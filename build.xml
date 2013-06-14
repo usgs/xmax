@@ -1,0 +1,135 @@
+<project name="xmax" default="compile" basedir=".">
+    <description>
+        XMAX
+    </description>
+
+    <!-- set global properties for this build -->
+<!--
+    <property name="version"         value="1.06" />
+    <property name="version"         value="1.07" />
+    <property name="src.dir"         location="src/${version}"/>
+-->
+    <property name="src.dir"         location="src"/>
+
+    <property name="build.root"      location="build"/>
+    <property name="build.resources" location="build/resources"/>
+    <property name="libs.dir"        location="libs"/>
+    <property name="project.main"    value="com.isti.xmax.XMAX" />
+    <property name="project.archive" value="xmax.jar" />
+    <property name="manifest.file"   value="${src.dir}/META-INF/MANIFEST.MF" />
+
+    <!-- Classpath for compile -->
+    <path id="compile.class.path">
+<!-- This is handed to javac as a sourcepath variable in target=compile below
+        <pathelement location="${src.dir}"/>
+-->
+        <fileset dir="${libs.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Classpath for run -->
+    <path id="run.class.path">
+        <pathelement location="${build.root}"/>
+        <fileset dir="${libs.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+      <dirset dir="plugins/">
+        <include name="**/classes"/>
+      </dirset>
+<!-- Doesn't seem to look for images anymore ... ? -->
+        <pathelement location="${build.resources}/images"/>
+    </path>
+
+        <path id="classpath">
+                <fileset dir="libs" includes="*.jar" />
+        </path>
+        <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
+                <classpath refid="classpath" />
+        </typedef>
+
+        <target name="build-plugins">
+<!--
+                <mkdir dir="${build.root}/plugins" />
+-->
+                <ant dir="plugins/com.isti.xmax.filter.lowpass" target="build" />
+                <ant dir="plugins/com.isti.xmax.filter.highpass" target="build" />
+                <ant dir="plugins/com.isti.xmax.filter.bandpass" target="build" />
+                <ant dir="plugins/com.isti.xmax.filter.dyo" target="build" />
+                <ant dir="plugins/com.isti.xmax.correlation" target="build" />
+                <ant dir="plugins/com.isti.xmax.ppm" target="build" />
+                <ant dir="plugins/com.isti.xmax.psd" target="build" />
+                <ant dir="plugins/com.isti.xmax.showResponse" target="build" />
+                <ant dir="plugins/com.isti.xmax.spectra" target="build" />
+        </target>
+
+
+<!--CLEAN-->
+    <target name="clean">
+<!--
+        <delete dir="${build.root}" verbose="true"/>
+-->
+        <delete dir="${build.root}" verbose="false"/>
+    </target>
+
+<!--INIT-->
+    <target name="init" depends="clean">
+        <tstamp/>
+        <mkdir dir="${build.root}"/>
+<!-- <mkdir dir="${build.resources}"/> -->
+    </target>
+
+<!--COMPILE-->
+    <target name="compile" depends="init" description="Compile the source">
+        <property name="myclasspath" refid="compile.class.path"/>
+        <echo message="Classpath = ${myclasspath}"/>
+        <javac verbose="true" srcdir="${src.dir}" destdir="${build.root}" listfiles="true" encoding="utf-8" debug="true" includeantruntime="no">
+            <classpath refid="compile.class.path"/>
+            <compilerarg value="-Xlint" />
+        </javac>
+    </target>
+
+<!--RUN-->
+    <target name="run" description="">
+        <property name="myclasspath" refid="run.class.path"/>
+        <echo message="Classpath = ${myclasspath}"/>
+        <echo message="project.main = ${project.main}"/>
+        <java classname="${project.main}" classpathref="run.class.path" fork="true">
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx512m"/>
+        </java>
+    </target>
+
+<!--LIBRARIES-->
+    <target name="libraries" description="Add libraries">
+        <copy todir="${build.root}/libs">
+            <fileset dir="${libs.dir}"/>
+        </copy>
+        <copy file="${src.dir}/log4j.properties" todir="${build.root}"/>
+<!--
+        <unjar dest="${build.root}">
+            <fileset dir="${libs.dir}">
+                <include name="**/*.jar"/>
+            </fileset>
+        </unjar>
+        <delete dir="${build.root}/META-INF"/>
+-->
+    </target>
+
+
+<!--
+<available file="${manifest.file}" property="has.manifest" />
+<target name="jar" if="has.manifest" description="generate the distribution" >
+-->
+ 
+<!--JAR-->
+<!--
+    <target name="jar" depends="libraries" description="generate the distribution" >
+-->
+    <target name="jar" description="generate the distribution" >
+        <jar jarfile="${project.archive}" manifest="${manifest.file}" basedir="${build.root}" > 
+        </jar>
+    </target>
+
+
+</project>

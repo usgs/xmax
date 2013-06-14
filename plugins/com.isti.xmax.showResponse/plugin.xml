@@ -1,0 +1,16 @@
+<?xml version="1.0" ?> 
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.5" 
+"http://jpf.sourceforge.net/plugin_0_5.dtd"> 
+<plugin id="com.isti.xmax.showResponse" version="1.0"> 
+	<requires> 
+		<import plugin-id="com.isti.xmax.core"/> 
+	</requires> 
+	<runtime> 
+		<library id="response" path="classes/" type="code"/> 
+	</runtime> 
+	<extension plugin-id="com.isti.xmax.core" point-id="Transformation" id="Response"> 
+		<parameter id="class" value="TransResp"/>
+		<parameter id="name" value="Show Response"/> 
+		<parameter id="description" value="Shows responses for selected channels"/>  
+	</extension> 
+</plugin> 

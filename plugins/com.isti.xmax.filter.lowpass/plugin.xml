@@ -1,0 +1,16 @@
+<?xml version="1.0" ?> 
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.5" 
+"http://jpf.sourceforge.net/plugin_0_5.dtd"> 
+<plugin id="com.isti.xmax.filterLP" version="1.0"> 
+	<requires> 
+		<import plugin-id="com.isti.xmax.core"/> 
+	</requires> 
+	<runtime> 
+		<library id="filterLP" path="classes/" type="code"/> 
+	</runtime> 
+	<extension plugin-id="com.isti.xmax.core" point-id="Filter" id="LP"> 
+		<parameter id="class" value="FilterLP"/>
+		<parameter id="name" value="LP filter"/> 
+		<parameter id="description" value="Apply Low Pass filter for selected channels"/>  
+	</extension> 
+</plugin> 

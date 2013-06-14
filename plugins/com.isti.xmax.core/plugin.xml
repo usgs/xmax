@@ -1,0 +1,15 @@
+<?xml version="1.0" ?> 
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.5" "http://jpf.sourceforge.net/plugin_0_5.dtd"> 
+<plugin id="com.isti.xmax.core" version="1.0"> 
+	<extension-point id="Filter"> 
+		<parameter-def id="class" type = "string"/> 
+		<parameter-def id="name" type = "string"/>
+		<parameter-def id="description" type = "string" multiplicity="none-or-one"/> 
+	</extension-point>
+	<extension-point id="Transformation"> 
+		<parameter-def id="class" type = "string"/> 
+		<parameter-def id="name" type = "string"/>
+		<parameter-def id="description" type = "string" multiplicity="none-or-one"/> 
+		<parameter-def id="max_data_length" type = "number" multiplicity="none-or-one"/> 
+	</extension-point>
+</plugin> 

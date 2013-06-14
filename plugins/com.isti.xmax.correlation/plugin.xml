@@ -1,0 +1,17 @@
+<?xml version="1.0" ?> 
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.5" 
+"http://jpf.sourceforge.net/plugin_0_5.dtd"> 
+<plugin id="com.isti.xmax.correlation" version="1.0"> 
+	<requires> 
+		<import plugin-id="com.isti.xmax.core"/> 
+	</requires> 
+	<runtime> 
+		<library id="correlation" path="classes/" type="code"/> 
+	</runtime> 
+	<extension plugin-id="com.isti.xmax.core" point-id="Transformation" id="Correlation"> 
+		<parameter id="class" value="TransCorrelation"/>
+		<parameter id="name" value="Correlation"/> 
+		<parameter id="description" value="Shows 2 channels correlation"/>  
+		<parameter id="max_data_length" value="131072"/>   
+	</extension> 
+</plugin> 

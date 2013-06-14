@@ -1,0 +1,17 @@
+<?xml version="1.0" ?> 
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.5" 
+"http://jpf.sourceforge.net/plugin_0_5.dtd"> 
+<plugin id="com.isti.xmax.filterDYO" version="1.0"> 
+	<requires> 
+		<import plugin-id="com.isti.xmax.core"/> 
+		<import plugin-id="com.isti.xmax.filterBP" exported="true"/> 
+	</requires> 
+	<runtime> 
+		<library id="filterDYO" path="classes/" type="code"/> 
+	</runtime> 
+	<extension plugin-id="com.isti.xmax.core" point-id="Filter" id="DYO"> 
+		<parameter id="class" value="FilterDYO"/>
+		<parameter id="name" value="DYO filter"/> 
+		<parameter id="description" value="Creates DYO filter for selected channels and apply it"/>  
+	</extension> 
+</plugin> 

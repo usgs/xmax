@@ -1,0 +1,17 @@
+<?xml version="1.0" ?> 
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.5" 
+"http://jpf.sourceforge.net/plugin_0_5.dtd"> 
+<plugin id="com.isti.xmax.powerSpectraDenity" version="1.0"> 
+	<requires> 
+		<import plugin-id="com.isti.xmax.core"/> 
+	</requires> 
+	<runtime> 
+		<library id="psd" path="classes/" type="code"/> 
+	</runtime> 
+	<extension plugin-id="com.isti.xmax.core" point-id="Transformation" id="Power Spectra Density"> 
+		<parameter id="class" value="TransPSD"/>
+		<parameter id="name" value="PowerSpectraDensity"/> 
+		<parameter id="description" value="Shows power spectra density for selected channels"/>
+		<parameter id="max_data_length" value="32768"/>   
+	</extension> 
+</plugin> 

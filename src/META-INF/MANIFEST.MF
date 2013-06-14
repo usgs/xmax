@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Implementation-Version: 1.0
+Implementation-Vendor: "Instrumental Software Technologies"
+Main-Class: com.isti.xmax.XMAX
+Class-Path: libs/BareBonesBrowserLaunch.jar     libs/ekit-1.4.jar               libs/jfreechart-1.0.14.jar
+            libs/JEvalResp.jar                  libs/fissuresIDL-1.0.jar        libs/jpf.jar
+            libs/JavaSeed.jar                   libs/fissuresImpl-1.1.13.jar    libs/jtransforms-2.4.jar
+            libs/TauP-1.1.7.jar                 libs/fissuresUtil-1.0.19.jar    libs/log4j-1.2.16.jar
+            libs/commons-cli-1.2.jar            libs/isti_shape.jar             libs/miglayout-3.6.3-swing-java14.jar
+            libs/commons-codec-1.5.jar          libs/isti_util.jar              libs/oscache-2.1-mod2.jar
+            libs/commons-collections-3.2.1.jar  libs/jaxen-core.jar             libs/saxpath.jar
+            libs/commons-configuration-1.7.jar  libs/jaxen-jdom.jar             libs/seedCodec-1.0.6.jar
+            libs/commons-exec-1.1.jar           libs/jcalendar.jar              libs/seisFile-1.5.2.jar
+            libs/commons-lang-2.6.jar           libs/jcommon-1.0.17.jar
+            libs/commons-logging-1.1.1.jar      libs/jdom.jar                   libs/commons-io-2.4.jar
+
