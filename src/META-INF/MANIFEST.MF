@@ -11,6 +11,7 @@ Class-Path: lib/BareBonesBrowserLaunch.jar     lib/ekit-1.4.jar               li
             lib/commons-collections-3.2.1.jar  lib/jaxen-core.jar             lib/saxpath.jar
             lib/commons-configuration-1.7.jar  lib/jaxen-jdom.jar             lib/seedCodec-1.0.6.jar
             lib/commons-exec-1.1.jar           lib/jcalendar.jar              lib/seisFile-1.5.2.jar
-            lib/commons-lang-2.6.jar           lib/jcommon-1.0.17.jar
+            lib/commons-lang-2.6.jar           lib/jcommon-1.0.17.jar      
             lib/commons-logging-1.1.1.jar      lib/jdom.jar                   lib/commons-io-2.4.jar
+            .
 
