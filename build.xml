@@ -6,23 +6,18 @@
     <!-- set global properties for this build -->
 <!--
     <property name="version"         value="1.06" />
-    <property name="version"         value="1.07" />
     <property name="src.dir"         location="src/${version}"/>
 -->
     <property name="src.dir"         location="src"/>
-
     <property name="build.root"      location="build"/>
     <property name="build.resources" location="build/resources"/>
-    <property name="libs.dir"        location="libs"/>
+    <property name="libs.dir"        location="lib"/>
     <property name="project.main"    value="com.isti.xmax.XMAX" />
     <property name="project.archive" value="xmax.jar" />
     <property name="manifest.file"   value="${src.dir}/META-INF/MANIFEST.MF" />
 
     <!-- Classpath for compile -->
     <path id="compile.class.path">
-<!-- This is handed to javac as a sourcepath variable in target=compile below
-        <pathelement location="${src.dir}"/>
--->
         <fileset dir="${libs.dir}">
             <include name="**/*.jar"/>
         </fileset>
@@ -41,31 +36,32 @@
         <pathelement location="${build.resources}/images"/>
     </path>
 
-        <path id="classpath">
-                <fileset dir="libs" includes="*.jar" />
-        </path>
-        <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
-                <classpath refid="classpath" />
-        </typedef>
+    <path id="classpath">
+            <fileset dir="lib" includes="*.jar" />
+    </path>
+    <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
+            <classpath refid="classpath" />
+    </typedef>
 
-        <target name="build-plugins">
+
+    <target name="build-plugins">
 <!--
-                <mkdir dir="${build.root}/plugins" />
+        <mkdir dir="${build.root}/plugins" />
 -->
-                <ant dir="plugins/com.isti.xmax.filter.lowpass" target="build" />
-                <ant dir="plugins/com.isti.xmax.filter.highpass" target="build" />
-                <ant dir="plugins/com.isti.xmax.filter.bandpass" target="build" />
-                <ant dir="plugins/com.isti.xmax.filter.dyo" target="build" />
-                <ant dir="plugins/com.isti.xmax.correlation" target="build" />
-                <ant dir="plugins/com.isti.xmax.ppm" target="build" />
-                <ant dir="plugins/com.isti.xmax.psd" target="build" />
-                <ant dir="plugins/com.isti.xmax.showResponse" target="build" />
-                <ant dir="plugins/com.isti.xmax.spectra" target="build" />
-        </target>
+        <ant dir="plugins/com.isti.xmax.filter.lowpass" target="build" />
+        <ant dir="plugins/com.isti.xmax.filter.highpass" target="build" />
+        <ant dir="plugins/com.isti.xmax.filter.bandpass" target="build" />
+        <ant dir="plugins/com.isti.xmax.filter.dyo" target="build" />
+        <ant dir="plugins/com.isti.xmax.correlation" target="build" />
+        <ant dir="plugins/com.isti.xmax.ppm" target="build" />
+        <ant dir="plugins/com.isti.xmax.psd" target="build" />
+        <ant dir="plugins/com.isti.xmax.showResponse" target="build" />
+        <ant dir="plugins/com.isti.xmax.spectra" target="build" />
+    </target>
 
 
-<!--CLEAN-->
-    <target name="clean">
+<!--CLEAN_BUILD-->
+    <target name="clean_build" description="Delete /build dir">
 <!--
         <delete dir="${build.root}" verbose="true"/>
 -->
@@ -73,14 +69,13 @@
     </target>
 
 <!--INIT-->
-    <target name="init" depends="clean">
-        <tstamp/>
+    <target name="init" depends="clean_build" description="Mkdir /build and /build/resources [depends=clean_build]">
         <mkdir dir="${build.root}"/>
-<!-- <mkdir dir="${build.resources}"/> -->
+        <mkdir dir="${build.resources}"/>
     </target>
 
 <!--COMPILE-->
-    <target name="compile" depends="init" description="Compile the source">
+    <target name="compile" depends="init" description="Compile the source [depends=init]">
         <property name="myclasspath" refid="compile.class.path"/>
         <echo message="Classpath = ${myclasspath}"/>
         <javac verbose="true" srcdir="${src.dir}" destdir="${build.root}" listfiles="true" encoding="utf-8" debug="true" includeantruntime="no">
@@ -90,7 +85,7 @@
     </target>
 
 <!--RUN-->
-    <target name="run" description="">
+    <target name="run" description="Run java com.isti.xmax.XMAX from /build dir">
         <property name="myclasspath" refid="run.class.path"/>
         <echo message="Classpath = ${myclasspath}"/>
         <echo message="project.main = ${project.main}"/>

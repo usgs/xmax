@@ -9,6 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+//MTH:
+import javax.swing.SwingUtilities;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -185,7 +189,15 @@ System.out.format("== file = [%s]\n", name);
 					//restoring logging level
 					Logger.getRootLogger().setLevel(level);
 					setDataModule(XMAXDataModule.getInstance());
+                    
+System.out.format("== Load Data: is EDT=[%s]\n", SwingUtilities.isEventDispatchThread() );
+SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+Date date = new Date();
+System.out.format("== Load Data Date=[%s]\n",dateFormat.format(date));
 					getDataModule().loadData();
+date = new Date();
+System.out.format("== Finished Load Data Date=[%s]\n",dateFormat.format(date));
+
 					if (getDataModule().getAllChannels().size() > 0) {
 						setFrame(XMAXframe.getInstance());
 						if (XMAXconfiguration.getInstance().getTimeInterval() != null) {
