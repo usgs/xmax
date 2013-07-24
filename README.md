@@ -1,0 +1,4 @@
+xmax
+====
+
+XMAX waveform display
