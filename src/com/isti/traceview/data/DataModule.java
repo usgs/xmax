@@ -77,6 +77,7 @@ public class DataModule extends Observable {
 		markerPosition = 0;
 		dataSources = new ArrayList<ISource>();
 		responses = new ArrayList<Response>();
+System.out.format("== traceview/data/DataModule() constructor\n");
 	}
 
 	/**
@@ -148,12 +149,36 @@ System.out.format("== DataModule.loadData() TraceView.getConfiguration().getData
 	 * Cleanup temp storage and dump all found data to temp storage
 	 */
 	public void dumpData(IColorModeState colorMode) throws TraceViewException {
+System.out.format("== DataModule.dumpData()\n");
 		lg.debug("DataModule.dumpData() begin");
 		if (storage == null) {
+System.out.format("== DataModule.dumpData(): storage=null: getDataTempPath()=[%s]\n", TraceView.getConfiguration().getDataTempPath() );
 			storage = new TemporaryStorage(TraceView.getConfiguration()
 					.getDataTempPath());
+
+    // MTH: Check if dataTempPath exists and if not, try to create it:
+            String dataTempPath = TraceView.getConfiguration().getDataTempPath();
+            File dir = new File(dataTempPath);
+            if (dir.exists() ) {
+                if (!dir.isDirectory()) {
+                    System.out.format("== DataModule.dumpData(): ERROR: dataTempPath=[%s] is NOT a directory!\n", dataTempPath);
+                    System.exit(1);
+                }
+                System.out.format("== DataModule.dumpData(): dataTempPath=[%s] exists\n", dataTempPath);
+            }
+            else {
+                Boolean success = dir.mkdirs();
+                if (!success) {
+                    System.out.format("== DataModule.dumpData(): ERROR: unable to create directory dataTempPath=[%s]\n", dataTempPath);
+                    System.exit(1);
+                }
+                System.out.format("== DataModule.dumpData(): successfully created dir dataTempPath=[%s]\n", dataTempPath);
+            }
 		}
-		storage.delAllTempFiles();
+
+    // MTH: Don't delete all temp files --> add to existing files instead
+		//storage.delAllTempFiles();
+
 		List<ISource> dss = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
 		for (ISource ds : dss) {
 			if (!isSourceLoaded(ds)) {
@@ -171,14 +196,18 @@ System.out.format("== DataModule.loadData() TraceView.getConfiguration().getData
 		Iterator<PlotDataProvider> it = getAllChannels().iterator();
 		while (it.hasNext()) {
 			PlotDataProvider channel = it.next();
+System.out.format("== DataModule.dumpData() call channel.load() for channel=[%s]\n", channel);
 			channel.load();
 			channel.initPointCache(colorMode);
+System.out.format("== DataModule.dumpData() call channel.dump() for channel=[%s]\n", channel);
 			channel.dump(storage.getSerialFileName(channel));
 			it.remove();
 			channel.drop();
 			channel = null;
 		}
 		lg.debug("DataModule.dumpData() end");
+System.out.format("== DataModule.dumpData() DONE\n");
+System.exit(0);
 	}
 
 	/**

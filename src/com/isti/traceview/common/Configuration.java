@@ -216,9 +216,10 @@ public class Configuration extends Observable {
 	public String getDataPath() {
         // MTH: The line below will take xmax -d '../xs0/seed/..' and turn it into path="./Users/mth/mth/../xs0/seed/.." !
 		//String ret = dataPath.replace("." + File.separator, getConfigFileDir());
-		//lg.debug("Configuration.getDataPath(): " + ret);
-		//return ret;
-		return dataPath;
+        // MTH: Added to handle -d '~/somePath/..'
+		String ret = dataPath.replace("~" , System.getProperty("user.home"));
+		lg.debug("Configuration.getDataPath(): " + ret);
+		return ret;
 	}
 
 	/**
