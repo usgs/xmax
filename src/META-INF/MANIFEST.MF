@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Implementation-Version: 1.0
 Implementation-Vendor: "Instrumental Software Technologies"
 Main-Class: com.isti.xmax.XMAX
-Class-Path: lib/BareBonesBrowserLaunch.jar     lib/ekit-1.4.jar               lib/jfreechart-1.0.14.jar
+Class-Path: lib/BareBonesBrowserLaunch.jar     lib/ekit-1.4.jar               lib/jfreechart.jar
             lib/JEvalResp.jar                  lib/fissuresIDL-1.0.jar        lib/jpf.jar
             lib/JavaSeed.jar                   lib/fissuresImpl-1.1.13.jar    lib/jtransforms-2.4.jar
             lib/TauP-1.1.7.jar                 lib/fissuresUtil-1.0.19.jar    lib/log4j-1.2.16.jar

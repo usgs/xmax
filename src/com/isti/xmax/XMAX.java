@@ -78,7 +78,6 @@ public class XMAX extends TraceView {
                 System.out.println(" >java -Xms512M -Xmx512M -jar xmar.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
                 System.out.println("* Append to Serialized data in DATA_TEMP:");
                 System.out.println(" >java -Xms512M -Xmx512M -jar xmar.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
-                System.exit(0);
             }
 			if (cmd.hasOption("h")) {
 				if (cmd.getOptions().length > 1) {
