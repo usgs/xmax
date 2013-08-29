@@ -276,8 +276,9 @@ public class Channel extends Observable implements Comparable, Serializable {
 	 * @throws IOException
 	 */
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		lg.debug("Serializing " + toString());
+        lg.debug("== Channel.writeObject() ENTER: Serializing " + toString());
 		out.defaultWriteObject();
+        lg.debug("== Channel.writeObject() EXIT");
 	}
 
 	/**
@@ -290,7 +291,7 @@ public class Channel extends Observable implements Comparable, Serializable {
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
-		lg.debug("Deserialized " + toString());
+        lg.debug("== Channel.readObject() --> in.defaultReadObject() Deserialize " + toString());
 	}
 
 	/**

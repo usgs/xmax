@@ -77,7 +77,6 @@ public class DataModule extends Observable {
 		markerPosition = 0;
 		dataSources = new ArrayList<ISource>();
 		responses = new ArrayList<Response>();
-System.out.format("== traceview/data/DataModule() constructor\n");
 	}
 
 	/**
@@ -97,32 +96,55 @@ System.out.format("== traceview/data/DataModule() constructor\n");
 	 * directory and parse file data sources which absent in temp storage area
 	 */
 	public void loadData() throws TraceViewException {
-		// add channels from temporary storage
-		lg.debug("DataModule.loadData() begin");
+        lg.debug("\n== Enter DataModule.loadData()\n");
+     // -t: Read serialized PlotDataProviders from TEMP_DATA
 		if (TraceView.getConfiguration().getUseTempData()) {
+            lg.debug("-t: Read from temp storage\n");
+            System.out.format("     -t: Read from temp storage\n");
 			if (storage == null) {
 				storage = new TemporaryStorage(TraceView.getConfiguration().getDataTempPath());
 			}
 			for (String tempFileName : storage.getAllTempFiles()) {
+                lg.debug("PDP.load: tempFileName=" + tempFileName);
+                System.out.format("         Read serialized file:%s\n", tempFileName);
 				PlotDataProvider channel = PlotDataProvider.load(tempFileName);
+             // MTH:
+                if (TraceView.getConfiguration().getUseDataPath()) {
+                    lg.debug("== loadData(): -t AND -d chosen --> null PlotDataProvider's pointsCache");
+                    channel.nullPointsCache();
+                }
 				if ((channels.indexOf(channel) <= 0)) {
 					addChannel(channel);
 				}
 			}
+        // Should this be moved to after the -d read in case there are other channels ... ?
 			Collections.sort(channels, Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
+            lg.debug("-t: Read from temp storage DONE\n\n");
 		}
-System.out.format("== DataModule.loadData() TraceView.getConfiguration().getDataPath() = [%s]\n", TraceView.getConfiguration().getDataPath());
+     // -d: Read data from data path. Note that at this point we are merely *parsing* the
+     //     data (e.g., mseed files) to construct PlotDataProviders, and the actual 
+     //     traces (=Segments) won't be read in until just before they are displayed on the screen. 
+		if (TraceView.getConfiguration().getUseDataPath()) {
+            System.out.format("     -d: Read from data path\n");
+            lg.debug("-d: Read from data path --> addDataSources()\n");
+		    addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
+            lg.debug("-d: Read from data path DONE\n\n");
+        }
+		else {
+            if (!TraceView.getConfiguration().getUseTempData()) {
+            lg.debug("-d + -t are both false: Read from data path --> addDataSources()\n");
+		    addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
+            lg.debug("-d + -t: Read from data path DONE\n\n");
+            }
+        }
 
-		addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
 		// Fill up stations from station file
 		loadStations();
 		setChanged();
 		notifyObservers();
-		lg.debug("DataModule.loadData() end");
 
-		// for (PlotDataProvider channel: getAllChannels()) {
-		// channel.printout();
-		// }
+        //printAllChannels();
+        lg.debug("== Exit DataModule.loadData()\n\n");
 	}
 
 	public void reLoadData() throws TraceViewException {
@@ -149,12 +171,16 @@ System.out.format("== DataModule.loadData() TraceView.getConfiguration().getData
 	 * Cleanup temp storage and dump all found data to temp storage
 	 */
 	public void dumpData(IColorModeState colorMode) throws TraceViewException {
-System.out.format("== DataModule.dumpData()\n");
-		lg.debug("DataModule.dumpData() begin");
+        lg.debug("== DataModule.dumpData() ENTER");
+        lg.debug("== DataModule.dumpData() call DataModule.loadData()");
+        loadData();
+        lg.debug("== DataModule.dumpData() call DataModule.loadData() DONE");
+
+        System.out.format("     -T: Serialize data to temp storage ");
+
 		if (storage == null) {
-System.out.format("== DataModule.dumpData(): storage=null: getDataTempPath()=[%s]\n", TraceView.getConfiguration().getDataTempPath() );
-			storage = new TemporaryStorage(TraceView.getConfiguration()
-					.getDataTempPath());
+            lg.debug("== DataModule.dumpData() storage == null --> new TemporaryStorage()");
+			storage = new TemporaryStorage(TraceView.getConfiguration().getDataTempPath());
 
     // MTH: Check if dataTempPath exists and if not, try to create it:
             String dataTempPath = TraceView.getConfiguration().getDataTempPath();
@@ -164,7 +190,7 @@ System.out.format("== DataModule.dumpData(): storage=null: getDataTempPath()=[%s
                     System.out.format("== DataModule.dumpData(): ERROR: dataTempPath=[%s] is NOT a directory!\n", dataTempPath);
                     System.exit(1);
                 }
-                System.out.format("== DataModule.dumpData(): dataTempPath=[%s] exists\n", dataTempPath);
+                //System.out.format("== DataModule.dumpData(): dataTempPath=[%s] exists\n", dataTempPath);
             }
             else {
                 Boolean success = dir.mkdirs();
@@ -172,42 +198,36 @@ System.out.format("== DataModule.dumpData(): storage=null: getDataTempPath()=[%s
                     System.out.format("== DataModule.dumpData(): ERROR: unable to create directory dataTempPath=[%s]\n", dataTempPath);
                     System.exit(1);
                 }
-                System.out.format("== DataModule.dumpData(): successfully created dir dataTempPath=[%s]\n", dataTempPath);
+                //System.out.format("== DataModule.dumpData(): successfully created dir dataTempPath=[%s]\n", dataTempPath);
             }
 		}
 
-    // MTH: Don't delete all temp files --> add to existing files instead
-		//storage.delAllTempFiles();
+    // MTH: if -t was given on command line then keep the files in /DATA_TEMP, else clear them out
+        if (TraceView.getConfiguration().getUseTempData()) {
+            System.out.format(" [-t: Don't wipe out existing data in temp storage]\n");
+            // do nothing
+        }
+        else {
+            System.out.format(" [First wipe out existing data in temp storage]\n");
+		    storage.delAllTempFiles();
+        }
 
-		List<ISource> dss = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
-		for (ISource ds : dss) {
-			if (!isSourceLoaded(ds)) {
-				dataSources.add(ds);
-				lg.info("Parsing " + ds.getName());
-				ds.parse(this);
-			}
-		}
-		Set<RawDataProvider> toCheck = new HashSet<RawDataProvider>();
-		for (PlotDataProvider pdp : getAllChannels()) {
-			toCheck.add((PlotDataProvider) pdp);
-		}
-		checkDataIntegrity(toCheck);
-		toCheck = null;
 		Iterator<PlotDataProvider> it = getAllChannels().iterator();
 		while (it.hasNext()) {
 			PlotDataProvider channel = it.next();
-System.out.format("== DataModule.dumpData() call channel.load() for channel=[%s]\n", channel);
+            lg.debug("== DataModule.dumpData() call channel.load() for channel=" + channel);
 			channel.load();
+            lg.debug("== DataModule.dumpData() call channel.load() DONE for channel=" + channel);
 			channel.initPointCache(colorMode);
-System.out.format("== DataModule.dumpData() call channel.dump() for channel=[%s]\n", channel);
+            System.out.format("         Serialize to file:%s\n", storage.getSerialFileName(channel));
 			channel.dump(storage.getSerialFileName(channel));
 			it.remove();
-			channel.drop();
-			channel = null;
+            //MTH: not sure why this is needed
+			//channel.drop();
+			//channel = null;
 		}
-		lg.debug("DataModule.dumpData() end");
-System.out.format("== DataModule.dumpData() DONE\n");
-System.exit(0);
+        //printAllChannels();
+        lg.debug("== DataModule.dumpData() EXIT");
 	}
 
 	/**
@@ -934,4 +954,27 @@ System.exit(0);
 			return resp;
 		}
 	}
+
+// MTH:
+    public void printAllChannels() {
+    /**
+        System.out.format("== DataModule: Number of ISources=[%d]\n", dataSources.size() );
+        for (ISource dataSource : dataSources) {
+            System.out.format("==   [ISource: %s]\n", dataSource.getName() );
+        }
+    **/
+        System.out.format("== DataModule: Number of channels(=PDP's) attached =[%d]:\n", channels.size());
+        for (PlotDataProvider channel : channels) {
+            System.out.format("   [PDP: %s] [nsegs=%d] [isLoadingStarted=%s] [isLoaded=%s]\n", 
+                channel.toString(), channel.getSegmentCount(), channel.isLoadingStarted(), channel.isLoaded() ); 
+            List<Segment> segs = channel.getRawData();
+            //System.out.format("     [rdp#][chanSerial#]:Segment\n");
+            for (Segment seg : segs) {
+                System.out.format("         [%d][%d]:%s [Source:%s]\n", seg.getSourceSerialNumber(), seg.getChannelSerialNumber(),
+                    seg.toString(), seg.getDataSource().getName() );
+                System.out.println();
+            }
+        }
+    }
+
 }

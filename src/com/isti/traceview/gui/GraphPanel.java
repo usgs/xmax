@@ -587,6 +587,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 	 *            list of traces
 	 */
 	public void setChannelShowSet(List<PlotDataProvider> channels) {
+        lg.debug("== GraphPanel.setChannelShowSet [ENTER]");
 		synchronized (TraceView.getDataModule().getAllChannels()) {
 			lg.debug("GraphPanel.setChannelShowSet begin");
 			if (channels != null) {
@@ -595,6 +596,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 				// a command
 				if (!TraceView.getConfiguration().getMergeLocations()) {
 					for (PlotDataProvider channel: channels) {
+                        lg.debug("== GraphPanel.setChannelShowSet Handle channel=" + channel);
 						List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
@@ -635,11 +637,12 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 					observable.setChanged();
 					observable.notifyObservers("ROT OFF");
 				}
+//System.out.println("== GraphPanel.setChannelShowSet [Call repaint()]");
 				repaint();
 			}
 			observable.setChanged();
 			observable.notifyObservers(channels);
-			lg.debug("GraphPanel.setChannelShowSet end");
+            lg.debug("== GraphPanel.setChannelShowSet [EXIT]");
 		}
 	}
 
@@ -1222,6 +1225,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 	}
 
 	public void paint(Graphics g) {
+//System.out.println("== GraphPanel.paint(g) [Enter]");
 		if(!paintNow){
 			
 		paintNow = true;
@@ -1304,6 +1308,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 		//lg.debug("End of repainting graph panel");
 		paintNow = false;
 		}
+//System.out.println("== GraphPanel.paint(g) [Exit]");
 	}
 
 	private void paintSelection(Graphics g, long Xbegin, long Xend, double Ybegin, double Yend, String message) {

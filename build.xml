@@ -1,4 +1,4 @@
-<project name="xmax" default="compile" basedir=".">
+<project name="xmax" default="jar" basedir=".">
     <description>
         XMAX
     </description>
@@ -78,7 +78,7 @@
     <target name="compile" depends="init" description="Compile the source [depends=init]">
         <property name="myclasspath" refid="compile.class.path"/>
         <echo message="Classpath = ${myclasspath}"/>
-        <javac verbose="true" srcdir="${src.dir}" destdir="${build.root}" listfiles="true" encoding="utf-8" debug="true" includeantruntime="no">
+        <javac verbose="false" srcdir="${src.dir}" destdir="${build.root}" listfiles="true" encoding="utf-8" debug="true" includeantruntime="no">
             <classpath refid="compile.class.path"/>
             <compilerarg value="-Xlint" />
         </javac>
@@ -121,7 +121,7 @@
 <!--
     <target name="jar" depends="libraries" description="generate the distribution" >
 -->
-    <target name="jar" description="generate the distribution" >
+    <target name="jar" depends="compile" description="generate the distribution" >
         <jar jarfile="${project.archive}" manifest="${manifest.file}" basedir="${build.root}" > 
         </jar>
     </target>
