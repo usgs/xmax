@@ -105,7 +105,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * parts of data, and raw data access during zooming happens only to limited small parts of data
 	 */
 	public void initPointCache(IColorModeState colorMode) {
+        lg.debug("== PDP.initPointCache ENTER");
 		pointsCache = pixelize(getTimeRange(), initPointCount, null, colorMode);
+        lg.debug("== PDP.initPointCache EXIT");
 	}
 
 	/**
@@ -164,6 +166,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		if (pointsCache == null) {
 			initPointCache(colorMode);
 		}
+
 		// Time range need to be pixelized - intersection of requested pixalization range and
 		// channel's time range
 		PlotData ret = new PlotData(this.getName(), this.getColor());
@@ -172,12 +175,14 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		if (effectiveTimeRange != null) {
 			if ((pointCount > pointsCache.size() * new Double(effectiveTimeRange.getDuration()) / new Double(getTimeRange().getDuration()))
 					|| filter != null) {
+//System.out.format("== getPlotData: pointCount > pointsCache.size !!\n");
 				points = pixelize(effectiveTimeRange, new Double(2 * pointCount * effectiveTimeRange.getDuration()
 						/ new Double(ti.getDuration()).intValue()).intValue(), filter, colorMode);
 			} else {
 				points = new ArrayList<PlotDataPoint[]>();
 				int startIndex = new Double((effectiveTimeRange.getStart() - getTimeRange().getStart()) * initPointCount
 						/ getTimeRange().getDuration()).intValue();
+//System.out.format("== getPlotData: startIndex=[ %d]\n", startIndex);
 				if (startIndex < 0) {
 					for (int i = -startIndex; i < 0; i++) {
 						// lg.debug("getPlotData: add empty points in the beginning");
@@ -189,7 +194,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				}
 				int endIndex = new Double((effectiveTimeRange.getEnd() - getTimeRange().getStart()) * initPointCount / getTimeRange().getDuration())
 						.intValue();
+//System.out.format("== getPlotData: endIndex=[ %d ] initPointCount=[%d]\n", endIndex, initPointCount);
 				if (endIndex > initPointCount) {
+// MTH: We don't seem to go in here
+//System.out.format("== getPlotData: endIndex > initPointCount\n");
 					points.addAll(pointsCache.subList(startIndex, initPointCount));
 					for (int i = initPointCount; i < endIndex; i++) {
 						// lg.debug("getPlotData: add empty points in the end");
@@ -198,6 +206,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 						points.add(intervalPoints);
 					}
 				} else {
+//System.out.format("== getPlotData: points.addAll\n");
 					points.addAll(pointsCache.subList(startIndex, endIndex));
 				}
 				// lg.debug("Use data points from cache to calculate data, indexes: " + startIndex +
@@ -297,7 +306,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			}
 			lastAccessed = new Date();
 		}
-		lg.debug("getPlotData end: " + this);
+		lg.debug("== PlotDataProvider getPlotData() END: " + this);
 		return ret;
 	}
 	
@@ -370,6 +379,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				for (SegmentData segData: intervalData) {
 					TimeInterval currentSegmentDataTI = new TimeInterval(segData.startTime, segData.endTime());
 					//lg.debug("Processing segment " + segment + "on interval " + currentSegmentDataTI);
+					lg.debug("Processing segment [seg] on interval " + currentSegmentDataTI);
 					double top = Double.NEGATIVE_INFINITY;
 					double bottom = Double.POSITIVE_INFINITY;
 					double sum = 0.0;
@@ -611,40 +621,51 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public void dump(String serialFileName) {
 		ObjectOutputStream out = null;
 		try {
+            lg.debug("== PDP.dump() -- ENTER: serfialFileName=" + serialFileName);
 			out = new ObjectOutputStream(new FileOutputStream(serialFileName + ".SER"));
 			setDataStream(serialFileName + ".DATA");
 			synchronized (this) {
 				lg.info("Serializing " + this + " to file " + serialFileName);
+				//System.out.println("== PDP.dump() --> out.writeObject\n");
 				out.writeObject(this);
+				//System.out.println("== PDP.dump() --> out.writeObject DONE\n");
 				notifyAll();
 			}
 		} catch (Exception ex) {
 			lg.error("Can't save channel: " + ex);
 		} finally {
 			try {
+				//System.out.println("== PDP.dump() --> setDataStream(null) and do out.close()");
 				setDataStream(null);
 				out.close();
 			} catch (IOException e) {
 				// Do nothing
 			}
 		}
+        lg.debug("== PDP.dump() -- EXIT");
 	}
 
 	/**
 	 * Loads trace from serialized file in temporary storage
 	 */
 	public static PlotDataProvider load(String fileName) {
-		lg.debug("Deserializing channel: from file " + fileName);
+        lg.debug("\n== PlotDataProvider.load() -- ENTER: Deserialize channel from file:" + fileName);
 		PlotDataProvider channel = null;
 		ObjectInputStream ois = null;
 		String serialDataFileName = TemporaryStorage.getDataFileName(fileName);
 		try {
 			Object objRead = null;
 			ois = new ObjectInputStream(new FileInputStream(fileName));
+            lg.debug("== PlotDataProvider.load(): call ois.readObject()");
 			objRead = ois.readObject();
+            lg.debug("== PlotDataProvider.load(): call ois.readObject() DONE");
 			channel = (PlotDataProvider) objRead;
 			channel.setStation(DataModule.getOrAddStation(channel.getStation().getName()));
-
+//MTH: added Segment.isLoaded boolean
+            List<Segment> segs = channel.getRawData();
+            for (Segment seg : segs) {
+                seg.setIsLoaded(true);
+            }
 		} catch (FileNotFoundException e) {
 			lg.error(e);
 		} catch (IOException e) {
@@ -658,6 +679,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				// Do nothing
 			}
 		}
+        lg.debug("== PlotDataProvider.load(fileName=%s) -- EXIT\n");
 		return channel;
 	}
 
@@ -700,4 +722,12 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			return new PlotDataPoint(top, bottom, mean, segmentNumber, continueAreaNumber, rdpNumber, evts);
 		}
 	}
+
+	/**
+	 * MTH: Provide a way for DataModule to set pointsCache=null
+	 *      in order to mix -t and -d data 
+	 */
+    public void nullPointsCache() {
+        pointsCache = null;
+    }
 }

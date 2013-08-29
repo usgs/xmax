@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Default list delimeter is ';' char, may be escaped by '/' -->
-<!-- 	 1.01 Added masks for data and event files
+<!-- Version
+     1.01 Added masks for data and event files
 	 1.02 Changed string time format
 	 1.03 Removed stations and channels descriptions
 	 1.04 Added filters strings
 	 1.05 Added ExportDir and LogFile tags
 	 1.06 Changed name of XYZ2SessionConfiguration tag to XMAXSessionConfiguration
 	 1.07 Added separated plugin configuration
+  ===MTH: Rolled back to 1.06 since there were problems with the plugins & fixed wildcard -d breaks
+	 1.08 First MTH version: Added ability to simultaneously plot/serialize from -d + -t
  -->
 <XMAXSessionConfiguration>
 <Version>
 		<Major>1</Major>
-		<Minor>6</Minor>
+		<Minor>8</Minor>
 	</Version>
 <!--  Sets start time for display. Recovers by -b option-->
 <!--  StartTime>2007,055,05:00:00</StartTime-->
@@ -24,9 +27,9 @@
 -->
 		<Data>
 			<!--  Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*"-->
-			<DataMask>resources/DATA/*</DataMask>
+			<DataMask>resources/DATA</DataMask>
 			<!--  Temporary directory to store decompressed traces in the internal format -->
-			<TempPath>resources/DATA_TEMP2</TempPath>
+			<TempPath>resources/DATA_TEMP</TempPath>
 			<!--  Quality control data file. Recovers by -q option -->
 			<QCdataFile>/home/max/DATA/QC.xml</QCdataFile>
 			<EventFileMask>resources/*.ndk</EventFileMask>

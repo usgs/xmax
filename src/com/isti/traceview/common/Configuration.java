@@ -199,6 +199,13 @@ public class Configuration extends Observable {
 
 	private boolean useTempData = false;
 
+	private boolean useDataPath = false;
+
+    /**
+    * If dumpData = true then we are in -T mode
+    **/
+	private boolean dumpData = false;
+
 	private Set<String> filterStation = null;
 
 	private Set<String> filterNetwork = null;
@@ -216,10 +223,9 @@ public class Configuration extends Observable {
 	public String getDataPath() {
         // MTH: The line below will take xmax -d '../xs0/seed/..' and turn it into path="./Users/mth/mth/../xs0/seed/.." !
 		//String ret = dataPath.replace("." + File.separator, getConfigFileDir());
-        // MTH: Added to handle -d '~/somePath/..'
-		String ret = dataPath.replace("~" , System.getProperty("user.home"));
-		lg.debug("Configuration.getDataPath(): " + ret);
-		return ret;
+		//lg.debug("Configuration.getDataPath(): " + ret);
+		//return ret;
+		return dataPath;
 	}
 
 	/**
@@ -581,6 +587,24 @@ public class Configuration extends Observable {
 	 */
 	public void setUseTempData(boolean useTempData) {
 		this.useTempData = useTempData;
+	}
+    /**
+    * MTH: Added useDataPath so we can know if user entered "-d dataPath"
+    *      on the command line in.
+    *      If -t was also entered, then we want to try to load data 
+    *      from both locations (dataPath + TempData)
+    */
+	public boolean getUseDataPath() {
+		return useDataPath;
+	}
+	public void setUseDataPath(boolean useDataPath) {
+		this.useDataPath = useDataPath;
+	}
+	public boolean getDumpData() {
+		return dumpData;
+	}
+	public void setDumpData(boolean dumpData) {
+		this.dumpData = dumpData;
 	}
 
 	/**
