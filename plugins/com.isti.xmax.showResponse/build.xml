@@ -27,7 +27,7 @@
       <dirset dir="../">
         <include name="**/classes"/>
       </dirset>
-      <fileset dir="../../libs/">
+      <fileset dir="../../lib/">
             <include name="**/*.jar"/>
       </fileset>
 	</path>
