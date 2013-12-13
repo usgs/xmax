@@ -1579,6 +1579,15 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 		 *            time interval of axis
 		 */
 		public void setTimeRange(TimeInterval ti) {
+            final long ONE_DAY    = 1L*86400000;
+            final long TWO_DAYS   = 2L*86400000;
+            final long THREE_DAYS = 3L*86400000;
+            final long FOUR_DAYS  = 4L*86400000;
+            final long ONE_WEEK   = 7L*86400000;
+            final long TWO_WEEKS  = 14L*86400000;
+            final long FOUR_WEEKS = 28L*86400000;
+            final long EIGHT_WEEKS= 56L*86400000;
+
 			lg.debug("AxisPanel setTimeRange: " + ti);
 			boolean needwait = false;
 			if (axis.getMinimumDate().getTime() == 0 && axis.getMaximumDate().getTime() == 1) {
@@ -1609,21 +1618,42 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 			}
 
 			if (ti != null) {
-			    if (ti.getDuration() > 86400000*2) {
-					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 6) );
-					axis.setMinorTickCount(6);
+                int minorTickCount = 4;
+                double nDays = ti.getDuration()/(double)ONE_DAY;
+                int interval = (int)(nDays/11.);
+                double remainder = nDays%11.;
+                double x = remainder/(double)interval;
+                if (x > 0.5) {
+                    interval++;
                 }
-			    else if (ti.getDuration() > 86400000*1) { // 1 - 2Days
+
+			    if (ti.getDuration() > ONE_WEEK) {                  // tD > 1 Week
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.DAY, interval) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > FOUR_DAYS) {            // 4 Days < tD <= 1 Week
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 12) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > THREE_DAYS) {           // 3 Days < tD <= 4 Days
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 8) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > TWO_DAYS) {             // 2 Days < tD <= 3 Days
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 6) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > ONE_DAY) {              // 1 Day < tD <= 2 Days
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 4) );
-					axis.setMinorTickCount(4);
+					axis.setMinorTickCount(minorTickCount);
                 }
 			    else if (ti.getDuration() > 36000000) { // 8 - 24hrs
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 2) );
-					axis.setMinorTickCount(2);
+					axis.setMinorTickCount(minorTickCount);
                 }
 			    else if (ti.getDuration() > 18000000) { // 4 - 8 hrs
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 1) );
-					axis.setMinorTickCount(4);
+					axis.setMinorTickCount(minorTickCount);
                 }
 			    else if (ti.getDuration() > 7200000) { // 2 - 4 hrs
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 30) );
@@ -1639,18 +1669,25 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
                 }
 			    else if (ti.getDuration() > 600000) { // 10min - 30min
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 2) );
-					axis.setMinorTickCount(2);
+					axis.setMinorTickCount(4);
                 }
-			    else if (ti.getDuration() > 120000) { // 2min
+			    else if (ti.getDuration() > 120000) { // 2 min < tD <= 10 min
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 1) );
-					axis.setMinorTickCount(2);
+					axis.setMinorTickCount(4);
                 }
-			    else {
+			    else if (ti.getDuration() > 30000) { // 30 sec < tD <= 2 min
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 30) );
 					axis.setMinorTickCount(30);
                 }
+			    else if (ti.getDuration() > 12000) { // 12 sec < tD <= 30 sec
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 3) );
+					axis.setMinorTickCount(1);
+                }
+			    else { // tD < 12 sec
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 1) );
+					axis.setMinorTickCount(10);
+                }
             }
-
 
 			repaint();
 		}
