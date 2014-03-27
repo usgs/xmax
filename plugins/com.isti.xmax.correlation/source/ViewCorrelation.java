@@ -124,6 +124,7 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 				true,// tooltips
 				false// include URLs
 				);
+
 		TextTitle title = new TextTitle("Start time: " + TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 				+ ", Duration: " + ti.convert(), ret.getFont());
 		chart.setTitle(title);

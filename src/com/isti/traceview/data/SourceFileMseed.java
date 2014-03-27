@@ -193,13 +193,14 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 //			}
 //			lg.debug(err);
 //		}
-		
+
 		BufferedRandomAccessFile dis = null;
 		int[] data = new int[segment.getSampleCount()];
 		int currentSampleCount = 0; //Counter on the basis of data values
 		int headerSampleCount = 0; //Counter on the basis of header information
 		int blockNumber = 0;
 		try {
+            lg.debug("== SourceFileMSEED.load() segment from source=" + getFile().getCanonicalPath() );
 			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
 			dis.seek(segment.getStartOffset());
@@ -280,6 +281,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		for (int value: data) {
 			segment.addDataPoint(value);
 		}
+
 		lg.debug("Loaded " + this + " " + segment + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
 	}
 

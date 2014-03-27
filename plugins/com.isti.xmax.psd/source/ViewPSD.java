@@ -298,8 +298,13 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 		for (Spectra spectra: ds) {
 			ret.addSeries(spectra.getPSDSeries(OutputGenerator.VELOCITY_UNIT_CONV));
 		}
-		XYSeries lowNoiseModelSeries = new XYSeries("MODEL");
-		XYSeries highNoiseModelSeries = new XYSeries("MODEL");
+        // MTH: later versions of XYCollection do NOT allow you to add more than 1 series with
+        //      a given key=name! --> name must be unique
+		//XYSeries lowNoiseModelSeries = new XYSeries("MODEL");
+		//XYSeries highNoiseModelSeries = new XYSeries("MODEL");
+		XYSeries lowNoiseModelSeries = new XYSeries("NLNM");
+		XYSeries highNoiseModelSeries = new XYSeries("NHNM");
+
 		double[] freqArr = ds.get(0).getFrequencies();
 		for (int i = 1; i < freqArr.length; i++) {
 			double period = 1.0 / freqArr[i];
@@ -341,7 +346,6 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 			}
 			i++;
 		}
-
 		ret.addSeries(lowNoiseModelSeries);
 		ret.addSeries(highNoiseModelSeries);
 		return ret;

@@ -34,11 +34,11 @@ public class LoadDataCommand extends AbstractCommand {
 		try {
 			super.run();
 			for (PlotDataProvider channel: channels) {
-				if (!channel.isLoadingStarted()) {
-					lg.debug("Load data command: " + channel.toString() + ti);
+				//if (!channel.isLoadingStarted()) {
+					lg.debug("== Load data command: " + channel.toString() + ti);
 					channel.load(ti);
 					//lg.debug("Max Val = " + channel.getMaxValue() + ", Min Val = " + channel.getMinValue());
-				}
+				//}
 			}
 		} catch (Exception e) {
 			lg.error("LoadDataCommand error: " + e);

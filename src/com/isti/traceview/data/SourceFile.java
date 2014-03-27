@@ -107,7 +107,8 @@ public abstract class SourceFile implements ISource {
 		Iterator<File> it = listFiles.iterator();
 		while (it.hasNext()) {
 			File file = it.next();
-        System.out.format("== getDataFiles: file=[%s]\n", file.toString());
+            System.out.format("         Found file:%s\n", file.toString());
+            lg.debug("== getDataFiles: file=" + file.toString());
 			if (file.getName().matches(".*\\.log(\\.\\d{1,2}){0,1}$")) {
 				lg.warn("Excluding file " + file.getName() + " from loading list");
 				it.remove();

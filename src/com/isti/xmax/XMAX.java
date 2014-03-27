@@ -49,8 +49,10 @@ import com.isti.xmax.gui.XMAXframe;
  * @author Max Kokoulin
  */
 public class XMAX extends TraceView {
-	private static final String version = "1.06";
-	private static final String releaseDate = "Sept 14, 2011";
+	//private static final String version = "1.06";
+	//private static final String releaseDate = "Sept 14, 2011";
+	private static final String version = "1.08";
+	private static final String releaseDate = "Aug 29, 2013";
 
 	/**
 	 * Parsed command line
@@ -66,6 +68,17 @@ public class XMAX extends TraceView {
 		setUndoAdapter(new XMAXUndoAdapter());
 		try {
 			boolean dump = false;
+			System.out.println("  XMAX ver." + getVersionMessage() );
+            System.out.println("===============");
+            if (cmd.getOptions().length == 0) {
+                System.out.println("[ Quick Examples ]");
+                System.out.println("* Read from BOTH -d 'data/path' AND existing serialized data in DATA_TEMP:");
+                System.out.println(" >java -Xms512M -Xmx512M -jar xmar.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+                System.out.println("* Overwrite Serialized data in DATA_TEMP:");
+                System.out.println(" >java -Xms512M -Xmx512M -jar xmar.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+                System.out.println("* Append to Serialized data in DATA_TEMP:");
+                System.out.println(" >java -Xms512M -Xmx512M -jar xmar.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+            }
 			if (cmd.hasOption("h")) {
 				if (cmd.getOptions().length > 1) {
 					throw new XMAXException("It isn't allowed to use any other options with -h");
@@ -73,7 +86,7 @@ public class XMAX extends TraceView {
 				HelpFormatter formatter = new HelpFormatter();
 				formatter
 						.printHelp(
-								"xmax [-h | -v | -T] {-t -u<units> -o<order>} [-c<config file> -d<data mask> -s<station file> -k<earthquakes mask> -q<QC file> -b<begin time> -e<end time> -f<units count>]",
+								"xmax [-h | -v | -T] {-t -u<units> -o<order>} [-c<config file> -d<data mask> -s<station file> -k<earthquakes mask> -q<QC file> -b<begin time> -e<end time> -f<units count>]", 
 								options);
 			} else if (cmd.hasOption("v")) {
 				if (cmd.getOptions().length > 1) {
@@ -87,24 +100,23 @@ public class XMAX extends TraceView {
 				setConfiguration(XMAXconfiguration.getInstance());
 				if (cmd.hasOption("T")) {
 					dump = true;
+					getConfiguration().setDumpData(true);
+/** MTH: This has changed
 					if (cmd.hasOption("t")) {
 						throw new XMAXException("It isn't allowed to use -T and -t options together");
 					}
+**/
 				}
 				if (cmd.hasOption("t")) {
 					getConfiguration().setUseTempData(true);
+/**
 					if (cmd.hasOption("T")) {
 						throw new XMAXException("It isn't allowed to use -T and -t options together");
 					}
+**/
 				}
 				if (cmd.hasOption("d")) {
-/** MTH
-String[] fileNames = cmd.getOptionValues("d");
-System.out.format("== Number of files=[%d]\n", fileNames.length);
-for (String name : fileNames) {
-System.out.format("== file = [%s]\n", name);
-}
-**/
+                    getConfiguration().setUseDataPath(true);
 					getConfiguration().setDataPath(dequote(cmd.getOptionValue("d")).trim());
 				}
 				if (cmd.hasOption("i")) {
@@ -190,13 +202,7 @@ System.out.format("== file = [%s]\n", name);
 					Logger.getRootLogger().setLevel(level);
 					setDataModule(XMAXDataModule.getInstance());
                     
-System.out.format("== Load Data: is EDT=[%s]\n", SwingUtilities.isEventDispatchThread() );
-SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-Date date = new Date();
-System.out.format("== Load Data Date=[%s]\n",dateFormat.format(date));
 					getDataModule().loadData();
-date = new Date();
-System.out.format("== Finished Load Data Date=[%s]\n",dateFormat.format(date));
 
 					if (getDataModule().getAllChannels().size() > 0) {
 						setFrame(XMAXframe.getInstance());

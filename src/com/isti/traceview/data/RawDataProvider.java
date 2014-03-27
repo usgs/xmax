@@ -223,9 +223,25 @@ public class RawDataProvider extends Channel {
 	 * @param ti
 	 */
 	public void loadData(TimeInterval ti) {
+        lg.debug("== RawDataProvider.loadData(): ENTER");
 		for (SegmentCache sc: rawData) {
-			sc.getSegment().load();
+            Segment seg = sc.getSegment();
+            if (!seg.getIsLoaded()) {
+                lg.debug("== RDP.loadData(): Load Segment:" + seg.toString() );
+			    seg.load();
+			    seg.setIsLoaded(true);
+			    //sc.getSegment().load();
+            }
+            else {
+                lg.debug("== RDP.loadData(): Segment is ALREADY loaded:" + seg.toString() );
+                //System.out.format("== RawDataProvider.loadData(): Segment is Already Loaded:%s\n", seg.toString() );
+                // MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
+                //      in order to have the segment's int[] data filled before serialization, but we're
+                //      doing this instead via PDP.initPointCache() --> PDP.pixelize(ti) --> Segment.getData(ti)
+                //seg.loadDataInt();
+            }
 		}
+        lg.debug("== RawDataProvider.loadData(): EXIT");
 	}
 
 	/**
@@ -259,8 +275,10 @@ public class RawDataProvider extends Channel {
 	 * @param dataStream
 	 */
 	public void setDataStream(Object dataStream) {
+        lg.debug("== RDP.setDataStream(Object dataStream) ENTER");
 		try {
 			if (dataStream == null) {
+                lg.debug("== RDP.setDataStream(null) dataStream == null --> serialStream.close()");
 				try {
 					this.serialStream.close();
 					this.serialStream = null;
@@ -270,14 +288,19 @@ public class RawDataProvider extends Channel {
 			} else {
 				if (dataStream instanceof String) {
 					this.serialFile = (String) dataStream;
+                    lg.debug("== RDP.setDataStream(Object) dataStream == instanceof String --> set serialFile=" + serialFile);
 				}
+                // MTH: This is a little redundant sicne readObject() already wraps the serialFile in a 
+                //      BufferedRandomAccessFile before using it to call setDataStream(raf) ...
 				BufferedRandomAccessFile raf = new BufferedRandomAccessFile(serialFile, "rw");
 				raf.order(BufferedRandomAccessFile.BIG_ENDIAN);
 				this.serialStream = raf;
 			}
 			for (SegmentCache sc: rawData) {
+                lg.debug("== RDP.setDataStream(Object) --> sc.setDataStream(serialStream)");
 				sc.setDataStream(serialStream);
 			}
+            lg.debug("== RDP.setDataStream() -- DONE");
 		} catch (FileNotFoundException e) {
 			lg.error(e);
 		} catch (IOException e) {
@@ -335,6 +358,7 @@ public class RawDataProvider extends Channel {
 	 * @throws IOException
 	 */
 	public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter) throws IOException {
+System.out.println("== Segment dumpMseed ENTER");
 		for (Segment segment: getRawData(ti)) {
 			int[] data = segment.getData(ti).data;
 			if (filter != null) {
@@ -549,8 +573,10 @@ public class RawDataProvider extends Channel {
 	 * @throws IOException
 	 */
 	private void writeObject(ObjectOutputStream out) throws IOException {
+        lg.debug("== RDP.writeObject() ENTER");
 		lg.debug("Serializing RawDataProvider" + toString());
 		out.defaultWriteObject();
+        lg.debug("== RDP.writeObject() EXIT");
 	}
 
 	/**
@@ -562,14 +588,17 @@ public class RawDataProvider extends Channel {
 	 * @throws IOException
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		lg.debug("== RDP.readObject() Deserializing RawDataProvider" + toString());
+        // MTH: Once we've read in the .SER file, serialFile(=... .DATA) will be set
+        lg.debug("== RDP.readObject() in.defaultReadObject()");
 		in.defaultReadObject();
-		lg.debug("Deserializing RawDataProvider" + toString());
+        lg.debug("== RDP.readObject() in.defaultReadObject() DONE");
 		if (serialFile != null) {
 			serialStream = new BufferedRandomAccessFile(serialFile, "rw");
 			serialStream.order(BufferedRandomAccessFile.BIG_ENDIAN);
 			setDataStream(serialStream);
 		}
-		lg.debug("Deserialized RawDataProvider" + toString());
+        lg.debug("== RDP.readObject() EXIT");
 	}
 
 	/**

@@ -13,7 +13,10 @@ import javax.swing.event.MouseInputListener;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.RectangleInsets;
 
 import com.isti.traceview.CommandExecutor;
 import com.isti.traceview.ITimeRangeAdapter;
@@ -587,6 +590,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 	 *            list of traces
 	 */
 	public void setChannelShowSet(List<PlotDataProvider> channels) {
+        lg.debug("== GraphPanel.setChannelShowSet [ENTER]");
 		synchronized (TraceView.getDataModule().getAllChannels()) {
 			lg.debug("GraphPanel.setChannelShowSet begin");
 			if (channels != null) {
@@ -595,6 +599,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 				// a command
 				if (!TraceView.getConfiguration().getMergeLocations()) {
 					for (PlotDataProvider channel: channels) {
+                        lg.debug("== GraphPanel.setChannelShowSet Handle channel=" + channel);
 						List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
@@ -635,11 +640,12 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 					observable.setChanged();
 					observable.notifyObservers("ROT OFF");
 				}
+//System.out.println("== GraphPanel.setChannelShowSet [Call repaint()]");
 				repaint();
 			}
 			observable.setChanged();
 			observable.notifyObservers(channels);
-			lg.debug("GraphPanel.setChannelShowSet end");
+            lg.debug("== GraphPanel.setChannelShowSet [EXIT]");
 		}
 	}
 
@@ -1222,6 +1228,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 	}
 
 	public void paint(Graphics g) {
+//System.out.println("== GraphPanel.paint(g) [Enter]");
 		if(!paintNow){
 			
 		paintNow = true;
@@ -1304,6 +1311,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 		//lg.debug("End of repainting graph panel");
 		paintNow = false;
 		}
+//System.out.println("== GraphPanel.paint(g) [Exit]");
 	}
 
 	private void paintSelection(Graphics g, long Xbegin, long Xend, double Ybegin, double Yend, String message) {
@@ -1543,11 +1551,16 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 
 		public AxisPanel() {
 			super();
+// BorderLayout: Ignores the width dimension for NORTH/SOUTH components
 			setMinimumSize(new Dimension(200, 20));
 			setPreferredSize(new Dimension(200, 20));
 			axis = new DateAxis();
 			axis.setTimeZone(TimeZone.getTimeZone("GMT"));
 			axis.setDateFormatOverride(TimeInterval.df_long);
+            //axis.setMinorTickCount(10);
+            axis.setMinorTickMarksVisible(true);
+            axis.setTickMarkOutsideLength(6F);
+            axis.setTickLabelInsets( new RectangleInsets(6., 4., 2., 4.) );
 		}
 
 		/**
@@ -1566,6 +1579,15 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 		 *            time interval of axis
 		 */
 		public void setTimeRange(TimeInterval ti) {
+            final long ONE_DAY    = 1L*86400000;
+            final long TWO_DAYS   = 2L*86400000;
+            final long THREE_DAYS = 3L*86400000;
+            final long FOUR_DAYS  = 4L*86400000;
+            final long ONE_WEEK   = 7L*86400000;
+            final long TWO_WEEKS  = 14L*86400000;
+            final long FOUR_WEEKS = 28L*86400000;
+            final long EIGHT_WEEKS= 56L*86400000;
+
 			lg.debug("AxisPanel setTimeRange: " + ti);
 			boolean needwait = false;
 			if (axis.getMinimumDate().getTime() == 0 && axis.getMaximumDate().getTime() == 1) {
@@ -1574,7 +1596,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 			if (ti != null) {
 				axis.setMinimumDate(ti.getStartTime());
 				axis.setMaximumDate(ti.getEndTime());
-				if (ti.getDuration() < 6000) {
+				if (ti.getDuration() < 10000) {
 					axis.setDateFormatOverride(TimeInterval.df);
 				} else if (ti.getDuration() < 300000) {
 					axis.setDateFormatOverride(TimeInterval.df_middle);
@@ -1594,6 +1616,79 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 					// do nothing
 				}
 			}
+
+			if (ti != null) {
+                int minorTickCount = 4;
+                double nDays = ti.getDuration()/(double)ONE_DAY;
+                int interval = (int)(nDays/11.);
+                double remainder = nDays%11.;
+                double x = remainder/(double)interval;
+                if (x > 0.5) {
+                    interval++;
+                }
+
+			    if (ti.getDuration() > ONE_WEEK) {                  // tD > 1 Week
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.DAY, interval) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > FOUR_DAYS) {            // 4 Days < tD <= 1 Week
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 12) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > THREE_DAYS) {           // 3 Days < tD <= 4 Days
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 8) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > TWO_DAYS) {             // 2 Days < tD <= 3 Days
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 6) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > ONE_DAY) {              // 1 Day < tD <= 2 Days
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 4) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > 36000000) { // 8 - 24hrs
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 2) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > 18000000) { // 4 - 8 hrs
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 1) );
+					axis.setMinorTickCount(minorTickCount);
+                }
+			    else if (ti.getDuration() > 7200000) { // 2 - 4 hrs
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 30) );
+					axis.setMinorTickCount(15);
+                }
+			    else if (ti.getDuration() > 3600000) { // 1 - 2 hrs
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 15) );
+					axis.setMinorTickCount(15);
+                }
+			    else if (ti.getDuration() > 1600000) { // 30min - 1 hr
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 5) );
+					axis.setMinorTickCount(5);
+                }
+			    else if (ti.getDuration() > 600000) { // 10min - 30min
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 2) );
+					axis.setMinorTickCount(4);
+                }
+			    else if (ti.getDuration() > 120000) { // 2 min < tD <= 10 min
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 1) );
+					axis.setMinorTickCount(4);
+                }
+			    else if (ti.getDuration() > 30000) { // 30 sec < tD <= 2 min
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 30) );
+					axis.setMinorTickCount(30);
+                }
+			    else if (ti.getDuration() > 12000) { // 12 sec < tD <= 30 sec
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 3) );
+					axis.setMinorTickCount(1);
+                }
+			    else { // tD < 12 sec
+					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 1) );
+					axis.setMinorTickCount(10);
+                }
+            }
+
 			repaint();
 		}
 
@@ -1603,8 +1698,22 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 			int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
 			if (axis.getMinimumDate().getTime() != 0 && axis.getMaximumDate().getTime() != 1) {
 				//lg.debug("min date " + axis.getMinimumDate() + ", max date " + axis.getMaximumDate());
-				axis.draw((Graphics2D) g, 0, new Rectangle(infoPanelWidth + getInsets().left, 0, getWidth(), getHeight()), new Rectangle(
-						infoPanelWidth + getInsets().left, 0, getWidth(), 10), RectangleEdge.BOTTOM, null);
+
+				//axis.draw((Graphics2D) g, 0, new Rectangle(infoPanelWidth + getInsets().left, 0, getWidth(), getHeight()), new Rectangle(
+						//infoPanelWidth + getInsets().left, 0, getWidth(), 10), RectangleEdge.BOTTOM, null);
+// MTH: The line above is incorrect: The Rectangle width should = (axisPanel - infoPanelWidth) 
+//      Where infoPanel is the leftmost panel (showing the trace amplitude values)
+// Rectangle(int x, int y, int width, int height) - (x,y)=upper-left corner
+// Note that getInsets() will try to get the border widths of "this" = axisPanel (which doesn't have a border!)
+//     e.g., getInsets().left = 0
+// The +2 was added to the width as an empirical correction to try to match x-axis times with the trace
+//     time (given by left clicking on the trace) 
+// jfreechart:  DateAxis.draw( Graphics2D, double cursor, Rectangle2D plotArea, Rectangle2D drawArea, ...)
+
+				axis.draw((Graphics2D) g, 0, 
+                  new Rectangle(infoPanelWidth+getInsets().left, 0, getWidth()-infoPanelWidth + 2, getHeight()), 
+                  new Rectangle(infoPanelWidth+getInsets().left, 0, getWidth()-infoPanelWidth + 2, 10), 
+                  RectangleEdge.BOTTOM, null);
 			}
 		}
 	}
@@ -1659,8 +1768,10 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 			gridLayout.setColumns(1);
 			gridLayout.setRows(0);
 			add(axisPanel);
+//axisPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
 			if(showTimePanel){
 				add(infoPanel);
+//infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
 			}
 		}
 
@@ -1676,9 +1787,11 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 			super.setBackground(color);
 			if(axisPanel!=null){
 			axisPanel.setBackground(color);
+			//axisPanel.setBackground(Color.BLUE);
 			}
 			if(infoPanel!=null){
-			infoPanel.setBackground(color);
+			    infoPanel.setBackground(color);
+			    //infoPanel.setBackground(Color.RED);
 			}
 		}
 	}
