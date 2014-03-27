@@ -199,6 +199,13 @@ public class Configuration extends Observable {
 
 	private boolean useTempData = false;
 
+	private boolean useDataPath = false;
+
+    /**
+    * If dumpData = true then we are in -T mode
+    **/
+	private boolean dumpData = false;
+
 	private Set<String> filterStation = null;
 
 	private Set<String> filterNetwork = null;
@@ -580,6 +587,24 @@ public class Configuration extends Observable {
 	 */
 	public void setUseTempData(boolean useTempData) {
 		this.useTempData = useTempData;
+	}
+    /**
+    * MTH: Added useDataPath so we can know if user entered "-d dataPath"
+    *      on the command line in.
+    *      If -t was also entered, then we want to try to load data 
+    *      from both locations (dataPath + TempData)
+    */
+	public boolean getUseDataPath() {
+		return useDataPath;
+	}
+	public void setUseDataPath(boolean useDataPath) {
+		this.useDataPath = useDataPath;
+	}
+	public boolean getDumpData() {
+		return dumpData;
+	}
+	public void setDumpData(boolean dumpData) {
+		this.dumpData = dumpData;
 	}
 
 	/**

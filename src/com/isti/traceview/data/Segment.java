@@ -106,6 +106,9 @@ public class Segment implements Externalizable, Cloneable {
 
 	private transient BufferedRandomAccessFile dataStream = null;
 
+    // MTH: Use to combine segments read with -t and -d within a single PlotDataProvider
+    private boolean isLoaded = false;
+
 	/**
 	 * @param dataSource
 	 *            data source containing this segment
@@ -223,6 +226,36 @@ public class Segment implements Externalizable, Cloneable {
 	}
 
 	/**
+     * MTH: Currently not using this since serialized data is being
+     *      read in dumpData() --> InitCache --> Segment.getData()
+     *
+	 * Load the int[] data from a .DATA file into this Segment data[]
+     *      Needed so that -T will work with existing serialized data
+	 */
+	public int[] loadDataInt() {
+        int[] ret = null;
+		if (dataStream == null) {
+            System.out.println("== Segment.loadDataInt() ERROR: dataStream == null!! --> Exiting");
+            System.exit(0);
+		} else {
+			ret = new int[sampleCount];
+			try {
+				dataStream.seek(startOffsetSerial);
+				for (int i = 0; i < sampleCount; i++) {
+					ret[i] = dataStream.readInt();
+				}
+			} catch (IOException e) {
+				lg.error(e);
+			}
+            // Copy into this Segment's int[] data:
+            data = new int[sampleCount];
+            System.arraycopy(ret, 0, data, 0, sampleCount);
+		}
+	    return ret;
+	}
+
+
+	/**
 	 * Reads all data from loaded segment
 	 */
 	public SegmentData getData() {
@@ -271,6 +304,8 @@ public class Segment implements Externalizable, Cloneable {
 			ret = new int[endIndex - startIndex];
 			lg.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
 			if (dataStream == null) {
+                lg.debug("== Segment.getData(): dataStream == null --> Get points from RAM data[] " +
+                "startTime=" + startTime + " endTime=" + getEndTime().getTime());
 				// we use internal data in the ram
 				for (int i = startIndex; i < endIndex; i++) {
 					ret[i - startIndex] = data[i];
@@ -279,6 +314,8 @@ public class Segment implements Externalizable, Cloneable {
 				if (endIndex<sampleCount) next = data[endIndex];
 			} else {
 				// we use serialized data file
+                lg.debug("== Segment.getData(): dataStream is NOT null --> Load points from dataStream.readInt() to data[] " +
+                "startTime=" + startTime + " endTime=" + getEndTime().getTime());
 				try {
 					if(startIndex>0){
 						dataStream.seek(startOffsetSerial + startIndex * 4 - 4);
@@ -292,6 +329,22 @@ public class Segment implements Externalizable, Cloneable {
 					if(endIndex<sampleCount){
 						next = dataStream.readInt(); 
 					}
+            // MTH: Use this if we are in the -T mode and we need to load existing serialized data (from .DATA)
+                    if (com.isti.traceview.TraceView.getConfiguration().getDumpData()) {
+                        lg.debug("== Segment.getData(): We are in -T dataDump mode --> read this Segment from dataStream");
+                        if (data == null) {
+                            if (ret.length != sampleCount) {
+          lg.debug("== Segment.getData(): Warning: sampleCount != data.length");
+          System.out.format("== Segment.getData(): Warning: sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length);
+                            }
+                            //data = new int[sampleCount];
+                            data = new int[ret.length];
+                            System.arraycopy(ret, 0, data, 0, ret.length);
+                        }
+                        else {
+        System.out.println("== Segment.getData(): We are in -T dataDump mode but data IS NOT null!!!");
+                        }
+                    }
 				} catch (IOException e) {
 					lg.error(e);
 				}
@@ -326,6 +379,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * Loads segment data from memory from data source
 	 */
 	public void load() {
+//System.out.format("== Segment.load() --> dataSource.load(this): dataSource=[%s]\n", dataSource);
 		dataSource.load(this);
 	}
 
@@ -458,7 +512,8 @@ public class Segment implements Externalizable, Cloneable {
 				+ TimeInterval.formatDate(new Date(new Double(startTime + sampleRate * sampleCount).longValue()),
 						TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + ", sampleRate " + sampleRate + ", sampleCount " + sampleCount
 				+ ", startOffset " + startOffset + ", maxValue " + maxValue + ", minValue " + minValue + ", rdpNumber " + sourceSerialNumber
-				+ ", serialNumber " + channelSerialNumber + ";";
+				+ ", serialNumber " + channelSerialNumber + ", isLoaded=" + isLoaded + ";";
+				//+ ", serialNumber " + channelSerialNumber + ";";
 	}
 
 	/**
@@ -468,6 +523,10 @@ public class Segment implements Externalizable, Cloneable {
 	 */
 	public void setDataStream(BufferedRandomAccessFile dataStream) {
 		this.dataStream = dataStream;
+	}
+    // MTH:
+	public BufferedRandomAccessFile getDataStream() {
+		return dataStream;
 	}
 
 	/**
@@ -479,6 +538,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * @throws IOException
 	 */
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        lg.debug("== Segment readExternal() - Enter");
 		dataSource = (ISource) in.readObject();
 		currentPos = in.readInt();
 		startTime = in.readLong();
@@ -491,12 +551,14 @@ public class Segment implements Externalizable, Cloneable {
 		sourceSerialNumber = in.readInt();
 		channelSerialNumber = in.readInt();
 		continueAreaNumber = in.readInt();
+
 		// we don't load serialized channel data at start time - we do it when we need it
-		// data = new int[sampleCount];
-		// for (int i = 0; i < sampleCount; i++) {
-		// data[i] = inData.readInt();
-		// }
-		lg.debug("Deserialized " + this);
+		//data = new int[sampleCount];
+		//for (int i = 0; i < sampleCount; i++) {
+		//data[i] = inData.readInt();
+		//MTH: This should be data[i] = dataStream.readInt();
+
+        lg.debug("== Segment readExternal() - Exit: Deserialized " + this);
 	}
 
 	/**
@@ -508,7 +570,13 @@ public class Segment implements Externalizable, Cloneable {
 	 * @throws IOException
 	 */
 	public void writeExternal(ObjectOutput out) throws IOException {
-		lg.debug("Serializing " + this);
+        lg.debug("==  Segment: writeExternal() --> Output the Segment to serial stream:");
+        lg.debug("    Segment:" + this.toString() );
+        lg.debug("    Segment: ObjectOutputStream:" + out.toString() );
+        lg.debug("    Segment: dataSource:"  + dataSource );
+        lg.debug("    Segment: dataStream:"  + dataStream );
+        lg.debug("    Segment: sampleCount:" + sampleCount );
+
 		out.writeObject(dataSource);
 		out.writeInt(currentPos);
 		out.writeLong(startTime);
@@ -524,6 +592,7 @@ public class Segment implements Externalizable, Cloneable {
 		for (int i = 0; i < sampleCount; i++) {
 			dataStream.writeInt(data[i]);
 		}
+        lg.debug("== Segment: writeExternal() --> DONE");
 	}
 
 	public Object clone() throws CloneNotSupportedException {
@@ -559,5 +628,12 @@ public class Segment implements Externalizable, Cloneable {
 	
 	public static boolean isDataOverlay(long firstEndTime, long secondStartTime, double sampleRate) {
 		return (firstEndTime - secondStartTime) > (gapTolerance * 2.0 * sampleRate);
+	}
+
+	public boolean getIsLoaded() {
+		return isLoaded;
+	}
+	public void setIsLoaded(boolean isLoaded) {
+		this.isLoaded = isLoaded;
 	}
 }

@@ -388,6 +388,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * This method initializes this frame
 	 */
 	private void initialize() {
+        lg.debug("== XMAXframe.initialize() Enter");
 		this.setContentPane(getJContentPane());
 		graphPanel.addObserver(statusBar);
 		this.setJMenuBar(getMainMenuBar());
@@ -452,6 +453,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			JOptionPane.showMessageDialog(this, "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
 		}
 		statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(), dm.getAllChannels().size());
+        lg.debug("== XMAXframe.initialize() Exit");
 	}
 
 	public static synchronized XMAXframe getInstance() {
