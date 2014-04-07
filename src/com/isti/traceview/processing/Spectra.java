@@ -255,6 +255,7 @@ public class Spectra {
 	 * This code was copied from Java 6 Arrays class sources. In Java 5 this class has not such
 	 * method.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T, U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {
 		T[] copy = ((Object) newType == (Object) Object[].class) ? (T[]) new Object[newLength] : (T[]) Array.newInstance(newType.getComponentType(),
 				newLength);

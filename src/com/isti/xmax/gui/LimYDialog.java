@@ -24,6 +24,7 @@ import java.beans.PropertyChangeListener;
  */
 public class LimYDialog extends JDialog implements PropertyChangeListener {
 
+	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane = null;
 	private JTextField topValueTE = null;
 	private JLabel topValueLabel = null;

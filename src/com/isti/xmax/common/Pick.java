@@ -198,7 +198,7 @@ public class Pick extends AbstractEvent implements IEvent {
 			Element session = doc.getRootElement();
 			String query = "//Pick[@time='" + TimeInterval.formatDate(getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + "']";
 			XPath selectPickByTime = XPath.newInstance(query);
-			List picks = selectPickByTime.selectNodes(doc);
+			List<?> picks = selectPickByTime.selectNodes(doc);
 			for (Object o: picks) {
 				Element pick = (Element) o;
 				pick.detach();
@@ -245,6 +245,7 @@ public class Pick extends AbstractEvent implements IEvent {
 			File file = getSessionFile();
 			FileInputStream fis = new FileInputStream(file);
 			FileChannel fch = fis.getChannel();
+			fis.close();
 			MappedByteBuffer mbf = fch.map(FileChannel.MapMode.READ_ONLY, 0, fch.size());
 			byte[] barray = new byte[(int) (fch.size())];
 			mbf.get(barray);

@@ -6,6 +6,9 @@ package com.isti.xmax;
  * @author Max Kokoulin
  */
 public class XMAXException extends Exception {
+
+	private static final long serialVersionUID = 1L;
+
 	public XMAXException() {
 		super();
 	}

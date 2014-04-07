@@ -34,6 +34,8 @@ import java.util.Observer;
  * @author Max Kokoulin
  */
 public class StatusBar extends JPanel implements Observer {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(StatusBar.class);
 
 	private Font font = null;

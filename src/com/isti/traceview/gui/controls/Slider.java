@@ -30,6 +30,8 @@ import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
  * @author Max Kokoulin
  */
 public class Slider extends JPanel implements Observer {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(Slider.class);
 	private static final Dimension size = new Dimension(200, 30);
 	private static Insets inset = new Insets(0, 0, 0, 0);
@@ -112,6 +114,8 @@ public class Slider extends JPanel implements Observer {
 	}
 
 	private class SliderPanel extends JPanel implements MouseInputListener {
+
+		private static final long serialVersionUID = 1L;
 
 		public SliderPanel() {
 			super();

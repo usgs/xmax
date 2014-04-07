@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="data" size="1128,2578" id="com.isti.xyz.data" metadata="uml2-1.0" initialized="true" scrolledY="1650" tag="1000" key="323030373031323220636F6D2E697374692E78797A2F6D6178">
+  <children xsi:type="editmodel:ClassEditModel" name="PlotData" location="906,1649" size="83,29" id="com.isti.xyz.data/PlotData" packageIndication="2" runTimeClassModel="">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="DataModule" location="406,1211" size="379,283" id="com.isti.xyz.data/DataModule" packageIndication="2" runTimeClassModel="getNextCnannelSet(),addStation(Lcom.isti.xyz.common.Station;),addDataFile(Lcom.isti.xyz.data.DataFile;),getInstance(),hasNextChannelSet(),getAllStations(),getStation(Ljava.lang.String;),getPreviousCnannelSet(),getAllQCIssues(),hasPreviousChannelSet(),addChannel(Lcom.isti.xyz.data.IChannel;),getAllChannels()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="356,234">
+      <children xsi:type="editmodel:MethodEditModel" name="addChannel" id="com.isti.xyz.data/DataModule#addChannel(Lcom.isti.xyz.data.IChannel;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addDataFile" id="com.isti.xyz.data/DataModule#addDataFile(Lcom.isti.xyz.data.DataFile;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addStation" id="com.isti.xyz.data/DataModule#addStation()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAllChannels" id="com.isti.xyz.data/DataModule#getAllChannels()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAllQCIssues" id="com.isti.xyz.data/DataModule#gets()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getAllStations" id="com.isti.xyz.data/DataModule#getAllStations()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getInstance" id="com.isti.xyz.data/DataModule#getInstance()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStation" id="com.isti.xyz.data/DataModule#getStation(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNextCnannelSet" id="com.isti.xyz.data/DataModule#getNextCnannelSet()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getPreviousCnannelSet" id="com.isti.xyz.data/DataModule#getPreviousCnannelSet()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasNextChannelSet" id="com.isti.xyz.data/DataModule#hasNextChannelSet(I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hasPreviousChannelSet" id="com.isti.xyz.data/DataModule#hasPreviousChannelSet(I)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="Responce" location="765,1649" size="91,67" id="com.isti.xyz.data/Response" packageIndication="2" runTimeClassModel="Responce()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="60,18">
+      <children xsi:type="editmodel:MethodEditModel" name="Responce" id="com.isti.xyz.data/Response#Response()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="PlotDataPoint" location="604,1649" size="111,93" id="com.isti.xyz.data/PlotDataPoint" packageIndication="2" runTimeClassModel="minValue,maxValue,segmentNumber">
+    <children xsi:type="editmodel:CompartmentEditModel" size="88,54">
+      <children xsi:type="editmodel:AttributeEditModel" name="maxValue" id="com.isti.xyz.data/PlotDataPoint#maxValue"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="minValue" id="com.isti.xyz.data/PlotDataPoint#minValue"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="segmentNumber" id="com.isti.xyz.data/PlotDataPoint#segmentNumber"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="ComplexNumber" location="423,1649" size="131,93" id="com.isti.xyz.data/ComplexNumber" packageIndication="2" runTimeClassModel="i,r,zERO_NUMBER">
+    <children xsi:type="editmodel:CompartmentEditModel" size="108,54">
+      <children xsi:type="editmodel:AttributeEditModel" name="i" id="com.isti.xyz.data/ComplexNumber#i"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="r" id="com.isti.xyz.data/ComplexNumber#r"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="zERO_NUMBER" id="com.isti.xyz.data/ComplexNumber#zERO_NUMBER"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="Segment" location="50,1649" size="353,301" id="com.isti.xyz.data/Segment" packageIndication="2" runTimeClassModel="getData(Ljava.util.Date;Ljava.util.Date;),minValue,addDataPoint(I),maxValue,Segment(JLjava.util.Date;DI),sampleRate,startOffset,drop(),getData(),startTime,sampleCount,endTime">
+    <children xsi:type="editmodel:CompartmentEditModel" size="86,126">
+      <children xsi:type="editmodel:AttributeEditModel" name="endTime" id="com.isti.xyz.data/Segment#endTime"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="sampleRate" id="com.isti.xyz.data/Segment#sampleRate"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="startTime" id="com.isti.xyz.data/Segment#startTime"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="startOffset" id="com.isti.xyz.data/Segment#startOffsetSerial"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="sampleCount" id="com.isti.xyz.data/Segment#sampleCount"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="maxValue" id="com.isti.xyz.data/Segment#maxValue"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="minValue" id="com.isti.xyz.data/Segment#minValue"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="330,126">
+      <children xsi:type="editmodel:MethodEditModel" name="addDataPoint" id="com.isti.xyz.data/Segment#addDataPoint(I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getData" id="com.isti.xyz.data/Segment#getData(JLjava.util.Date;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getData" id="com.isti.xyz.data/Segment#getData(Ld;J)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="drop" id="com.isti.xyz.data/Segment#drop()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.7/@sourceConnections.0" name="DataFile" location="50,1211" size="306,253" id="com.isti.xyz.data/DataFile" packageIndication="2" runTimeClassModel="getDataFiles(),com.isti.xyz.data.DataFile.DataFileType,parse(Lcom.isti.xyz.data.DataModule;),getType(),type,file,DataFile(Ljava.io.File;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="83,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="file" id="com.isti.xyz.data/DataFile#file"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="type" id="com.isti.xyz.data/DataFile#type"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="283,72">
+      <children xsi:type="editmodel:MethodEditModel" name="DataFile" id="com.isti.xyz.data/DataFile#DataFile(Ljava.io.File;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDataFiles" id="com.isti.xyz.data/DataFile#getDataFiles()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getType" id="com.isti.xyz.data/DataFile#getType()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parse" id="com.isti.xyz.data/DataFile#parse(Lcom.isti.xyz.data.DataModule;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="103,86">
+      <children xsi:type="editmodel:EnumerationEditModel" name="DataFileType" size="103,84" id="com.isti.xyz.data/DataFile$DataFileType" packageIndication="2" runTimeClassModel="MSEED%,ASCII%">
+        <children xsi:type="editmodel:CompartmentEditModel" size="46,36">
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="MSEED" id="com.isti.xyz.data/DataFile$DataFileType#MSEED%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="ASCII" id="com.isti.xyz.data/DataFile$DataFileType#ASCII%"/>
+        </children>
+        <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+      </children>
+    </children>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="DataFileMseed" location="50,1514" size="306,85" id="com.isti.xyz.data/DataFileMseed" packageIndication="2" runTimeClassModel="parse(Lcom.isti.xyz.data.DataModule;),DataFileMseed(Ljava.io.File;)">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="283,36">
+      <children xsi:type="editmodel:MethodEditModel" name="DataFileMseed" id="com.isti.xyz.data/DataFileMseed#DataFileMseed(Ljava.io.File;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="parse" id="com.isti.xyz.data/DataFileMseed#parse(Lcom.isti.xyz.data.DataModule;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.data/DataFile&lt;-com.isti.xyz.data/DataFileMseed" source="//@children.7" target="//@children.6" targetEnd="//@children.7/@sourceConnections.0/@children.1" sourceEnd="//@children.7/@sourceConnections.0/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="153,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="153,253"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.16/@sourceConnections.0" name="FileRawDataProvider" location="567,581" size="239,103" id="com.isti.xyz.data/FileRawDataProvider" packageIndication="2" runTimeClassModel="load(),dataFileOffset,FileRawDataProvider(Lcom.isti.xyz.data.DataFile;J)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="84,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="dataFileOffset" id="com.isti.xyz.data/FileRawDataProvider#dataFileOffset"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="216,36">
+      <children xsi:type="editmodel:MethodEditModel" name="FileRawDataProvider" id="com.isti.xyz.data/FileRawDataProvider#FileRawDataProvider(Lcom.isti.xyz.data.DataFile;J)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="load" id="com.isti.xyz.data/FileRawDataProvider#load(Ljava.util.Date;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.data/AbstractRawDataProvider&lt;-com.isti.xyz.data/FileRawDataProvider" source="//@children.8" target="//@children.9/@sourceConnections.0" targetEnd="//@children.8/@sourceConnections.0/@children.1" sourceEnd="//@children.8/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="119,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="SocketRawDataProvider" location="836,581" size="163,67" id="com.isti.xyz.data/SocketRawDataProvider" packageIndication="2" runTimeClassModel="load()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="40,18">
+      <children xsi:type="editmodel:MethodEditModel" name="load" id="com.isti.xyz.data/SocketRawDataProvider#load()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.8/@sourceConnections.0" autoLocated="true" id="com.isti.xyz.data/AbstractRawDataProvider&lt;-com.isti.xyz.data/SocketRawDataProvider" source="//@children.9" target="//@children.12" targetEnd="//@children.9/@sourceConnections.0/@children.1" sourceEnd="//@children.9/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="81,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="136,247" anchorKind="FixedAtEdge"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.11/@sourceConnections.0" name="IPlotDataProvider" location="329,284" size="307,112" id="com.isti.xyz.data/IPlotDataProvider" packageIndication="2" runTimeClassModel="removeFilter(),addFilter(Lcom.isti.xyz.processing.IFilter;),getPlotData(Ljava.util.Date;Ljava.util.Date;I)">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="284,54">
+      <children xsi:type="editmodel:MethodEditModel" name="addFilter" id="com.isti.xyz.data/IPlotDataProvider#addFilter(Lcom.isti.xyz.processing.IFilter;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getPlotData" id="com.isti.xyz.data/IPlotDataProvider#getPlotData()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="removeFilter" id="com.isti.xyz.data/IPlotDataProvider#removeFilter(Lcom.isti.xyz.processing.IFilter;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.12/@sourceConnections.0" autoLocated="true" id="com.isti.xyz.data/IRawDataProvider&lt;-com.isti.xyz.data/IPlotDataProvider" source="//@children.10" target="//@children.14" targetEnd="//@children.10/@sourceConnections.0/@children.1" sourceEnd="//@children.10/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="153,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="161,237" anchorKind="FixedAtEdge"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.15/@sourceConnections.0" name="IChannel" location="50,581" size="134,130" id="com.isti.xyz.data/IChannel" packageIndication="2" runTimeClassModel="getChannelName(),getLocationName(),getNetworkName(),getStation()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="111,72">
+      <children xsi:type="editmodel:MethodEditModel" name="getChannelName" id="com.isti.xyz.data/IChannel#getChannelName()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLocationName" id="com.isti.xyz.data/IChannel#getLocationName()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNetworkName" id="com.isti.xyz.data/IChannel#getName()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStation" id="com.isti.xyz.data/IChannel#getStation()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.13/@sourceConnections.0" autoLocated="true" id="com.isti.xyz.data/IPlotDataProvider&lt;-com.isti.xyz.data/IChannel" source="//@children.11" target="//@children.10" targetEnd="//@children.11/@sourceConnections.0/@children.1" sourceEnd="//@children.11/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="67,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="153,112" anchorKind="FixedAtEdge"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.9/@sourceConnections.0" name="AbstractRawDataProvider" location="666,284" size="272,247" id="com.isti.xyz.data/AbstractRawDataProvider" packageIndication="2" runTimeClassModel="beginTime,addSegment(Lcom.isti.xyz.data.Segment;),getBeginTime(),AbstractRawDataProvider(),getRawData(Lcom.isti.xyz.processing.IFilter;),load(),drop(),getRawData(Ljava.util.Date;Ljava.util.Date;),getEndTime(),endTime">
+    <children xsi:type="editmodel:CompartmentEditModel" size="75,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="beginTime" id="com.isti.xyz.data/AbstractRawDataProvider#startTime"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="endTime" id="com.isti.xyz.data/AbstractRawDataProvider#endTime"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="249,162">
+      <children xsi:type="editmodel:MethodEditModel" name="AbstractRawDataProvider" id="com.isti.xyz.data/AbstractRawDataProvider#AbstractRawDataProvider()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addSegment" id="com.isti.xyz.data/AbstractRawDataProvider#addSegment(Lcom.isti.xyz.data.Segment;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBeginTime" id="com.isti.xyz.data/AbstractRawDataProvider#getTime()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getEndTime" id="com.isti.xyz.data/AbstractRawDataProvider#getEndTime()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/AbstractRawDataProvider#getRawData(Lcom.isti.xyz.processing.IFilter;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/AbstractRawDataProvider#getRawData()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="load" id="com.isti.xyz.data/AbstractRawDataProvider#load()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="drop" id="com.isti.xyz.data/AbstractRawDataProvider#drop()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.data/IRawDataProvider&lt;-com.isti.xyz.data/AbstractRawDataProvider" source="//@children.12" target="//@children.10/@sourceConnections.0" targetEnd="//@children.12/@sourceConnections.0/@children.1" sourceEnd="//@children.12/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="136,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.15/@sourceConnections.1" name="PlotDataProvider" location="214,581" size="323,319" id="com.isti.xyz.data/PlotDataProvider" packageIndication="2" runTimeClassModel="deleteObserver(Ljava.util.Observer;),getBeginTime(),getPlotData(Ljava.util.Date;Ljava.util.Date;I),load(),PlotDataProvider(Lcom.isti.xyz.data.IRawDataProvider;),addFilter(Lcom.isti.xyz.processing.IFilter;),setResponce(Lcom.isti.xyz.data.Responce;),removeFilter(),addObserver(Ljava.util.Observer;),getRawData(Ljava.util.Date;Ljava.util.Date;Lcom.isti.xyz.processing.IFilter;),addEvent(Lcom.isti.xyz.common.IEvent;),getRawData(Lcom.isti.xyz.processing.IFilter;),getRawData(Ljava.util.Date;Ljava.util.Date;),getEndTime(),getRawData()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="300,270">
+      <children xsi:type="editmodel:MethodEditModel" name="PlotDataProvider" id="com.isti.xyz.data/PlotDataProvider#PlotDataProvider(LListIRawDataProvider;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addEvent" id="com.isti.xyz.data/PlotDataProvider#addEvents(Lcom.isti.xyz.common.IEvent;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addFilter" id="com.isti.xyz.data/PlotDataProvider#setFilters(Lcom.isti.xyz.processing.IFilter;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="addObserver" id="com.isti.xyz.data/PlotDataProvider#addObserver(Ljava.util.Observer;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="deleteObserver" id="com.isti.xyz.data/PlotDataProvider#deleteObserver(Ljava.util.Observer;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getPlotData" id="com.isti.xyz.data/PlotDataProvider#PlotData(Ljava.util.Date;Ljava.util.Date;I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/PlotDataProvider#getRawData(LT;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/PlotDataProvider#getRawData(LTIME;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/PlotDataProvider#getRawData()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/PlotDataProvider#getRawData()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="removeFilter" id="com.isti.xyz.data/PlotDataProvider#removeFilter(Lcom.isti.xyz.processing.IFilter;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setResponce" id="com.isti.xyz.data/PlotDataProvider#setResponse(Lcom.isti.xyz.data.Response;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBeginTime" id="com.isti.xyz.data/PlotDataProvider#getTime()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getEndTime" id="com.isti.xyz.data/PlotDataProvider#getEndTime()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="load" id="com.isti.xyz.data/PlotDataProvider#load(Ljava.util.Date;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.data/IPlotDataProvider&lt;-com.isti.xyz.data/PlotDataProvider" source="//@children.13" target="//@children.11/@sourceConnections.0" targetEnd="//@children.13/@sourceConnections.0/@children.1" sourceEnd="//@children.13/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="161,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.10/@sourceConnections.0" name="IRawDataProvider" location="480,50" size="323,238" id="com.isti.xyz.data/IRawDataProvider" packageIndication="2" runTimeClassModel="setResponce(Lcom.isti.xyz.data.Responce;),addObserver(Ljava.util.Observer;),deleteObserver(Ljava.util.Observer;),getBeginTime(),getRawData(Ljava.util.Date;Ljava.util.Date;Lcom.isti.xyz.processing.IFilter;),getRawData(Lcom.isti.xyz.processing.IFilter;),load(),getRawData(Ljava.util.Date;Ljava.util.Date;),getEndTime(),getRawData()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="300,180">
+      <children xsi:type="editmodel:MethodEditModel" name="addObserver" id="com.isti.xyz.data/IRawDataProvider#addObserver(Ljava.util.Observer;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="deleteObserver" id="com.isti.xyz.data/IRawDataProvider#deleteObserver(Ljava.util.Observer;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/IRawDataProvider#getRawData()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/IRawDataProvider#getRawData(Lcom.isti.xyz.processing.IFilter;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/IRawDataProvider#getRawData(Ljava.util.Date;Ljava.util.Date;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getRawData" id="com.isti.xyz.data/IRawDataProvider#getRawData(Lcom.isti.xyz.common.TimeInterval;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setResponce" id="com.isti.xyz.data/IRawDataProvider#setResponse(Lcom.isti.xyz.data.Response;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="load" id="com.isti.xyz.data/IRawDataProvider#load(Ljava.util.Date;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getEndTime" id="com.isti.xyz.data/IRawDataProvider#getEndTime()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBeginTime" id="com.isti.xyz.data/IRawDataProvider#getTime()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="Channel" location="50,896" size="521,379" id="com.isti.xyz.data/Channel" packageIndication="2" runTimeClassModel="station,getChannelName(),Channel(Ljava.lang.String;Lcom.isti.xyz.common.Station;Ljava.lang.String;Ljava.lang.String;Lcom.isti.xyz.data.IRawDataProvider;),locationName,toString(),hashCode(),compareTo(Ljava.lang.Object;),networkName,equals(Ljava.lang.Object;),channelName,getLocationName(),getNetworkName(),getComparator(I),com.isti.xyz.data.Channel.SortOrder">
+    <children xsi:type="editmodel:CompartmentEditModel" size="91,72">
+      <children xsi:type="editmodel:AttributeEditModel" name="channelName" id="com.isti.xyz.data/Channel#channelName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="locationName" id="com.isti.xyz.data/Channel#locationName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="networkName" id="com.isti.xyz.data/Channel#networkName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="station" id="com.isti.xyz.data/Channel#station"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="498,162">
+      <children xsi:type="editmodel:MethodEditModel" name="Channel" id="com.isti.xyz.data/Channel#Channel(Ljava.lang.String;Lcom.isti.xyz.common.Station;Ljava.lang.String;Ljava.lang.String;LLIRawDataProvider;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="compareTo" id="com.isti.xyz.data/Channel#compareTo(Ljava.lang.Object;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="equals" id="com.isti.xyz.data/Channel#equals(Ljava.lang.Object;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getChannelName" id="com.isti.xyz.data/Channel#getChannelName()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getLocationName" id="com.isti.xyz.data/Channel#getLocationName()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getNetworkName" id="com.isti.xyz.data/Channel#getNetworkName()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hashCode" id="com.isti.xyz.data/Channel#hashCode()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="toString" id="com.isti.xyz.data/Channel#String()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getComparator" id="com.isti.xyz.data/Channel#getComparator(LChannelSortType;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="90,86">
+      <children xsi:type="editmodel:EnumerationEditModel" name="SortOrder" size="90,84" id="com.isti.xyz.data/Channel$SortOrder" packageIndication="2" runTimeClassModel="STATION%,NAME%">
+        <children xsi:type="editmodel:CompartmentEditModel" size="51,36">
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="STATION" id="com.isti.xyz.data/Channel$SortOrder#STATION%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="NAME" id="com.isti.xyz.data/Channel$SortOrder#NAME%"/>
+        </children>
+        <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+      </children>
+    </children>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.data/IChannel&lt;-com.isti.xyz.data/Channel" source="//@children.15" target="//@children.11" targetEnd="//@children.15/@sourceConnections.0/@children.1" sourceEnd="//@children.15/@sourceConnections.0/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="66,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="66,130"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.data/PlotDataProvider&lt;-com.isti.xyz.data/Channel" source="//@children.15" target="//@children.13" targetEnd="//@children.15/@sourceConnections.1/@children.1" sourceEnd="//@children.15/@sourceConnections.1/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="325,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="161,319"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="MseedRawDataProvider" location="601,896" size="249,103" id="com.isti.xyz.data/MseedRawDataProvider" packageIndication="2" runTimeClassModel="MseedRawDataProvider(Lcom.isti.xyz.data.DataFile;J),drop(),load()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="226,54">
+      <children xsi:type="editmodel:MethodEditModel" name="MseedRawDataProvider" id="com.isti.xyz.data/MseedRawDataProvider#MseedRawDataProvider(Lcom.isti.xyz.data.DataFile;J)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="load" id="com.isti.xyz.data/MseedRawDataProvider#load(Ljava.util.Date;Ljava.util.Date;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="drop" id="com.isti.xyz.data/MseedRawDataProvider#drop()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.data/FileRawDataProvider&lt;-com.isti.xyz.data/MseedRawDataProvider" source="//@children.16" target="//@children.8" targetEnd="//@children.16/@sourceConnections.0/@children.1" sourceEnd="//@children.16/@sourceConnections.0/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="102,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="136,103"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" level="-1" showScope="InPackage" properties="wireOptions=1"/>
+  <boardSetting snapToGeometry="true" gridEnabled="true" gridSpacing="15,15" gridOrigin="0,0" rulerUnit="pixel">
+    <leftRuler/>
+    <topRuler/>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" showClassStereotype="true" showPackageStereotype="true" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showInterfaceStereotype="true" showAttributeProperty="true"/>
+</editmodel:ClassDiagramEditModel>

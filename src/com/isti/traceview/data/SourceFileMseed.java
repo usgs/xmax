@@ -32,6 +32,8 @@ import edu.sc.seis.seisFile.mseed.SeedRecord;
  * @author Max Kokoulin
  */
 public class SourceFileMseed extends SourceFile implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private static Logger lg = Logger.getLogger(SourceFileMseed.class);
 
 	// used during parsing
@@ -40,7 +42,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	private long segmentOffset = 0;
 
 	// -----
-
 	public SourceFileMseed(File file) {
 		super(file);
 		lg.debug("Created: " + this);

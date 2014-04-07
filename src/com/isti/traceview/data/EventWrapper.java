@@ -7,7 +7,7 @@ import com.isti.traceview.common.IEvent;
  * @author Max Kokoulin
  */
 
-public class EventWrapper implements Comparable {
+public class EventWrapper implements Comparable<Object> {
 	private IEvent event = null;
 	private boolean isFront = false;
 	

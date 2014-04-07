@@ -31,6 +31,8 @@ import com.isti.xmax.common.Pick;
  * @author Max Kokoulin
  */
 public class XMAXChannelView extends ChannelView {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(XMAXChannelView.class);
 
 	public XMAXChannelView(List<PlotDataProvider> channels, int infoPanelWidth, boolean isDrawSelectionCheckBox, Color graphAreaBgColor, Color infoAreaBgColor) {
