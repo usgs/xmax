@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Max Kokoulin
  */
 
-public abstract class AbstractCommand implements ICommand, Comparable {
+public abstract class AbstractCommand implements ICommand, Comparable<Object> {
 	/**
 	 * Priority of command
 	 * 

@@ -6,6 +6,11 @@ package com.isti.traceview;
  */
 
 public class TraceViewException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public TraceViewException(){
 		super();
 	}

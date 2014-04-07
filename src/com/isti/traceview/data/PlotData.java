@@ -10,7 +10,7 @@ import java.util.List;
  * @author Max Kokoulin
  */
 
-public class PlotData implements Comparable {
+public class PlotData implements Comparable<Object> {
 
 	/**
 	 * List of arrays of data points. PlotDataPoint[] contains one data points of several overlayed segments.

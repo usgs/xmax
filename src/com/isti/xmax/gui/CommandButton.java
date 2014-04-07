@@ -18,6 +18,8 @@ import java.awt.Dimension;
  * @author Max Kokoulin
  */
 public class CommandButton extends JPanel implements MouseListener {
+
+	private static final long serialVersionUID = 1L;
 	private Action action1 = null; // @jve:decl-index=0:
 	private Action action2 = null;
 	private Action action3 = null;

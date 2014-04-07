@@ -7,6 +7,10 @@ import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import com.isti.traceview.jnt.FFT.ComplexDoubleFFT_Mixed;
+import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
+import com.isti.traceview.jnt.FFT.RealDoubleFFT_Radix2;
+
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.Response;
@@ -462,6 +466,38 @@ public class IstiUtilsMath {
 		lg.debug("processFft end");
 		return ret;
 	}
+	
+	/**
+	 * Real FFT processing
+	 * 
+	 * @param indata
+	 *            data to process, count of points must be even
+	 * @return half of symmetric complex spectra
+	 */
+	public static Cmplx[] processFft_Even(double[] indata) {
+		RealDoubleFFT_Even fft = new RealDoubleFFT_Even(indata.length);
+		fft.transform(indata);;
+		
+		final int outLen = indata.length / 2;
+		final Cmplx[] ret = new Cmplx[outLen];
+		for (int k = 0; k < outLen; k++) {
+			ret[k] = new Cmplx(indata[k], k == 0 ? 0 : indata[indata.length - k]);
+		}
+		
+		/*
+		final Cmplx[] ret = new Cmplx[indata.length];
+		ret[0] = new Cmplx(indata[0], 0);
+		for (int k = 1; k < indata.length/2; k++) {
+			if (k == (indata.length/2)) {
+				ret[k] = new Cmplx(indata[k], 0);
+			} else {
+				ret[k] = new Cmplx(indata[k], indata[indata.length - k]);
+				ret[indata.length-k] = new Cmplx(indata[k], -indata[indata.length - k]);
+			}
+		}
+		*/
+		return ret;
+	}
 
 	/**
 	 * Inverse FFT processing
@@ -478,6 +514,36 @@ public class IstiUtilsMath {
 			dataToProcess[2*k+1] = (k==0?indata[indata.length-1].r:indata[k].i);
 		}
 		fft.realInverse(dataToProcess, true);
+		return dataToProcess;
+	}
+	
+	/**
+	 * Inverse complex symetric FFT processing
+	 * 
+	 * @param indata
+	 * 			  half of spectra to process
+	 */
+	public static double[] inverseFft_Even(Cmplx[] indata) {
+		RealDoubleFFT_Even fft = new RealDoubleFFT_Even(indata.length * 2);
+		double[] dataToProcess = new double[indata.length * 2];
+		for (int k = 0; k < indata.length; k++) {
+			dataToProcess[k] = indata[k].r;
+			dataToProcess[dataToProcess.length - k - 1] = indata[k].i;
+		}
+		fft.inverse(dataToProcess);
+		/* 
+		ComplexDoubleFFT_Mixed fft = new ComplexDoubleFFT_Mixed(indata.length);
+		double[] dataToProcess = new double[indata.length*2];
+		for (int k = 0; k < indata.length; k++) {
+			dataToProcess[k*2] = indata[k].r;
+			dataToProcess[k*2+1] = indata[k].i;
+		}
+		
+		Cmplx[] ret = new Cmplx[indata.length];
+		for (int k = 0; k < indata.length; k++) {
+			ret[k] = new Cmplx(dataToProcess[k*2], dataToProcess[k*2+1]);
+		}
+		*/
 		return dataToProcess;
 	}
 

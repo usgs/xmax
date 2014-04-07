@@ -26,8 +26,13 @@ import com.isti.traceview.common.Station;
  * 
  * @author Max Kokoulin
  */
-public class Channel extends Observable implements Comparable, Serializable {
+public class Channel extends Observable implements Comparable<Object>, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public enum Sensor {
 		SEISMIC, HYDROACUSTIC, INFRASONIC ,WEATHER, OTHER
 	}
@@ -389,7 +394,7 @@ public class Channel extends Observable implements Comparable, Serializable {
 	 *            configured channel sort type
 	 * @return comparator according
 	 */
-	public static Comparator getComparator(Configuration.ChannelSortType sortOrder) {
+	public static Comparator<Object> getComparator(Configuration.ChannelSortType sortOrder) {
 		switch (sortOrder) {
 		case TRACENAME:
 			return new NameComparator();
@@ -410,7 +415,7 @@ public class Channel extends Observable implements Comparable, Serializable {
 /**
  * Comparator by channel string name, currently network - station - location - channel
  */
-class NameComparator implements Comparator {
+class NameComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
 			return (((Channel) o1).getChannelName()).compareTo(((Channel) o2).getChannelName());
@@ -435,7 +440,7 @@ class NameComparator implements Comparator {
 /**
  * Comparator by channel, i.e channel - network - station - location
  */
-class ChannelComparator implements Comparator {
+class ChannelComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
 			Channel channel1 = (Channel) o1;
@@ -480,7 +485,7 @@ class ChannelComparator implements Comparator {
 /**
  * Comparator by channel type, i.e channel type - channel - network - station
  */
-class ChannelTypeComparator implements Comparator {
+class ChannelTypeComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
 			Channel channel1 = (Channel) o1;
@@ -531,7 +536,7 @@ class ChannelTypeComparator implements Comparator {
 /**
  * Comparator by network - station - sample rate - location code - channel type
  */
-class NetworkStationSamplerateComparator implements Comparator {
+class NetworkStationSamplerateComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
 			Channel channel1 = (Channel) o1;
@@ -584,7 +589,7 @@ class NetworkStationSamplerateComparator implements Comparator {
 /**
  * Comparator by events
  */
-class EventComparator implements Comparator {
+class EventComparator implements Comparator<Object> {
 	// ToDo EventComparator
 	public int compare(Object o1, Object o2) {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {

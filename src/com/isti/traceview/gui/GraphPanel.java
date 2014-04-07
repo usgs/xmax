@@ -68,6 +68,9 @@ import java.io.IOException;
  * @author Max Kokoulin
  */
 public class GraphPanel extends JPanel implements Printable, MouseInputListener, Observer {
+
+	private static final long serialVersionUID = 1L;
+
 	private static Logger lg = Logger.getLogger(GraphPanel.class); // @jve:decl-index=0:
 
 	private static final Color selectionColor = Color.YELLOW;
@@ -213,28 +216,21 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @uml.property name="phaseState"
 	 */
 	private boolean phaseState = false;
-
 	private boolean pickState = false;
-
 	private boolean overlay = false;
-
 	private boolean select = false;
-
 	private IFilter filter = null;
-
 	private Rotation rotation = null;
 
 	/**
 	 * Visible earthquakes to draw on the graphs
 	 */
-
 	private Set<IEvent> selectedEarthquakes = null; // @jve:decl-index=0:
 	/**
 	 * Visible phases to draw on the graphs
 	 */
 
 	private Set<String> selectedPhases = null; // @jve:decl-index=0:
-
 	private IMouseAdapter mouseAdapter = null;
 	private ITimeRangeAdapter timeRangeAdapter = null;
 	protected IChannelViewFactory channelViewFactory = new DefaultChannelViewFactory();
@@ -281,35 +277,35 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		this.add(getDrawAreaPanel(), BorderLayout.CENTER);
 		this.add(getSouthPanel(showTimePanel), BorderLayout.SOUTH);
 
-/** ----------------- MTH ---------------- **/
-//  file defaultMarkPosition.gif will NOT be found this way as java will
-//  look for build/com/isti/traceview/gui/defaultMarkPosition.gif and will NOT find the
-//  resource, but at least it won't crash
-URL url = null;
-  try {
-     URL baseUrl = GraphPanel.class.getResource(".");
-     if (baseUrl != null) {
-        url = new URL(baseUrl, "defaultMarkPosition.gif");
-     } else {
-        url = GraphPanel.class.getResource("defaultMarkPosition.gif");
-     }
-System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
-     markPositionImage = javax.imageio.ImageIO.read(url);
-  //} catch (MalformedURLException e) {
-  } catch (Exception e) {
-     // Do something appropriate
-  }
-
-/** ----------------- MTH ---------------- **/
-
-/**
+		/** ----------------- MTH ---------------- **/
+		//  file defaultMarkPosition.gif will NOT be found this way as java will
+		//  look for build/com/isti/traceview/gui/defaultMarkPosition.gif and will NOT find the
+		//  resource, but at least it won't crash
+		URL url = null;
 		try {
-			markPositionImage = javax.imageio.ImageIO.read(ClassLoader.getSystemResource("defaultMarkPosition.gif"));
-		} catch (IOException e) {
-			markPositionImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-			lg.error("Can't read mark position image: " + e);
+			URL baseUrl = GraphPanel.class.getResource(".");
+			if (baseUrl != null) {
+				url = new URL(baseUrl, "defaultMarkPosition.gif");
+			} else {
+				url = GraphPanel.class.getResource("defaultMarkPosition.gif");
+			}
+			System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
+			markPositionImage = javax.imageio.ImageIO.read(url);
+			//} catch (MalformedURLException e) {
+		} catch (Exception e) {
+	     // Do something appropriate
 		}
-**/
+
+		/** ----------------- MTH ---------------- **/
+		
+		/**
+				try {
+					markPositionImage = javax.imageio.ImageIO.read(ClassLoader.getSystemResource("defaultMarkPosition.gif"));
+				} catch (IOException e) {
+					markPositionImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+					lg.error("Can't read mark position image: " + e);
+				}
+		**/
 	}
 	
 	public void forceRepaint(){
@@ -515,7 +511,6 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 			for (PlotDataProvider channel: cv.getPlotDataProviders()) {
 				ret.add(channel);
 			}
-
 		}
 		return ret;
 	}
@@ -567,7 +562,6 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 		}
 		Collections.sort(ret);
 		return ret;
-
 	}
 
 	/**
@@ -579,7 +573,6 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 			ret.addAll(cv.getPlotDataProviders());
 		}
 		return ret;
-
 	}
 
 	/**
@@ -615,7 +608,6 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 							ChannelView cv = channelViewFactory.getChannelView(toAdd);
 							addGraph(cv);
 							toAdd = new ArrayList<PlotDataProvider>();
-
 						}
 						toAdd.add(channel);
 						prevChannel = channel;
@@ -1547,6 +1539,8 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 	 * Time-axis panel used by GraphPanel
 	 */
 	class AxisPanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
 		private DateAxis axis = null;
 
 		public AxisPanel() {
@@ -1723,6 +1717,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 	 * GraphPanel
 	 */
 	class TimeInfoPanel extends JPanel {
+		private static final long serialVersionUID = 1L;
 		private JLabel start = null;
 		private JLabel duration = null;
 		private JLabel end = null;
@@ -1754,6 +1749,7 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 	}
 
 	class SouthPanel extends JPanel {
+		private static final long serialVersionUID = 1L;
 		private AxisPanel axisPanel;
 		private TimeInfoPanel infoPanel;
 
@@ -1797,6 +1793,8 @@ System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
 	}
 
 	class DrawAreaPanel extends JPanel {
+		private static final long serialVersionUID = 1L;
+
 		public DrawAreaPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout();

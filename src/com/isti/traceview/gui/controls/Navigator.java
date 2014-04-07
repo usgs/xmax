@@ -24,6 +24,8 @@ import com.isti.traceview.gui.GraphUtil;
  */
 public class Navigator extends JPanel implements ActionListener {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Available buttons enumeration
 	 */

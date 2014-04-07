@@ -23,6 +23,8 @@ import com.isti.traceview.gui.GraphUtil;
  * @author Max Kokoulin
  */
 public class Zoomer extends JPanel implements ActionListener {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(Zoomer.class);
 	private static Insets inset = new Insets(0, 0, 0, 0);
 	private static final Dimension maxSize = new Dimension(130, 30);

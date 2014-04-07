@@ -145,7 +145,8 @@ public class Response {
 		final double endFreq = sampRate / 2.0;
 		final int numFreq = (int) (numSamples / 2.0 + 1.0 + 0.5); // 0.5 for double to int conversion
 		final double startFreq = endFreq/numFreq;
-		final double sampFreq = (endFreq - startFreq) / ((double) (numFreq - 1.0));
+		//(double)
+		final double sampFreq = (endFreq - startFreq) / (numFreq - 1.0);
 		return new FreqParameters(startFreq, endFreq, sampFreq, numFreq);
 	}
 	

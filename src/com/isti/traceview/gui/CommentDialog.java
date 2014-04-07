@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.hexidec.ekit.EkitCore;
+
 import java.awt.Dimension;
 
 /**
@@ -23,6 +24,7 @@ import java.awt.Dimension;
  */
 public class CommentDialog extends JDialog implements PropertyChangeListener {
 
+	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane;
 	private EkitCore editorPane = null;
 	private String commentText = null;
@@ -85,7 +87,7 @@ public class CommentDialog extends JDialog implements PropertyChangeListener {
 		panel.setLayout(new BorderLayout());
 		panel.add(editorPane, BorderLayout.CENTER);
 		panel.add(editorPane.getToolBar(true), BorderLayout.NORTH);
-		Vector vcMenus = new Vector();
+		Vector<String> vcMenus = new Vector<String>();
 		vcMenus.add(EkitCore.KEY_MENU_EDIT);
 		vcMenus.add(EkitCore.KEY_MENU_VIEW);
 		vcMenus.add(EkitCore.KEY_MENU_FONT);

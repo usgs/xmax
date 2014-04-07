@@ -14,7 +14,7 @@ import java.util.Set;
  * 
  * @author Max Kokoulin
  */
-public interface IEvent extends Comparable {
+public interface IEvent extends Comparable<Object> {
 
 	/**
 	 * @return event's type

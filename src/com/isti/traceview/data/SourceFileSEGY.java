@@ -19,6 +19,7 @@ import com.isti.traceview.TraceViewException;
  */
 public class SourceFileSEGY extends SourceFile implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(SourceFileSEGY.class);
 
 	public SourceFileSEGY(File file) {

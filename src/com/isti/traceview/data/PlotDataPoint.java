@@ -15,6 +15,11 @@ import org.apache.log4j.Logger;
  * @author Max Kokoulin
  */
 public class PlotDataPoint implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger lg = Logger.getLogger(PlotDataPoint.class);
 
 	/**
