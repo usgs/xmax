@@ -27,6 +27,7 @@ import edu.iris.Fissures.IfNetwork.NetworkId;
 import edu.iris.Fissures.IfTimeSeries.EncodedData;
 import edu.iris.Fissures.model.MicroSecondDate;
 import edu.iris.Fissures.model.SamplingImpl;
+import edu.iris.dmc.seedcodec.Steim1;
 import edu.iris.dmc.seedcodec.SteimException;
 import edu.iris.dmc.seedcodec.SteimFrameBlock;
 import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
@@ -41,6 +42,11 @@ import edu.sc.seis.seisFile.mseed.SeedFormatException;
  * @author Max Kokoulin
  */
 public class RawDataProvider extends Channel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private static Logger lg = Logger.getLogger(RawDataProvider.class);
 
@@ -357,6 +363,7 @@ public class RawDataProvider extends Channel {
 	 *            content's time interval
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter) throws IOException {
 System.out.println("== Segment dumpMseed ENTER");
 		for (Segment segment: getRawData(ti)) {
@@ -367,18 +374,20 @@ System.out.println("== Segment dumpMseed ENTER");
 			TimeInterval exportedRange = TimeInterval.getIntersect(ti, new TimeInterval(segment.getStartTime(), segment.getEndTime()));
 			if (data.length > 0) {
 				try {
-					List lst = Recompress.steim1(data);
+					List<SteimFrameBlock> lst = new LinkedList<SteimFrameBlock>();
+					lst = Recompress.steim1(data);
 
 					EncodedData edata[] = new EncodedData[lst.size()];
 					for (int i = 0; i < edata.length; i++) {
-						SteimFrameBlock block = (SteimFrameBlock) lst.get(i);
+						//(SteimFrameBlock)
+						SteimFrameBlock block = lst.get(i);
 						edata[i] = new EncodedData((short) 10, block.getEncodedData(), block.getNumSamples(), false);
 					}
 					Time channelStartTime = new Time(FissuresConvert.getISOTime(FissuresConvert.getBtime(new MicroSecondDate(exportedRange
 							.getStartTime()))), 0);
 					LinkedList<DataRecord> dataRecords = FissuresConvert.toMSeed(edata, new ChannelId(new NetworkId(getNetworkName(),
 							channelStartTime), getStation().getName(), getLocationName(), getChannelName(), channelStartTime), new MicroSecondDate(
-							exportedRange.getStartTime()), (SamplingImpl) new SamplingImpl(data.length, new edu.iris.Fissures.model.TimeInterval(
+							exportedRange.getStartTime()), new SamplingImpl(data.length, new edu.iris.Fissures.model.TimeInterval(
 							new MicroSecondDate(exportedRange.getStartTime()), new MicroSecondDate(exportedRange.getEndTime()))), 1);
 
 					for (DataRecord rec: dataRecords) {
@@ -605,7 +614,11 @@ System.out.println("== Segment dumpMseed ENTER");
 	 * internal class to hold original segment (cache(0)) and it's images processed by filters. Also
 	 * may define caching policy.
 	 */
-	private class SegmentCache implements Serializable, Comparable {
+	private class SegmentCache implements Serializable, Comparable<Object> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private Segment initialData;
 		private transient List<Segment> filterCache;
 

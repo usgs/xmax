@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="processing" size="1111,830" id="com.isti.xyz.processing" metadata="uml2-1.0" initialized="true" scrolledY="2" tag="1000" key="323030373031323220636F6D2E697374692E78797A2F6D6178">
+  <children xsi:type="editmodel:InterfaceEditModel" name="IVisualizer" location="360,209" size="181,94" id="com.isti.xyz.processing/IVisualizer" packageIndication="2" runTimeClassModel="init(Lcom.isti.xyz.data.IPlotDataProvider;),getPointCount()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="158,36">
+      <children xsi:type="editmodel:MethodEditModel" name="getPointCount" id="com.isti.xyz.processing/IVisualizer#getPointCount()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="init" id="com.isti.xyz.processing/IVisualizer#init()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" name="IFilter" location="15,50" size="329,76" id="com.isti.xyz.processing/IFilter" packageIndication="2" runTimeClassModel="filter(Lcom.isti.xyz.data.IRawDataProvider;Ljava.util.Date;Ljava.util.Date;)">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="306,18">
+      <children xsi:type="editmodel:MethodEditModel" name="filter" id="com.isti.xyz.processing/IFilter#filter(Lcom.isti.xyz.data.IRawDataProvider;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" name="IReporter" location="359,315" size="159,76" id="com.isti.xyz.processing/IReporter" packageIndication="2" runTimeClassModel="addItem(Ljava.io.File;Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="136,18">
+      <children xsi:type="editmodel:MethodEditModel" name="addItem" id="com.isti.xyz.processing/IReporter#addItem(Ljava.io.File;Ljava.lang.String;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="CartesianDataPoint" location="630,135" size="136,75" id="com.isti.xyz.processing/CartesianDataPoint" packageIndication="2" runTimeClassModel="y,x">
+    <children xsi:type="editmodel:CompartmentEditModel" size="41,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="x" id="com.isti.xyz.processing/CartesianDataPoint#x"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="y" id="com.isti.xyz.processing/CartesianDataPoint#y"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" name="ICartesianTransformation" location="630,50" size="287,76" id="com.isti.xyz.processing/ICartesianTransformation" packageIndication="2" runTimeClassModel="transform(Ljava.util.List;)">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="264,18">
+      <children xsi:type="editmodel:MethodEditModel" name="transform" id="com.isti.xyz.processing/ICartesianTransformation#transform(Ljava.util.List;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" name="ITransformation" location="359,50" size="259,76" id="com.isti.xyz.processing/ITransformation" packageIndication="2" runTimeClassModel="transform(Ljava.util.List;)">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="236,18">
+      <children xsi:type="editmodel:MethodEditModel" name="transform" id="com.isti.xyz.processing/ITransformation#transform(Ljava.util.List;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" name="IExporter" location="44,209" size="271,208" id="com.isti.xyz.processing/IExporter" packageIndication="2" runTimeClassModel="export(Ljava.awt.Graphics;Ljava.lang.String;Lcom.isti.xyz.processing.IExporter.Format;),com.isti.xyz.processing.IExporter.Format">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="248,18">
+      <children xsi:type="editmodel:MethodEditModel" name="export" id="com.isti.xyz.processing/IExporter#export(Ljava.awt.Graphics;Ljava.lang.String;Lcom.isti.xyz.processing.IExporter.Format;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="76,122">
+      <children xsi:type="editmodel:EnumerationEditModel" targetConnections="//@children.6/@sourceConnections.0" name="Format" location="317,156" size="76,120" id="com.isti.xyz.processing/IExporter$Format" packageIndication="2" runTimeClassModel="EPS%,PDF%,PNG%,SVG%">
+        <children xsi:type="editmodel:CompartmentEditModel" size="36,72">
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="SVG" id="com.isti.xyz.processing/IExporter$Format#SVG%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="PNG" id="com.isti.xyz.processing/IExporter$Format#PNG%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="EPS" id="com.isti.xyz.processing/IExporter$Format#EPS%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="PDF" id="com.isti.xyz.processing/IExporter$Format#PDF%"/>
+        </children>
+        <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+      </children>
+    </children>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.processing/IExporter-Soyatec::Import->com.isti.xyz.processing/IExporter$Format" source="//@children.6" target="//@children.6/@children.2/@children.0" targetEnd="//@children.6/@sourceConnections.0/@children.2" label="//@children.6/@sourceConnections.0/@children.0" sourceEnd="//@children.6/@sourceConnections.0/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«import»" size="30,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="271,181" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,25"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" level="-1" showScope="InPackage" properties="wireOptions=7"/>
+  <boardSetting snapToGeometry="true" gridEnabled="true" gridSpacing="15,15" gridOrigin="0,0" rulerUnit="pixel">
+    <leftRuler/>
+    <topRuler/>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" showClassStereotype="true" showPackageStereotype="true" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showInterfaceStereotype="true" showAttributeProperty="true"/>
+</editmodel:ClassDiagramEditModel>

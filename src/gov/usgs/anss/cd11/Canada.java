@@ -322,7 +322,8 @@ public static int unpack(int m, int [] y, int offset, ByteBuffer b, int j)
       y0 = (int) (ll >> 40) & 0xffffff;
       y1 = (int) (ll >> 16) & 0xffffff ;
       y2 = (int) ((ll & 0xffff) << 8) | ((ul >> 24) & 0xff);
-      y3 = (int) (ul  & 0xffffff);
+      //(int)
+      y3 = (ul  & 0xffffff);
       if ( (y0 & 0x800000) != 0) y0 |= 0xff000000;
       if ( (y1 & 0x800000) != 0) y1 |= 0xff000000;
       if ( (y2 & 0x800000) != 0) y2 |= 0xff000000;

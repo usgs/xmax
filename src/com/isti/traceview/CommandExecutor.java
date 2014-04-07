@@ -52,7 +52,7 @@ public class CommandExecutor extends ThreadPoolExecutor {
 	private static CommandExecutor instance = null;
 
 	private CommandExecutor() {
-		super(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new PriorityBlockingQueue());
+		super(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 		history = new LinkedList<ICommand>();
 		observable = new Obs();
 	}

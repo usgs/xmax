@@ -1332,6 +1332,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * This action loads next portion of traces into graph panel
 	 */
 	class NextAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public NextAction() {
 			super();
 			putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK));
@@ -1371,6 +1374,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * This action loads previous portion of traces into graph panel
 	 */
 	class PreviousAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public PreviousAction() {
 			super();
 			putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.ALT_MASK));
@@ -1406,6 +1412,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class SaveAllAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public SaveAllAction() {
 			super();
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
@@ -1423,6 +1432,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class PhasesAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public PhasesAction() {
 			super();
 			putValue(Action.NAME, "Phases");
@@ -1458,6 +1470,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class QCAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public QCAction() {
 			super();
 			putValue(Action.NAME, "Quality Control");
@@ -1492,6 +1507,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class OverlayAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public OverlayAction() {
 			super();
 			putValue(Action.NAME, "Overlay");
@@ -1513,6 +1531,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class SelectChannelsAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public SelectChannelsAction() {
 			super();
 			putValue(Action.NAME, "Select");
@@ -1534,6 +1555,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ScaleModeAutoAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ScaleModeAutoAction() {
 			super();
 			putValue(Action.NAME, "Scale auto");
@@ -1555,6 +1579,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ScaleModeComAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ScaleModeComAction() {
 			super();
 			putValue(Action.NAME, "Scale com");
@@ -1576,6 +1603,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ScaleModeXHairAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ScaleModeXHairAction() {
 			super();
 			putValue(Action.NAME, "Scale Xhair");
@@ -1597,6 +1627,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ShowBigCursorAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ShowBigCursorAction() {
 			super();
 			putValue(Action.NAME, "Show crosshair");
@@ -1612,6 +1645,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class SetColorModeBySegmentAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public SetColorModeBySegmentAction() {
 			super();
 			putValue(Action.NAME, "Color mode by segment");
@@ -1628,6 +1664,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 	
 	class SetColorModeBWAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public SetColorModeBWAction() {
 			super();
 			putValue(Action.NAME, "Color mode BW");
@@ -1644,6 +1683,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 	
 	class SetColorModeByGapAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public SetColorModeByGapAction() {
 			super();
 			putValue(Action.NAME, "Color mode by gap");
@@ -1661,6 +1703,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	
 	//Used in screen toggle button
 	class SwitchColorModeAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public SwitchColorModeAction() {
 			super();
 			putValue(Action.NAME, "Color mode");
@@ -1687,6 +1732,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 	
 	class DemeanAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public DemeanAction() {
 			super();
 			putValue(Action.NAME, "Demean");
@@ -1708,6 +1756,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ShowStatusBarAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ShowStatusBarAction() {
 			super();
 			putValue(Action.NAME, "Show status bar");
@@ -1724,6 +1775,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ShowCommandButtonsAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ShowCommandButtonsAction() {
 			super();
 			putValue(Action.NAME, "Show buttons panel");
@@ -1740,6 +1794,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ShowCommandButtonsTopAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ShowCommandButtonsTopAction() {
 			super();
 			putValue(Action.NAME, "Show buttons top");
@@ -1759,6 +1816,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ShowCommandButtonsBottomAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ShowCommandButtonsBottomAction() {
 			super();
 			putValue(Action.NAME, "Show buttons bottom");
@@ -1778,6 +1838,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class UndoAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public UndoAction() {
 			super();
 			putValue(Action.NAME, "Undo");
@@ -1800,6 +1863,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ParticleMotionAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ParticleMotionAction() {
 			super();
 			putValue(Action.NAME, "Particle motion");
@@ -1859,6 +1925,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class PowerSpectraDensityAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public PowerSpectraDensityAction() {
 			super();
 			putValue(Action.NAME, "Power spectra density");
@@ -1895,6 +1964,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class SpectraAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public SpectraAction() {
 			super();
 			putValue(Action.NAME, "Spectra");
@@ -1930,6 +2002,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class CorrelationAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public CorrelationAction() {
 			super();
 			putValue(Action.NAME, "Correlation");
@@ -1962,6 +2037,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class RotationAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public RotationAction() {
 			super();
 			putValue(Action.NAME, "Rotation");
@@ -1988,6 +2066,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ResponseAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ResponseAction() {
 			super();
 			putValue(Action.NAME, "Response");
@@ -2020,6 +2101,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class OffsetAction extends AbstractAction implements Action {
+		
+		private static final long serialVersionUID = 1L;
+
 		public OffsetAction() {
 			super();
 			putValue(Action.NAME, "Offset");
@@ -2042,6 +2126,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class MarkPickAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public MarkPickAction() {
 			super();
 			putValue(Action.NAME, "Mark pick");
@@ -2064,6 +2151,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class DelPickAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public DelPickAction() {
 			super();
 			putValue(Action.NAME, "Delete pick");
@@ -2080,6 +2170,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class DumpMSeedAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public DumpMSeedAction() {
 			super();
 			putValue(Action.NAME, "Dump to MSEED");
@@ -2108,9 +2201,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
-						Iterator it = selectedChannels.iterator();
+						Iterator<PlotDataProvider> it = selectedChannels.iterator();
 						while (it.hasNext()) {
-							channel = (PlotDataProvider) it.next();
+							//(PlotDataProvider)
+							channel = it.next();
 							channel.dumpMseed(ds, graphPanel.getTimeRange(), graphPanel.getFilter());
 						}
 						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to Mseed", "Info",
@@ -2137,6 +2231,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class DumpSACAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public DumpSACAction() {
 			super();
 			putValue(Action.NAME, "Dump to SAC");
@@ -2163,10 +2260,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
-						Iterator it = selectedChannels.iterator();
+						Iterator<PlotDataProvider> it = selectedChannels.iterator();
 						int i = 1;
 						while (it.hasNext()) {
-							channel = (PlotDataProvider) it.next();
+							//(PlotDataProvider)
+							channel = it.next();
 							DataOutputStream ds = null;
 							try {
 								String exportFileName = "";
@@ -2214,6 +2312,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 	
 	class DumpXMLAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public DumpXMLAction() {
 			super();
 			putValue(Action.NAME, "Dump to XML");
@@ -2247,9 +2348,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 								+ "\" end = \""
 								+ TimeInterval.formatDate(graphPanel.getTimeRange().getEndTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 								+ "\">\n");
-						Iterator it = selectedChannels.iterator();
+						Iterator<PlotDataProvider> it = selectedChannels.iterator();
 						while (it.hasNext()) {
-							channel = (PlotDataProvider) it.next();
+							//(PlotDataProvider)
+							channel = it.next();
 							channel.dumpXML(fw, graphPanel.getTimeRange(), graphPanel.getFilter());
 						}
 						fw.write("</Export>");
@@ -2277,6 +2379,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class DumpASCIIAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public DumpASCIIAction() {
 			super();
 			putValue(Action.NAME, "Dump to ASCII");
@@ -2305,9 +2410,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
-						Iterator it = selectedChannels.iterator();
+						Iterator<PlotDataProvider> it = selectedChannels.iterator();
 						while (it.hasNext()) {
-							channel = (PlotDataProvider) it.next();
+							//(PlotDataProvider)
+							channel = it.next();
 							channel.dumpASCII(fw, graphPanel.getTimeRange(), graphPanel.getFilter());
 						}
 						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to ASCII", "Info",
@@ -2334,6 +2440,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class FilterAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public FilterAction(String pluginId, String description) {
 			super();
 			putValue(Action.NAME, pluginId);
@@ -2399,6 +2508,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class LimXAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public LimXAction() {
 			super();
 			putValue(Action.NAME, "X limits");
@@ -2420,6 +2532,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class LimYAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public LimYAction() {
 			super();
 			putValue(Action.NAME, "Y limits");
@@ -2445,6 +2560,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class PrintAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public PrintAction() {
 			super();
 			putValue(Action.NAME, "Print");
@@ -2491,6 +2609,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	class ExpGRAPHAction extends AbstractAction implements Action {
 
+		private static final long serialVersionUID = 1L;
+
 		public ExpGRAPHAction() {
 			super();
 			putValue(Action.NAME, "Export to GRAPH");
@@ -2511,6 +2631,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ExpHTMLAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ExpHTMLAction() {
 			super();
 			putValue(Action.NAME, "Export to HTML");
@@ -2532,6 +2655,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	
 	class ViewHeadersAction extends AbstractAction implements Action {
 
+		private static final long serialVersionUID = 1L;
+
 		public ViewHeadersAction() {
 			super();
 			putValue(Action.NAME, "View headers");
@@ -2547,6 +2672,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 	
 	class ReLoadAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
 
 		public ReLoadAction() {
 			super();
@@ -2581,6 +2708,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class AboutAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public AboutAction() {
 			super();
 			putValue(Action.NAME, "About");
@@ -2596,6 +2726,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class ExitAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
 		public ExitAction() {
 			super();
 			putValue(Action.NAME, "Exit");
@@ -2616,6 +2749,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * Command buttons top/bottom panel
 	 */
 	class ButtonPanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
 		private CommandButton filterButton = null;
 		private CommandButton scaleButton = null;
 		private CommandButton selectButton = null;
