@@ -21,6 +21,7 @@ import static edu.sc.seis.seisFile.sac.SacConstants.data_offset;
 
 public class SourceFileSAC extends SourceFile implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(SourceFileSAC.class);
 	private static final SimpleDateFormat fissTime = new SimpleDateFormat("yyyyDDD'T'HH:mm:ss.SSS'Z'"); 
 	static {

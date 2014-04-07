@@ -668,10 +668,10 @@ public class Util extends Object {
         }
         if(type.equals("CHAR")) rs.updateString(column,"");
         else if(type.equals("FLOAT")) rs.updateFloat(column,(float) 0.);
-        else if(type.equals("DOUBLE")) rs.updateDouble(column,(double) 0.);
+        else if(type.equals("DOUBLE")) rs.updateDouble(column, 0.);
         else if(type.equals("LONGLONG")) rs.updateLong(column,(long) 0);
-        else if(type.equals("INTEGER")) rs.updateInt(column,(int) 0);
-        else if(type.equals("BIGINT")) rs.updateInt(column,(int) 0);
+        else if(type.equals("INTEGER")) rs.updateInt(column, 0);
+        else if(type.equals("BIGINT")) rs.updateInt(column, 0);
         else if(type.equals("LONG")) rs.updateInt(column,0);
         else if(type.equals("SHORT")) rs.updateShort(column,(short)0);
         else if(type.equals("SMALLINT")) rs.updateShort(column,(short)0);

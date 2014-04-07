@@ -35,6 +35,7 @@ import javax.swing.SwingConstants;
  */
 public class AboutDialog extends JPanel implements ActionListener, MouseListener {
 
+	private static final long serialVersionUID = 1L;
 	private JLabel programNameL = null;
 	private JLabel dateL = null;
 

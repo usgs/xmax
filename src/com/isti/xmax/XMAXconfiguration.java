@@ -150,6 +150,7 @@ public class XMAXconfiguration extends Configuration {
 			setShowStatusBar(config.getBoolean("Configuration.View.ShowStatusBar", true));
 			setShowCommandButtons(config.getBoolean("Configuration.View.ShowCommandButtons", true));
 			setShowCommandButtonsTop(config.getBoolean("Configuration.View.ShowCommandButtonsTop", false));
+			@SuppressWarnings("unchecked")
 			Iterator<String> it = config.getKeys("SessionData.UserDir");
 			while (it.hasNext()) {
 				String key = it.next();

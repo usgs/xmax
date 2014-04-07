@@ -342,7 +342,12 @@ public class DataModule extends Observable {
 	 * @return list of loaded stations
 	 */
 	public static SortedSet<Station> getAllStations() {
-		return new TreeSet(stations.entrySet());
+		SortedSet<Station> loadedStations = new TreeSet<Station>();
+		for (String key : stations.keySet()) {
+			loadedStations.add(stations.get(key));
+		}
+		//return new TreeSet(stations.entrySet());
+		return loadedStations;
 	}
 
 	/**

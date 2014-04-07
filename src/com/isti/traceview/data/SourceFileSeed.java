@@ -20,6 +20,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceView;
+import com.isti.traceview.data.TraceViewSacExportBuilder;
 
 import edu.iris.Fissures.seed.app.Jseedr;
 import edu.iris.Fissures.seed.builder.ExportBuilder;
@@ -44,6 +45,8 @@ import edu.iris.Fissures.seed.util.Utility;
  */
 
 public class SourceFileSeed extends SourceFile implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(SourceFileSeed.class);
 	private boolean verboseMode = false; // set to true to turn Jseedr verbose mode ON
 
@@ -90,7 +93,6 @@ public class SourceFileSeed extends SourceFile implements Serializable {
 	}
 	
 	public void load(Segment segment){
-
 	}
 }
 
@@ -124,13 +126,13 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 		// set some default values
 		logicalRecordLength = 1024;
 		physicalRecordLength = 2000000000; // set to impossibly high value
-		logicalRecords = new Vector(8, 8);
-		exportMold = new Vector(8, 8);
+		logicalRecords = new Vector<LogicalRecord>(8, 8);
+		exportMold = new Vector<Object>(8, 8);
 		recordPadding = (byte) 0; // use nulls for padding, although it probably won't be used
 		scriptNesting = new int[8];
 		nestingScore = new int[scriptNesting.length];
 		builderType = "SAC"; // indicate the type of builder we are
-		stationList = new Vector(8, 8); // set up station list vector
+		stationList = new Vector<SacStation>(8, 8); // set up station list vector
 	}
 
 	// public methods
@@ -326,7 +328,8 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 				SacStation currentStation = null;
 				int stationListSize = stationList.size();
 				for (int i = 0; i < stationListSize; i++) { // find station header object
-					currentStation = (SacStation) stationList.get(i);
+					//(SacStation)
+					currentStation = stationList.get(i);
 					if (currentStation.stationName.equals(stationName) && currentStation.networkCode.equals(networkCode)
 							&& currentStation.endEffTime.diffSeconds(startTime) >= 0 && currentStation.startEffTime.diffSeconds(endTime) <= 0)
 						break; // found match
@@ -338,7 +341,8 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 				SacChannel currentChannel = null;
 				int channelsSize = currentStation.channels.size();
 				for (int i = 0; i < channelsSize; i++) {
-					currentChannel = (SacChannel) currentStation.channels.get(i);
+					//(SacChannel)
+					currentChannel = currentStation.channels.get(i);
 					if (currentChannel.channelName.equals(channelName) && currentChannel.locationId.equals(locationId)
 							&& currentChannel.endEffTime.diffSeconds(startTime) >= 0 && currentChannel.startEffTime.diffSeconds(endTime) <= 0)
 						break; // found match
@@ -783,7 +787,7 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 		protected String networkCode = null;
 		protected Btime startEffTime = null;
 		protected Btime endEffTime = null;
-		protected Vector channels = new Vector(8, 8);
+		protected Vector<SacChannel> channels = new Vector<SacChannel>(8, 8);
 	}
 
 	/**
@@ -1025,7 +1029,7 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 	private Btime prevEndTime = null;
 	private byte[] sacHeaderBlank = null;
 	private byte[] sacDataBlank = null;
-	private Vector stationList = null;
+	private Vector<SacStation> stationList = null;
 	private SacStation currentStation = null;
 	private SacChannel currentChannel = null;
 	private SacEvent sacEvent = null;

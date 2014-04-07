@@ -31,6 +31,7 @@ import java.util.Date;
  */
 public class LimXDialog extends JDialog implements PropertyChangeListener {
 
+	private static final long serialVersionUID = 1L;
 	private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD,HH:mm:ss");
 	private JOptionPane optionPane = null;
 	private JTextField startTimeTE = null;
