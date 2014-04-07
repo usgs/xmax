@@ -17,6 +17,8 @@ import com.isti.xmax.common.Earthquake;
  * @author Max Kokoulin
  */
 public class XMAXChannel extends PlotDataProvider {
+
+	private static final long serialVersionUID = 1L;
 	private boolean isArrivalsComputed = false;
 
 	public XMAXChannel(String channelName, Station station, String networkName, String locationName) {

@@ -22,6 +22,7 @@ import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import gov.usgs.anss.cd11.CanadaException;
 
 public class SourceFileIMS extends SourceFile {
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(SourceFileIMS.class);
 
 	public SourceFileIMS(File file) {

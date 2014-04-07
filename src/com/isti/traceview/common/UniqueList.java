@@ -9,6 +9,8 @@ import java.util.Collection;
  * @author Max Kokoulin
  */
 public class UniqueList<E> extends ArrayList<E> {
+	private static final long serialVersionUID = 1L;
+
 	public boolean add(E e) {
 		if (!super.contains(e)) {
 			return super.add(e);

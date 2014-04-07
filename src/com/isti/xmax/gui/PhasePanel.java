@@ -13,6 +13,7 @@ import javax.swing.event.ListSelectionListener;
 
 import java.awt.Component;
 import java.awt.Dimension;
+
 import javax.swing.JScrollPane;
 
 import com.isti.xmax.XMAX;
@@ -38,6 +39,8 @@ import org.apache.log4j.Logger;
  * @author Max Kokoulin
  */
 public class PhasePanel extends JPanel implements ListSelectionListener {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(PhasePanel.class); // @jve:decl-index=0:
 	private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD,HH:mm:ss");
 	private static Object[] initialSelectedPhases = { "P" };
@@ -124,7 +127,7 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 	 * 
 	 * @return javax.swing.JList
 	 */
-	private JList getEarthquakesL() {
+	private JList<?> getEarthquakesL() {
 		if (earthquakesL == null) {
 			earthquakesL = new PhaseList(XMAX.getDataModule().getEarthquakes().toArray());
 			earthquakesL.setCellRenderer(new EarthquakeCellRenderer());
@@ -138,7 +141,7 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 	 * 
 	 * @return javax.swing.JList
 	 */
-	private JList getPhasesL() {
+	private JList<?> getPhasesL() {
 		if (phasesL == null) {
 			phasesL = new PhaseList();
 			phasesL.addListSelectionListener(this);
@@ -197,6 +200,7 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 	/**
 	 * this method called after changing selected earthquakes list
 	 */
+	@SuppressWarnings("deprecation")
 	private void refreshAvailablePhases() {
 		// lg.debug("refreshing phases");
 		init = true;
@@ -209,6 +213,7 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 	/**
 	 * This method is required by ListSelectionListener.
 	 */
+	@SuppressWarnings("deprecation")
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getValueIsAdjusting() == false && !init) {
 			if (e.getSource().equals(earthquakesL)) {
@@ -231,7 +236,10 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 		}
 	}
 
-	private class PhaseList extends JList {
+	private class PhaseList extends JList<Object> {
+
+		private static final long serialVersionUID = 1L;
+
 		public PhaseList() {
 			super();
 			init();
@@ -261,7 +269,7 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 			} else {
 				int i, c;
 				clearSelection();
-				ListModel dm = getModel();
+				ListModel<Object> dm = getModel();
 				for (Object object: objects) {
 					for (i = 0, c = dm.getSize(); i < c; i++) {
 						if (object.equals(dm.getElementAt(i))) {
@@ -277,8 +285,10 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 		}
 	}
 
-	private class EarthquakeCellRenderer extends JLabel implements ListCellRenderer {
-		public Component getListCellRendererComponent(JList list, // the list
+	private class EarthquakeCellRenderer extends JLabel implements ListCellRenderer<Object> {
+		private static final long serialVersionUID = 1L;
+
+		public Component getListCellRendererComponent(JList<?> list, // the list
 				Object value, // value to display
 				int index, // cell index
 				boolean isSelected, // is the cell selected

@@ -16,6 +16,8 @@ import edu.sc.seis.seisFile.segd.Trace;
 
 
 public class SourceFileSEGD extends SourceFile implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(SourceFileSEGD.class);
 	private final int NORM_AMPLITUDE =100000;
 	

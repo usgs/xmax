@@ -201,7 +201,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 	 * @return set of arrivals
 	 */
 	public SortedSet<IEvent> computeArrivals(PlotDataProvider channel) {
-		TreeSet ret = new TreeSet<IEvent>();
+		TreeSet<IEvent> ret = new TreeSet<IEvent>();
 		Station station = channel.getStation();
 		try {
 			TauP_Time timeTool = new TauP_Time("iasp91");

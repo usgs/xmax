@@ -17,9 +17,9 @@ import org.apache.log4j.Logger;
  * longitude, latitude, elevation and depth is loaded from a station configuration file. Class
  * implements an interface "Comparable" to define sort order in the station lists.
  */
-public class Station implements Comparable, Serializable {
+public class Station implements Comparable<Object>, Serializable {
 	private static Logger lg = Logger.getLogger(Station.class);
-
+	private static final long serialVersionUID = 1L;
 	/**
 	 * @uml.property name="name"
 	 */

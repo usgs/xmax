@@ -20,6 +20,8 @@ import com.isti.xmax.data.XMAXChannel;
  * @author Max Kokoulin
  */
 public class XMAXGraphPanel extends GraphPanel {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(XMAXGraphPanel.class);
 
 	public XMAXGraphPanel() {

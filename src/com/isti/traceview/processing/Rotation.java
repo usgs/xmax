@@ -17,12 +17,14 @@ import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
@@ -461,6 +463,10 @@ public class Rotation {
 	 * Visual dialog to enter rotation description
 	 */
 	public class RotationDialog extends JDialog implements PropertyChangeListener, ItemListener {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JFrame frame;
 		private RotationType type = RotationType.ARBITRARY;
 		private StandardRotation standardRotation = StandardRotation.THRILLIUM_UVW_TO_XMAX;
@@ -475,10 +481,10 @@ public class Rotation {
 		private JTextField XTF;
 		private JTextField YTF;
 		private JTextField ZTF;
-		private JComboBox rotationTypeCB;
+		private JComboBox<String> rotationTypeCB;
 		private JPanel arbitraryPanel;
 		private JPanel standardPanel;
-		private JComboBox standardRotationCB;
+		private JComboBox<String> standardRotationCB;
 		private JLabel rotationTypeL;
 		private JPanel swithPanel;
 		private JLabel standardRotationL;
@@ -580,10 +586,10 @@ public class Rotation {
 			}
 		}
 
-		private JComboBox getRotationTypeCB() {
+		private JComboBox<String> getRotationTypeCB() {
 			if (rotationTypeCB == null) {
-				ComboBoxModel rotationTypeCBModel = new DefaultComboBoxModel(new String[]{ "Arbitrary", "Standard" });
-				rotationTypeCB = new JComboBox();
+				ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<String>(new String[]{"Arbitrary", "Standard"});
+				rotationTypeCB = new JComboBox<String>();
 				rotationTypeCB.setModel(rotationTypeCBModel);
 				rotationTypeCB.setPreferredSize(new java.awt.Dimension(141, 21));
 				rotationTypeCB.addItemListener(this);
@@ -628,11 +634,11 @@ public class Rotation {
 			return standardPanel;
 		}
 
-		private JComboBox getStandardRotationCB() {
+		private JComboBox<String> getStandardRotationCB() {
 			if (standardRotationCB == null) {
-				ComboBoxModel rotationTypeCBModel = new DefaultComboBoxModel(new String[]{ "Thrillium UVW to XMAX", "Thrillium XMAX to UVW",
+				ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<String>(new String[]{ "Thrillium UVW to XMAX", "Thrillium XMAX to UVW",
 						"STS2 UVW to XMAX", "STS2 XMAX to UVW" });
-				standardRotationCB = new JComboBox();
+				standardRotationCB = new JComboBox<String>();
 				standardRotationCB.setModel(rotationTypeCBModel);
 				standardRotationCB.setPreferredSize(new java.awt.Dimension(180, 23));
 				standardRotationCB.addItemListener(this);

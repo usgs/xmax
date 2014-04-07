@@ -16,6 +16,7 @@ import java.awt.FlowLayout;
  */
 public class QCPanel extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	private JTree qcTree = null;
 	private JScrollPane scrollPane = null;
 

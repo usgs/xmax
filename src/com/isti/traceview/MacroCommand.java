@@ -15,12 +15,12 @@ import java.util.ArrayList;
  * @author Max Kokoulin
  */
 
-public class MacroCommand extends AbstractUndoableCommand implements IUndoableCommand, Comparable {
+public class MacroCommand extends AbstractUndoableCommand implements IUndoableCommand, Comparable<Object> {
 
 	/**
 	 * @uml.property name="commands"
 	 */
-	private ArrayList<IUndoableCommand> commands = new ArrayList();
+	private ArrayList<IUndoableCommand> commands = new ArrayList<IUndoableCommand>();
 
 	public void undo() {
 		// TODO Auto-generated method stub

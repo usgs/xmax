@@ -60,14 +60,17 @@ import java.awt.event.MouseMotionListener;
  * @author Max Kokoulin
  */
 
-public class ChannelView extends JPanel implements Comparable, Observer {
+public class ChannelView extends JPanel implements Comparable<Object>, Observer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger lg = Logger.getLogger(ChannelView.class); // @jve:decl-index=0:
 
 	public static boolean tooltipVisible = false;
 	public static final int defaultInfoPanelWidth = 80;
 	protected static int currentSelectionNumber = 0;
-	
-	
 
 	/**
 	 * @uml.property name="plotDataProviders" multiplicity="(0 -1)" dimension="1"
@@ -476,6 +479,10 @@ System.out.println();
 	 * Left panel for auxiliary information: selection checkbox, axis painting etc
 	 */
 	class InfoPanel extends JPanel implements ItemListener {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private NonPrintableCheckBox selected = null;
 		private ChannelView channelView = null;
 
@@ -518,6 +525,11 @@ System.out.println();
 		}
 
 		private class NonPrintableCheckBox extends JCheckBox {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public void paint(Graphics g) {
 				// if(!isPaintingForPrint()){ //works only in jre 1.6
 				super.paint(g);
@@ -545,6 +557,11 @@ System.out.println();
 	 * Big right panel for graphs drawing
 	 */
 	class GraphAreaPanel extends JPanel implements MouseInputListener {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * Panel height in pixel
 		 */
@@ -873,18 +890,24 @@ System.out.println();
 			return new CVToolTip();
 		}
 		
-		
 		class CVToolTip extends JToolTip{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public CVToolTip(){
 				lg.debug("CVToolTip: create");
 				tooltipVisible = true;
 			}
 			
+			@SuppressWarnings("deprecation")
 			public void show(){
 				lg.debug("CVToolTip: show");
 				super.show();
 			}
 			
+			@SuppressWarnings("deprecation")
 			public void hide(){
 				lg.debug("CVToolTip: hide");
 				super.hide();
@@ -893,15 +916,13 @@ System.out.println();
 			public void repaint(){
 				super.repaint();
 				graphPanel.repaint();
-				
 			}
 			
-			protected void finalize()throws Throwable{
+			protected void finalize()throws Throwable {
 				lg.debug("CVToolTip: false");
 				tooltipVisible = false;
 				super.finalize();
 			}
-
 		}
 
 		private Set<EventWrapper> getEvents(int x) {
