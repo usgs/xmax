@@ -73,11 +73,11 @@ public class XMAX extends TraceView {
             if (cmd.getOptions().length == 0) {
                 System.out.println("[ Quick Examples ]");
                 System.out.println("* Read from BOTH -d 'data/path' AND existing serialized data in DATA_TEMP:");
-                System.out.println(" >java -Xms512M -Xmx512M -jar xmar.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+                System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
                 System.out.println("* Overwrite Serialized data in DATA_TEMP:");
-                System.out.println(" >java -Xms512M -Xmx512M -jar xmar.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+                System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
                 System.out.println("* Append to Serialized data in DATA_TEMP:");
-                System.out.println(" >java -Xms512M -Xmx512M -jar xmar.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+                System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
             }
 			if (cmd.hasOption("h")) {
 				if (cmd.getOptions().length > 1) {
@@ -268,7 +268,7 @@ public class XMAX extends TraceView {
 				// Get plug-in class loader.
 				ClassLoader classLoader = pluginManager.getPluginClassLoader(ext.getDeclaringPluginDescriptor());
 				// Load Routine class.
-				Class cls = classLoader.loadClass(ext.getParameter("class").valueAsString());
+				Class<?> cls = classLoader.loadClass(ext.getParameter("class").valueAsString());
 				// Create Routine instance.
 				IFilter filter = (IFilter) cls.newInstance();
 				// Constructor cnst = cls.getConstructor(args);
@@ -296,7 +296,7 @@ public class XMAX extends TraceView {
 				// Get plug-in class loader.
 				ClassLoader classLoader = pluginManager.getPluginClassLoader(ext.getDeclaringPluginDescriptor());
 				// Load Routine class.
-				Class cls = classLoader.loadClass(ext.getParameter("class").valueAsString());
+				Class<?> cls = classLoader.loadClass(ext.getParameter("class").valueAsString());
 				// Create Routine instance.
 				ITransformation transform = (ITransformation) cls.newInstance();
 				try {
@@ -376,7 +376,8 @@ public class XMAX extends TraceView {
 				result.add(pluginLocation);
 			}
 		}
-		return (PluginLocation[]) result.toArray(new PluginLocation[result.size()]);
+		//(PluginLocation[])
+		return result.toArray(new PluginLocation[result.size()]);
 	}
 
 	private PluginLocation getPluginLocation(File aFolder) throws MalformedURLException {

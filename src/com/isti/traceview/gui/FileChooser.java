@@ -13,6 +13,9 @@ import com.isti.traceview.data.SourceFile;
  * @author Max Kokoulin
  */
 public class FileChooser extends JFileChooser {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Enumeration for file types handled by this file chooser
 	 */

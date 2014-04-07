@@ -429,7 +429,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the chart.
 	 */
 	public TraceViewChartPanel(JFreeChart chart) {
-
 		this(chart, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_MINIMUM_DRAW_WIDTH, DEFAULT_MINIMUM_DRAW_HEIGHT, DEFAULT_MAXIMUM_DRAW_WIDTH,
 				DEFAULT_MAXIMUM_DRAW_HEIGHT, DEFAULT_BUFFER_USED, true, // properties
 				true, // save
@@ -437,7 +436,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 				true, // zoom
 				true // tooltips
 		);
-
 	}
 
 	/**
@@ -449,7 +447,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            a flag controlling whether or not an off-screen buffer is used.
 	 */
 	public TraceViewChartPanel(JFreeChart chart, boolean useBuffer) {
-
 		this(chart, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_MINIMUM_DRAW_WIDTH, DEFAULT_MINIMUM_DRAW_HEIGHT, DEFAULT_MAXIMUM_DRAW_WIDTH,
 				DEFAULT_MAXIMUM_DRAW_HEIGHT, useBuffer, true, // properties
 				true, // save
@@ -457,7 +454,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 				true, // zoom
 				true // tooltips
 		);
-
 	}
 
 	/**
@@ -480,10 +476,8 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            a flag indicating whether or not tooltips should be enabled for the chart.
 	 */
 	public TraceViewChartPanel(JFreeChart chart, boolean properties, boolean save, boolean print, boolean zoom, boolean tooltips) {
-
 		this(chart, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_MINIMUM_DRAW_WIDTH, DEFAULT_MINIMUM_DRAW_HEIGHT, DEFAULT_MAXIMUM_DRAW_WIDTH,
 				DEFAULT_MAXIMUM_DRAW_HEIGHT, DEFAULT_BUFFER_USED, properties, save, print, zoom, tooltips);
-
 	}
 
 	/**
@@ -522,7 +516,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 */
 	public TraceViewChartPanel(JFreeChart chart, int width, int height, int minimumDrawWidth, int minimumDrawHeight, int maximumDrawWidth,
 			int maximumDrawHeight, boolean useBuffer, boolean properties, boolean save, boolean print, boolean zoom, boolean tooltips) {
-
+		
 		this.setChart(chart);
 		this.chartMouseListeners = new EventListenerList();
 		this.info = new ChartRenderingInfo();
@@ -555,7 +549,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		this.ownToolTipInitialDelay = ttm.getInitialDelay();
 		this.ownToolTipDismissDelay = ttm.getDismissDelay();
 		this.ownToolTipReshowDelay = ttm.getReshowDelay();
-
 	}
 
 	/**
@@ -574,7 +567,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the chart (<code>null</code> permitted).
 	 */
 	public void setChart(JFreeChart chart) {
-
 		// stop listening for changes to the existing chart
 		if (this.chart != null) {
 			this.chart.removeChangeListener(this);
@@ -603,7 +595,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			this.refreshBuffer = true;
 		}
 		repaint();
-
 	}
 
 	/**
@@ -1018,7 +1009,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @return A tool tip or <code>null</code> if no tooltip is available.
 	 */
 	public String getToolTipText(MouseEvent e) {
-
 		String result = null;
 		if (this.info != null) {
 			EntityCollection entities = this.info.getEntityCollection();
@@ -1032,7 +1022,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			}
 		}
 		return result;
-
 	}
 
 	/**
@@ -1092,7 +1081,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @return The chart entity (possibly <code>null</code>).
 	 */
 	public ChartEntity getEntityForPoint(int viewX, int viewY) {
-
 		ChartEntity result = null;
 		if (this.info != null) {
 			Insets insets = getInsets();
@@ -1102,7 +1090,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			result = entities != null ? entities.getEntity(x, y) : null;
 		}
 		return result;
-
 	}
 
 	/**
@@ -1233,7 +1220,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			this.chart.draw(g2, chartArea, this.anchor, this.info);
 			g2.setTransform(saved);
 			//System.out.println(new Date() + " chart drawed");
-
 		}
 
 		// Redraw the zoom rectangle (if present)
@@ -1280,7 +1266,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the event.
 	 */
 	public void actionPerformed(ActionEvent event) {
-
 		String command = event.getActionCommand();
 
 		// many of the zoom methods need a screen location - all we have is
@@ -1322,7 +1307,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		} else if (command.equals(ZOOM_RESET_RANGE_COMMAND)) {
 			restoreAutoRangeBounds();
 		}
-
 	}
 
 	/**
@@ -1417,7 +1401,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the mouse event.
 	 */
 	public void mouseDragged(MouseEvent e) {
-
 		// if the popup menu has already been triggered, then ignore dragging...
 		if (this.popup != null && this.popup.isShowing()) {
 			return;
@@ -1459,9 +1442,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 
 		// Draw the new zoom rectangle...
 		drawZoomRectangle(g2);
-
 		g2.dispose();
-
 	}
 
 	/**
@@ -1472,7 +1453,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            information about the event.
 	 */
 	public void mouseReleased(MouseEvent e) {
-
 		if (this.zoomRectangle != null) {
 			boolean hZoom = false;
 			boolean vZoom = false;
@@ -1524,7 +1504,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 				this.zoomPoint = null;
 				this.zoomRectangle = null;
 			}
-
 		}
 
 		else if (e.isPopupTrigger()) {
@@ -1532,7 +1511,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 				displayPopupMenu(e.getX(), e.getY());
 			}
 		}
-
 	}
 
 	/**
@@ -1543,7 +1521,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            Information about the mouse event.
 	 */
 	public void mouseClicked(MouseEvent event) {
-
 		Insets insets = getInsets();
 		int x = (int) ((event.getX() - insets.left) / this.scaleX);
 		int y = (int) ((event.getY() - insets.top) / this.scaleY);
@@ -1570,7 +1547,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		for (int i = listeners.length - 1; i >= 0; i -= 1) {
 			((ChartMouseListener) listeners[i]).chartMouseClicked(chartEvent);
 		}
-
 	}
 
 	/**
@@ -1741,9 +1717,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 					z.zoomRangeAxes(vLower, vUpper, plotInfo, selectOrigin);
 				}
 			}
-
 		}
-
 	}
 
 	/**
@@ -1962,7 +1936,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the x-coordinate of the trace line.
 	 */
 	private void drawHorizontalAxisTrace(Graphics2D g2, int x) {
-
 		Rectangle2D dataArea = getScreenDataArea();
 
 		g2.setXORMode(Color.orange);
@@ -1990,7 +1963,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the y-coordinate of the trace line.
 	 */
 	private void drawVerticalAxisTrace(Graphics2D g2, int y) {
-
 		Rectangle2D dataArea = getScreenDataArea();
 
 		g2.setXORMode(Color.orange);
@@ -2015,7 +1987,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @since 1.0.3
 	 */
 	public void doEditChartProperties() {
-
 		ChartEditor editor = ChartEditorManager.getChartEditor(this.chart);
 		int result = JOptionPane.showConfirmDialog(this, editor, localizationResources.getString("Chart_Properties"), JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE);
@@ -2047,7 +2018,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			}
 			ChartUtilities.saveChartAsPNG(new File(filename), this.chart, getWidth(), getHeight());
 		}
-
 	}
 
 	/**
@@ -2069,7 +2039,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -2095,7 +2064,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		double h = pf.getImageableHeight();
 		this.chart.draw(g2, new Rectangle2D.Double(x, y, w, h), this.anchor, null);
 		return PAGE_EXISTS;
-
 	}
 
 	/**
@@ -2255,11 +2223,9 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 
 			result.addSeparator();
 			result.add(autoRangeMenu);
-
 		}
 
 		return result;
-
 	}
 
 	/**
@@ -2319,7 +2285,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 
 			this.popup.show(this, x, y);
 		}
-
 	}
 
 	/*

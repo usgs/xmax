@@ -11,12 +11,12 @@ import com.isti.traceview.data.BufferedRandomAccessFile;
 public class STA2 extends Block {
 	private static Logger lg = Logger.getLogger(STA2.class);
 	
-	private String network;		//6–14 a9 network identifier
-	private double latitude;	//16–24 f9.5 latitude (degrees, South is negative)
-	private double longitude;	//26–35 f10.5 longitude (degrees, West is negative)
-	private String coordType;	//37–48 a12 reference coordinate system	(for example, WGS-84)
-	private double elevation;	//50–54 f5.3 elevation (km)
-	private double emplacement;	//56–60 f5.3 emplacement depth (km)
+	private String network;		//6-14 a9 network identifier
+	private double latitude;	//16-24 f9.5 latitude (degrees, South is negative)
+	private double longitude;	//26-35 f10.5 longitude (degrees, West is negative)
+	private String coordType;	//37-48 a12 reference coordinate system	(for example, WGS-84)
+	private double elevation;	//50-54 f5.3 elevation (km)
+	private double emplacement;	//56-60 f5.3 emplacement depth (km)
 	
 	public STA2(long startOffset){
 		super(startOffset);

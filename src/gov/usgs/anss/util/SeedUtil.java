@@ -237,7 +237,8 @@ public static int sanitizeYear(int yr) {
     int jalpha,ja,jb,jc,jd,je,year,month,day;
     double julian = (double) injulian + HALFSECOND / 86400.0;
 
-    ja = (int) injulian;
+    //(int)
+    ja = injulian;
     if (ja>= JGREG) {    
        jalpha = (int) (((ja - 1867216) - 0.25) / 36524.25);
        ja = ja + 1 + jalpha - jalpha / 4;

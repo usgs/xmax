@@ -24,4 +24,7 @@
 */
 package gov.usgs.anss.util;
 
-public class JCJBLBadPassword extends Exception {}
+public class JCJBLBadPassword extends Exception {
+
+	private static final long serialVersionUID = 1L;
+}

@@ -99,9 +99,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 
 	/** _more_ */
 
-	static public List openFiles =
-
-	Collections.synchronizedList(new ArrayList());
+	static public List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
 
 	/** The default buffer size, in bytes. */
 
@@ -180,13 +178,9 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	protected BufferedRandomAccessFile(int bufferSize) {
-
 		file = null;
-
 		readonly = true;
-
 		init(bufferSize);
-
 	}
 
 	/**
@@ -200,11 +194,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public BufferedRandomAccessFile(String location, String mode) throws IOException {
-
 		this(location, mode, defaultBufferSize);
-
 		this.location = location;
-
 	}
 
 	/**
@@ -220,23 +211,15 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public BufferedRandomAccessFile(String location, String mode, int bufferSize)
-
 	throws IOException {
-
 		this.location = location;
-
 		this.file = new java.io.RandomAccessFile(location, mode);
-
 		this.readonly = mode.equals("r");
 
 		init(bufferSize);
-
 		if (debugLeaks) {
-
 			openFiles.add(location);
-
 		}
-
 	}
 
 	/**
@@ -247,9 +230,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public java.io.RandomAccessFile getRandomAccessFile() {
-
 		return this.file;
-
 	}
 
 	/**
@@ -260,21 +241,13 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	private void init(int bufferSize) {
-
 		// Initialise the buffer
-
 		bufferStart = 0;
-
 		dataEnd = 0;
-
 		dataSize = 0;
-
 		filePosition = 0;
-
 		buffer = new byte[bufferSize];
-
 		endOfFile = false;
-
 	}
 
 	/**
@@ -285,17 +258,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized void close() throws IOException {
-
 		if (debugLeaks) {
-
 			openFiles.remove(location);
-
 		}
 
 		if (file == null) {
-
 			return;
-
 		}
 
 		// If we are writing and the buffer has been modified, flush the contents
@@ -303,11 +271,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 		// of the buffer.
 
 		if (!readonly && bufferModified) {
-
 			file.seek(bufferStart);
-
 			file.write(buffer, 0, dataSize);
-
 		}
 
 		/*
@@ -319,19 +284,13 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 		// may need to truncate file in case overwriting a longer file
 		// use only if minLength is set (by N3iosp)
 		if (!readonly && (minLength != 0) && (minLength != file.length())) {
-
 			file.setLength(minLength);
-
 			// System.out.println("TRUNCATE!!! minlength="+minLength);
-
 		}
 
 		// Close the underlying file object.
-
 		file.close();
-
 		file = null; // help the gc
-
 	}
 
 	/**
@@ -341,9 +300,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public boolean isAtEndOfFile() {
-
 		return endOfFile;
-
 	}
 
 	/*
@@ -362,49 +319,31 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized void seek(long pos) throws IOException {
-
 		// If the seek is into the buffer, just update the file pointer.
-
 		if ((pos >= bufferStart) && (pos < dataEnd)) {
-
 			filePosition = pos;
-
 			return;
-
 		}
 
 		// If the current buffer is modified, write it to disk.
-
 		if (bufferModified) {
-
 			flush();
-
 		}
 
 		// need new buffer
-
 		bufferStart = pos;
-
 		filePosition = pos;
-
 		dataSize = read_(pos, buffer, 0, buffer.length);
 
 		if (dataSize <= 0) {
-
 			dataSize = 0;
-
 			endOfFile = true;
-
 		} else {
-
 			endOfFile = false;
-
 		}
 
 		// Cache the position of the buffer end.
-
 		dataEnd = bufferStart + dataSize;
-
 	}
 
 	/**
@@ -416,9 +355,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized long getFilePointer() throws IOException {
-
 		return filePosition;
-
 	}
 
 	/**
@@ -428,9 +365,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized String getLocation() {
-
 		return location;
-
 	}
 
 	/**
@@ -441,21 +376,13 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurrs.
 	 */
-
 	public long length() throws IOException {
-
 		long fileLength = file.length();
-
 		if (fileLength < dataEnd) {
-
 			return dataEnd;
-
 		} else {
-
 			return fileLength;
-
 		}
-
 	}
 
 	/**
@@ -465,11 +392,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @param endian
 	 *            BIG_ENDIAN or LITTLE_ENDIAN
 	 */
-
 	public void order(int endian) {
-
 		this.bigEndian = (endian == BIG_ENDIAN);
-
 	}
 
 	public boolean isBE() {
@@ -483,15 +407,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public FileDescriptor getFD() throws IOException {
-
-		return (file == null)
-
-		? null
-
-		: file.getFD();
-
+		return (file == null) ? null : file.getFD();
 	}
 
 	/**
@@ -502,26 +419,17 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized void flush() throws IOException {
-
 		if (bufferModified) {
-
 			file.seek(bufferStart);
-
 			file.write(buffer, 0, dataSize);
 
 			// System.out.println("--flush at "+bufferStart+" dataSize= "+dataSize+ " filePosition=
 			// "+filePosition);
-
 			bufferModified = false;
-
 		}
-
 		// debug
-
 		// FileChannel fc = file.getChannel();
-
 		// System.out.println("flush size = "+fc.size());
-
 	}
 
 	/**
@@ -533,9 +441,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public void setMinLength(long minLength) {
-
 		this.minLength = minLength;
-
 	}
 
 	/**
@@ -544,9 +450,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public void setExtendMode() {
-
 		this.extendMode = true;
-
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////
@@ -564,33 +468,19 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized int read() throws IOException {
-
 		// If the file position is within the data, return the byte...
-
 		if (filePosition < dataEnd) {
-
 			int pos = (int) (filePosition - bufferStart);
-
 			filePosition++;
-
 			return (buffer[pos] & 0xff);
-
 			// ...or should we indicate EOF...
-
 		} else if (endOfFile) {
-
 			return -1;
-
 			// ...or seek to fill the buffer, and try again.
-
 		} else {
-
 			seek(filePosition);
-
 			return read();
-
 		}
-
 	}
 
 	/**
@@ -608,105 +498,59 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurrs.
 	 */
-
 	protected int readBytes(byte b[], int off, int len) throws IOException {
-
 		// Check for end of file.
-
 		if (endOfFile) {
-
 			return -1;
-
 		}
 
 		// See how many bytes are available in the buffer - if none,
-
 		// seek to the file position to update the buffer and try again.
 
 		int bytesAvailable = (int) (dataEnd - filePosition);
-
 		if (bytesAvailable < 1) {
-
 			seek(filePosition);
-
 			return readBytes(b, off, len);
-
 		}
 
 		// Copy as much as we can.
-
-		int copyLength = (bytesAvailable >= len)
-
-		? len
-
-		: bytesAvailable;
-
-		System.arraycopy(buffer, (int) (filePosition - bufferStart), b, off,
-
-		copyLength);
-
+		int copyLength = (bytesAvailable >= len) ? len : bytesAvailable;
+		System.arraycopy(buffer, (int) (filePosition - bufferStart), b, off, 
+				copyLength);
 		filePosition += copyLength;
 
 		// If there is more to copy...
-
 		if (copyLength < len) {
-
 			int extraCopy = len - copyLength;
 
 			// If the amount remaining is more than a buffer's length, read it
-
 			// directly from the file.
-
 			if (extraCopy > buffer.length) {
-
 				extraCopy = read_(filePosition, b, off + copyLength,
-
 				len - copyLength);
-
 				// ...or read a new buffer full, and copy as much as possible...
-
 			} else {
-
 				seek(filePosition);
-
 				if (!endOfFile) {
-
-					extraCopy = (extraCopy > dataSize)
-
-					? dataSize
-
-					: extraCopy;
-
+					extraCopy = (extraCopy > dataSize) ? dataSize : extraCopy;
 					System.arraycopy(buffer, 0, b, off + copyLength,
-
 					extraCopy);
-
 				} else {
-
 					extraCopy = -1;
-
 				}
-
 			}
 
 			// If we did manage to copy any more, update the file position and
-
 			// return the amount copied.
 
 			if (extraCopy > 0) {
-
 				filePosition += extraCopy;
-
 				return copyLength + extraCopy;
-
 			}
-
 		}
 
 		// Return the amount copied.
-
 		return copyLength;
-
 	}
 
 	/**
@@ -724,28 +568,19 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @throws IOException
 	 *             _more_
 	 */
-
 	protected int read_(long pos, byte[] b, int offset, int len)
-
 	throws IOException {
-
 		file.seek(pos);
-
 		int n = file.read(b, offset, len);
 
 		if (debugAccess)
 			System.out.println(" read_ " + location + " = " + len + " bytes at " + pos + "; block = " + (pos / buffer.length));
 
 		if (extendMode && (n < len)) {
-
 			// System.out.println(" read_ = "+len+" at "+pos+"; got = "+n);
-
 			n = len;
-
 		}
-
 		return n;
-
 	}
 
 	/**
@@ -765,9 +600,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized int read(byte b[], int off, int len) throws IOException {
-
 		return readBytes(b, off, len);
-
 	}
 
 	/**
@@ -783,9 +616,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized int read(byte b[]) throws IOException {
-
 		return readBytes(b, 0, b.length);
-
 	}
 
 	/**
@@ -802,9 +633,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public final void readFully(byte b[]) throws IOException {
-
 		readFully(b, 0, b.length);
-
 	}
 
 	/**
@@ -825,25 +654,15 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void readFully(byte b[], int off, int len)
-
 	throws IOException {
-
 		int n = 0;
-
 		while (n < len) {
-
 			int count = this.read(b, off + n, len - n);
-
 			if (count < 0) {
-
 				throw new EOFException();
-
 			}
-
 			n += count;
-
 		}
-
 	}
 
 	/**
@@ -860,11 +679,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized int skipBytes(int n) throws IOException {
-
 		seek(getFilePointer() + n);
-
 		return n;
-
 	}
 
 	/*
@@ -879,9 +695,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized void unread() {
-
 		filePosition--;
-
 	}
 
 	//
@@ -901,49 +715,29 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurrs.
 	 */
-
 	public synchronized void write(int b) throws IOException {
-
 		// If the file position is within the block of data...
-
 		if (filePosition < dataEnd) {
-
 			buffer[(int) (filePosition++ - bufferStart)] = (byte) b;
-
 			bufferModified = true;
 
 			// ...or (assuming that seek will not allow the file pointer
-
 			// to move beyond the end of the file) get the correct block of
-
 			// data...
-
 		} else {
-
 			// If there is room in the buffer, expand it...
-
 			if (dataSize != buffer.length) {
-
 				buffer[(int) (filePosition++ - bufferStart)] = (byte) b;
-
 				bufferModified = true;
-
 				dataSize++;
-
 				dataEnd++;
 
 				// ...or do another seek to get a new buffer, and start again...
-
 			} else {
-
 				seek(filePosition);
-
 				write(b);
-
 			}
-
 		}
-
 	}
 
 	/**
@@ -962,115 +756,65 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	public synchronized void writeBytes(byte b[], int off, int len) throws IOException {
 
 		// If the amount of data is small (less than a full buffer)...
-
 		if (len < buffer.length) {
-
 			// If any of the data fits within the buffer...
-
 			int spaceInBuffer = 0;
-
 			int copyLength = 0;
 
 			if (filePosition >= bufferStart) {
-
 				spaceInBuffer = (int) ((bufferStart + buffer.length)
-
-				- filePosition);
-
+						- filePosition);
 			}
 
 			if (spaceInBuffer > 0) {
-
 				// Copy as much as possible to the buffer.
+				copyLength = (spaceInBuffer > len) ? len : spaceInBuffer;
 
-				copyLength = (spaceInBuffer > len)
-
-				? len
-
-				: spaceInBuffer;
-
-				System.arraycopy(b, off, buffer,
-
-				(int) (filePosition - bufferStart),
-
-				copyLength);
+				System.arraycopy(b, off, buffer, 
+						(int) (filePosition - bufferStart), copyLength);
 
 				bufferModified = true;
-
 				long myDataEnd = filePosition + copyLength;
-
-				dataEnd = (myDataEnd > dataEnd)
-
-				? myDataEnd
-
-				: dataEnd;
+				dataEnd = (myDataEnd > dataEnd) ? myDataEnd : dataEnd;
 
 				dataSize = (int) (dataEnd - bufferStart);
-
 				filePosition += copyLength;
 
 				// /System.out.println("--copy to buffer "+copyLength+" "+len);
-
 			}
 
 			// If there is any data remaining, move to the new position and copy to
-
 			// the new buffer.
-
 			if (copyLength < len) {
-
 				// System.out.println("--need more "+copyLength+" "+len+" space= "+spaceInBuffer);
-
 				seek(filePosition); // triggers a flush
-
 				System.arraycopy(b, off + copyLength, buffer,
 
-				(int) (filePosition - bufferStart),
-
-				len - copyLength);
-
+				(int) (filePosition - bufferStart), len - copyLength);
 				bufferModified = true;
-
 				long myDataEnd = filePosition + (len - copyLength);
-
-				dataEnd = (myDataEnd > dataEnd)
-
-				? myDataEnd
-
-				: dataEnd;
+				dataEnd = (myDataEnd > dataEnd) ? myDataEnd : dataEnd;
 
 				dataSize = (int) (dataEnd - bufferStart);
-
 				filePosition += (len - copyLength);
-
 			}
 
 			// ...or write a lot of data...
-
 		} else {
 
 			// Flush the current buffer, and write this data to the file.
-
 			if (bufferModified) {
-
 				flush();
-
 				bufferStart = dataEnd = dataSize = 0;
-
 				// file.seek(filePosition); // JC added Oct 21, 2004
-
 			}
 
 			file.seek(filePosition); // moved per Steve Cerruti; Jan 14, 2005
-
 			file.write(b, off, len);
 
 			// System.out.println("--write at "+filePosition+" "+len);
-
 			filePosition += len;
-
 		}
-
 	}
 
 	/**
@@ -1082,11 +826,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public void write(byte b[]) throws IOException {
-
 		writeBytes(b, 0, b.length);
-
 	}
 
 	/**
@@ -1102,17 +843,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public void write(byte b[], int off, int len) throws IOException {
-
 		writeBytes(b, off, len);
-
 	}
 
 	//
-
 	// DataInput methods.
-
 	//
 
 	/**
@@ -1127,19 +863,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public final boolean readBoolean() throws IOException {
-
 		int ch = this.read();
-
 		if (ch < 0) {
-
 			throw new EOFException();
-
 		}
-
 		return (ch != 0);
-
 	}
 
 	/**
@@ -1163,19 +892,13 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public final byte readByte() throws IOException {
-
 		int ch = this.read();
-
 		if (ch < 0) {
-
 			throw new EOFException();
-
 		}
 
 		return (byte) (ch);
-
 	}
 
 	/**
@@ -1191,19 +914,13 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public final int readUnsignedByte() throws IOException {
-
 		int ch = this.read();
-
 		if (ch < 0) {
-
 			throw new EOFException();
-
 		}
 
 		return ch;
-
 	}
 
 	/**
@@ -1228,29 +945,18 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public synchronized final short readShort() throws IOException {
-
 		int ch1 = this.read();
-
 		int ch2 = this.read();
-
 		if ((ch1 | ch2) < 0) {
-
 			throw new EOFException();
-
 		}
 
 		if (bigEndian) {
-
 			return (short) ((ch1 << 8) + (ch2 << 0));
-
 		} else {
-
 			return (short) ((ch2 << 8) + (ch1 << 0));
-
 		}
-
 	}
 
 	/**
@@ -1265,17 +971,11 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @throws IOException
 	 *             _more_
 	 */
-
 	public final void readShort(short[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			pa[start + i] = readShort();
-
 		}
-
 	}
 
 	/**
@@ -1299,29 +999,18 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public synchronized final int readUnsignedShort() throws IOException {
-
 		int ch1 = this.read();
-
 		int ch2 = this.read();
-
 		if ((ch1 | ch2) < 0) {
-
 			throw new EOFException();
-
 		}
 
 		if (bigEndian) {
-
 			return ((ch1 << 8) + (ch2 << 0));
-
 		} else {
-
 			return ((ch2 << 8) + (ch1 << 0));
-
 		}
-
 	}
 
 	/**
@@ -1346,29 +1035,19 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public synchronized final char readChar() throws IOException {
-
 		int ch1 = this.read();
-
 		int ch2 = this.read();
 
 		if ((ch1 | ch2) < 0) {
-
 			throw new EOFException();
-
 		}
 
 		if (bigEndian) {
-
 			return (char) ((ch1 << 8) + (ch2 << 0));
-
 		} else {
-
 			return (char) ((ch2 << 8) + (ch1 << 0));
-
 		}
-
 	}
 
 	/**
@@ -1393,33 +1072,21 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public synchronized final int readInt() throws IOException {
-
 		int ch1 = this.read();
-
 		int ch2 = this.read();
-
 		int ch3 = this.read();
-
 		int ch4 = this.read();
 
 		if ((ch1 | ch2 | ch3 | ch4) < 0) {
-
 			throw new EOFException();
-
 		}
 
 		if (bigEndian) {
-
 			return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
-
 		} else {
-
 			return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
-
 		}
-
 	}
 
 	/**
@@ -1430,37 +1097,24 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @return The int that was read
 	 * @throws IOException
 	 */
-
 	public final int readIntUnbuffered(long pos) throws IOException {
-
 		byte[] bb = new byte[4];
-
 		read_(pos, bb, 0, 4);
-
+		
 		int ch1 = bb[0] & 0xff;
-
 		int ch2 = bb[1] & 0xff;
-
 		int ch3 = bb[2] & 0xff;
-
 		int ch4 = bb[3] & 0xff;
-
+		
 		if ((ch1 | ch2 | ch3 | ch4) < 0) {
-
 			throw new EOFException();
-
 		}
 
 		if (bigEndian) {
-
 			return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
-
 		} else {
-
 			return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
-
 		}
-
 	}
 
 	/**
@@ -1492,13 +1146,9 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public final void readInt(int[] pa, int start, int n) throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			pa[start + i] = readInt();
-
 		}
-
 	}
 
 	/**
@@ -1541,19 +1191,13 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public synchronized final long readLong() throws IOException {
-
 		if (bigEndian) {
-
 			return ((long) (readInt()) << 32) + (readInt() & 0xFFFFFFFFL); // tested ok
-
 		} else {
-
-			return ((long) (readInt() & 0xFFFFFFFFL)
-
-			+ ((long) readInt() << 32)); // not tested yet ??
-
+			//(long)
+			return ((readInt() & 0xFFFFFFFFL) 
+					+ ((long) readInt() << 32)); // not tested yet ??
 		}
 
 		/*
@@ -1565,7 +1209,6 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 		 * ((long)(ch8 << 56) + (ch7 << 48) + (ch6 << 40) + (ch5 << 32) + (ch4 << 24) + (ch3 <<
 		 * 16) + (ch2 << 8) + (ch1 << 0));
 		 */
-
 	}
 
 	/**
@@ -1582,15 +1225,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void readLong(long[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			pa[start + i] = readLong();
-
 		}
-
 	}
 
 	/**
@@ -1610,11 +1248,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @see java.io.RandomAccessFile#readInt()
 	 * @see java.lang.Float#intBitsToFloat(int)
 	 */
-
 	public final float readFloat() throws IOException {
-
 		return Float.intBitsToFloat(readInt());
-
 	}
 
 	/**
@@ -1631,15 +1266,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void readFloat(float[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			pa[start + i] = Float.intBitsToFloat(readInt());
-
 		}
-
 	}
 
 	/**
@@ -1659,11 +1289,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @see java.io.RandomAccessFile#readLong()
 	 * @see java.lang.Double#longBitsToDouble(long)
 	 */
-
 	public final double readDouble() throws IOException {
-
 		return Double.longBitsToDouble(readLong());
-
 	}
 
 	/**
@@ -1680,15 +1307,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void readDouble(double[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			pa[start + i] = Double.longBitsToDouble(readLong());
-
 		}
-
 	}
 
 	/**
@@ -1708,27 +1330,19 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public synchronized final String readLine() throws IOException {
-
 		StringBuffer input = new StringBuffer();
-
 		int c;
 
 		while (((c = read()) != -1) && (c != '\n')) {
-
 			input.append((char) c);
-
 		}
 
 		if ((c == -1) && (input.length() == 0)) {
-
 			return null;
-
 		}
 
 		return input.toString();
-
 	}
 
 	/**
@@ -1751,11 +1365,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 *                if the bytes do not represent valid UTF-8 encoding of a Unicode string.
 	 * @see java.io.RandomAccessFile#readUnsignedShort()
 	 */
-
 	public final String readUTF() throws IOException {
-
 		return DataInputStream.readUTF(this);
-
 	}
 
 	/**
@@ -1766,15 +1377,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @return String wrapping the bytes.
 	 * @throws IOException
 	 */
-
 	public String readString(int nbytes) throws IOException {
-
 		byte[] data = new byte[nbytes];
-
 		readFully(data);
-
 		return new String(data);
-
 	}
 
 	//
@@ -1795,13 +1401,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public final void writeBoolean(boolean v) throws IOException {
-
-		write(v
-
-		? 1
-
-		: 0);
-
+		write(v ? 1 : 0);
 	}
 
 	/**
@@ -1816,17 +1416,11 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @throws IOException
 	 *             _more_
 	 */
-
 	public synchronized final void writeBoolean(boolean[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			writeBoolean(pa[start + i]);
-
 		}
-
 	}
 
 	/**
@@ -1837,11 +1431,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public final void writeByte(int v) throws IOException {
-
 		write(v);
-
 	}
 
 	/**
@@ -1852,13 +1443,9 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public synchronized final void writeShort(int v) throws IOException {
-
 		write((v >>> 8) & 0xFF);
-
 		write((v >>> 0) & 0xFF);
-
 	}
 
 	/**
@@ -1875,15 +1462,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void writeShort(short[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			writeShort(pa[start + i]);
-
 		}
-
 	}
 
 	/**
@@ -1896,11 +1478,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public final void writeChar(int v) throws IOException {
-
 		write((v >>> 8) & 0xFF);
-
 		write((v >>> 0) & 0xFF);
-
 	}
 
 	/**
@@ -1917,15 +1496,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void writeChar(char[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			writeChar(pa[start + i]);
-
 		}
-
 	}
 
 	/**
@@ -1938,15 +1512,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void writeInt(int v) throws IOException {
-
 		write((v >>> 24) & 0xFF);
-
 		write((v >>> 16) & 0xFF);
-
 		write((v >>> 8) & 0xFF);
-
 		write((v >>> 0) & 0xFF);
-
 	}
 
 	/**
@@ -1963,15 +1532,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void writeInt(int[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			writeInt(pa[start + i]);
-
 		}
-
 	}
 
 	/**
@@ -1984,23 +1548,14 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void writeLong(long v) throws IOException {
-
 		write((int) (v >>> 56) & 0xFF);
-
 		write((int) (v >>> 48) & 0xFF);
-
 		write((int) (v >>> 40) & 0xFF);
-
 		write((int) (v >>> 32) & 0xFF);
-
 		write((int) (v >>> 24) & 0xFF);
-
 		write((int) (v >>> 16) & 0xFF);
-
 		write((int) (v >>> 8) & 0xFF);
-
 		write((int) (v >>> 0) & 0xFF);
-
 	}
 
 	/**
@@ -2017,15 +1572,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void writeLong(long[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			writeLong(pa[start + i]);
-
 		}
-
 	}
 
 	/**
@@ -2039,11 +1589,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 *                if an I/O error occurs.
 	 * @see java.lang.Float#floatToIntBits(float)
 	 */
-
 	public final void writeFloat(float v) throws IOException {
-
 		writeInt(Float.floatToIntBits(v));
-
 	}
 
 	/**
@@ -2058,17 +1605,11 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @throws IOException
 	 *             _more_
 	 */
-
 	public synchronized final void writeFloat(float[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			writeFloat(pa[start + i]);
-
 		}
-
 	}
 
 	/**
@@ -2082,11 +1623,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 *                if an I/O error occurs.
 	 * @see java.lang.Double#doubleToLongBits(double)
 	 */
-
 	public final void writeDouble(double v) throws IOException {
-
 		writeLong(Double.doubleToLongBits(v));
-
 	}
 
 	/**
@@ -2103,15 +1641,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void writeDouble(double[] pa, int start, int n)
-
 	throws IOException {
-
 		for (int i = 0; i < n; i++) {
-
 			writeDouble(pa[start + i]);
-
 		}
-
 	}
 
 	/**
@@ -2123,17 +1656,11 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public synchronized final void writeBytes(String s) throws IOException {
-
 		int len = s.length();
-
 		for (int i = 0; i < len; i++) {
-
 			write((byte) s.charAt(i));
-
 		}
-
 	}
 
 	/**
@@ -2151,15 +1678,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 */
 
 	public synchronized final void writeBytes(char b[], int off, int len)
-
 	throws IOException {
-
 		for (int i = off; i < len; i++) {
-
 			write((byte) b[i]);
-
 		}
-
 	}
 
 	/**
@@ -2172,21 +1694,13 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 *                if an I/O error occurs.
 	 * @see java.io.RandomAccessFile#writeChar(int)
 	 */
-
 	public synchronized final void writeChars(String s) throws IOException {
-
 		int len = s.length();
-
 		for (int i = 0; i < len; i++) {
-
 			int v = s.charAt(i);
-
 			write((v >>> 8) & 0xFF);
-
 			write((v >>> 0) & 0xFF);
-
 		}
-
 	}
 
 	/**
@@ -2202,69 +1716,40 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-
 	public final void writeUTF(String str) throws IOException {
-
 		int strlen = str.length();
-
 		int utflen = 0;
-
 		for (int i = 0; i < strlen; i++) {
-
 			int c = str.charAt(i);
-
 			if ((c >= 0x0001) && (c <= 0x007F)) {
-
 				utflen++;
-
 			} else if (c > 0x07FF) {
-
 				utflen += 3;
-
 			} else {
-
 				utflen += 2;
-
 			}
-
 		}
 
 		if (utflen > 65535) {
-
 			throw new UTFDataFormatException();
-
 		}
 
 		write((utflen >>> 8) & 0xFF);
-
 		write((utflen >>> 0) & 0xFF);
 
 		for (int i = 0; i < strlen; i++) {
-
 			int c = str.charAt(i);
-
 			if ((c >= 0x0001) && (c <= 0x007F)) {
-
 				write(c);
-
 			} else if (c > 0x07FF) {
-
 				write(0xE0 | ((c >> 12) & 0x0F));
-
 				write(0x80 | ((c >> 6) & 0x3F));
-
 				write(0x80 | ((c >> 0) & 0x3F));
-
 			} else {
-
 				write(0xC0 | ((c >> 6) & 0x1F));
-
 				write(0x80 | ((c >> 0) & 0x3F));
-
 			}
-
 		}
-
 	}
 
 	/**
@@ -2272,19 +1757,13 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * 
 	 * @return a string representation of the state of the object.
 	 */
-
 	public String toString() {
-
-		return "fp=" + filePosition + ", bs=" + bufferStart + ", de="
-
-		+ dataEnd + ", ds=" + dataSize + ", bl=" + buffer.length
-
-		+ ", readonly=" + readonly + ", bm=" + bufferModified;
-
+		return "fp=" + filePosition + ", bs=" + bufferStart + ", de=" 
+				+ dataEnd + ", ds=" + dataSize + ", bl=" + buffer.length 
+				+ ", readonly=" + readonly + ", bm=" + bufferModified;
 	}
 
 	/** Support for ucar.unidata.io.FileCache. */
-
 	protected boolean cached;
 
 	/**
@@ -2294,11 +1773,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 *            in the cache or not.
 	 * @see ucar.unidata.io.FileCache
 	 */
-
 	public void setCached(boolean cached) {
-
 		this.cached = cached;
-
 	}
 
 	/**
@@ -2307,11 +1783,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @return true if in the cache.
 	 * @see ucar.unidata.io.FileCache
 	 */
-
 	public boolean isCached() {
-
 		return cached;
-
 	}
 
 	/**
@@ -2320,7 +1793,6 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @throws IOException
 	 *             _more_
 	 */
-
 	public void synch() throws IOException {
 	}
 
