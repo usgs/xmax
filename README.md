@@ -90,3 +90,7 @@ xmax
     java -Xms512M -Xmx512M -jar xmax.jar -t
 ```
 
+    Read serialized data from resources/DATA_TEMP AND from dataPath (-t -d options):
+```ruby
+    java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
+```
