@@ -70,3 +70,12 @@ xmax
     <ASCII>/Users/mth/mth/Projects/xmax</ASCII>
     <SAC>/Users/mth/mth/Projects/xmax</SAC> 
 ```
+
+###Usage
+
+######Basic Execution
+
+    No arguments specified (reads data from resources/DATA in config.xml):
+```java
+    java -Xms512M -Xmx512M -jar xmax.jar
+```
