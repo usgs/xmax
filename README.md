@@ -84,3 +84,9 @@ xmax
 ```ruby
     java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
 ```
+
+    Read serialized data from resources/DATA_TEMP specified in config.xml (-t option):
+```ruby
+    java -Xms512M -Xmx512M -jar xmax.jar -t
+```
+
