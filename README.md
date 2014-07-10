@@ -102,3 +102,11 @@ xmax
 ```ruby
     java -Xms512M -Xmx512M -jar xmax.jar -T
 ```
+
+    Read data files found on path and dump serialized data in resources/DATA_TEMP (-T -d options):
+    (**NOTE: This will wipe out any existing serialized data in resources/DATA_TEMP)
+```ruby
+    java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
+```
+
+    
