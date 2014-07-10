@@ -109,4 +109,8 @@ xmax
     java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
 ```
 
-    
+    Same as above but ALSO read existing serialized data in resources/DATA_TEMP (-T -d -t options):
+    (**NOTE: This will APPEND new serialized data to that already in resources/DATA_TEMP)
+```ruby
+    java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
+```
