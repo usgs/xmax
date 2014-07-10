@@ -97,7 +97,8 @@ xmax
 
 ######Basic Execution Serial Dump
 
-    Read any data files found in resources/DATA and dump serialized data into resources/DATA_TEMP (-T option) (**NOTE: This will wipe out any existing serialized data in resources/DATA_TEMP):
+    Read any data files found in resources/DATA and dump serialized data into resources/DATA_TEMP (-T option):
+    (**NOTE: This will wipe out any existing serialized data in resources/DATA_TEMP)
 ```ruby
     java -Xms512M -Xmx512M -jar xmax.jar -T
 ```
