@@ -73,7 +73,7 @@ xmax
 
 ###Usage
 
-######Basic Execution
+######Basic Execution Display
 
     No arguments specified (reads data from resources/DATA in config.xml):
 ```ruby
@@ -93,4 +93,11 @@ xmax
     Read serialized data from resources/DATA_TEMP AND from dataPath (-t -d options):
 ```ruby
     java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
+```
+
+######Basic Execution Serial Dump
+
+    Read any data files found in resources/DATA and dump serialized data into resources/DATA_TEMP (-T option) (**NOTE: This will wipe out any existing serialized data in resources/DATA_TEMP):
+```ruby
+    java -Xms512M -Xmx512M -jar xmax.jar -T
 ```
