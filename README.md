@@ -114,3 +114,8 @@ xmax
 ```ruby
     java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
 ```
+
+    Explicitly pointing to a log4j.properties file (default is ./log4j.properties)
+```ruby
+    java -Dlog4j.configuration=file:./src/log4j.properties -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
+```
