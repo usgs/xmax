@@ -76,6 +76,6 @@ xmax
 ######Basic Execution
 
     No arguments specified (reads data from resources/DATA in config.xml):
-```java
-java -Xms512M -Xmx512M -jar xmax.jar
+```ruby
+    java -Xms512M -Xmx512M -jar xmax.jar
 ```
