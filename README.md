@@ -77,7 +77,16 @@ xmax
 
     No arguments specified (reads data from resources/DATA in config.xml):
 ```ruby
+    java -Xms512M -Xmx512M -jar xmax.jar
+```
 ```java
     java -Xms512M -Xmx512M -jar xmax.jar
 ```
+
+    Read data files found on path (-d option):
+```ruby
+    java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
+```
+```java
+    java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
 ```
