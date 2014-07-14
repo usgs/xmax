@@ -2,7 +2,7 @@ xmax
 ====
 
 ###Purpose
-    XMAX waveform display for .mseed files
+    XMAX waveform display for .seed files
 
 ###Configuration
     The main configuration is found in config.xml. File is under
@@ -118,4 +118,13 @@ xmax
     Explicitly pointing to a log4j.properties file (default is ./log4j.properties)
 ```ruby
     java -Dlog4j.configuration=file:./src/log4j.properties -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
+```
+
+######Basic Execution in Eclipse
+
+    Main program /src/com/isti/xmax/XMAX.java line 74 input cmd line arguments:
+```ruby
+    System.out.println("[ Eclipse Examples ]");
+    System.out.println("* Read from -d 'data/path':");
+    System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
 ```
