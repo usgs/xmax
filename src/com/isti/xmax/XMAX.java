@@ -72,6 +72,8 @@ public class XMAX extends TraceView {
             System.out.println("===============");
             if (cmd.getOptions().length == 0) {
                 System.out.println("[ Quick Examples ]");
+            	System.out.println("* Read from -d 'data/path':");
+            	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/home/agonzales/Documents/xmax/seed/IU_PTGA/2014_1{93,94}/00_LHZ*seed'");
                 System.out.println("* Read from BOTH -d 'data/path' AND existing serialized data in DATA_TEMP:");
                 System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
                 System.out.println("* Overwrite Serialized data in DATA_TEMP:");
@@ -346,20 +348,27 @@ public class XMAX extends TraceView {
 	}
 
 	private PluginLocation[] collectPluginLocations() throws MalformedURLException, XMAXException {
-		String[] classpath = System.getProperty("java.class.path").split(";");
+		System.out.println("User directory: " + System.getProperty("user.dir").toString());
+		System.out.println("Operating System: " + System.getProperty("os.name").toString());
+		System.out.println("Java Runtime Version: " + System.getProperty("java.runtime.version").toString());
+		System.out.println("Java Classpath: " + System.getProperty("java.class.path").toString());
+		//String[] classpath = System.getProperty("java.class.path").split(";");
+		String[] classpath = System.getProperty("java.class.path").split(":");
 		String pluginDirName = null;
 		for (String st: classpath) {
 			if (st.contains("xmax.jar")) {
 				pluginDirName = st.substring(0, st.indexOf("xmax.jar"));
 				if (pluginDirName.length() == 0)
 					pluginDirName = ".";
-				pluginDirName = pluginDirName + File.separator + "plugins";
+				//pluginDirName = pluginDirName + File.separator + "plugins";
+				pluginDirName = pluginDirName + "plugins";
 				break;
 			}
 		}
 		if (pluginDirName == null) {
 			pluginDirName = "./plugins";
 		}
+		System.out.println("Plugin Directory: " + pluginDirName);
 		File pluginDir = new File(pluginDirName);
 		if (pluginDir == null) {
 			throw new XMAXException("Can not find plugin directory");
