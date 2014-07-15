@@ -122,9 +122,12 @@ xmax
 
 ######Basic Execution in Eclipse
 
-    Main program /src/com/isti/xmax/XMAX.java line 74 input cmd line arguments:
-```ruby
-    System.out.println("[ Eclipse Examples ]");
-    System.out.println("* Read from -d 'data/path':");
-    System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+    Eclipse reads files from config DataMask at runtime (config.xml):
+```xml
+    <!-- Default DataMask path -->
+    <DataMask>resources/Data/</DataMask>
+   
+    <!-- User DataMask examples --> 
+    <DataMask>mseed/II_AAK/2013_026/</DataMask>
+    <DataMask>seed/IU_PTGA/2014_193/</DataMask>
 ```
