@@ -1,6 +1,3 @@
-
-
-
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;

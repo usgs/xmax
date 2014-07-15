@@ -5,7 +5,7 @@
 #java  -Xms512M -Xmx512M -jar xmax.jar
 
 # -d: Read data files found on path:
-#java  -Xms512M -Xmx512M -jar xmax.jar -d '/Users/mth/mth/ASLData/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
+java  -Xms512M -Xmx512M -jar xmax.jar -d '/Users/mth/mth/ASLData/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
 
 # -t: Read serialized data from resources/DATA_TEMP (specified in config.xml)
 #java  -Xms512M -Xmx512M -jar xmax.jar -t
