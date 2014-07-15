@@ -122,7 +122,7 @@ xmax
 
 ######Basic Execution in Eclipse
 
-    Eclipse reads files from config DataMask at runtime (config.xml):
+    Eclipse reads seed files from config DataMask at runtime (config.xml):
 ```xml
     <!-- Default DataMask path -->
     <DataMask>resources/Data/</DataMask>
