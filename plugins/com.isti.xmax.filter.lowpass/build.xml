@@ -73,11 +73,11 @@
 	        <fileset dir="${basedir}/source"
 			 includes="**/*"
 			 excludes="**/.*,**/*.java" />
-		</copy>
-		<copy todir="${plugin.home}" includeemptydirs="false">
-			<fileset dir="${basedir}"
-			         excludes="classes/,nbproject/,.*,*build*,source/" />
-		</copy>
+	    </copy>
+	    <copy todir="${plugin.home}" includeemptydirs="false">
+	        <fileset dir="${basedir}"
+			 excludes="classes/,nbproject/,.*,*build*,source/" />
+	    </copy>
 	-->
     </target>
 
