@@ -27,7 +27,7 @@
 		<Data>
 			<!--  Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*"-->
 			<!-- DataMask>resources/DATA</DataMask -->
-			<DataMask>mseed/II_AAK/2013_026/</DataMask>
+			<DataMask>seed/IU_TUC/2013_135/</DataMask>
 
 			<!--  Temporary directory to store decompressed traces in the internal format -->
 			<TempPath>resources/DATA_TEMP</TempPath>
