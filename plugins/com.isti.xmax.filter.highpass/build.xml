@@ -14,7 +14,7 @@
 -->
 
 <!-- Uses JPF - Java Plugin Framework -->
-<project name="com.isti.xmax.filter.lowpass plug-in build file"
+<project name="com.isti.xmax.filter.highpass plug-in build file"
          default="help"
          basedir=".">
 
