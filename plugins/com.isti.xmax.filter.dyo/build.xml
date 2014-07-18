@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- MTH
-    basedir     = Dir where /source/FilterHP.java is located
+    basedir     = Dir where /source/FilterDYO.java is located
     plugin.home = Dir where this plugin will be compiled to, e.g., framework will look for
-        ${plugin.home}/classes/FilterHP.class AND
+        ${plugin.home}/classes/FilterDYO.class AND
         ${plugin.home}/plugin.xml
     Note that plugin.xml specifies where the class file is wrt the plugin.xml file: 
         <runtime> 
@@ -13,7 +13,7 @@
     Requires that you've already compiled the isti traceview classes into ../../build/com/isti/... etc.
 -->
 
-<project name="com.isti.xmax.filter.lowpass plug-in build file"
+<project name="com.isti.xmax.filter.dyo plug-in build file"
          default="help"
          basedir=".">
     
