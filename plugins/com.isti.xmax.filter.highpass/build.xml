@@ -69,15 +69,15 @@
 	</javac>
 
 	<!-- Not sure this is needed since plugin.home = basedir
-	    <copy todir="${plugin.home}/classes">
-	        <fileset dir="${basedir}/source"
-			 includes="**/*"
-			 excludes="**/.*,**/*.java" />
-	    </copy>
-            <copy todir="${plugin.home}" includeemptydirs="false">
-	        <fileset dir="${basedir}"
-			 excludes="classes/,nbproject/,.*,*build*,source/" />
-	    </copy>
+	<copy todir="${plugin.home}/classes">
+	    <fileset dir="${basedir}/source"
+		     includes="**/*"
+		     excludes="**/.*,**/*.java" />
+	</copy>
+        <copy todir="${plugin.home}" includeemptydirs="false">
+	    <fileset dir="${basedir}"
+		     excludes="classes/,nbproject/,.*,*build*,source/" />
+	</copy>
 	-->
     </target>
 
