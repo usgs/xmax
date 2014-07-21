@@ -12,9 +12,9 @@
     <property name="build.root"      location="build"/>
     <property name="build.resources" location="build/resources"/>
     <property name="libs.dir"        location="lib"/>
-    <property name="project.main"    value="com.isti.xmax.XMAX" />
-    <property name="project.archive" value="xmax.jar" />
-    <property name="manifest.file"   value="${src.dir}/META-INF/MANIFEST.MF" />
+    <property name="project.main"    value="com.isti.xmax.XMAX"/>
+    <property name="project.archive" value="xmax.jar"/>
+    <property name="manifest.file"   value="${src.dir}/META-INF/MANIFEST.MF"/>
 
     <!-- Classpath for compile -->
     <path id="compile.class.path">
@@ -29,25 +29,25 @@
         <fileset dir="${libs.dir}">
             <include name="**/*.jar"/>
         </fileset>
-      <dirset dir="plugins/">
-        <include name="**/classes"/>
-      </dirset>
-<!-- Doesn't seem to look for images anymore ... ? -->
+        <dirset dir="plugins/">
+            <include name="**/classes"/>
+        </dirset>
+	<!-- Doesn't seem to look for images anymore ... ? -->
         <pathelement location="${build.resources}/images"/>
     </path>
 
+    <!-- Classpath for build ... ? -->
     <path id="classpath">
-            <fileset dir="lib" includes="*.jar" />
+        <fileset dir="lib" includes="*.jar" />
     </path>
     <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
-            <classpath refid="classpath" />
+        <classpath refid="classpath" />
     </typedef>
 
-
+    <!-- BUILD-PLUGINS -->
     <target name="build-plugins">
-<!--
-        <mkdir dir="${build.root}/plugins" />
--->
+        <!-- mkdir dir="${build.root}/plugins" / -->
+
         <ant dir="plugins/com.isti.xmax.filter.lowpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.highpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.bandpass" target="build" />
