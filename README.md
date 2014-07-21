@@ -78,19 +78,11 @@ xmax
     Ant commands to clean, compile and package xmax (uses build.xml)
     Run in the following order (each command depends on the prev):
 ```bash
-<<<<<<< HEAD
-   ant clean_build	# run in /xmax dir (cleans previous build 'rm /build')
-   ant init		# initialize build (mkdir /build /build/resources)
-   ant compile		# compile source code
-   ant jar		# generate distribution xmax.jar (default target)
-   ant run		# run java com.isti.xmax.XMAX from /build dir
-=======
     ant clean_build	# run in /xmax dir (cleans previous build 'rm /build')
     ant init		# initialize build (mkdir /build /build/resources)
     ant compile		# compile source code
     ant jar		# generate distribution xmax.jar (default target)
     ant run		# run java com.isti.xmax.XMAX from /build dir
->>>>>>> test-branch
 ```
 
 ###Usage
