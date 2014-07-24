@@ -13,6 +13,7 @@
     Requires that you've already compiled the isti traceview classes into ../../build/com/isti/... etc.
 -->
 
+<!-- Uses JPF - Java Plugin Framework -->
 <project name="com.isti.xmax.filter.reconvolution plug-in build file"
          default="help"
          basedir=".">
@@ -31,7 +32,7 @@
         </dirset>
     </path>
 
-    <!-- Not sure what jpf-path is actually used for ... -->
+    <!-- Initializes Java Plugins using JPF --> 
     <jpf-path pathidref="plugin.classpath" pluginid="${plugin.id}">
         <fileset dir="${plugin.home}/.."
 		 includes="*/plugin*.xml"
@@ -62,9 +63,9 @@
 	       srcdir="${basedir}/source"
 	       classpathref="plugin.classpath"
 	       excludes=""
-	       target="1.5"
 	       debug="true"
-	       optimize="false">
+	       optimize="false"
+	       includeantruntime="false">
 	</javac>
 
 	<!-- Not sure this is needed since plugin.home = basedir

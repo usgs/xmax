@@ -32,7 +32,7 @@
         </dirset>
     </path>
 
-    <!-- Not sure what jpf-path is actually used for ... -->
+    <!-- Initializes Java Plugins using JPF --> 
     <jpf-path pathidref="plugin.classpath" pluginid="${plugin.id}">
         <fileset dir="${plugin.home}/.."
 		 includes="*/plugin*.xml"
@@ -63,9 +63,9 @@
 	       srcdir="${basedir}/source"
 	       classpathref="plugin.classpath"
 	       excludes=""
-	       target="1.5"
 	       debug="true"
-	       optimize="false">
+	       optimize="false"
+	       includeantruntime="false">
 	</javac>
 
 	<!-- Not sure this is needed since plugin.home = basedir
