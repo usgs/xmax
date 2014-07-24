@@ -47,12 +47,13 @@
     <!-- BUILD-PLUGINS -->
     <target name="build-plugins">
         <!-- mkdir dir="${build.root}/plugins" / -->
-
+	
         <ant dir="plugins/com.isti.xmax.filter.lowpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.highpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.bandpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.dyo" target="build" />
-        <ant dir="plugins/com.isti.xmax.correlation" target="build" />
+	<ant dir="plugins/com.isti.xmax.filter.reconvolution" target="build" /> 
+	<ant dir="plugins/com.isti.xmax.correlation" target="build" />
         <ant dir="plugins/com.isti.xmax.ppm" target="build" />
         <ant dir="plugins/com.isti.xmax.psd" target="build" />
         <ant dir="plugins/com.isti.xmax.showResponse" target="build" />
@@ -72,6 +73,7 @@
     </target>
 
     <!-- COMPILE -->
+    <!-- target="1.7" in '<javac></javac>' --> 
     <target name="compile" depends="init" description="Compile the source [depends=init]">
         <property name="myclasspath" refid="compile.class.path"/>
         <echo message="Classpath = ${myclasspath}"/>

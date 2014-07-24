@@ -56,6 +56,7 @@
     </target>
 
     <!-- BUILD -->
+    <!-- target="1.7" in <javac></javac> --> 
     <target name="build" depends="clean_build">
         <echo>Building plug-in ${plugin.id} to folder ${plugin.home}</echo>
 	<mkdir dir="${plugin.home}/classes" />
@@ -66,6 +67,7 @@
 	       debug="true"
 	       optimize="false"
 	       includeantruntime="false">
+	    <compilerarg value="-Xlint"/>	
 	</javac>
 
         <!-- Not sure this is needed since plugin.home = basedir

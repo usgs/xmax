@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
-
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.RawDataProvider;
@@ -35,10 +34,13 @@ import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 
 public class Reconvolution extends JDialog implements IFilter, PropertyChangeListener {
+	
+	private static final long serialVersionUID = 1L;
+	private static Logger lg = Logger.getLogger(Reconvolution.class);
+	
 	private final static int comboBoxHeight = 22;
 	private final static int maxDataLength = 16385;
 	private static boolean warningWasShown = false;
-	private static Logger lg = Logger.getLogger(Reconvolution.class);
 	private RawDataProvider channel = null;
 	private JOptionPane optionPane;
 	private boolean needProcessing = false;
