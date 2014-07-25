@@ -8,22 +8,26 @@
     <property name="version"         value="1.06" />
     <property name="src.dir"         location="src/${version}"/>
 -->
-    <property name="src.dir"         location="src"/>
-    <property name="build.root"      location="build"/>
-    <property name="build.resources" location="build/resources"/>
-    <property name="libs.dir"        location="lib"/>
-    <property name="project.main"    value="com.isti.xmax.XMAX"/>
-    <property name="project.archive" value="xmax.jar"/>
-    <property name="manifest.file"   value="${src.dir}/META-INF/MANIFEST.MF"/>
+    <property name="src.dir"          location="src"/>
+    <property name="build.root"       location="build"/>
+    <property name="build.resources"  location="build/resources"/>
+    <property name="libs.dir"         location="lib"/>
+    <property name="plugins.dir"      location="plugins"/> 
+    <property name="project.main"     value="com.isti.xmax.XMAX"/>
+    <property name="project.archive"  value="xmax.jar"/>
+    <property name="manifest.file"    value="${src.dir}/META-INF/MANIFEST.MF"/>
+    <property name="manifest.version" value="1.0"/>
+    <property name="imp.version"      value="1.0"/><!-- implementation -->
+    <property name="imp.vendor"       value="Instrumental Software Technologies"/>
 
-    <!-- Classpath for compile -->
+    <!-- Classpath for Compile -->
     <path id="compile.class.path">
         <fileset dir="${libs.dir}">
             <include name="**/*.jar"/>
         </fileset>
     </path>
 
-    <!-- Classpath for run -->
+    <!-- Classpath for Run -->
     <path id="run.class.path">
         <pathelement location="${build.root}"/>
         <fileset dir="${libs.dir}">
@@ -36,6 +40,26 @@
         <pathelement location="${build.resources}/images"/>
     </path>
 
+    <!-- Classpath for JAR-Package -->
+    <path id="package.class.path">
+        <pathelement location="${build.root}"/> 	
+	<fileset dir="${libs.dir}">
+   	    <include name="**/*.jar"/>
+	</fileset>
+	<fileset dir="${plugins.dir}">
+	    <include name="**/classes/"/>
+	</fileset>
+   	<pathelement location="${basedir}"/>
+	<pathelement location="${basedir}/${project.archive}"/>
+    </path>
+
+    <!-- Convert package.class.path to space delimited files -->
+    <!-- These will be inserted into the MANFIEST.MF file    --> 
+    <pathconvert property="mf.class.path" pathsep=":">
+        <path refid="package.class.path"/>
+	<!--flattenmapper/--><!-- limits recursive directory structure -->
+    </pathconvert>
+
     <!-- Classpath for Build (JPF: Java Plugin Framework) -->
     <path id="classpath">
         <fileset dir="lib" includes="*.jar" />
@@ -43,7 +67,7 @@
     <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
         <classpath refid="classpath" />
     </typedef>
-
+ 
     <!-- BUILD-PLUGINS -->
     <target name="build-plugins">
         <!-- mkdir dir="${build.root}/plugins" / -->
@@ -107,25 +131,31 @@
             <fileset dir="${libs.dir}"/>
         </copy>
         <copy file="${src.dir}/log4j.properties" todir="${build.root}"/>
-	<!--
-        <unjar dest="${build.root}">
-            <fileset dir="${libs.dir}">
-                <include name="**/*.jar"/>
-            </fileset>
-        </unjar>
-        <delete dir="${build.root}/META-INF"/>
-	-->
     </target>
 
-    <!--
-    <available file="${manifest.file}" property="has.manifest" />
-    <target name="jar" if="has.manifest" description="generate the distribution" >
-    -->
- 
+    <!-- Create Manifest -->
+    <target name="create-manifest" depends="build-plugins" description="Create MANIFEST.MF for xmax.jar archive">
+        <tstamp/><!-- needed for TODAY -->
+	<delete file="${manifest.file}"/>
+	<echo message="Creating new ${manifest.file}"/>
+	<manifest file="${manifest.file}">
+	    <!--section name="${ant.project.name}"-->
+	    <attribute name="Built-By" value="${user.name}"/>
+	    <attribute name="Built-On" value="${os.name}"/>
+	    <attribute name="Built-Date" value="${TODAY}"/>
+	    <attribute name="Implementation-Version" value="${imp.version}"/>
+	    <attribute name="Implementation-Vendor" value="${imp.vendor}"/>
+	    <attribute name="Main-Class" value="${project.main}"/>
+	    <attribute name="Class-Path" value="${mf.class.path}"/>
+	    <!--</section-->
+	</manifest>
+    </target>
+
     <!-- JAR -->
     <!--target name="jar" depends="libraries" description="generate the distribution"-->
-    <target name="jar" depends="compile" description="generate the distribution" >
-        <jar jarfile="${project.archive}" 
+    <target name="jar" depends="compile,create-manifest" description="generate the distribution" >
+        <echo message="Using manifest: ${manifest.file}"/> 
+	<jar jarfile="${project.archive}" 
              manifest="${manifest.file}" 
              basedir="${build.root}"> 
         </jar>
