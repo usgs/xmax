@@ -2,80 +2,45 @@ Manifest-Version: 1.0
 Ant-Version: Apache Ant 1.8.2
 Created-By: 1.7.0_51-b13 (Oracle Corporation)
 Built-By: agonzales
-Built-On: Linux
-Built-Date: July 25 2014
+Built-Date: July 29 2014
 Implementation-Version: 1.0
 Implementation-Vendor: Instrumental Software Technologies
 Main-Class: com.isti.xmax.XMAX
-Class-Path: /home/agonzales/Documents/xmax/build:/home/agonzales/Docum
- ents/xmax/lib/BareBonesBrowserLaunch.jar:/home/agonzales/Documents/xm
- ax/lib/JEvalResp.jar:/home/agonzales/Documents/xmax/lib/JavaSeed.jar:
- /home/agonzales/Documents/xmax/lib/TauP-1.1.7.jar:/home/agonzales/Doc
- uments/xmax/lib/commons-cli-1.2.jar:/home/agonzales/Documents/xmax/li
- b/commons-codec-1.5.jar:/home/agonzales/Documents/xmax/lib/commons-co
- llections-3.2.1.jar:/home/agonzales/Documents/xmax/lib/commons-config
- uration-1.7.jar:/home/agonzales/Documents/xmax/lib/commons-exec-1.1.j
- ar:/home/agonzales/Documents/xmax/lib/commons-io-2.4.jar:/home/agonza
- les/Documents/xmax/lib/commons-lang-2.6.jar:/home/agonzales/Documents
- /xmax/lib/commons-logging-1.1.1.jar:/home/agonzales/Documents/xmax/li
- b/commons-logging.jar:/home/agonzales/Documents/xmax/lib/ekit-1.4.jar
- :/home/agonzales/Documents/xmax/lib/fissuresIDL-1.0.jar:/home/agonzal
- es/Documents/xmax/lib/fissuresImpl-1.1.13.jar:/home/agonzales/Documen
- ts/xmax/lib/fissuresUtil-1.0.19.jar:/home/agonzales/Documents/xmax/li
- b/isti_shape.jar:/home/agonzales/Documents/xmax/lib/isti_util.jar:/ho
- me/agonzales/Documents/xmax/lib/jar/commons-logging-1.1.1.jar:/home/a
- gonzales/Documents/xmax/lib/jar/commons-logging.jar:/home/agonzales/D
- ocuments/xmax/lib/jar/isti_shape.jar:/home/agonzales/Documents/xmax/l
- ib/jar/oscache-2.1-mod2.jar:/home/agonzales/Documents/xmax/lib/jaxen-
- core.jar:/home/agonzales/Documents/xmax/lib/jaxen-jdom.jar:/home/agon
- zales/Documents/xmax/lib/jcalendar.jar:/home/agonzales/Documents/xmax
- /lib/jcommon-1.0.17.jar:/home/agonzales/Documents/xmax/lib/jdom.jar:/
- home/agonzales/Documents/xmax/lib/jfreechart.jar:/home/agonzales/Docu
- ments/xmax/lib/jpf-tools.jar:/home/agonzales/Documents/xmax/lib/jpf.j
- ar:/home/agonzales/Documents/xmax/lib/jtransforms-2.4.jar:/home/agonz
- ales/Documents/xmax/lib/jxp-1.6.1.jar:/home/agonzales/Documents/xmax/
- lib/jxp.jar:/home/agonzales/Documents/xmax/lib/log4j-1.2.16.jar:/home
- /agonzales/Documents/xmax/lib/miglayout-3.6.3-swing-java14.jar:/home/
- agonzales/Documents/xmax/lib/oscache-2.1-mod2.jar:/home/agonzales/Doc
- uments/xmax/lib/saxpath.jar:/home/agonzales/Documents/xmax/lib/seedCo
- dec-1.0.6.jar:/home/agonzales/Documents/xmax/lib/seisFile-1.5.2.jar:/
- home/agonzales/Documents/xmax/plugins/com.isti.xmax.correlation/class
- es/TransCorrelation.class:/home/agonzales/Documents/xmax/plugins/com.
- isti.xmax.correlation/classes/ViewCorrelation$1.class:/home/agonzales
- /Documents/xmax/plugins/com.isti.xmax.correlation/classes/ViewCorrela
- tion.class:/home/agonzales/Documents/xmax/plugins/com.isti.xmax.filte
- r.bandpass/classes/FilterBP.class:/home/agonzales/Documents/xmax/plug
- ins/com.isti.xmax.filter.dyo/classes/FilterDYO$1.class:/home/agonzale
- s/Documents/xmax/plugins/com.isti.xmax.filter.dyo/classes/FilterDYO.c
- lass:/home/agonzales/Documents/xmax/plugins/com.isti.xmax.filter.high
- pass/classes/FilterHP.class:/home/agonzales/Documents/xmax/plugins/co
- m.isti.xmax.filter.lowpass/classes/FilterLP.class:/home/agonzales/Doc
- uments/xmax/plugins/com.isti.xmax.filter.reconvolution/classes/Reconv
- olution$1.class:/home/agonzales/Documents/xmax/plugins/com.isti.xmax.
- filter.reconvolution/classes/Reconvolution.class:/home/agonzales/Docu
- ments/xmax/plugins/com.isti.xmax.ppm/classes/AngleInputDialog.class:/
- home/agonzales/Documents/xmax/plugins/com.isti.xmax.ppm/classes/PPMPo
- larItemRenderer.class:/home/agonzales/Documents/xmax/plugins/com.isti
- .xmax.ppm/classes/TransPPM$ArrayValues.class:/home/agonzales/Document
- s/xmax/plugins/com.isti.xmax.ppm/classes/TransPPM.class:/home/agonzal
- es/Documents/xmax/plugins/com.isti.xmax.ppm/classes/ViewPPM$1.class:/
- home/agonzales/Documents/xmax/plugins/com.isti.xmax.ppm/classes/ViewP
- PM.class:/home/agonzales/Documents/xmax/plugins/com.isti.xmax.psd/cla
- sses/NoiseModel.class:/home/agonzales/Documents/xmax/plugins/com.isti
- .xmax.psd/classes/TransPSD.class:/home/agonzales/Documents/xmax/plugi
- ns/com.isti.xmax.psd/classes/ViewPSD$1.class:/home/agonzales/Document
- s/xmax/plugins/com.isti.xmax.psd/classes/ViewPSD$MyOptionPane.class:/
- home/agonzales/Documents/xmax/plugins/com.isti.xmax.psd/classes/ViewP
- SD$PSDChannelViewFactory.class:/home/agonzales/Documents/xmax/plugins
- /com.isti.xmax.psd/classes/ViewPSD$PSDItemRenderer.class:/home/agonza
- les/Documents/xmax/plugins/com.isti.xmax.psd/classes/ViewPSD.class:/h
- ome/agonzales/Documents/xmax/plugins/com.isti.xmax.showResponse/class
- es/TransResp.class:/home/agonzales/Documents/xmax/plugins/com.isti.xm
- ax.showResponse/classes/ViewResp$1.class:/home/agonzales/Documents/xm
- ax/plugins/com.isti.xmax.showResponse/classes/ViewResp.class:/home/ag
- onzales/Documents/xmax/plugins/com.isti.xmax.spectra/classes/TransSpe
- ctra.class:/home/agonzales/Documents/xmax/plugins/com.isti.xmax.spect
- ra/classes/ViewSpectra$1.class:/home/agonzales/Documents/xmax/plugins
- /com.isti.xmax.spectra/classes/ViewSpectra.class:/home/agonzales/Docu
- ments/xmax:/home/agonzales/Documents/xmax/xmax.jar
+Class-Path: build lib/BareBonesBrowserLaunch.jar lib/JEvalResp.jar lib
+ /JavaSeed.jar lib/TauP-1.1.7.jar lib/commons-cli-1.2.jar lib/commons-
+ codec-1.5.jar lib/commons-collections-3.2.1.jar lib/commons-configura
+ tion-1.7.jar lib/commons-exec-1.1.jar lib/commons-io-2.4.jar lib/comm
+ ons-lang-2.6.jar lib/commons-logging-1.1.1.jar lib/commons-logging.ja
+ r lib/ekit-1.4.jar lib/fissuresIDL-1.0.jar lib/fissuresImpl-1.1.13.ja
+ r lib/fissuresUtil-1.0.19.jar lib/isti_shape.jar lib/isti_util.jar li
+ b/jaxen-core.jar lib/jaxen-jdom.jar lib/jcalendar.jar lib/jcommon-1.0
+ .17.jar lib/jdom.jar lib/jfreechart-1.0.14.jar.NEW lib/jpf-tools.jar 
+ lib/jpf.jar lib/jtransforms-2.4.jar lib/jxp-1.6.1.jar lib/jxp.jar lib
+ /log4j-1.2.16.jar lib/miglayout-3.6.3-swing-java14.jar lib/oscache-2.
+ 1-mod2.jar lib/saxpath.jar lib/seedCodec-1.0.6.jar lib/seisFile-1.5.2
+ .jar plugins/com.isti.xmax.correlation/classes/TransCorrelation.class
+  plugins/com.isti.xmax.correlation/classes/ViewCorrelation$1.class pl
+ ugins/com.isti.xmax.correlation/classes/ViewCorrelation.class plugins
+ /com.isti.xmax.filter.bandpass/classes/FilterBP.class plugins/com.ist
+ i.xmax.filter.dyo/classes/FilterDYO$1.class plugins/com.isti.xmax.fil
+ ter.dyo/classes/FilterDYO.class plugins/com.isti.xmax.filter.highpass
+ /classes/FilterHP.class plugins/com.isti.xmax.filter.lowpass/classes/
+ FilterLP.class plugins/com.isti.xmax.filter.reconvolution/classes/Rec
+ onvolution$1.class plugins/com.isti.xmax.filter.reconvolution/classes
+ /Reconvolution.class plugins/com.isti.xmax.ppm/classes/AngleInputDial
+ og.class plugins/com.isti.xmax.ppm/classes/PPMPolarItemRenderer.class
+  plugins/com.isti.xmax.ppm/classes/TransPPM$ArrayValues.class plugins
+ /com.isti.xmax.ppm/classes/TransPPM.class plugins/com.isti.xmax.ppm/c
+ lasses/ViewPPM$1.class plugins/com.isti.xmax.ppm/classes/ViewPPM.clas
+ s plugins/com.isti.xmax.psd/classes/NoiseModel.class plugins/com.isti
+ .xmax.psd/classes/TransPSD.class plugins/com.isti.xmax.psd/classes/Vi
+ ewPSD$1.class plugins/com.isti.xmax.psd/classes/ViewPSD$MyOptionPane.
+ class plugins/com.isti.xmax.psd/classes/ViewPSD$PSDChannelViewFactory
+ .class plugins/com.isti.xmax.psd/classes/ViewPSD$PSDItemRenderer.clas
+ s plugins/com.isti.xmax.psd/classes/ViewPSD.class plugins/com.isti.xm
+ ax.showResponse/classes/TransResp.class plugins/com.isti.xmax.showRes
+ ponse/classes/ViewResp$1.class plugins/com.isti.xmax.showResponse/cla
+ sses/ViewResp.class plugins/com.isti.xmax.spectra/classes/TransSpectr
+ a.class plugins/com.isti.xmax.spectra/classes/ViewSpectra$1.class plu
+ gins/com.isti.xmax.spectra/classes/ViewSpectra.class xmax.jar
 
