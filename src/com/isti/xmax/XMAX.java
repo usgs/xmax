@@ -351,7 +351,7 @@ public class XMAX extends TraceView {
 		System.out.println("User directory: " + System.getProperty("user.dir").toString());
 		System.out.println("Operating System: " + System.getProperty("os.name").toString());
 		System.out.println("Java Runtime Version: " + System.getProperty("java.runtime.version").toString());
-		System.out.println("Java Classpath: " + System.getProperty("java.class.path").toString());
+		System.out.println("Java Classpath: " + System.getProperty("java.class.path").toString());	
 		//String[] classpath = System.getProperty("java.class.path").split(";");
 		String[] classpath = System.getProperty("java.class.path").split(":");
 		String pluginDirName = null;
