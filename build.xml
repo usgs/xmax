@@ -3,7 +3,7 @@
         XMAX
     </description>
 
-    <!-- set global properties for this build -->
+    <!-- GLOBAL PROPERTIES --> 
 <!--
     <property name="version"         value="1.06" />
     <property name="src.dir"         location="src/${version}"/>
@@ -20,14 +20,36 @@
     <property name="imp.version"      value="1.0"/><!-- implementation -->
     <property name="imp.vendor"       value="Instrumental Software Technologies"/>
 
-    <!-- Classpath for Compile -->
+    <!-- COMPILE CLASSPATH --> 
     <path id="compile.classpath">
         <fileset dir="${libs.dir}">
             <include name="**/*.jar"/>
         </fileset>
     </path>
 
-    <!-- Classpath for Run -->
+    <!-- JAR CLASSPATH --> 
+    <path id="package.classpath">
+        <pathelement location="${build.root}"/> 	
+	<fileset dir="${libs.dir}">
+   	    <include name="*.jar"/>
+	</fileset>
+	<fileset dir="${plugins.dir}">
+	    <include name="**/classes/"/>
+	</fileset>
+   	<!--pathelement location="${basedir}"/-->
+	<pathelement location="${basedir}/${project.archive}"/>
+    </path>
+    
+    <!-- MANIFEST CLASSPATH --> 
+    <pathconvert property="mf.classpath" pathsep=" ">
+        <path refid="package.classpath"/>
+	<flattenmapper/><!-- limits recursive directory structure -->
+    </pathconvert>
+    <manifestclasspath property="jar.classpath" jarfile="xmax.jar">
+        <classpath refid="package.classpath"/>
+    </manifestclasspath>
+    
+    <!-- RUN CLASSPATH --> 
     <path id="run.classpath">
         <pathelement location="${build.root}"/>
         <fileset dir="${libs.dir}">
@@ -40,30 +62,7 @@
         <pathelement location="${build.resources}/images"/>
     </path>
 
-    <!-- Classpath for JAR-Package -->
-    <path id="package.classpath">
-        <pathelement location="${build.root}"/> 	
-	<fileset dir="${libs.dir}">
-   	    <include name="*.jar"/>
-	</fileset>
-	<fileset dir="${plugins.dir}">
-	    <include name="**/classes/"/>
-	</fileset>
-   	<!--pathelement location="${basedir}"/-->
-	<pathelement location="${basedir}/${project.archive}"/>
-    </path>
-
-    <!-- Convert package.class.path to space delimited files -->
-    <!-- These will be inserted into the MANFIEST.MF file    --> 
-    <pathconvert property="mf.classpath" pathsep=" ">
-        <path refid="package.classpath"/>
-	<flattenmapper/><!-- limits recursive directory structure -->
-    </pathconvert>
-    <manifestclasspath property="jar.classpath" jarfile="xmax.jar">
-        <classpath refid="package.classpath"/>
-    </manifestclasspath>
-
-    <!-- Classpath for Build (JPF: Java Plugin Framework) -->
+    <!-- BUILD CLASSPATH --> 
     <path id="classpath">
         <fileset dir="lib" includes="*.jar" />
     </path>
@@ -71,6 +70,25 @@
         <classpath refid="classpath" />
     </typedef>
  
+    <!-- LIB FILESET -->
+    <fileset dir="${libs.dir}" id="lib.fileset">
+        <include name="*.jar"/>
+    </fileset>
+
+    <!-- PLUGIN FILESET -->
+    <fileset dir="${plugins.dir}" id="plugin.fileset">
+        <include name="com.isti.xmax.correlation/classes/*.class"/>
+	<include name="com.isti.xmax.filter.bandpass/classes/*.class"/>
+   	<include name="com.isti.xmax.filter.dyo/classes/*.class"/> 
+	<include name="com.isti.xmax.filter.highpass/classes/*.class"/>
+    	<include name="com.isti.xmax.filter.lowpass/classes/*.class"/>
+    	<include name="com.isti.xmax.filter.reconvolution/classes/*.class"/>
+    	<include name="com.isti.xmax.ppm/classes/*.class"/>
+    	<include name="com.isti.xmax.psd/classes/*.class"/>
+    	<include name="com.isti.xmax.showResponse/classes/*.class"/>
+    	<include name="com.isti.xmax.spectra/classes/*.class"/>
+    </fileset>
+    
     <!-- CLEAN_BUILD -->
     <target name="clean_build" description="Delete /build dir">
         <!--delete dir="${build.root}" verbose="true"/-->
@@ -160,9 +178,9 @@
     <!-- JAR -->
     <!--target name="jar" depends="libraries" description="generate the distribution"-->
     <target name="jar" depends="compile,build-plugins,libraries" description="generate the distribution">
-	<echo message="Package classpath = ${jar.classpath}"/>
+	<echo message="Deleting/creating ${manifest.file}"/>
 	<tstamp/><!-- needed for TODAY --> 
-	<jar destfile="${project.archive}" basedir="${build.root}" includes="${jar.classpath}"> 
+	<jar destfile="${project.archive}" basedir="${build.root}"> 
 	    <manifest>
 	        <attribute name="Built-By" value="${user.name}"/>
 		<attribute name="Built-Date" value="${TODAY}"/>
