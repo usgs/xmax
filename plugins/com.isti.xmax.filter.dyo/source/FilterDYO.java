@@ -29,6 +29,8 @@ import javax.swing.border.EtchedBorder;
  * @author Max Kokoulin
  */
 public class FilterDYO extends JDialog implements IFilter, PropertyChangeListener {
+
+	private static final long serialVersionUID = 1L;
 	private static Double cutLowFrequency = null;
 	private static Double cutHighFrequency = null;
 	private static Integer order = null;
@@ -40,7 +42,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	private JLabel lowFrequencyL = null;
 	private JLabel highFrequencyL = null;
 	private JLabel orderL = null;
-	private JComboBox orderCB = null;
+	private JComboBox<Object> orderCB = null;
 	private boolean needProcessing = false;
 
 	public FilterDYO() {
@@ -217,9 +219,9 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	 * 
 	 * @return javax.swing.JComboBox
 	 */
-	private JComboBox getOrderCB() {
+	private JComboBox<Object> getOrderCB() {
 		if (orderCB == null) {
-			orderCB = new JComboBox();
+			orderCB = new JComboBox<Object>();
 			orderCB.addItem(1);
 			orderCB.addItem(2);
 			orderCB.addItem(3);

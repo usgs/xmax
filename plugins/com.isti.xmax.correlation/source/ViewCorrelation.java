@@ -41,6 +41,8 @@ import com.isti.traceview.processing.IstiUtilsMath;
  * @author Max Kokoulin
  */
 public class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemListener {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(ViewCorrelation.class);
 	private static DecimalFormat dFormat = new DecimalFormat("###.###");
 	List<double[]> data = null;
@@ -53,7 +55,7 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 	private JLabel ampMaxL;
 	private JLabel lagTimeL;
 	private JLabel taperL;
-	private JComboBox taperCB;
+	private JComboBox<Object> taperCB;
 
 	/**
 	 * @param owner
@@ -231,7 +233,7 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 		return taperL;
 	}
 
-	private JComboBox getTaperCB() {
+	private JComboBox<Object> getTaperCB() {
 		if (taperCB == null) {
 			List<String> options = new ArrayList<String>();
 			options.add("None");
@@ -242,8 +244,8 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 			options.add("Bartlett");
 			options.add("Gauss");
 			options.add("Blackman");
-			ComboBoxModel convolveCBModel = new DefaultComboBoxModel(options.toArray());
-			taperCB = new JComboBox();
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
+			taperCB = new JComboBox<Object>();
 			taperCB.setModel(convolveCBModel);
 			taperCB.setPreferredSize(new java.awt.Dimension(100, 22));
 			taperCB.setEnabled(true);

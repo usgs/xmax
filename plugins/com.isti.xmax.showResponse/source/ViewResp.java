@@ -18,6 +18,8 @@ import com.isti.traceview.common.TraceViewChartPanel;
 
 
 public class ViewResp extends JDialog implements PropertyChangeListener {
+
+	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane;
 
 	public ViewResp(Frame owner, XYDataset dataset) {

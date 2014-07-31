@@ -1,0 +1,46 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.8.2
+Created-By: 1.7.0_51-b13 (Oracle Corporation)
+Built-By: agonzales
+Built-Date: July 29 2014
+Implementation-Version: 1.0
+Implementation-Vendor: Instrumental Software Technologies
+Main-Class: com.isti.xmax.XMAX
+Class-Path: build lib/BareBonesBrowserLaunch.jar lib/JEvalResp.jar lib
+ /JavaSeed.jar lib/TauP-1.1.7.jar lib/commons-cli-1.2.jar lib/commons-
+ codec-1.5.jar lib/commons-collections-3.2.1.jar lib/commons-configura
+ tion-1.7.jar lib/commons-exec-1.1.jar lib/commons-io-2.4.jar lib/comm
+ ons-lang-2.6.jar lib/commons-logging-1.1.1.jar lib/commons-logging.ja
+ r lib/ekit-1.4.jar lib/fissuresIDL-1.0.jar lib/fissuresImpl-1.1.13.ja
+ r lib/fissuresUtil-1.0.19.jar lib/isti_shape.jar lib/isti_util.jar li
+ b/jaxen-core.jar lib/jaxen-jdom.jar lib/jcalendar.jar lib/jcommon-1.0
+ .17.jar lib/jdom.jar lib/jfreechart-1.0.14.jar.NEW lib/jpf-tools.jar 
+ lib/jpf.jar lib/jtransforms-2.4.jar lib/jxp-1.6.1.jar lib/jxp.jar lib
+ /log4j-1.2.16.jar lib/miglayout-3.6.3-swing-java14.jar lib/oscache-2.
+ 1-mod2.jar lib/saxpath.jar lib/seedCodec-1.0.6.jar lib/seisFile-1.5.2
+ .jar plugins/com.isti.xmax.correlation/classes/TransCorrelation.class
+  plugins/com.isti.xmax.correlation/classes/ViewCorrelation$1.class pl
+ ugins/com.isti.xmax.correlation/classes/ViewCorrelation.class plugins
+ /com.isti.xmax.filter.bandpass/classes/FilterBP.class plugins/com.ist
+ i.xmax.filter.dyo/classes/FilterDYO$1.class plugins/com.isti.xmax.fil
+ ter.dyo/classes/FilterDYO.class plugins/com.isti.xmax.filter.highpass
+ /classes/FilterHP.class plugins/com.isti.xmax.filter.lowpass/classes/
+ FilterLP.class plugins/com.isti.xmax.filter.reconvolution/classes/Rec
+ onvolution$1.class plugins/com.isti.xmax.filter.reconvolution/classes
+ /Reconvolution.class plugins/com.isti.xmax.ppm/classes/AngleInputDial
+ og.class plugins/com.isti.xmax.ppm/classes/PPMPolarItemRenderer.class
+  plugins/com.isti.xmax.ppm/classes/TransPPM$ArrayValues.class plugins
+ /com.isti.xmax.ppm/classes/TransPPM.class plugins/com.isti.xmax.ppm/c
+ lasses/ViewPPM$1.class plugins/com.isti.xmax.ppm/classes/ViewPPM.clas
+ s plugins/com.isti.xmax.psd/classes/NoiseModel.class plugins/com.isti
+ .xmax.psd/classes/TransPSD.class plugins/com.isti.xmax.psd/classes/Vi
+ ewPSD$1.class plugins/com.isti.xmax.psd/classes/ViewPSD$MyOptionPane.
+ class plugins/com.isti.xmax.psd/classes/ViewPSD$PSDChannelViewFactory
+ .class plugins/com.isti.xmax.psd/classes/ViewPSD$PSDItemRenderer.clas
+ s plugins/com.isti.xmax.psd/classes/ViewPSD.class plugins/com.isti.xm
+ ax.showResponse/classes/TransResp.class plugins/com.isti.xmax.showRes
+ ponse/classes/ViewResp$1.class plugins/com.isti.xmax.showResponse/cla
+ sses/ViewResp.class plugins/com.isti.xmax.spectra/classes/TransSpectr
+ a.class plugins/com.isti.xmax.spectra/classes/ViewSpectra$1.class plu
+ gins/com.isti.xmax.spectra/classes/ViewSpectra.class xmax.jar
+

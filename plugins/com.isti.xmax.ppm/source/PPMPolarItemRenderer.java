@@ -13,6 +13,7 @@ import org.jfree.chart.renderer.DefaultPolarItemRenderer;
 import org.jfree.data.xy.XYDataset;
 
 public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
+	private static final long serialVersionUID = 1L;
 	double rulerTheta = 0.0;
 	
 	public void setRulerAngle(double theta){
@@ -34,6 +35,7 @@ public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 	 * @param dataset the dataset.
 	 * @param seriesIndex the series index.
 	 */
+	@SuppressWarnings("deprecation")
 	public void drawSeries(Graphics2D g2, Rectangle2D dataArea, PlotRenderingInfo info, PolarPlot plot, XYDataset dataset, int seriesIndex) {
 		GeneralPath gp = new GeneralPath();
 		int numPoints = dataset.getItemCount(seriesIndex);

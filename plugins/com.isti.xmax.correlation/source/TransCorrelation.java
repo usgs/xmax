@@ -65,7 +65,7 @@ public class TransCorrelation implements ITransformation {
 	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti) throws XMAXException {
 		lg.debug("Create data");
 		List<double[]> ret = new ArrayList<double[]>();
-		PlotDataProvider channel1 = (PlotDataProvider) input.get(0);
+		PlotDataProvider channel1 = input.get(0);
 		List<Segment> segments1 = channel1.getRawData(ti);
 		int[] intData1 = new int[0];
 		if (segments1.size() > 0) {
@@ -99,7 +99,7 @@ public class TransCorrelation implements ITransformation {
 		 */
 		ret.add(dblData1);
 		if (input.size() == 2) {
-			PlotDataProvider channel2 = (PlotDataProvider) input.get(1);
+			PlotDataProvider channel2 = input.get(1);
 			List<Segment> segments2 = channel2.getRawData(ti);
 			int[] intData2 = new int[0];
 			if (segments2.size() > 0) {
