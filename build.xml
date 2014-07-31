@@ -1,6 +1,6 @@
 <project name="xmax" default="jar" basedir=".">
     <description>
-        XMAX
+        XMAX: Plots/analyzes seed file waveforms 
     </description>
 
     <!-- GLOBAL PROPERTIES --> 
@@ -11,7 +11,7 @@
     <property name="src.dir"          location="src"/>
     <property name="build.root"       location="build"/>
     <property name="build.resources"  location="build/resources"/>
-    <property name="libs.dir"         location="lib"/>
+    <property name="lib.dir"          location="lib"/>
     <property name="plugins.dir"      location="plugins"/> 
     <property name="project.main"     value="com.isti.xmax.XMAX"/>
     <property name="project.archive"  value="xmax.jar"/>
@@ -22,37 +22,33 @@
 
     <!-- COMPILE CLASSPATH --> 
     <path id="compile.classpath">
-        <fileset dir="${libs.dir}">
+        <fileset dir="${lib.dir}">
             <include name="**/*.jar"/>
         </fileset>
     </path>
 
     <!-- JAR CLASSPATH --> 
     <path id="package.classpath">
-        <pathelement location="${build.root}"/> 	
-	<fileset dir="${libs.dir}">
+        <pathelement path="${build.root}"/> 	
+	<fileset dir="${lib.dir}">
    	    <include name="*.jar"/>
 	</fileset>
 	<fileset dir="${plugins.dir}">
-	    <include name="**/classes/"/>
+	    <include name="**/classes/*.class"/>
 	</fileset>
-   	<!--pathelement location="${basedir}"/-->
-	<pathelement location="${basedir}/${project.archive}"/>
+   	<pathelement location="."/>
+	<!--pathelement location="${basedir}/${project.archive}"/-->
     </path>
     
-    <!-- MANIFEST CLASSPATH --> 
-    <pathconvert property="mf.classpath" pathsep=" ">
-        <path refid="package.classpath"/>
-	<flattenmapper/><!-- limits recursive directory structure -->
-    </pathconvert>
+    <!-- JAR CLASSPATH --> 
     <manifestclasspath property="jar.classpath" jarfile="xmax.jar">
-        <classpath refid="package.classpath"/>
+	<classpath refid="package.classpath"/>
     </manifestclasspath>
     
     <!-- RUN CLASSPATH --> 
     <path id="run.classpath">
-        <pathelement location="${build.root}"/>
-        <fileset dir="${libs.dir}">
+        <pathelement path="${build.root}"/>
+        <fileset dir="${lib.dir}">
             <include name="**/*.jar"/>
         </fileset>
         <dirset dir="${plugins.dir}">
@@ -71,7 +67,7 @@
     </typedef>
  
     <!-- LIB FILESET -->
-    <fileset dir="${libs.dir}" id="lib.fileset">
+    <fileset dir="${lib.dir}" id="lib.fileset">
         <include name="*.jar"/>
     </fileset>
 
@@ -115,9 +111,9 @@
 
     <!-- LIBRARIES -->
     <target name="libraries" description="Add libraries">
-        <echo message="Copying ${libs.dir} to ${build.root}/libs"/> 
-	<copy todir="${build.root}/libs">
-            <fileset dir="${libs.dir}"/>
+        <echo message="Copying ${lib.dir} to ${build.root}/lib"/> 
+	<copy todir="${build.root}/lib">
+            <fileset dir="${lib.dir}"/>
         </copy>
         <echo message="Copying ${plugins.dir} to ${build.root}/plugins"/>
 	<copy todir="${build.root}/plugins">
@@ -179,8 +175,9 @@
     <!--target name="jar" depends="libraries" description="generate the distribution"-->
     <target name="jar" depends="compile,build-plugins,libraries" description="generate the distribution">
 	<echo message="Deleting/creating ${manifest.file}"/>
+	<echo message="Classpath = ${jar.classpath}"/>
 	<tstamp/><!-- needed for TODAY --> 
-	<jar destfile="${project.archive}" basedir="${build.root}"> 
+	<jar destfile="${project.archive}" basedir="${build.root}">
 	    <manifest>
 	        <attribute name="Built-By" value="${user.name}"/>
 		<attribute name="Built-Date" value="${TODAY}"/>

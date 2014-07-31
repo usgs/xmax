@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="common" size="1152,852" description="" id="com.isti.xyz.common" metadata="uml2-1.0" initialized="true" zoom="1.5" scrolledX="256" scrolledY="86" tag="1000" key="323030373031323220636F6D2E697374692E78797A2F6D6178">
+  <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.1/@sourceConnections.1 //@children.2/@sourceConnections.1 //@children.3/@sourceConnections.0 //@children.4/@sourceConnections.1 //@children.5/@sourceConnections.1 //@children.6/@sourceConnections.0 //@children.5/@sourceConnections.0 //@children.6/@sourceConnections.3" name="IEvent" location="0,45" size="220,298" id="com.isti.xyz.common/IEvent" runTimeClassModel="getDuration(),getParameterValue(Ljava.lang.String;),getType(),getStartTime(),com.isti.xyz.common.IEvent.EventType,getParameters()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="197,90">
+      <children xsi:type="editmodel:MethodEditModel" name="getType" id="com.isti.xyz.common/IEvent#getType()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStartTime" id="com.isti.xyz.common/IEvent#getStartTime()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getDuration" id="com.isti.xyz.common/IEvent#getDuration()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getParameters" id="com.isti.xyz.common/IEvent#getParameters()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getParameterValue" id="com.isti.xyz.common/IEvent#getParameterValue(Ljava.lang.String;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="96,140">
+      <children xsi:type="editmodel:EnumerationEditModel" name="EventType" size="96,138" id="com.isti.xyz.common/IEvent$EventType" runTimeClassModel="PICK%,EARTHQUAKE%,ARRIVAL%,SOH%,QCISSUE%">
+        <children xsi:type="editmodel:CompartmentEditModel" size="73,90">
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="QCISSUE" id="com.isti.xyz.common/IEvent$EventType#QCISSUE%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="EARTHQUAKE" id="com.isti.xyz.common/IEvent$EventType#EARTHQUAKE%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="SOH" id="com.isti.xyz.common/IEvent$EventType#SOH%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="PICK" id="com.isti.xyz.common/IEvent$EventType#PICK%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="ARRIVAL" id="com.isti.xyz.common/IEvent$EventType#ARRIVAL%"/>
+        </children>
+        <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+      </children>
+    </children>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.6/@sourceConnections.1 //@children.2/@sourceConnections.3 //@children.3/@sourceConnections.2 //@children.4/@sourceConnections.3 //@children.5/@sourceConnections.3 //@children.6/@sourceConnections.2" name="AbstractEvent" location="15,375" size="223,157" id="com.isti.xyz.common/AbstractEvent" runTimeClassModel="setParameter(Ljava.lang.String;Ljava.lang.Object;),getParameterValue(Ljava.lang.String;),getType(),getParameters(),startTime,duration">
+    <children xsi:type="editmodel:CompartmentEditModel" size="72,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="startTime" id="com.isti.xyz.common/AbstractEvent#startTime"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="duration" id="com.isti.xyz.common/AbstractEvent#duration"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="200,72">
+      <children xsi:type="editmodel:MethodEditModel" name="getType" id="com.isti.xyz.common/AbstractEvent#getType()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getParameters" id="com.isti.xyz.common/AbstractEvent#getParameters()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getParameterValue" id="com.isti.xyz.common/AbstractEvent#getParameterValue(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setParameter" id="com.isti.xyz.common/AbstractEvent#setParameter(Ljava.lang.String;Ljava.lang.Object;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/IEvent&lt;-com.isti.xyz.common/AbstractEvent" source="//@children.1" target="//@children.5/@sourceConnections.0" targetEnd="//@children.1/@sourceConnections.0/@children.1" sourceEnd="//@children.1/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="110,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/AbstractEvent-Soyatec::Implement->com.isti.xyz.common/IEvent" source="//@children.1" target="//@children.0" targetEnd="//@children.1/@sourceConnections.1/@children.2" label="//@children.1/@sourceConnections.1/@children.0" sourceEnd="//@children.1/@sourceConnections.1/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«implement»" size="44,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="102,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="117,298"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="Arrival" location="300,621" size="116,103" id="com.isti.xyz.common/Arrival" runTimeClassModel="getType(),getStartTime(),localTime">
+    <children xsi:type="editmodel:CompartmentEditModel" size="73,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="localTime" id="com.isti.xyz.common/Arrival#localTime"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="93,36">
+      <children xsi:type="editmodel:MethodEditModel" name="getType" id="com.isti.xyz.common/Arrival#getType()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStartTime" id="com.isti.xyz.common/Arrival#getStartTime()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/IEvent&lt;-com.isti.xyz.common/Arrival" source="//@children.2" target="//@children.5/@sourceConnections.0" targetEnd="//@children.2/@sourceConnections.0/@children.1" sourceEnd="//@children.2/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="58,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/Arrival-Soyatec::Implement->com.isti.xyz.common/IEvent" source="//@children.2" target="//@children.0" targetEnd="//@children.2/@sourceConnections.1/@children.2" label="//@children.2/@sourceConnections.1/@children.0" sourceEnd="//@children.2/@sourceConnections.1/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«implement»" size="44,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,10" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="210,298"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/AbstractEvent&lt;-com.isti.xyz.common/Arrival" source="//@children.2" target="//@children.6/@sourceConnections.1" targetEnd="//@children.2/@sourceConnections.2/@children.1" sourceEnd="//@children.2/@sourceConnections.2/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="58,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/Arrival-Standard::Derive->com.isti.xyz.common/AbstractEvent" source="//@children.2" target="//@children.1" targetEnd="//@children.2/@sourceConnections.3/@children.2" label="//@children.2/@sourceConnections.3/@children.0" sourceEnd="//@children.2/@sourceConnections.3/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«derive»" size="29,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,10" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="213,157"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="com.isti.xyz.common/Earthquake@earthquake+com.isti.xyz.common/Arrival@arrival" source="//@children.2" target="//@children.3" targetEnd="//@children.2/@sourceConnections.4/@children.2" label="//@children.2/@sourceConnections.4/@children.0" sourceEnd="//@children.2/@sourceConnections.4/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" size="0,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="arrival" location="0,51" id="com.isti.xyz.common/Earthquake@earthquake+com.isti.xyz.common/Arrival@arrival|com.isti.xyz.common/Arrival#arrival" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="earthquake" location="116,57" id="com.isti.xyz.common/Earthquake@earthquake+com.isti.xyz.common/Arrival@arrival|com.isti.xyz.common/Earthquake#earthquake" multiplicityLabel="//@children.2/@sourceConnections.4/@children.2/@children.1" roleLabel="//@children.2/@sourceConnections.4/@children.2/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - earthquake" location="273,656" size="44,9" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="273,679" size="4,9" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/Arrival-Soyatec::Import->com.isti.xyz.common/Earthquake" source="//@children.2" target="//@children.3" targetEnd="//@children.2/@sourceConnections.5/@children.2" label="//@children.2/@sourceConnections.5/@children.0" sourceEnd="//@children.2/@sourceConnections.5/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«import»" size="30,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,55" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="116,83"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.2/@sourceConnections.4 //@children.2/@sourceConnections.5" name="Earthquake" location="150,615" size="116,175" id="com.isti.xyz.common/Earthquake" runTimeClassModel="longitude,magnitude,getType(),depth,region,sourceCode,latitude">
+    <children xsi:type="editmodel:CompartmentEditModel" size="84,108">
+      <children xsi:type="editmodel:AttributeEditModel" name="sourceCode" id="com.isti.xyz.common/Earthquake#sourceCode"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="latitude" id="com.isti.xyz.common/Earthquake#latitude"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="longitude" id="com.isti.xyz.common/Earthquake#longitude"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="depth" id="com.isti.xyz.common/Earthquake#depth"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="magnitude" id="com.isti.xyz.common/Earthquake#magnitude"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="region" id="com.isti.xyz.common/Earthquake#region"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="93,18">
+      <children xsi:type="editmodel:MethodEditModel" name="getType" id="com.isti.xyz.common/Earthquake#getType()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/Earthquake-Soyatec::Implement->com.isti.xyz.common/IEvent" source="//@children.3" target="//@children.0" targetEnd="//@children.3/@sourceConnections.0/@children.2" label="//@children.3/@sourceConnections.0/@children.0" sourceEnd="//@children.3/@sourceConnections.0/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«implement»" size="44,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="34,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="184,298"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/AbstractEvent&lt;-com.isti.xyz.common/Earthquake" source="//@children.3" target="//@children.6/@sourceConnections.1" targetEnd="//@children.3/@sourceConnections.1/@children.1" sourceEnd="//@children.3/@sourceConnections.1/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/Earthquake-Standard::Derive->com.isti.xyz.common/AbstractEvent" source="//@children.3" target="//@children.1" targetEnd="//@children.3/@sourceConnections.2/@children.2" label="//@children.3/@sourceConnections.2/@children.0" sourceEnd="//@children.3/@sourceConnections.2/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«derive»" size="29,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="43,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="178,157"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/IEvent&lt;-com.isti.xyz.common/Earthquake" source="//@children.3" target="//@children.5/@sourceConnections.0" targetEnd="//@children.3/@sourceConnections.3/@children.1" sourceEnd="//@children.3/@sourceConnections.3/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+      <bendpoints location="53,530" secondRelativeDimension="-226,301" firstRelativeDimension="0,-24"/>
+      <bendpoints location="53,323" secondRelativeDimension="-225,138" firstRelativeDimension="0,-230"/>
+      <bendpoints location="280,323" secondRelativeDimension="-8,25" firstRelativeDimension="173,-241"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="Pick" location="0,615" size="116,217" id="com.isti.xyz.common/Pick" runTimeClassModel="getType(),com.isti.xyz.common.Pick.PickType,pickType">
+    <children xsi:type="editmodel:CompartmentEditModel" size="85,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="pickType" id="com.isti.xyz.common/Pick#pickType"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="93,18">
+      <children xsi:type="editmodel:MethodEditModel" name="getType" id="com.isti.xyz.common/Pick#getType()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="85,122">
+      <children xsi:type="editmodel:EnumerationEditModel" targetConnections="//@children.4/@sourceConnections.4" name="PickType" size="85,120" id="com.isti.xyz.common/Pick$PickType" runTimeClassModel="SP%,P%,PS%,S%">
+        <children xsi:type="editmodel:CompartmentEditModel" size="29,72">
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="S" id="com.isti.xyz.common/Pick$PickType#S%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="PS" id="com.isti.xyz.common/Pick$PickType#PS%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="SP" id="com.isti.xyz.common/Pick$PickType#SP%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="P" id="com.isti.xyz.common/Pick$PickType#P%"/>
+        </children>
+        <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+      </children>
+    </children>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/IEvent&lt;-com.isti.xyz.common/Pick" source="//@children.4" target="//@children.5/@sourceConnections.0" targetEnd="//@children.4/@sourceConnections.0/@children.1" sourceEnd="//@children.4/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/Pick-Soyatec::Implement->com.isti.xyz.common/IEvent" source="//@children.4" target="//@children.0" targetEnd="//@children.4/@sourceConnections.1/@children.2" label="//@children.4/@sourceConnections.1/@children.0" sourceEnd="//@children.4/@sourceConnections.1/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«implement»" size="44,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,298"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/AbstractEvent&lt;-com.isti.xyz.common/Pick" source="//@children.4" target="//@children.6/@sourceConnections.1" targetEnd="//@children.4/@sourceConnections.2/@children.1" sourceEnd="//@children.4/@sourceConnections.2/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/Pick-Standard::Derive->com.isti.xyz.common/AbstractEvent" source="//@children.4" target="//@children.1" targetEnd="//@children.4/@sourceConnections.3/@children.2" label="//@children.4/@sourceConnections.3/@children.0" sourceEnd="//@children.4/@sourceConnections.3/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«derive»" size="29,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="65,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="50,157"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/Pick-Soyatec::Import->com.isti.xyz.common/Pick$PickType" source="//@children.4" target="//@children.4/@children.2/@children.0" targetEnd="//@children.4/@sourceConnections.4/@children.2" label="//@children.4/@sourceConnections.4/@children.0" sourceEnd="//@children.4/@sourceConnections.4/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«import»" size="30,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="116,60" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="85,60"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="StateOfHealth" location="465,621" size="116,67" id="com.isti.xyz.common/StateOfHealth" runTimeClassModel="getType()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="93,18">
+      <children xsi:type="editmodel:MethodEditModel" name="getType" id="com.isti.xyz.common/StateOfHealth#getType()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.1/@sourceConnections.0 //@children.4/@sourceConnections.0 //@children.2/@sourceConnections.0 //@children.3/@sourceConnections.3" autoLocated="true" id="com.isti.xyz.common/IEvent&lt;-com.isti.xyz.common/StateOfHealth" source="//@children.5" target="//@children.0" targetEnd="//@children.5/@sourceConnections.0/@children.1" sourceEnd="//@children.5/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="109,298" anchorKind="FixedAtEdge"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/StateOfHealth-Soyatec::Implement->com.isti.xyz.common/IEvent" source="//@children.5" target="//@children.0" targetEnd="//@children.5/@sourceConnections.1/@children.2" label="//@children.5/@sourceConnections.1/@children.0" sourceEnd="//@children.5/@sourceConnections.1/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«implement»" size="44,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="10,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="220,288"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/AbstractEvent&lt;-com.isti.xyz.common/StateOfHealth" source="//@children.5" target="//@children.6/@sourceConnections.1" targetEnd="//@children.5/@sourceConnections.2/@children.1" sourceEnd="//@children.5/@sourceConnections.2/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/StateOfHealth-Standard::Derive->com.isti.xyz.common/AbstractEvent" source="//@children.5" target="//@children.1" targetEnd="//@children.5/@sourceConnections.3/@children.2" label="//@children.5/@sourceConnections.3/@children.0" sourceEnd="//@children.5/@sourceConnections.3/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«derive»" size="29,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="10,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="223,147"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="QCIssue" location="600,621" size="116,103" id="com.isti.xyz.common/QCIssue" runTimeClassModel="getType(),message,priority">
+    <children xsi:type="editmodel:CompartmentEditModel" size="80,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="priority" id="com.isti.xyz.common/QCIssue#priority"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="message" id="com.isti.xyz.common/QCIssue#message"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="93,18">
+      <children xsi:type="editmodel:MethodEditModel" name="getType" id="com.isti.xyz.common/QCIssue#getType()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/QCIssue-Soyatec::Implement->com.isti.xyz.common/IEvent" source="//@children.6" target="//@children.0" targetEnd="//@children.6/@sourceConnections.0/@children.2" label="//@children.6/@sourceConnections.0/@children.0" sourceEnd="//@children.6/@sourceConnections.0/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«implement»" size="44,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,10" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="210,298"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.5/@sourceConnections.2 //@children.4/@sourceConnections.2 //@children.3/@sourceConnections.1 //@children.2/@sourceConnections.2" autoLocated="true" id="com.isti.xyz.common/AbstractEvent&lt;-com.isti.xyz.common/QCIssue" source="//@children.6" target="//@children.1" targetEnd="//@children.6/@sourceConnections.1/@children.1" sourceEnd="//@children.6/@sourceConnections.1/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="57,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="110,157" anchorKind="FixedAtEdge"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.isti.xyz.common/QCIssue-Standard::Derive->com.isti.xyz.common/AbstractEvent" source="//@children.6" target="//@children.1" targetEnd="//@children.6/@sourceConnections.2/@children.2" label="//@children.6/@sourceConnections.2/@children.0" sourceEnd="//@children.6/@sourceConnections.2/@children.1" connectionRouterKind="Manhattan">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«derive»" size="29,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,10" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="213,157"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.isti.xyz.common/IEvent&lt;-com.isti.xyz.common/QCIssue" source="//@children.6" target="//@children.0" targetEnd="//@children.6/@sourceConnections.3/@children.1" sourceEnd="//@children.6/@sourceConnections.3/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="5,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="220,293"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="Station" location="310,45" size="573,211" id="com.isti.xyz.common/Station" runTimeClassModel="longitude,longName,hashCode(),toString(),compareTo(Ljava.lang.Object;),equals(Ljava.lang.Object;),latitude,name,Station(Ljava.lang.String;Ljava.lang.String;FFLjava.util.SortedSet;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="78,72">
+      <children xsi:type="editmodel:AttributeEditModel" name="name" id="com.isti.xyz.common/Station#name"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="longName" id="com.isti.xyz.common/Station#longName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="latitude" id="com.isti.xyz.common/Station#latitude"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="longitude" id="com.isti.xyz.common/Station#longitude"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="583,90">
+      <children xsi:type="editmodel:MethodEditModel" name="Station" id="com.isti.xyz.common/Station#Station(Ljava.lang.String;Ljava.lang.String;FFLjava.util.SortedSet;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="compareTo" id="com.isti.xyz.common/Station#compareTo(Ljava.lang.Object;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="equals" id="com.isti.xyz.common/Station#equals(Ljava.lang.Object;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="hashCode" id="com.isti.xyz.common/Station#hashCode()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="toString" id="com.isti.xyz.common/Station#toString()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="XYZconfiguration" location="645,300" size="226,429" id="com.isti.xyz.common/XYZconfiguration" runTimeClassModel="getSelectedChannelNames(Ljava.lang.String;),getStationNames(),getChannelNames(Ljava.lang.String;),stationInfoFileName,getChannelEnd(Ljava.lang.String;),getInstance(),panelCountUnit,endTime,panelOrder,unitsInFrame,earthquakeFileName,qCdataFileName,dataPath,confFileName,startTime,getChannelBegin(Ljava.lang.String;),com.isti.xyz.common.XYZconfiguration.PanelCountUnit,com.isti.xyz.common.XYZconfiguration.PanelOrder">
+    <children xsi:type="editmodel:CompartmentEditModel" size="128,162">
+      <children xsi:type="editmodel:AttributeEditModel" name="dataPath" id="com.isti.xyz.common/XYZconfiguration#dataTempPath"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="startTime" id="com.isti.xyz.common/XYZconfiguration#startTime"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="endTime" id="com.isti.xyz.common/XYZconfiguration#endTime"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="qCdataFileName" id="com.isti.xyz.common/XYZconfiguration#qCdataFileName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="stationInfoFileName" id="com.isti.xyz.common/XYZconfiguration#stationInfoFileName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="earthquakeFileName" id="com.isti.xyz.common/XYZconfiguration#earthquake"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="unitsInFrame" id="com.isti.xyz.common/XYZconfiguration#unitsInFrame"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="confFileName" id="com.isti.xyz.common/XYZconfiguration#confFileName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="panelCountUnit" id="com.isti.xyz.common/XYZconfiguration#panelCountUnit"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="203,54">
+      <children xsi:type="editmodel:MethodEditModel" name="getInctance"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getInstance" id="com.isti.xyz.common/XYZconfiguration#getInstance()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getStationNames" id="com.isti.xyz.common/XYZconfiguration#getStationNames()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getChannelNames" id="com.isti.xyz.common/XYZconfiguration#getChannelNames(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getChannelBegin" id="com.isti.xyz.common/XYZconfiguration#getChannelBegin(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getChannelEnd" id="com.isti.xyz.common/XYZconfiguration#getChannelEnd(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getSelectedChannelNames" id="com.isti.xyz.common/XYZconfiguration#getSelectedChannelNames(Ljava.lang.String;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="130,190">
+      <children xsi:type="editmodel:EnumerationEditModel" name="PanelCountUnit" size="117,84" id="com.isti.xyz.common/XYZconfiguration$PanelCountUnit" packageIndication="2" runTimeClassModel="STATION%,CHANNEL%">
+        <children xsi:type="editmodel:CompartmentEditModel" size="57,36">
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="STATION" id="com.isti.xyz.common/XYZconfiguration$PanelCountUnit#STATION%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="CHANNEL" id="com.isti.xyz.common/XYZconfiguration$PanelCountUnit#CHANNEL%"/>
+        </children>
+        <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+      </children>
+      <children xsi:type="editmodel:EnumerationEditModel" name="PanelOrder" size="130,102" id="com.isti.xyz.common/XYZconfiguration$PanelOrder" packageIndication="2" runTimeClassModel="CHANNEL%,FILE%,STATION_SAMPLERATE%">
+        <children xsi:type="editmodel:CompartmentEditModel" size="107,54">
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="STATION_SAMPLERATE" id="com.isti.xyz.common/XYZconfiguration$PanelOrder#STATION_SAMPLERATE%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="FILE" id="com.isti.xyz.common/XYZconfiguration$PanelOrder#FILE%"/>
+          <children xsi:type="editmodel:EnumerationLiteralEditModel" name="CHANNEL" id="com.isti.xyz.common/XYZconfiguration$PanelOrder#CHANNEL%"/>
+        </children>
+        <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showAttributeProperty="true"/>
+      </children>
+    </children>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" level="-1" showScope="InPackage" properties="wireOptions=1"/>
+  <boardSetting snapToGeometry="true" gridEnabled="true" gridSpacing="15,15" gridOrigin="0,0" rulerUnit="pixel">
+    <leftRuler/>
+    <topRuler/>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" showMethodsParameterTypes="true" showMethodsReturnType="true" showMethodsParameterNames="true" showMethodsParameterKinds="true" attributeSorter="Natural" methodSorter="Natural" showClassStereotype="true" showPackageStereotype="true" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="2" showInterfaceStereotype="true" showAttributeProperty="true"/>
+</editmodel:ClassDiagramEditModel>
