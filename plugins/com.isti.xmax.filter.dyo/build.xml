@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- MTH
-    basedir     = Dir where /source/FilterHP.java is located
+    basedir     = Dir where /source/FilterDYO.java is located
     plugin.home = Dir where this plugin will be compiled to, e.g., framework will look for
-        ${plugin.home}/classes/FilterHP.class AND
+        ${plugin.home}/classes/FilterDYO.class AND
         ${plugin.home}/plugin.xml
     Note that plugin.xml specifies where the class file is wrt the plugin.xml file: 
         <runtime> 
@@ -13,76 +13,83 @@
     Requires that you've already compiled the isti traceview classes into ../../build/com/isti/... etc.
 -->
 
-<project name="com.isti.xmax.filter.lowpass plug-in build file"
+<!-- Uses JPF - Java Plugin Framework -->
+<project name="com.isti.xmax.filter.dyo plug-in build file"
          default="help"
          basedir=".">
-	<jpf-info manifest="${basedir}/plugin.xml"
-	          propertyid="plugin.id"
-	          propertyversion="plugin.version" />
+    
+    <!-- Plugin Info -->
+    <jpf-info manifest="${basedir}/plugin.xml"
+	      propertyid="plugin.id"
+	      propertyversion="plugin.version" />
+    <property name="plugin.home" value="${basedir}" />
 
-	<property name="plugin.home" value="${basedir}" />
-
-	<path id="plugin.classpath">
+    <!-- Plugin Classpath -->
+    <path id="plugin.classpath">
         <pathelement location="../../build"/>
-      <dirset dir="../">
-        <include name="**/classes"/>
-      </dirset>
-	</path>
+        <dirset dir="../">
+            <include name="**/classes"/>
+        </dirset>
+    </path>
 
-<!-- Not sure what jpf-path is actually used for ... -->
+    <!-- Initializes Java Plugins using JPF --> 
+    <jpf-path pathidref="plugin.classpath" pluginid="${plugin.id}">
+        <fileset dir="${plugin.home}/.."
+		 includes="*/plugin*.xml"
+		 excludes="${plugin.id}/**" />
+	<fileset file="plugin.xml" />
+    </jpf-path>
 
-	<jpf-path pathidref="plugin.classpath" pluginid="${plugin.id}">
-		<fileset dir="${plugin.home}/.."
-		         includes="*/plugin*.xml"
-		         excludes="${plugin.id}/**" />
-		<fileset file="plugin.xml" />
-	</jpf-path>
+    <!-- HELP -->
+    <target name="help">
+        <echo>
+	    <![CDATA[
+	        ${plugin.id} plug-in build file:
+		Use top-level project build file to build application.
+	    ]]>
+        </echo>
+    </target>
 
-	<target name="help">
-		<echo>
-			<![CDATA[
-${plugin.id} plug-in build file:
-Use top-level project build file to build application.
-]]>
-		</echo>
-	</target>
-
-<!--CLEAN-BUILD-->
+    <!-- CLEAN-BUILD -->
     <target name="clean_build" description="clean up build content" >
         <delete dir="classes"/>
     </target>
 
-	<target name="build" depends="clean_build">
-		<echo>Building plug-in ${plugin.id} to folder ${plugin.home}</echo>
-		<mkdir dir="${plugin.home}/classes" />
-		<javac destdir="${plugin.home}/classes"
-		       srcdir="${basedir}/source"
-		       classpathref="plugin.classpath"
-		       excludes=""
-		       target="1.5"
-		       debug="true"
-		       optimize="false">
-		</javac>
+    <!-- BUILD -->
+    <!-- target="1.7" in <javac></javac> --> 
+    <target name="build" depends="clean_build">
+        <echo>Building plug-in ${plugin.id} to folder ${plugin.home}</echo>
+	<mkdir dir="${plugin.home}/classes" />
+	<javac destdir="${plugin.home}/classes"
+	       srcdir="${basedir}/source"
+	       classpathref="plugin.classpath"
+	       excludes=""
+	       debug="true"
+	       optimize="false"
+	       includeantruntime="false">
+	    <compilerarg value="-Xlint"/>	
+	</javac>
 
-<!-- Not sure this is needed since plugin.home = basedir
-		<copy todir="${plugin.home}/classes">
-			<fileset dir="${basedir}/source"
-			         includes="**/*"
-			         excludes="**/.*,**/*.java" />
-		</copy>
-		<copy todir="${plugin.home}" includeemptydirs="false">
-			<fileset dir="${basedir}"
-			         excludes="classes/,nbproject/,.*,*build*,source/" />
-		</copy>
--->
-	</target>
+    	<!-- Not sure this is needed since plugin.home = basedir
+    	<copy todir="${plugin.home}/classes">
+            <fileset dir="${basedir}/source"
+	             includes="**/*"
+		     excludes="**/.*,**/*.java" />
+    	</copy>
+    	<copy todir="${plugin.home}" includeemptydirs="false">
+            <fileset dir="${basedir}"
+		     excludes="classes/,nbproject/,.*,*build*,source/" />
+        </copy>
+        -->
+    </target>
 
-	<target name="docs">
-		<echo>Generating javadoc for plug-in ${plugin.id} to folder ${plugin.home}/docs/api</echo>
-		<javadoc destdir="${plugin.home}/docs/api"
-		         classpathref="plugin.classpath"
-		         sourcepath="${basedir}/source"
-		         packagenames="${plugin.id}.*">
-		</javadoc>
-	</target>
+    <!-- DOCS -->
+    <target name="docs">
+        <echo>Generating javadoc for plug-in ${plugin.id} to folder ${plugin.home}/docs/api</echo>
+	    <javadoc destdir="${plugin.home}/docs/api"
+		     classpathref="plugin.classpath"
+		     sourcepath="${basedir}/source"
+		     packagenames="${plugin.id}.*">
+	    </javadoc>
+    </target>
 </project>

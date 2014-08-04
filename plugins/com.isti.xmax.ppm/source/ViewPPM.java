@@ -26,6 +26,8 @@ import com.isti.traceview.processing.IFilter;
  * @author Max Kokoulin
  */
 public class ViewPPM extends JDialog implements PropertyChangeListener {
+
+	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane;
 	private static PPMPolarItemRenderer renderer = new PPMPolarItemRenderer();
 	private static TraceViewChartPanel cp = null;

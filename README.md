@@ -71,6 +71,33 @@ xmax
     <SAC>/Users/mth/mth/Projects/xmax</SAC> 
 ```
 
+###Build
+
+######Ant Setup/Execution
+
+    Ant commands to clean, compile and package xmax (uses build.xml)
+```
+    ant jar		# create distribution xmax.jar (default target)
+    ant run		# run java com.isti.xmax.XMAX from /build dir
+```
+
+    Ant target tree dependencies
+```
+    ant jar		-> depends="compile, build-plugins, libraries"
+    ant compile -> depends="init"
+    ant init	-> depends="clean_build"
+```
+
+    Ant target descriptions (order of operations)
+```
+    ant clean_build 	-> delete build/ directory
+    ant init			-> create build/ and build/resources/ directories
+    ant compile			-> compile java src/ code to build/ directory
+    ant build-plugins	-> compile java plugins/ code
+    ant libraries		-> add lib/ and plugins/ to build/ directory
+    ant jar				-> create distribution xmax.jar (default target)
+```
+
 ###Usage
 
 ######Basic Execution Display

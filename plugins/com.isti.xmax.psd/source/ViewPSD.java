@@ -70,6 +70,8 @@ import com.isti.traceview.processing.Spectra;
  * @author Max Kokoulin
  */
 public class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressListener {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(ViewPSD.class);
 	private static final String huttFreqsFile = "hutt_freqs";
 	private static final String huttPeriodsKey = "HuttPeriods";
@@ -396,8 +398,8 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 		}
 		if (chart != null) {
 			XYPlot plot = (XYPlot) chart.getPlot();
-			XYDataset dataset = plot.getDataset();
-			Comparable seriesKey = dataset.getSeriesKey(0);
+			//XYDataset dataset = plot.getDataset();
+			//Comparable seriesKey = dataset.getSeriesKey(0);
 			double xx = plot.getDomainCrosshairValue();
 			double yy = plot.getRangeCrosshairValue();
 			// update the screen...
@@ -429,6 +431,8 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 
 	private class PSDItemRenderer extends StandardXYItemRenderer {
 
+		private static final long serialVersionUID = 1L;
+
 		public PSDItemRenderer() {
 			super();
 			setSeriesPaint(dataset.getSeriesCount() - 1, Color.BLACK);
@@ -457,6 +461,8 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 	}
 
 	class MyOptionPane extends JPanel implements Printable {
+
+		private static final long serialVersionUID = 1L;
 		private TraceViewChartPanel cp = null;
 		private JPanel waveP = null;
 		private List<PlotDataProvider> input;

@@ -1,58 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Default list delimeter is ';' char, may be escaped by '/' --><!-- Version
-     1.01 Added masks for data and event files
-	 1.02 Changed string time format
-	 1.03 Removed stations and channels descriptions
-	 1.04 Added filters strings
-	 1.05 Added ExportDir and LogFile tags
-	 1.06 Changed name of XYZ2SessionConfiguration tag to XMAXSessionConfiguration
-	 1.07 Added separated plugin configuration
-  ===MTH: Rolled back to 1.06 since there were problems with the plugins & fixed wildcard -d breaks
-	 1.08 First MTH version: Added ability to simultaneously plot/serialize from -d + -t
- --><XMAXSessionConfiguration>
+<!-- 
+	Default list delimeter is ';' char, may be escaped by '/' --><!-- Version 1.01 Added
+	masks for data and event files 1.02 Changed string time format 1.03 Removed stations and
+	channels descriptions 1.04 Added filters strings 1.05 Added ExportDir and LogFile tags 
+	1.06 Changed name of XYZ2SessionConfiguration tag to XMAXSessionConfiguration 1.07 Added
+	separated plugin configuration 
+	===MTH: Rolled back to 1.06 since there were problems with the plugins & 
+	fixed wildcard -d breaks 1.08 First MTH version: Added ability to simultaneously 
+	plot/serialize from -d + -t 
+--><XMAXSessionConfiguration>
 <Version>
 		<Major>1</Major>
 		<Minor>8</Minor>
 	</Version>
-<!--  Sets start time for display. Recovers by -b option-->
-<!--  StartTime>2007,055,05:00:00</StartTime-->
-<!--  Sets end time for display. Recovers by -e option-->
-<!--  EndTime>2007,055,10:00:00</EndTime-->
+<!-- Sets start time for display. Recovers by -b option -->
+<!-- StartTime>2007,055,05:00:00</StartTime -->
+<!-- Sets end time for display. Recovers by -e option -->
+<!-- EndTime>2007,055,10:00:00</EndTime -->
 <Configuration>
-		<!--
-		<StartTime>2012,158,00:00:00</StartTime>
-		<EndTime>2012,161,00:00:00</EndTime>
-		-->
-	
-		<Data>
-			<!--  Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*"-->
-			<!-- DataMask>resources/DATA</DataMask -->
-			<DataMask>mseed/II_AAK/2013_026/</DataMask>
+		<!-- <StartTime>2012,158,00:00:00</StartTime> --> 
+		<!-- <EndTime>2012,161,00:00:00</EndTime> -->
 
-			<!--  Temporary directory to store decompressed traces in the internal format -->
+		<Data>
+			<!-- Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*" -->
+			<!-- DataMask>resources/DATA</DataMask -->
+			<DataMask>seed/IU_TUC/2013_135/</DataMask>
+
+			<!-- Temporary directory to store decompressed traces in the internal 
+				format -->
 			<TempPath>resources/DATA_TEMP</TempPath>
-		
-			<!--  Quality control data file. Recovers by -q option -->
+
+			<!-- Quality control data file. Recovers by -q option -->
 			<QCdataFile>/home/max/DATA/QC.xml</QCdataFile>
-		
-			<!--  Station files/paths -->	
+
+			<!-- Station files/paths -->
 			<EventFileMask>resources/*.ndk</EventFileMask>
 			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
 			<ResponsePath>resources/Responses</ResponsePath>
 			<AllowMultiplexedData>true</AllowMultiplexedData>
-		
-			<!--  Picks directory. Recovers by -p option -->
+
+			<!-- Picks directory. Recovers by -p option -->
 			<PickPath>resources/Picks</PickPath>
 		</Data>
-	
-		<!--  Contains wildcarded lists of values, separated by ";". The same as -n, -s, -l, -c command line options-->
-		<Filters> 
+
+		<!-- Contains wildcarded lists of values, separated by ";". The same as 
+			-n, -s, -l, -c command line options -->
+		<Filters>
 			<Network/>
 			<Station/>
 			<Location/>
 			<Channel/>
 		</Filters>
-	
+
 		<View>
 			<ShowBigCursor>true</ShowBigCursor>
 			<ShowStatusBar>true</ShowStatusBar>
@@ -61,24 +60,17 @@
 		</View>
 		<OutputPath>./Output</OutputPath>
 
-		<!-- Panel order: 
-		0 - trace name, currently network/station/location/channel; 
-		1 - Network/station/sample rate/channel type/location; 
-		2 - Channel/network/station/location, 
-		3 - Channel type/channel/network/station, 
-		4 - event-->
+		<!-- Panel order: 0 - trace name, currently network/station/location/channel; 
+			1 - Network/station/sample rate/channel type/location; 2 - Channel/network/station/location, 
+			3 - Channel type/channel/network/station, 4 - event -->
 		<PanelOrder>1</PanelOrder>
 
-		<!-- Panel count unit: 
-		0 - trace, 
-		1 - station, 
-		2 - channel, 
-		3 - channel type, 
-		4 - all -->
+		<!-- Panel count unit: 0 - trace, 1 - station, 2 - channel, 3 - channel 
+			type, 4 - all -->
 		<PanelCountUnit>1</PanelCountUnit>
 		<UnitsInFrame>1</UnitsInFrame>
 		<LogFile>logs/XMAX.LOG</LogFile>
-	
+
 		<Plugins>
 			<PSD>
 				<HuttPeriods>0.2,1.0,20.5,110.2</HuttPeriods>
@@ -89,10 +81,10 @@
 		<ExportDir/>
 		<Frame>
 			<State>MAXIMIZED_BOTH</State>
-			<PosY>25</PosY>
-			<PosX>0</PosX>
+			<PosY>0</PosY>
+			<PosX>1680</PosX>
 			<Width>1680</Width>
-			<Heigth>1025</Heigth>
+			<Heigth>1050</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>

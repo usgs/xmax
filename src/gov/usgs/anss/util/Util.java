@@ -860,8 +860,9 @@ public class Util extends Object {
           break;
         case '\032':
           result.append("\\Z");
-        case '\\':
-        case '\'':
+          break;
+        //case '\\':
+        //case '\'':
         case '"':
           result.append("\\" + c);
           break;

@@ -57,7 +57,7 @@ public class TransResp implements ITransformation {
 		for (PlotDataProvider channel: input) {
 			XYSeries series = new XYSeries(channel.getName());
 			double maxFreqValue = 500.0 / channel.getRawData().get(0).getSampleRate();
-			final double sampFreq = (maxFreqValue - minFreqValue) / ((double) (numberFreqs - 1.0));
+			final double sampFreq = (maxFreqValue - minFreqValue) / (numberFreqs - 1.0);
 			FreqParameters fp =  new FreqParameters(minFreqValue, maxFreqValue, sampFreq, numberFreqs);		
 			final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
 			Response resp = channel.getResponse();
