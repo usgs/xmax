@@ -359,16 +359,16 @@ public class XMAX extends TraceView {
 			if (st.contains("xmax.jar")) {
 				pluginDirName = st.substring(0, st.indexOf("xmax.jar"));
 				if (pluginDirName.length() == 0)
-					pluginDirName = ".";
-				//pluginDirName = pluginDirName + File.separator + "plugins";
-				pluginDirName = pluginDirName + "plugins";
+					pluginDirName = "." + File.separator + "plugins";
+				else
+					pluginDirName = pluginDirName + "plugins";
+				System.out.println("Plugin Directory: " + pluginDirName);
 				break;
 			}
 		}
 		if (pluginDirName == null) {
 			pluginDirName = "./plugins";
 		}
-		System.out.println("Plugin Directory: " + pluginDirName);
 		File pluginDir = new File(pluginDirName);
 		File[] pluginFolders = pluginDir.listFiles(new FileFilter(){
 			public boolean accept(final File file) {
