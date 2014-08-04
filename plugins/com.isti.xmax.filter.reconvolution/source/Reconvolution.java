@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.TraceViewException;
+import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.processing.IFilter;
@@ -35,16 +36,19 @@ import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 
 public class Reconvolution extends JDialog implements IFilter, PropertyChangeListener {
+	
+	private static final long serialVersionUID = 1L;
+	private static Logger lg = Logger.getLogger(Reconvolution.class);
+	
 	private final static int comboBoxHeight = 22;
 	private final static int maxDataLength = 16385;
 	private static boolean warningWasShown = false;
-	private static Logger lg = Logger.getLogger(Reconvolution.class);
 	private RawDataProvider channel = null;
 	private JOptionPane optionPane;
 	private boolean needProcessing = false;
 
 	private JLabel convolveL;
-	private JComboBox convolveCB;
+	private JComboBox<Object> convolveCB;
 	private static String respFile = null;
 
 	/**
@@ -71,7 +75,6 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 		pack();
 		setLocationRelativeTo(super.getOwner());
 		setVisible(true);
-
 	}
 	
 	public int getMaxDataLength(){
@@ -132,7 +135,7 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 		mean = mean/traceCopyLength;
 		
 		final Response.FreqParameters fp = Response.getFreqParameters(traceCopy.length, 1000.0 / channel.getSampleRate());
-		final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
+		//final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
 
 		// Norm the data: remove trend
 		traceCopy = IstiUtilsMath.normData(traceCopy);
@@ -234,14 +237,15 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 		return convolveL;
 	}
 	
-	private JComboBox getConvolveCB() {
+	private JComboBox<Object> getConvolveCB() {
 		if (convolveCB == null) {
-			convolveCB = new JComboBox();
+			convolveCB = new JComboBox<Object>();
 			FontMetrics fontMetrics = convolveCB.getFontMetrics(convolveCB.getFont());
 			List<String> options = new ArrayList<String>();
 			options.add("None");
 			try {
-				for (String respFile: XMAX.getDataModule().getAllResponseFiles()) {
+				XMAX.getDataModule();	
+				for (String respFile: DataModule.getAllResponseFiles()) {
 					options.add(respFile);
 					int width = fontMetrics.stringWidth(respFile);
 					if ((width + comboBoxHeight) > convolveCB.getPreferredSize().getWidth()) {
@@ -251,7 +255,7 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 			} catch (TraceViewException e) {
 				lg.error("Can't load response from file: " + e);
 			}
-			ComboBoxModel convolveCBModel = new DefaultComboBoxModel(options.toArray());
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
 			convolveCB.setModel(convolveCBModel);
 			if (respFile != null) {
 				convolveCB.setSelectedItem(respFile);
