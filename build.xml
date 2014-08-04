@@ -5,7 +5,7 @@
 
     <!-- GLOBAL PROPERTIES --> 
 <!--
-    <property name="version"         value="1.06" />
+    <property name="version"         value="1.08" />
     <property name="src.dir"         location="src/${version}"/>
 -->
     <property name="src.dir"          location="src"/>
@@ -27,7 +27,7 @@
         </fileset>
     </path>
 
-    <!-- JAR CLASSPATH --> 
+    <!-- PACKAGE CLASSPATH --> 
     <path id="package.classpath">
         <pathelement path="${build.root}"/> 	
 	<fileset dir="${lib.dir}">
@@ -126,7 +126,7 @@
     <!-- target="1.7" in '<javac></javac>' --> 
     <target name="compile" depends="init" description="Compile the source [depends=init]">
         <property name="myclasspath" refid="compile.classpath"/>
-	<echo message="Classpath = ${myclasspath}"/>
+	<!--echo message="Classpath = ${myclasspath}"/-->
 	<javac verbose="false" 
 	       srcdir="${src.dir}" 
 	       destdir="${build.root}" 
@@ -174,8 +174,8 @@
     <!-- JAR -->
     <!--target name="jar" depends="libraries" description="generate the distribution"-->
     <target name="jar" depends="compile,build-plugins,libraries" description="generate the distribution">
-	<echo message="Deleting/creating ${manifest.file}"/>
-	<echo message="Classpath = ${jar.classpath}"/>
+	<echo message="Deleting and creating ${manifest.file}"/>
+	<!--echo message="Classpath = ${jar.classpath}"/-->
 	<tstamp/><!-- needed for TODAY --> 
 	<jar destfile="${project.archive}" basedir="${build.root}">
 	    <manifest>
@@ -185,7 +185,7 @@
 		<attribute name="Implementation-Vendor" value="${imp.vendor}"/>
 	   	<attribute name="Main-Class" value="${project.main}"/>
 		<attribute name="Class-Path" value="${jar.classpath}"/>
-	    </manifest>	
+	    </manifest>
 	</jar>
     </target>
 </project>
