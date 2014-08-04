@@ -51,6 +51,8 @@ import com.isti.xmax.XMAX;
  * @author Max Kokoulin
  */
 public class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListener {
+
+	private static final long serialVersionUID = 1L;
 	private static Logger lg = Logger.getLogger(ViewSpectra.class);
 	private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
 	private JOptionPane optionPane;
@@ -58,7 +60,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 	private JPanel selectionP;
 	private JLabel convolveL;
 	private JPanel optionP;
-	private JComboBox convolveCB;
+	private JComboBox<Object> convolveCB;
 	private JCheckBox deconvolveCB;
 	private JCheckBox showDiffCB;
 	List<Spectra> data = null;
@@ -123,7 +125,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 
 		} else if (e.getSource().equals(getShowDiffCB())) {
 			if (getShowDiffCB().isSelected()) {
-				Component[] ca = selectionP.getComponents();
+				//Component[] ca = selectionP.getComponents();
 				int countSelected = 0;
 				for (int i = 1; i < selectionP.getComponentCount(); i++) {
 					JCheckBox cb = (JCheckBox) selectionP.getComponent(i);
@@ -199,7 +201,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 
 		if (getShowDiffCB().isSelected()) {
 			XYSeries[] series = new XYSeries[2];
-			Component[] ca = selectionP.getComponents();
+			//Component[] ca = selectionP.getComponents();
 			int seriesFound = 0;
 			int i = 1;
 			while (i < selectionP.getComponentCount() && seriesFound < 2) {
@@ -293,15 +295,15 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 		return deconvolveCB;
 	}
 
-	private JComboBox getConvolveCB() {
+	private JComboBox<Object> getConvolveCB() {
 		if (convolveCB == null) {
 			List<String> options = new ArrayList<String>();
 			options.add("None");
 			for (Response resp: TraceView.getDataModule().getLoadedResponses()) {
 				options.add(resp.getLocalFileName());
 			}
-			ComboBoxModel convolveCBModel = new DefaultComboBoxModel(options.toArray());
-			convolveCB = new JComboBox();
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
+			convolveCB = new JComboBox<Object>();
 			convolveCB.setModel(convolveCBModel);
 			convolveCB.setPreferredSize(new java.awt.Dimension(128, 22));
 			convolveCB.setEnabled(false);

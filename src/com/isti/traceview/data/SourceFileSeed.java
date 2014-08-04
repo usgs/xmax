@@ -653,8 +653,9 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 	 * ignored and should be set to null. Continuation will be false to build a record with SAC
 	 * header, true for just data section.
 	 */
+	@SuppressWarnings("unchecked")	// ExportBuilder.class cannot be changed in JavaSeed.jar
 	protected void startNewLogical(SeedObject obj, boolean continuation) throws Exception {
-		logicalRecord = new LogicalRecord(); // create a new logical record
+		LogicalRecord logicalRecord = new LogicalRecord(); // create a new logical record
 		if (continuation) {
 			// data record
 			System.arraycopy(getBlank(false), 0, logicalRecord.contents, 0, logicalRecordLength);

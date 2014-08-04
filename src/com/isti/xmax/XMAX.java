@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-//MTH:
 import javax.swing.SwingUtilities;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -21,7 +20,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.GnuParser;	// used for build.xml?
 //import org.apache.commons.cli.DefaultParser;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -80,6 +79,7 @@ public class XMAX extends TraceView {
                 System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
                 System.out.println("* Append to Serialized data in DATA_TEMP:");
                 System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+                System.out.println();
             }
 			if (cmd.hasOption("h")) {
 				if (cmd.getOptions().length > 1) {
@@ -351,7 +351,7 @@ public class XMAX extends TraceView {
 		System.out.println("User directory: " + System.getProperty("user.dir").toString());
 		System.out.println("Operating System: " + System.getProperty("os.name").toString());
 		System.out.println("Java Runtime Version: " + System.getProperty("java.runtime.version").toString());
-		System.out.println("Java Classpath: " + System.getProperty("java.class.path").toString());
+		System.out.println("Java Classpath: " + System.getProperty("java.class.path").toString());	
 		//String[] classpath = System.getProperty("java.class.path").split(";");
 		String[] classpath = System.getProperty("java.class.path").split(":");
 		String pluginDirName = null;
@@ -359,20 +359,17 @@ public class XMAX extends TraceView {
 			if (st.contains("xmax.jar")) {
 				pluginDirName = st.substring(0, st.indexOf("xmax.jar"));
 				if (pluginDirName.length() == 0)
-					pluginDirName = ".";
-				//pluginDirName = pluginDirName + File.separator + "plugins";
-				pluginDirName = pluginDirName + "plugins";
+					pluginDirName = "." + File.separator + "plugins";
+				else
+					pluginDirName = pluginDirName + "plugins";
+				System.out.println("Plugin Directory: " + pluginDirName);
 				break;
 			}
 		}
 		if (pluginDirName == null) {
 			pluginDirName = "./plugins";
 		}
-		System.out.println("Plugin Directory: " + pluginDirName);
 		File pluginDir = new File(pluginDirName);
-		if (pluginDir == null) {
-			throw new XMAXException("Can not find plugin directory");
-		}
 		File[] pluginFolders = pluginDir.listFiles(new FileFilter(){
 			public boolean accept(final File file) {
 				return file.isDirectory();
@@ -443,7 +440,7 @@ public class XMAX extends TraceView {
 		try {
 			CommandLineParser parser = new PosixParser();
 			cmd = parser.parse(options, args);
-			XMAX xyz = new XMAX();
+			XMAX xyz = new XMAX();	
 		} catch (ParseException e) {
 			System.err.println("Command line parsing failed.  Reason: " + e.getMessage());
 		}

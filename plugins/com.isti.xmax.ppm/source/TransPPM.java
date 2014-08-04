@@ -77,8 +77,8 @@ public class TransPPM implements ITransformation {
 	 */
 	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti) throws XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
-		PlotDataProvider channel1 = (PlotDataProvider) input.get(0);
-		PlotDataProvider channel2 = (PlotDataProvider) input.get(1);
+		PlotDataProvider channel1 = input.get(0);
+		PlotDataProvider channel2 = input.get(1);
 		if (channel1.getSampleRate() != channel2.getSampleRate())
 			throw new XMAXException("Channels have dufferent sample rate");
 		XYSeries series = new XYSeries(channel1.getName() + " " + channel2.getName(), false);
