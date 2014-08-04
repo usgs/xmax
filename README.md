@@ -95,7 +95,7 @@ xmax
     ant compile			-> compile java src/ code to build/ directory
     ant build-plugins	-> compile java plugins/ code
     ant libraries		-> add lib/ and plugins/ to build/ directory
-    ant jar			-> create distribution xmax.jar (default target)
+    ant jar				-> create distribution xmax.jar (default target)
 ```
 
 ###Usage
