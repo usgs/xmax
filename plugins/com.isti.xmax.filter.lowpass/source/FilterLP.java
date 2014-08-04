@@ -1,4 +1,3 @@
-
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.IFilter;
 

@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class AngleInputDialog extends JDialog implements PropertyChangeListener {
+	
+	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane;
 	private JTextField textField;
 	private double angle = Double.POSITIVE_INFINITY;
