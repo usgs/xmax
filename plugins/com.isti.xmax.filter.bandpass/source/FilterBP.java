@@ -152,7 +152,8 @@ public class FilterBP implements IFilter {
 				f[j][2] = f[j][3];
 				f[j][3] = f[j][4];
 			}
-			data[i] = f[order][4] + mean;
+			//data[i] = f[order][4] + mean;
+			data[i] = f[order][4];
 		}
 		return data;
 	}
@@ -174,9 +175,11 @@ public class FilterBP implements IFilter {
 			sum = sum + buf[i];
 		}
 		sum = sum / n;
-		for (int i = 0; i < n; i++) {
+		
+		//This removes mean from data but isnt returned
+		/*for (int i = 0; i < n; i++) {
 			buf[i] = buf[i] - sum;
-		}
+		}*/
 		return sum;
 	}
 
