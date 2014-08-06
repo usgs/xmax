@@ -24,7 +24,7 @@
 		<Data>
 			<!-- Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*" -->
 			<!-- DataMask>resources/DATA</DataMask -->
-			<DataMask>seed/IU_TUC/2013_135/</DataMask>
+			<DataMask>seed/IU_TUC/2014_21*</DataMask>
 
 			<!-- Temporary directory to store decompressed traces in the internal 
 				format -->
@@ -80,11 +80,11 @@
 <SessionData>
 		<ExportDir/>
 		<Frame>
-			<State>MAXIMIZED_BOTH</State>
-			<PosY>0</PosY>
-			<PosX>1680</PosX>
-			<Width>1680</Width>
-			<Heigth>1050</Heigth>
+			<State>NORMAL</State>
+			<PosY>25</PosY>
+			<PosX>65</PosX>
+			<Width>1556</Width>
+			<Heigth>975</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>

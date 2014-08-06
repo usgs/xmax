@@ -132,9 +132,9 @@ public class DataModule extends Observable {
         }
 		else {
             if (!TraceView.getConfiguration().getUseTempData()) {
-            lg.debug("-d + -t are both false: Read from data path --> addDataSources()\n");
-		    addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
-            lg.debug("-d + -t: Read from data path DONE\n\n");
+            	lg.debug("-d + -t are both false: Read from data path --> addDataSources()\n");
+            	addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
+            	lg.debug("-d + -t: Read from data path DONE\n\n");
             }
         }
 
