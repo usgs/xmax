@@ -97,7 +97,8 @@ public class FilterLP implements IFilter {
 				f[j][0] = f[j][1];
 				f[j][1] = f[j][2];
 			}
-			data[i] = f[order][2] + mean;
+			//data[i] = f[order][2] + mean;
+			data[i] = f[order][2];
 		}
 		return data;
 	}
@@ -119,9 +120,11 @@ public class FilterLP implements IFilter {
 			sum = sum + buf[i];
 		}
 		sum = sum / n;
-		for (int i = 0; i < n; i++) {
+		
+		//This removes mean from data but isnt returned
+		/*for (int i = 0; i < n; i++) {
 			buf[i] = buf[i] - sum;
-		}
+		}*/
 		return sum;
 	}
 
