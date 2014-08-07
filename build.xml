@@ -4,21 +4,30 @@
     </description>
 
     <!-- GLOBAL PROPERTIES --> 
-<!--
-    <property name="version"         value="1.08" />
-    <property name="src.dir"         location="src/${version}"/>
--->
     <property name="src.dir"          location="src"/>
-    <property name="build.root"       location="build"/>
-    <property name="build.resources"  location="build/resources"/>
     <property name="lib.dir"          location="lib"/>
     <property name="plugins.dir"      location="plugins"/> 
+    <property name="resources.dir"    location="resources"/>
+    <property name="seed.dir"         location="seed"/>
+    <property name="logs.dir"	      location="logs"/>
+    <property name="config"	      value="config.xml"/>
+
+    <property name="build.root"       location="build"/>
     <property name="project.main"     value="com.isti.xmax.XMAX"/>
     <property name="project.archive"  value="xmax.jar"/>
+    
     <property name="manifest.file"    value="${src.dir}/META-INF/MANIFEST.MF"/>
     <property name="manifest.version" value="1.0"/>
     <property name="imp.version"      value="1.0"/><!-- implementation -->
     <property name="imp.vendor"       value="Instrumental Software Technologies"/>
+    
+    <!-- BUILD CLASSPATH (Java Plugins) --> 
+    <path id="classpath">
+        <fileset dir="lib" includes="*.jar"/>
+    </path>
+    <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
+        <classpath refid="classpath"/>
+    </typedef>
 
     <!-- COMPILE CLASSPATH --> 
     <path id="compile.classpath">
@@ -54,51 +63,20 @@
         <dirset dir="${plugins.dir}">
             <include name="**/classes"/>
         </dirset>
-	<!-- Doesn't seem to look for images anymore ... ? -->
-        <pathelement location="${build.resources}/images"/>
     </path>
-
-    <!-- BUILD CLASSPATH --> 
-    <path id="classpath">
-        <fileset dir="lib" includes="*.jar" />
-    </path>
-    <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
-        <classpath refid="classpath" />
-    </typedef>
- 
-    <!-- LIB FILESET -->
-    <fileset dir="${lib.dir}" id="lib.fileset">
-        <include name="*.jar"/>
-    </fileset>
-
-    <!-- PLUGIN FILESET -->
-    <fileset dir="${plugins.dir}" id="plugin.fileset">
-        <include name="com.isti.xmax.correlation/classes/*.class"/>
-	<include name="com.isti.xmax.filter.bandpass/classes/*.class"/>
-   	<include name="com.isti.xmax.filter.dyo/classes/*.class"/> 
-	<include name="com.isti.xmax.filter.highpass/classes/*.class"/>
-    	<include name="com.isti.xmax.filter.lowpass/classes/*.class"/>
-    	<include name="com.isti.xmax.filter.reconvolution/classes/*.class"/>
-    	<include name="com.isti.xmax.ppm/classes/*.class"/>
-    	<include name="com.isti.xmax.psd/classes/*.class"/>
-    	<include name="com.isti.xmax.showResponse/classes/*.class"/>
-    	<include name="com.isti.xmax.spectra/classes/*.class"/>
-    </fileset>
     
     <!-- CLEAN_BUILD -->
-    <target name="clean_build" description="Delete /build dir">
-        <!--delete dir="${build.root}" verbose="true"/-->
+    <target name="clean_build" description="Delete build/ dir">
         <delete dir="${build.root}" verbose="false"/>
     </target>
 
     <!-- INIT -->
-    <target name="init" depends="clean_build" description="Mkdir /build and /build/resources [depends=clean_build]">
+    <target name="init" depends="clean_build" description="Mkdir build/ [depends=clean_build]">
         <mkdir dir="${build.root}"/>
-        <mkdir dir="${build.resources}"/>
     </target>
     
     <!-- RUN -->
-    <target name="run" description="Run java com.isti.xmax.XMAX from /build dir">
+    <target name="run" description="Run java com.isti.xmax.XMAX from build/ dir">
         <property name="myclasspath" refid="run.classpath"/>
         <echo message="Classpath = ${myclasspath}"/>
         <echo message="project.main = ${project.main}"/>
@@ -111,32 +89,40 @@
 
     <!-- LIBRARIES -->
     <target name="libraries" description="Add libraries">
-        <echo message="Copying ${lib.dir} to ${build.root}/lib"/> 
+	<!-- Copy lib/ to build/lib -->
+	<echo message="Copying ${lib.dir} to ${build.root}/lib"/> 
 	<copy todir="${build.root}/lib">
             <fileset dir="${lib.dir}"/>
         </copy>
-        <echo message="Copying ${plugins.dir} to ${build.root}/plugins"/>
+        <!-- Copy plugins/ to build/plugins --> 
+	<echo message=""/>	
+	<echo message="Copying ${plugins.dir} to ${build.root}/plugins"/>
 	<copy todir="${build.root}/plugins">
 	    <fileset dir="${plugins.dir}"/>
 	</copy>
+	<!-- Copy seed/ to build/seed -->	
+	<echo message=""/>	
+	<echo message="Copying ${seed.dir} to ${build.root}/seed"/>	
+	<copy todir="${build.root}/seed">
+	    <fileset dir="${seed.dir}"/>
+	</copy>
+	<!-- Copy resources/ to build/resources -->	
+	<echo message=""/>	
+	<echo message="Copying ${resources.dir} to ${build.root}/resources"/>
+	<copy todir="${build.root}/resources">
+	    <fileset dir="${resources.dir}"/>
+	</copy>
+	<!-- Copy logs/ to build/logs -->
+	<echo message=""/>	
+	<echo message="Copying ${logs.dir} to ${build.root}/logs"/>
+	<copy todir="${build.root}/logs">
+	    <fileset dir="${logs.dir}"/>
+	</copy>
+	<!-- Copy config.xml and log4j.properties -->
+	<echo message=""/>	
+	<echo message="Copying ${src.dir}/log4j.properties and ${config} to ${build.root}"/>	
+	<copy file="${config}" todir="${build.root}"/>
 	<copy file="${src.dir}/log4j.properties" todir="${build.root}"/>
-    </target>
-    
-    <!-- COMPILE -->
-    <!-- target="1.7" in '<javac></javac>' --> 
-    <target name="compile" depends="init" description="Compile the source [depends=init]">
-        <property name="myclasspath" refid="compile.classpath"/>
-	<!--echo message="Classpath = ${myclasspath}"/-->
-	<javac verbose="false" 
-	       srcdir="${src.dir}" 
-	       destdir="${build.root}" 
-	       listfiles="true" 
-	       encoding="utf-8" 
-	       debug="true" 
-	       includeantruntime="false">
-            <classpath refid="compile.classpath"/>
-            <compilerarg value="-Xlint"/>
-        </javac>
     </target>
     
     <!-- BUILD-PLUGINS -->
@@ -164,28 +150,45 @@
 	    <attribute name="Built-By" value="${user.name}"/>
 	    <attribute name="Built-Date" value="${TODAY}"/>
 	    <attribute name="Implementation-Version" value="${imp.version}"/>
-	    <attribute name="Implementation-Vendor" value="${imp.vendor}"/>
+	    <attribute name="Implementation-Vendor" value='"${imp.vendor}"'/>
 	    <attribute name="Main-Class" value="${project.main}"/>
-	    <attribute name="Class-Path" value="${mf.classpath}"/>
+	    <attribute name="Class-Path" value="${jar.classpath}"/>
 	    <!--</section-->
 	</manifest>
+    </target>
+    
+    <!-- COMPILE -->
+    <!-- target="1.7" in '<javac></javac>' --> 
+    <target name="compile" depends="init,create-manifest" description="Compile the source [depends=init]">
+        <property name="myclasspath" refid="compile.classpath"/>
+	<!--echo message="Classpath = ${myclasspath}"/-->
+	<javac verbose="false" 
+	       srcdir="${src.dir}" 
+	       destdir="${build.root}" 
+	       listfiles="true" 
+	       encoding="utf-8" 
+	       debug="true" 
+	       includeantruntime="false">
+            <classpath refid="compile.classpath"/>
+            <compilerarg value="-Xlint"/>
+        </javac>
     </target>
 
     <!-- JAR -->
     <!--target name="jar" depends="libraries" description="generate the distribution"-->
-    <target name="jar" depends="compile,build-plugins,libraries" description="generate the distribution">
-	<echo message="Deleting and creating ${manifest.file}"/>
+    <target name="jar" depends="compile,libraries" description="generate the distribution">
+	<!--echo message="Deleting and creating ${manifest.file}"/-->
 	<!--echo message="Classpath = ${jar.classpath}"/-->
 	<tstamp/><!-- needed for TODAY --> 
-	<jar destfile="${project.archive}" basedir="${build.root}">
-	    <manifest>
+	<jar destfile="${project.archive}" manifest="${manifest.file}" basedir="${build.root}">
+	    <!--manifest>
 	        <attribute name="Built-By" value="${user.name}"/>
 		<attribute name="Built-Date" value="${TODAY}"/>
 		<attribute name="Implementation-Version" value="${imp.version}"/>
-		<attribute name="Implementation-Vendor" value="${imp.vendor}"/>
+		<attribute name="Implementation-Vendor" value='"${imp.vendor}"'/>
 	   	<attribute name="Main-Class" value="${project.main}"/>
 		<attribute name="Class-Path" value="${jar.classpath}"/>
-	    </manifest>
+	    </manifest-->
 	</jar>
     </target>
 </project>
