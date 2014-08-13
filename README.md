@@ -12,7 +12,7 @@ xmax
 
     Wildcarded mask of data files to load (when no cmd line args given):
 ```xml
-    <DataMask>resources/DATA</DataMask>
+    <DataMask>seed/IU_TUC/2014_21*</DataMask>
 ```
 
     Temporary directory to store decompressed traces in the internal format:
@@ -25,24 +25,21 @@ xmax
     <QCdataFile>/home/max/DATA/QC.xml</QCdataFile>
 ```
 
-    Station data file extras (events, station info, multiplexed data):
+    Station data file extras (events, station info, multiplexed data, picks):
 ```xml
-    <EventFileMask>resources/*.ndk</EventFileMask>
+    <EventFileMask>resources/qcmt.ndk</EventFileMask>
     <StationInfoFile>resources/gsn_sta_list</StationInfoFile>
     <ResponsePath>resources/Responses</ResponsePath>
     <AllowMultiplexedData>true</AllowMultiplexedData>
+    <PickPath>resources/Picks</PickPath>
 ```
 
 ######View Setup
 
-    Show big cursor and status bar:
+    Show big cursor, status bar, buttons:
 ```xml
     <ShowBigCursor>true</ShowBigCursor>
     <ShowStatusBar>true</ShowStatusBar>
-```
-
-    Show command buttons:
-```xml
     <ShowCommandButtons>true</ShowCommandButtons>
     <ShowCommandButtonsTop>false</ShowCommandButtonsTop>
 ```
@@ -51,24 +48,7 @@ xmax
 ```xml
     <PanelCountUnit>1</PanelCountUnit>
     <UnitsInFrame>1</UnitsInFrame>
-```
-
-######SessionData Setup
-    
-    Frame position and dimensions:
-```xml
-    <State>NORMAL</State>
-    <PosY>25</PosY>
-    <PoxX>96</PosX>
-    <Width>1373</Width>
-    <Heighth>789</Heighth>
-```
-
-    Set user directories (will change per server):
-```xml
-    <MSEED>/Users/mth/mth/Projects/xmax</MSEED>
-    <ASCII>/Users/mth/mth/Projects/xmax</ASCII>
-    <SAC>/Users/mth/mth/Projects/xmax</SAC> 
+    <LogFile>logs/xmax.log</LogFile>
 ```
 
 ###Build
@@ -81,19 +61,13 @@ xmax
     ant run		# run java com.isti.xmax.XMAX from /build dir
 ```
 
-    Ant target tree dependencies
-```bash
-    ant jar		-> depends="compile, build-plugins, libraries"
-    ant compile -> depends="init"
-    ant init	-> depends="clean_build"
-```
-
     Ant target descriptions (order of operations)
 ```bash
     ant clean_build 	-> delete build/ directory
-    ant init			-> create build/ and build/resources/ directories
-    ant compile			-> compile java src/ code to build/ directory
+    ant init			-> create build/ directory 
     ant build-plugins	-> compile java plugins/ code
+    ant create-manifest -> create META-INF/MANIFEST.MF 
+    ant compile			-> compile java src/ code to build/ directory
     ant libraries		-> add lib/ and plugins/ to build/ directory
     ant jar				-> create distribution xmax.jar (default target)
 ```
