@@ -31,10 +31,10 @@
 			<TempPath>resources/DATA_TEMP</TempPath>
 
 			<!-- Quality control data file. Recovers by -q option -->
-			<QCdataFile>/home/max/DATA/QC.xml</QCdataFile>
+			<!--QCdataFile>/home/max/DATA/QC.xml</QCdataFile-->
 
 			<!-- Station files/paths -->
-			<EventFileMask>resources/*.ndk</EventFileMask>
+			<EventFileMask>resources/qcmt.ndk</EventFileMask>
 			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
 			<ResponsePath>resources/Responses</ResponsePath>
 			<AllowMultiplexedData>true</AllowMultiplexedData>
@@ -58,7 +58,7 @@
 			<ShowCommandButtons>true</ShowCommandButtons>
 			<ShowCommandButtonsTop>false</ShowCommandButtonsTop>
 		</View>
-		<OutputPath>./Output</OutputPath>
+		<OutputPath>resources/Output</OutputPath>
 
 		<!-- Panel order: 0 - trace name, currently network/station/location/channel; 
 			1 - Network/station/sample rate/channel type/location; 2 - Channel/network/station/location, 
@@ -69,7 +69,7 @@
 			type, 4 - all -->
 		<PanelCountUnit>1</PanelCountUnit>
 		<UnitsInFrame>1</UnitsInFrame>
-		<LogFile>logs/XMAX.LOG</LogFile>
+		<LogFile>logs/xmax.log</LogFile>
 
 		<Plugins>
 			<PSD>

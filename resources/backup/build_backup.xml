@@ -1,0 +1,37 @@
+<!-- These are extra "targets", "paths", "filesets" that xmax doesn't use -->
+<project name="xmax" default="jar" basedir=".">
+    <description>
+        XMAX: Plots/analyzes seed filewaveforms
+    </description>
+
+    <!-- GLOBAL PROPERTIES -->
+    <property name="version"         value="1.08" />
+    <property name="src.dir"         location="src/${version}"/>
+    
+    <!-- BUILD CLASSPATH --> 
+    <path id="classpath">
+        <fileset dir="lib" includes="*.jar"/>
+    </path>
+    <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
+        <classpath refid="classpath" />
+    </typedef>
+    
+    <!-- LIB FILESET -->
+    <fileset dir="${lib.dir}" id="lib.fileset">
+        <include name="*.jar"/>
+    </fileset>
+
+    <!-- PLUGIN FILESET -->
+    <fileset dir="${plugins.dir}" id="plugin.fileset">
+        <include name="com.isti.xmax.correlation/classes/*.class"/>
+	<include name="com.isti.xmax.filter.bandpass/classes/*.class"/>
+   	<include name="com.isti.xmax.filter.dyo/classes/*.class"/> 
+	<include name="com.isti.xmax.filter.highpass/classes/*.class"/>
+    	<include name="com.isti.xmax.filter.lowpass/classes/*.class"/>
+    	<include name="com.isti.xmax.filter.reconvolution/classes/*.class"/>
+    	<include name="com.isti.xmax.ppm/classes/*.class"/>
+    	<include name="com.isti.xmax.psd/classes/*.class"/>
+    	<include name="com.isti.xmax.showResponse/classes/*.class"/>
+    	<include name="com.isti.xmax.spectra/classes/*.class"/>
+    </fileset>
+</project>

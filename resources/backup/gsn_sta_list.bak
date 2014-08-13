@@ -1,25 +1,27 @@
 STAT   NET LOCATION                                          START     TERMINATION LATITUDE  LONGITUDE  ELEVATION      DEPTH
                                                              DATE      DATE       
+CHUM   AK  Lake Minchumina, AK, USA                          2004,200               63.8827   -152.31      58.000      0.000
+DOT    AK  Dot lake, AK, USA                                 1986,200               63.6487   -144.062    671.000      0.000
+GAMB   AK  Gambell                                           2002,60                63.7767   -171.700     10.000      0.000
+JMJ    JP  Soemwhere in Japan                                2002,60                24.8147   125.2935     43.000      0.000   
 AAE    IU  Addis Ababa, Ethiopia                             1994,346  1997,259      9.0292    38.7656   2442.000      0.000
 AAK    II  Ala Archa, Kyrgyzstan                             1990,285               42.6390    74.4940   1645.000      0.000
 AAM    US  Ann Arbor, Michigan, USA                          1994,171               42.3012   -83.6567    172.000     71.000
 ABKT   II  Alibek, Turkmenistan                              1993,115               37.9304    58.1189    678.000      7.000
-ACSO   US  Alum Creek State Park, Ohio, USA                  2001,130               40.2319   -82.9820    288.0        0.0
+ACSO   US  Alum Creek State Park, Ohio, USA                  2001,130               40.2319    82.9820    288.0        0.0
 ADK    IU  Adak, Aleutian Islands, Alaska                    1993,264               51.8837  -176.6844    116.000      0.000
 AFI    DW  Afiamalu, Western Samoa                           1981,137  1991,323    -13.9093  -171.7773    706.000      0.000
 AFI    IU  Afiamalu, Western Samoa                           1993,236              -13.9093  -171.7773    706.000      0.000
-AGMN   US  Agassiz National Wildlife Refuge, Minnesota,USA   2006,263               48.2978   -95.8619    351.1        0.0
+AGMN   US  Agassiz National Wildlife Refuge, Minnesota,USA   2006,263               48.2978    95.8619    351.1        0.0
 AHID   US  Auburn Hatchery, Idaho, USA                       1997,316               42.7654  -111.1004   1960.000      0.000
 ALE    II  Alert, N.W.T., Canada                             1990,050               82.5033   -62.3500     60.000      0.000
 ALQ    HG  Albuquerque, New Mexico, USA                      1972,244  1978,199     34.9425  -106.4575   1849.000    -10.000
 ALQ    DW  Albuquerque, New Mexico, USA                      1981,062  1982,214     34.9425  -106.4575   1849.000    -10.000
-AMTX   US  Amarillo, Texas, USA                              2005,104               34.8837  -101.6808   1010.0        0.0
 ANMO   SR  Albuquerque, New Mexico, USA                      1974,240  1989,242     34.9462  -106.4567   1740.000   -100.000
 ANMO   IU  Albuquerque, New Mexico, USA                      1989,241  1995,087     34.9502  -106.4602   1839.000   -100.000
 ANMO   IU  Albuquerque, New Mexico, USA                      1995,087               34.9502  -106.4602   1839.000   -150.000
 ANTO   SR  Ankara, Turkey                                    1978,203  1992,114     39.8689    32.7936    883.000   -195.000
 ANTO   IU  Ankara, Turkey                                    1992,269  1998,160     39.8689    32.7936    883.000   -195.000
-ANWB   CU  Willy Bob, Antigua and Barbuda                    2007,250               17.6685   -61.7856     39.0        0.0
 AQU    MN  L'Aquila, Italy                                   1993,146               42.3540    13.4050    725.000     15.000
 ARU    II  Arti, Russia                                      1988,258               56.4302    58.5625    250.000      0.000
 ASCN   II  Butt Crater, Ascension Island                     1994,274               -7.9327   -14.3601    173.000    100.000
@@ -43,24 +45,19 @@ BJT    IC  Baijiatuan, Beijing, China                        1994,145           
 BLA    US  Blacksburg, Virginia, USA                         1994,175               37.2113   -80.4210    634.000     57.900
 BMN    US  Battle Mountain, Nevada, USA                      1994,174  1997,014     40.4315  -117.2218   1500.000      0.000
 BMN    LB  Battle Mountain, Nevada, USA                      1997,014               40.4314  -117.2210   1500.000      0.000
-BMO    US  Blue Mountains Array (Baker), Oregon, USA         2005,102               44.8525  -117.3060   1154.0        0.0
 BNI    MN  Bardonecchia, Italy                               1993,146               45.0520     6.6780   1440.000     40.000
 BOCO   SR  Bogota, Columbia                                  1978,013  1987,316      4.5869   -74.0432   3071.000   -100.000
 BOCO   IU  Bogota, Colombia                                  1994,157  1996,235      4.5869   -74.0432   3160.000    -23.000
 BORG   II  Borgarfjordur, Asbjarnarstadir, Iceland           1994,212               64.7474   -21.3268    110.000     95.000
 BOSA   GT  Boshof, South Africa                              1993,057              -28.6141    25.2555   1280.000   -100.000
-BOZ    US  Bozeman, Montana, USA                             1999,314               45.6470  -111.6296   1589.0        0.0
-BRAL   US  Brewton, Alabama, USA                             2006,197               31.0114   -87.0568     61.0        0.0
+BRAL   US  Brewton, Alabama, USA                             2006,197               31.0114    87.0568     61.0        0.0
 BRVK   II  Borovoye, Kazakhstan                              1994,244               53.0581    70.2828    330.000     15.000
 BTDF   MS  Bukit Timah Dairy Farm, Singapore                 1996,214                1.3608   103.7729     64.400      0.000
 BW06   US  Boulder Array Site 6 (Pinedale), Wyoming, USA     1996,126               42.7667  -109.5583   2224.000      0.000
 CALB   TS  Calabasas, California, USA                        1994,011               34.1430  -118.6270      0.000      0.000
 CASY   IU  Casey, Antarctica                                 1996,050              -66.2792   110.5364    159.000      5.000
 CBKS   US  Cedar Bluff, Kansas, USA                          1994,255               38.8140   -99.7374    677.000      0.000
-STAT   NET LOCATION                                          START     TERMINATION LATITUDE  LONGITUDE  ELEVATION      DEPTH
-                                                             DATE      DATE       
 CBM    US  Caribou, Maine, USA                               1992,307  1994,341     46.9325   -68.1208    250.000      0.000
-CBN    US  Corbin (Fredericksburg Observatory), Virginia, USA2005,103               38.2046   -77.3732     70.0        0.0
 CCM    IU  Cathedral Cave, Missouri, USA                     1989,209               38.0557   -91.2446    222.500     51.000
 CEH    US  Chapel Hill, North Carolina, USA                  1991,088               35.8908   -79.0928    152.000      0.000
 CHG    HG  Chaing Mia, Thailand                              1972,232  1976,265     18.7900    98.9769    416.000      0.000
@@ -70,14 +67,14 @@ CII    MN  Carovilli, Italy                                  1994,251           
 CMB    DW  Columbia College, California, USA                 1987,108  1992,178     38.0350  -120.3850    719.000      0.000
 CMB    BK  Columbia College, California, USA                 1992,177               38.0350  -120.3850    719.000      0.000
 CMLA   II  Cha de Macela, Sao Miguel Island, Azores          1996,070               37.7637   -25.5243    429.000     97.000
-CNNC   US  Cliffs of the Neuse, North Carolina, USA          2006,242               35.2400   -77.8800     17.0        0.0
+CNNC   US  Cliffs of the Neuse, North Carolina, USA          2006,242               35.2400    77.8800     17.0        0.0
 COCO   II  West Island, Cocos (Keeling) Islands              1996,350              -12.1901    96.8349      1.000     70.000
 COL    DW  College Outpost, Alaska, USA                      1982,008  1991,068     64.9000  -147.7933    320.000      0.000
 COL    IU  College Outpost, Alaska, USA                      1991,067  1997,303     64.9000  -147.7933    320.000      0.000
 COLA   IU  College Outpost, Alaska, USA                      1996,166  1997,049     64.8738  -147.8511    194.900   -120.000
 COLA   IU  College Outpost, Alaska, USA                      1997,049               64.8738  -147.8511    194.900      0.000
 COR    IU  Corvallis, Oregon, USA                            1989,299               44.5857  -123.3032    121.000      0.000
-COWI   US  Conover, Wisconsin, USA                           2006,244               46.1003   -89.1369    523.3        0.0
+COWI   US  Conover, Wisconsin, USA                           2006,244               46.1003    89.1369    523.3        0.0
 CPUP   GT  Villa Florida, Paraguay                           1994,202              -26.3306   -57.3309    105.000   -100.000
 CTA    HG  Charters Towers, Australia                        1972,223  1976,244    -20.0883   146.2544    357.000    -37.000
 CTAO   AS  Charters Towers, Australia                        1976,260  1991,155    -20.0882   146.2545    357.000    -37.000
@@ -87,13 +84,13 @@ CWC    TS  Cottonwood Creek Canyon, California, USA          1995,103           
 DAC    LB  Darwin, Inyo County, California, USA              1996,358               36.2770  -117.5937   1813.600      0.000
 DAV    IU  Davao, Philippines                                1994,352                7.0878   125.5747     85.000      1.000
 DBIC   GT  Dimbokro, Cote d'Ivoire                           1994,168                6.6702    -4.8566    125.000   -100.000
-DGMT   US  Dagmar, Montana, USA                              2004,197               48.4702  -104.1959    646.0        0.0
+DGMT   US  Dagmar, Montana, USA                              2004,197               48.4702   104.1959    646.0        0.0
 DGR    TS  Domenigoni Valley Reservior, California, USA      1993,173               33.6500  -117.0090    700.000      0.000
 DPC    CZ  Dobruska, Czech Republic                          1992,342               50.3583    16.4111    760.000      0.000
 DUG    US  Dugway, Tooele County, Utah, USA                  1993,049               40.1950  -112.8133   1477.000      0.000
-ECSD   US  EROS Data Center, Sioux Falls, South Dakota, USA  2006,138               43.7300   -96.6000    468.8        0.0
-EGAK   US  Eagle, Central Alaska, Alaska, USA                2006,213               64.7774  -141.1581    296.6        0.0
-EGMT   US  Eagleton, Montana, USA                            2005,325               48.0240  -109.7547   1055.0        0.0
+ECSD   US  EROS Data Center, Sioux Falls, South Dakota, USA  2006,138               43.7300    96.6000    468.8        0.0
+EGAK   US  Eagle, Central Alaska, Alaska, USA                2006,213               64.7774   141.1581    296.6        0.0
+EGMT   US  Eagleton, Montana, USA                            2005,325               48.0240   109.7547   1055.0        0.0
 DWPF   IU  Disney Wilderness Preserve, Florida, USA          1998,214               28.1102   -81.4327     20.000    -162.00
 EFI    II  Mount Kent, East Falkland Island                  1996,047              -51.6753   -58.0637    110.000     80.000
 EIL    HG  Eilat, Israel                                     1972,181  1979,003     29.5500    34.9500    200.000   -200.000
@@ -101,38 +98,33 @@ ELK    US  Elko, Nevada, USA                                 1994,006           
 ENH    CD  Enshi, Hubei Province, China                      1986,352  1997,252     30.2718   109.4868    487.000      0.000
 ENH    IC  Enshi, Hubei Province, China                      1997,263               30.2718   109.4868    487.000      0.000
 ERM    II  Erimo, Hokkaido Island, Japan                     1990,141               42.0150   143.1572     40.000      0.000
-ERPA   US  Erie, Pennsylvania, USA                           2005,102               42.1175   -79.9891    306.3        0.0
 ESK    II  Eskdalemuir, Scotland, UK                         1987,317               55.3167    -3.2050    242.000      0.000
 EYMN   US  Ely, Minnesota, USA                               1994,269               47.9462   -91.4950    475.000      0.000
 FFC    II  Flin Flon, Canada                                 1993,240               54.7250  -101.9783    338.000      0.000
-FUNA   IU  Funafuti, Tuvalu                                  2004,021               -8.53     179.2         0.0        0.0
+FUNA   IU  Funafuti, Tuvalu                                  2004,021                8.53     179.2         0.0        0.0
 FURI   IU  Mt. Furi, Ethiopia                                1997,244                8.9030    38.6883   2545.000      5.000
 GAC    CN  Glen Almond, Quebec, Canada                       1982,116  1989,275     45.7032   -75.4783     62.000   -100.000
 GAR    II  Garm, Tajikistan                                  1988,258  1992,150     39.0000    70.3167   1300.000      0.000
 GDH    DW  Godhaven, Greenland                               1982,238  1993,293     69.2500   -53.5333     23.000      0.000
 GFA    MN  Gafsa, Tunisia                                    1989,161               34.3382     9.7265    450.000    200.000
 GLA    TS  Glamis, California, USA                           1994,155               33.0520  -114.8270    627.000      4.000
-GLMI   US  Grayling, Michigan, USA                           2006,223               44.8245   -84.6174    387.0        0.0
+GLMI   US  Grayling, Michigan, USA                           2006,223               44.8245    84.6174    387.0        0.0
 GNI    IU  Garni, Armenia                                    1991,191               40.0530    44.7240   1460.000    100.000
 GOGA   US  Godfrey, Georgia, USA                             1993,068               33.4112   -83.4666    150.000      0.000
 GOL    US  Golden (Bergen Park), Colorado, USA               1990,292  1996,067     39.7003  -105.3711   2359.000      0.000
-STAT   NET LOCATION                                          START     TERMINATION LATITUDE  LONGITUDE  ELEVATION      DEPTH
-                                                             DATE      DATE       
 GPO    TS  China Lake , California, USA                      1996,012               35.6494  -117.6619    735.000      0.000
 GRFO   SR  Grafenberg, Germany                               1978,225  1993,329     49.6919    11.2217    425.000   -100.000
 GRFO   IU  Grafenberg, Germany                               1994,026               49.6919    11.2217    425.000   -100.000
 GRGR   CU  Grenville, Grenada                                2006,346               12.1324   -61.654     195.000      0.0
-GRTK   CU  Grand Turk, Turks and Caicos Islands              2007,340               21.4115   -71.1327     12.0        0.0
 GSC    TS  Goldston, California, USA                         1990,201               35.3028  -116.8083    990.000      0.000
-GTBY   CU  Guantanamo Bay, Cuba                              2007,239               19.9268   -75.1108     79.2        0.0
 GUMO   SR  Guam, Marianas Islands                            1975,168  1985,101     13.5878   144.8662     14.000   -123.000
 GUMO   SR  Guam, Marianas Islands                            1985,101  1988,327     13.5878   144.8662     14.000      0.000
 GUMO   SR  Guam, Marianas Islands                            1988,327  1990,327     13.5878   144.8662     14.000   -100.000
 GUMO   IU  Guam, Marianas Islands                            1991,160               13.5878   144.8662     14.000   -109.000
 GUMO   IU  Guam, Marianas Islands                                                   13.5878   144.8662     14.000      0.000
 GWDE   US  Greenwood, Delaware, USA                          1995,250               38.8256   -75.6171     19.000      0.000
-HAWA   US  Hanford, Washington, USA                          1999,113               46.3925  -119.5326    364.0        0.0
-HDIL   US  Hopedale, Illinois, USA                           2006,213               40.5560   -89.2940    219.4        0.0
+HAWA   US  Hanford, Washington, USA                          1999,113               46.3925   119.5326    364.0        0.0
+HDIL   US  Hopedale, Illinois, USA                           2006,213               40.5560    89.2940    219.4        0.0
 HIA    CD  Hailar, Neimenggu Province, China                 1986,201  1994,338     49.2667   119.7417    610.000    -15.000
 HIA    IC  Hailar, Neimenggu Province, China                 1994,338               49.2667   119.7417    610.000      0.000
 HKT    IU  Hockley, Texas                                    1995,192               29.9618   -95.8384   -415.000      0.000
@@ -148,13 +140,12 @@ ISA    TS  Isabella, California, USA                         1991,038           
 ISCO   US  Idaho Springs, Colorado, USA                      1996,299               39.7997  -105.6134   2743.000      0.000
 JAS    DW  Jamestown, California, USA                        1980,275  1984,180     37.9467  -120.4383    457.000     -7.000
 JAS1   DW  Jamestown, California, USA                        1984,209  1987,109     37.9267  -120.4200    425.000     -7.000
-JCT    US  Junction, Texas, USA                              1965,060               30.4794   -99.8022    591.0        0.0 
+JCT    US  Junction, Texas, USA                              1965,060               30.4794    99.8022    591.0        0.0 
 JFWS   US  Jewell Farm, Wisconsin, USA                       1992,211               42.9143   -90.2481    335.000      0.000
 JOHN   IU  Johnston Island, USA                              1998,205               16.7329  -169.5292      2.500    -39.000
 JTS    II  Las Juntas de Abangares, Costa Rica               1995,113               10.2908   -84.9525    340.000      0.000
 KAAO   AS  Kabul, Afghanistan                                1977,121  1982,213     34.5407    69.0428   1920.000     -7.000
 KAPI   II  Kappang, Sulawesi, Indonesia                      1999,037               -5.0142   119.7517     30.000    100.000
-KBL    IU  Kabul, Afghanistan                                2006,313               34.5408    69.0432   1913.0        0.0
 KBS    DW  Kingsbay (Svalbard), Norway                       1986,291  1987,258     78.9175    11.9239     46.000      0.000
 KBS    IU  Ny-Alesund, Spitzbergen, Norway                   1994,309  1999,105     78.9256    11.9417     77.000     -3.000
 KBS    IU  Ny-Alesund, Spitzbergen, Norway                   1999,105               78.9256    11.9417     77.000      3.000
@@ -172,19 +163,15 @@ KMBO   IU  Kilima Mbogo, Kenya                               1995,260           
 KMI    CD  Kunming, Yunnan Province, China                   1986,159  1996,108     25.1233   102.7400   1975.000     35.000
 KMI    IC  Kunming, Yunnan Province, China                   1996,118               25.1233   102.7400   1975.000     35.000
 KNB    US  Kanab, Kane County, Utah, USA                     1995,137               37.0166  -112.8224   1715.000      0.000
-KNTN   IU  Kanton Island, Kiribati                           2007,336               -2.7744  -171.7185      0.3        0.0
-STAT   NET LOCATION                                          START     TERMINATION LATITUDE  LONGITUDE  ELEVATION      DEPTH
-                                                             DATE      DATE       
 KON    HG  Kongsberg, Norway                                 1972,241  1978,201     59.6491     9.5982    216.000   -340.000
 KONO   AS  Kongsberg, Norway                                 1978,214  1991,157     59.6491     9.5982    216.000   -340.000
 KONO   IU  Kongsberg, Norway                                 1991,171  1997,260     59.6491     9.5982    216.000   -340.000
 KONO   IU  Kongsberg, Norway                                 1997,260               59.6491     9.5982    216.000    340.000
 KOWA   IU  Kowa, Mali                                        1998,067               14.4967    -4.0140    321.300      5.000
-KSU1   US  Kansas State University--Konza Prairie,Kansas,USA 2001,255               39.1009   -96.6094    347.5        0.0
+KSU1   US  Kansas State University--Konza Prairie,Kansas,USA 2001,255               39.1009    96.6094    347.5        0.0
 KURK   II  Kurchatov, Kazakhstan                             1995,085               50.7154    78.6202    184.000     25.000
-KVTX   US  Kingsville, Texas, USA                            2006,244               27.5459   -97.8929     14.6        0.0
+KVTX   US  Kingsville, Texas, USA                            2006,244               27.5459    97.8929     14.6        0.0
 KWAJ   II  Kwajalein Atoll, Pacific Ocean                    1999,173                8.8019   167.6130      0.000      0.000
-LAO    US  LASA Array, Montana, USA                          2005,103               46.6885  -106.2231    902.0        0.0
 LBNH   US  Lisbon, New Hampshire, USA                        1993,226               44.2401   -71.9259    367.000      0.000
 LBTB   GT  Lobatse, Botswana, Africa                         1993,107  1993,203    -25.0151    25.5967   1128.000   -100.000
 LBTB   GT  Lobatse, Botswana, Africa                         1993,203              -25.0151    25.5967   1128.000    -30.000
@@ -193,14 +180,12 @@ LDS    LB  Leeds, Washington County, Utah, USA               1996,358  1998,182 
 LEM    DW  Lembang, Indonesia                                1982,153  1988,311     -6.8333   107.6167   1252.000      0.000
 LKWY   US  Lake (Yellowstone--Lake), Wyoming, USA            1995,284               44.5652  -110.4000   2424.000      0.000
 LON    DW  Longmire, Washington, USA                         1980,275  1994,101     46.7500  -121.8100    854.000      0.000
-LONY   US  Lake Ozonia, New York, USA                        2005,274               44.6197   -74.5829    440.0        0.0
+LONY   US  Lake Ozonia, New York, USA                        2005,274               44.6197    74.5829    440.0        0.0
 LPAZ   GT  La Paz , Bolivia                                  1993,232              -16.2879   -68.1307   4769.000   -100.000
-LRAL   US  Lakeview Retreat, Alabama, USA                    2005,102               33.0348   -86.9978    130.0        0.0
 LSA    CD  Tibet, China                                      1991,333  1995,205     29.7000    91.1500   3789.000     15.000
 LSA    IC  Tibet, China                                      1995,215               29.7000    91.1500   3789.000     15.000
 LSCT   US  Lakeside, Connecticut, USA                        1993,218               41.6784   -73.2244    318.000      0.000
 LSZ    IU  Lusaka, Zambia                                    1994,217              -15.2766    28.1882   1184.800      0.000
-LTX    US  Lajitas, Texas, USA                               2005,103               29.3339  -103.6669   1013.0        0.0
 LVC    IU  Limon Verde, Chile                                1996,337              -22.6128   -68.9113   2195.000     30.000
 LVZ    II  Lovozero, Russia                                  1992,336               67.8979    34.6514    630.000    200.000
 LZH    CD  Lanzhou, Gansu Province, China                    1986,151               36.0867   103.8444   1560.000      0.000
@@ -222,25 +207,18 @@ MEB    MN  Medea, Algeria                                    1992,140           
 MIAR   US  Mount Ida, Arkansas, USA                          1992,267               34.5454   -93.5765    207.000      0.000
 MIDW   IU  Midway Island, USA                                1999,296               28.2157  -177.3697     18.800    -93.600
 MLAC   TS  Mammoth Lakes, California, USA                    1993,127               37.6310  -118.8340   2170.000      0.000
-MNTX   US  Cornudas Mountains, Texas, USA                    2005,102               31.6985  -105.3821    404.8        0.0
 MNV    US  Mina, Nevada, USA                                 1994,356               38.4328  -118.1531   1524.000      0.000
 MSEY   II  Mahe, Seychelles                                  1995,135               -4.6737    55.4792    475.000     91.000
 MSKU   IU  Masuku, Gabon                                     1999,058               -1.6557    13.6116    312.000     25.000
-MSO    US  Missoula, Montana, USA                            2005,102               46.8292  -113.9406   1264.0        0.0
 MSVF   II  Monasavu, Fiji                                    1994,144              -17.7333   178.0500    783.000    100.000
-MTDJ   CU  Mount Denham, Jamaica                             2007,340               18.2260   -77.5345    973.0        0.0
-MVCO   US  Mesa Verde, Colorado, USA                         2006,091               37.2103  -108.4986   2169.9        0.0
+MVCO   US  Mesa Verde, Colorado, USA                         2006,091               37.2103   108.4986   2169.9        0.0
 MVU    LB  Marysvale, Piute County, Utah, USA                1998,342               38.5037  -112.2123   2239.600      0.000
 MYNC   US  Murphy, North Carolina, USA                       1993,090               35.0739   -84.1279    550.000      0.000
 NAI    IU  Nairobi, Kenya                                    1995,005  1995,261     -1.2739    36.8037   1692.000      0.000
-NATX   US  Nacogdoches, Texas, USA                           2005,102               31.7598   -94.6610    168.0        0.0
 NEE    TS  Needles, California, USA                          1993,106               34.8230  -114.5960    139.000      0.000
-STAT   NET LOCATION                                          START     TERMINATION LATITUDE  LONGITUDE  ELEVATION      DEPTH
-                                                             DATE      DATE       
 NEW    US  Newport, Washington, USA                          1993,317               48.2633  -117.1200    760.000      0.000
-NHSC   US  New Hope, South Carolina, USA                     2005,102               33.1067   -80.1778     11.0        0.0
 NIL    II  Nilore, Pakistan                                  1994,352               33.6506    73.2686    629.000     68.000
-NLWA   US  Neilton Lookout, Washington, USA                  2006,213               47.3900  -123.8700    610.0        0.0
+NLWA   US  Neilton Lookout, Washington, USA                  2006,213               47.3900   123.8700    610.0        0.0
 NNA    II  Nana, Peru                                        1988,174              -11.9875   -76.8422    575.000      0.000
 NRIL   II  Norilsk, Russia                                   1992,350               69.5049    88.4414     92.000    506.000
 NVS    II  Novosibirsk, Russia                               1992,197  1994,047     54.8404    83.2346    150.000      0.000
@@ -260,14 +238,13 @@ PAYG   IU  Puerto Ayora, Galapagos Islands                   1998,170           
 PET    IU  Petropavlovsk, Russia                             1993,240               53.0235   158.6498    150.000     -5.000
 PFO    II  Pinon Flat, California, USA                       1986,297               33.6092  -116.4553   1280.000      0.000
 PFO    TS  Pinon Flat, California, USA                       1990,304               33.6092  -116.4553   1280.000      0.000
-PKME   US  Peaks-Kenny State Park, Maine, USA                2006,182               45.2644   -69.2917    108.5        0.0
+PKME   US  Peaks-Kenny State Park, Maine, USA                2006,182               45.2644    69.2917    108.5        0.0
 PLCA   GT  Paso Flores, Argentina                            1994,310              -40.7328   -70.5508   1050.000   -100.000
 PMG    IU  Port Moresby, New Guinea                          1993,253               -9.4092   147.1539     67.000      0.000
 PMSA   IU  Palmer Station, Antarctica                        1993,062              -64.7742   -64.0490     10.000      0.000
 POHA   IU  Pohakuloa, Hawaii, USA                            1999,317               19.7575  -155.5325   1967.000    -80.300
 PTCN   IU  Pitcarn Island, South Pacific                     1996,364              -25.0728  -130.0947    195.000      2.000
 PTGA   IU  Pitinga, Brazil                                   1995,319               -0.7308   -59.9666    237.000   -100.000
-RLMT   US  Red Lodge, Montana, USA                           2006,255               45.1221  -109.2673   2086.0        0.0
 QIZ    CD  Qiongzhong, Guangduong Province, China            1992,139  2001,049     19.0294   109.8433    230.000      0.000
 QIZ    IC  Qiongzhong, Guangduong Province, China            2001,049               19.0294   109.8433    230.000      0.000
 QSPA    IU  South Pole, Antarctica                           2002,001              -89.9279   145.0000   2927.000     270.000
@@ -291,11 +268,8 @@ SACV   II  Santiago Island, Cape Verde                       2000,150           
 SAML   IU  Samuel, Brazil                                    2003,128               -8.9488   -63.1832    130.000      0.000
 SBA    GT  Scott Base, Antarctica                            1993,363  1998,301    -77.8491   166.7573     20.000      0.000
 SBA    IU  Scott Base, Antarctica                            1998,301              -77.8491   166.7573     20.000      2.000
-STAT   NET LOCATION                                          START     TERMINATION LATITUDE  LONGITUDE  ELEVATION      DEPTH
-                                                             DATE      DATE       
 SBC    TS  Santa Barbara, California, USA                    1990,354               34.4417  -119.7133     90.000      0.000
-SCIA   US  State Center, Iowa, USA                           2006,121               41.9069   -93.2153    108.5        0.0
-SDCO   US  Great Sand Dunes National Park, Colorado, USA     2005,098               37.7456  -105.5012   2569.0        0.0
+SCIA   US  State Center, Iowa, USA                           2006,121               45.2644    69.2917    108.5        0.0
 SCP    DW  State College, Pennsylvania, USA                  1981,029  1992,255     40.7949   -77.8650    352.000      0.000
 SDDR   CU  Presa de Sabaneta, Dominican Republic             2006,242               18.9821   -71.287     589.000      0.000
 SDV    IU  Santo Domingo, Venezuela                          1994,231  1998,142      8.8790   -70.6330   1550.000    -32.000
@@ -306,7 +280,6 @@ SFJD   IU  Sondre Stromfjord, Greenland                      2005,031           
 SHEL   II  Horse Pasture, St. Helena Island                  1995,170              -15.9588    -5.7457    537.000     60.000
 SHIO   SR  Shillong, India                                   1978,125  1985,289     25.5666    91.8830   1509.000    -91.000
 SJG    IU  San Juan, Puerto Rico                             1993,146               18.1117   -66.1500    457.000      0.000
-SLBS   IU  Sierra la Laguna Baja California Sur, Mexico      2008,350               23.6505   109.8645    542.000      0.000
 SLR    DW  Silverton, South Africa                           1981,297  1993,021    -25.7349    28.2816   1348.000     -1.000
 SMTC   TS  Superstition Mountain, California, USA            1993,126  1996,123     32.9490  -115.7200    -50.000      0.000
 SNCC   TS  San Nicolas Island, California, USA               1994,123               33.2480  -119.5240    227.000      0.000
@@ -324,7 +297,6 @@ SSE    IC  Shanghai, China                                   1996,263           
 SSPA   IU  Standing Stone, Pennsylvania                      1994,335               40.6401   -77.8914    352.000   -100.000
 SUR    II  Sutherland, South Africa                          1990,303              -32.3797    20.8117   1770.000      0.000
 SVD    TS  Seven Oaks Dam, California, USA                   1991,142               34.1045  -117.0970    600.000      0.000
-TARA   IU  Tarawa Island, Republic of Kiribati               2007,001                1.3549   172.9229     19.0        0.0
 TATO   SR  Taipei, Taiwan                                    1976,091  1992,185     24.9754   121.4881     53.000    -90.000
 TATO   IU  Taipei, Taiwan                                    1992,270               24.9754   121.4881     53.000    -90.000
 TAU    DW  Hobart, Tasmania, Australia                       1981,217  1993,302    -42.9099   147.3204    132.000     -7.000
@@ -346,25 +318,19 @@ TRQA   IU  Tornquist, Argentina                              2000,302           
 TSUM   IU  Tsumeb, Namibia                                   1994,231              -19.2022    17.5838   1240.000      0.000
 TTE    MN  Trieste, Italy                                    1993,146               45.6600    13.7900     94.000      2.000
 TUC    IU  Tucson, Arizona                                   1992,165               32.3096  -110.7846    874.000      1.000
-TZTN   US  Tazewell, Tennessee, USA                          2005,054               36.5439   -83.5490    394.0        0.0
 ULN    IU  Ulaanbaatar, Mongolia                             1994,304               47.8652   107.0528   1615.000      0.000
 USC    TS  USC, Los Angeles, California, USA                 1993,090               34.0210  -118.2870     60.000      0.000
-STAT   NET LOCATION                                          START     TERMINATION LATITUDE  LONGITUDE  ELEVATION      DEPTH
-                                                             DATE      DATE       
-VBMS   US  Vicksburg, Mississippi, USA                       2007,116               32.2185   -90.5176     16.0        0.0
 VNDA   GT  Wright Valley (Bull Pass) Antarctica              1993,362              -77.5172   161.8528    151.000   -100.000
 VSL    MN  Villasalto, Italy                                 1989,200               39.4960     9.3780    380.000     10.000
 VTV    TS  Victorville, California, USA                      1993,106               34.5670  -117.3330    847.000      0.000
 WAKE   IU  Wake Island                                       1997,126               19.2833   166.6536      1.200      1.000
 WCI    IU  Wyandotte Cave, Indiana, USA                      1997,198               38.2290   -86.2940    638.000    132.000
-WDD    MN  Wield Dalam, Malta                                1995,187               35.867     14.5230     41.000      0.0
 WMOK   US  Wichita Mountains, Oklahoma, USA                  1992,317               34.7379   -98.7810    486.000      0.000
 WMQ    CD  Urumqi, Xinjiang Province, China                  1986,249  1995,260     43.8211    87.6950    903.000      6.000
 WMQ    IC  Urumqi, Xinjiang Province, China                  1995,266               43.8211    87.6950    903.000      6.000
 WRAB   II  Tennant Creek, NT, Australia                      1994,086              -19.9336   134.3600    366.000    100.000
-WRAK   US  Wrangell Island, Southeastern Alaska, Alaska, USA 2006,213               56.4191  -132.3466     80.9        0.0
+WRAK   US  Wrangell Island, Southeastern Alaska, Alaska, USA 2006,213               56.4191   132.3466     80.9        0.0
 WUAZ   US  Wupatki, Arizona, USA                             1998,132               35.5169  -111.3739   1592.000      0.000
-WVL    NE  Waterville, ME, USA                               2012,032                44.565    -69.662     50.000      0.00
 WVOR   US  Wild Horse Valley, Oregon, USA                    1994,173               42.4340  -118.6367   1344.000      0.000
 WVT    IU  Waverly, Tennessee, USA                           1997,106               36.1300   -87.8300    157.000      0.000
 XAN    IC  Xi'an, China                                      1992,334               34.0313   108.9237    630.000      0.000
