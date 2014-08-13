@@ -87,38 +87,6 @@
         </java>
     </target>
 
-    <!-- LIBRARIES -->
-    <target name="libraries" description="Add libraries">
-	<!-- Copy lib/ to build/lib -->
-	<echo message="Copying ${lib.dir} to ${build.root}/lib"/> 
-	<copy todir="${build.root}/lib">
-            <fileset dir="${lib.dir}"/>
-        </copy>
-	<!-- Copy plugins/ to build/plugins --> 
-	<echo message=""/>	
-	<echo message="Copying ${plugins.dir} to ${build.root}/plugins"/>
-	<copy todir="${build.root}/plugins">
-	    <fileset dir="${plugins.dir}"/>
-	</copy>
-	<!-- Copy resources/ to build/resources -->	
-	<echo message=""/>	
-	<echo message="Copying ${resources.dir} to ${build.root}/resources"/>
-	<copy todir="${build.root}/resources">
-	    <fileset dir="${resources.dir}"/>
-	</copy>
-	<!-- Copy seed/ to build/seed -->	
-	<echo message=""/>	
-	<echo message="Copying ${seed.dir} to ${build.root}/seed"/>	
-	<copy todir="${build.root}/seed">
-	    <fileset dir="${seed.dir}"/>
-	</copy>
-	<!-- Copy config.xml and log4j.properties -->
-	<echo message=""/>	
-	<echo message="Copying ${config} to ${build.root}"/>	
-	<copy file="${config}" todir="${build.root}"/>
-	<!--copy file="${src.dir}/log4j.properties" todir="${build.root}"/-->
-    </target>
-
     <!-- BUILD-PLUGINS -->
     <target name="build-plugins">
         <!-- mkdir dir="${build.root}/plugins" / -->
@@ -169,7 +137,7 @@
     </target>
 
     <!-- JAR -->
-    <target name="jar" depends="compile,libraries" description="generate the distribution">
+    <target name="jar" depends="compile" description="generate the distribution">
 	<!--echo message="Deleting and creating ${manifest.file}"/-->
 	<!--echo message="Classpath = ${jar.classpath}"/-->
 	<tstamp/><!-- needed for TODAY --> 
