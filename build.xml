@@ -94,17 +94,11 @@
 	<copy todir="${build.root}/lib">
             <fileset dir="${lib.dir}"/>
         </copy>
-        <!-- Copy plugins/ to build/plugins --> 
+	<!-- Copy plugins/ to build/plugins --> 
 	<echo message=""/>	
 	<echo message="Copying ${plugins.dir} to ${build.root}/plugins"/>
 	<copy todir="${build.root}/plugins">
 	    <fileset dir="${plugins.dir}"/>
-	</copy>
-	<!-- Copy seed/ to build/seed -->	
-	<echo message=""/>	
-	<echo message="Copying ${seed.dir} to ${build.root}/seed"/>	
-	<copy todir="${build.root}/seed">
-	    <fileset dir="${seed.dir}"/>
 	</copy>
 	<!-- Copy resources/ to build/resources -->	
 	<echo message=""/>	
@@ -112,19 +106,19 @@
 	<copy todir="${build.root}/resources">
 	    <fileset dir="${resources.dir}"/>
 	</copy>
-	<!-- Copy logs/ to build/logs -->
+	<!-- Copy seed/ to build/seed -->	
 	<echo message=""/>	
-	<echo message="Copying ${logs.dir} to ${build.root}/logs"/>
-	<copy todir="${build.root}/logs">
-	    <fileset dir="${logs.dir}"/>
+	<echo message="Copying ${seed.dir} to ${build.root}/seed"/>	
+	<copy todir="${build.root}/seed">
+	    <fileset dir="${seed.dir}"/>
 	</copy>
 	<!-- Copy config.xml and log4j.properties -->
 	<echo message=""/>	
-	<echo message="Copying ${src.dir}/log4j.properties and ${config} to ${build.root}"/>	
+	<echo message="Copying ${config} to ${build.root}"/>	
 	<copy file="${config}" todir="${build.root}"/>
-	<copy file="${src.dir}/log4j.properties" todir="${build.root}"/>
+	<!--copy file="${src.dir}/log4j.properties" todir="${build.root}"/-->
     </target>
-    
+
     <!-- BUILD-PLUGINS -->
     <target name="build-plugins">
         <!-- mkdir dir="${build.root}/plugins" / -->
@@ -175,20 +169,11 @@
     </target>
 
     <!-- JAR -->
-    <!--target name="jar" depends="libraries" description="generate the distribution"-->
     <target name="jar" depends="compile,libraries" description="generate the distribution">
 	<!--echo message="Deleting and creating ${manifest.file}"/-->
 	<!--echo message="Classpath = ${jar.classpath}"/-->
 	<tstamp/><!-- needed for TODAY --> 
 	<jar destfile="${project.archive}" manifest="${manifest.file}" basedir="${build.root}">
-	    <!--manifest>
-	        <attribute name="Built-By" value="${user.name}"/>
-		<attribute name="Built-Date" value="${TODAY}"/>
-		<attribute name="Implementation-Version" value="${imp.version}"/>
-		<attribute name="Implementation-Vendor" value='"${imp.vendor}"'/>
-	   	<attribute name="Main-Class" value="${project.main}"/>
-		<attribute name="Class-Path" value="${jar.classpath}"/>
-	    </manifest-->
 	</jar>
     </target>
 </project>
