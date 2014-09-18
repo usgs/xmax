@@ -24,7 +24,7 @@
 		<Data>
 			<!-- Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*" -->
 			<!-- DataMask>resources/DATA</DataMask -->
-			<DataMask>seed/IU_TUC/2014_21*</DataMask>
+			<DataMask>seed/IU_MACI/2014_236</DataMask>
 
 			<!-- Temporary directory to store decompressed traces in the internal 
 				format -->
@@ -34,7 +34,7 @@
 			<!--QCdataFile>/home/max/DATA/QC.xml</QCdataFile-->
 
 			<!-- Station files/paths -->
-			<EventFileMask>resources/qcmt.ndk</EventFileMask>
+			<EventFileMask>resources/*.ndk</EventFileMask>
 			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
 			<ResponsePath>resources/Responses</ResponsePath>
 			<AllowMultiplexedData>true</AllowMultiplexedData>
