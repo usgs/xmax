@@ -100,6 +100,17 @@
         <ant dir="plugins/com.isti.xmax.psd" target="build" />
         <ant dir="plugins/com.isti.xmax.showResponse" target="build" />
         <ant dir="plugins/com.isti.xmax.spectra" target="build" />
+   	<copy todir="plugins/com.isti.xmax.filter.dyo/classes">
+	    <fileset dir="plugins/com.isti.xmax.filter.lowpass/classes">
+	        <include name="*.class"/>
+	    </fileset>
+   	    <fileset dir="plugins/com.isti.xmax.filter.highpass/classes">
+	        <include name="*.class"/>
+	    </fileset>
+	    <fileset dir="plugins/com.isti.xmax.filter.bandpass/classes">
+	        <include name="*.class"/>
+	    </fileset>
+	</copy>
     </target>
 
     <!-- CREATE-MANIFEST -->
