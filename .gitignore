@@ -1,1 +1,5 @@
 xmax.jar
+build/
+logs/
+*.class
+**/**/classes

@@ -17,6 +17,31 @@
 <project name="com.isti.xmax.filter.reconvolution plug-in build file"
          default="help"
          basedir=".">
+    
+    <!-- Global Properties -->
+    <property name="lib.dir"	location="../../lib"/>
+    <property name="build.dir"	location="../../build"/>
+
+    <!-- Build Classpath (Java Plugins) -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+	    <include name="*.jar"/>
+	</fileset>
+    </path>
+    <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
+        <classpath refid="classpath"/>
+    </typedef>
+    
+    <!-- Plugin Classpath -->
+    <path id="plugin.classpath">
+        <pathelement location="../../build"/>
+        <dirset dir="../">
+            <include name="**/classes"/>
+        </dirset>
+        <fileset dir="../../lib/">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
 
     <!-- Plugin Info -->
     <jpf-info manifest="${basedir}/plugin.xml"
@@ -24,18 +49,7 @@
 	      propertyversion="plugin.version" />
     <property name="plugin.home" value="${basedir}" />
 
-    <!-- Plugin Classpath -->	
-    <path id="plugin.classpath">
-        <pathelement location="../../build"/>
-        <dirset dir="../">
-            <include name="**/classes"/>
-        </dirset>
-    	<fileset dir="../../lib/">
-    	    <include name="**/*.jar"/>
-    	</fileset>
-    </path>
-
-    <!-- Initializes Java Plugins using JPF --> 
+    <!-- Initializes Java Plugins using JPF -->
     <jpf-path pathidref="plugin.classpath" pluginid="${plugin.id}">
         <fileset dir="${plugin.home}/.."
 		 includes="*/plugin*.xml"
@@ -48,8 +62,8 @@
         <echo>
 	    <![CDATA[
 	        ${plugin.id} plug-in build file:
-		Use top-level project build file to build application.
-	    ]]>
+                Use top-level project build file to build application.
+            ]]>
 	</echo>
     </target>
 
@@ -59,21 +73,22 @@
     </target>
 
     <!-- BUILD -->	
-    <!-- target="1.7" in <javac></javac> --> 
+    <!-- target="1.7" in <javac></javac> -->  
     <target name="build" depends="clean_build">
         <echo>Building plug-in ${plugin.id} to folder ${plugin.home}</echo>
 	<mkdir dir="${plugin.home}/classes" />
-	<javac destdir="${plugin.home}/classes"
+	<javac verbose="false" 
 	       srcdir="${basedir}/source"
-	       classpathref="plugin.classpath"
-	       excludes=""
+	       destdir="${plugin.home}/classes" 
+	       listfiles="true" 
+	       encoding="utf-8" 
 	       debug="true"
-	       optimize="false"
 	       includeantruntime="false">
+	    <classpath refid="plugin.classpath"/> 
 	    <compilerarg value="-Xlint"/>	
 	</javac>
 
-	<!-- Not sure this is needed since plugin.home = basedir
+        <!-- Not sure this is needed since plugin.home = basedir
 	<copy todir="${plugin.home}/classes">
 	    <fileset dir="${basedir}/source"
 		     includes="**/*"
@@ -89,10 +104,10 @@
     <!-- DOCS -->	
     <target name="docs">
         <echo>Generating javadoc for plug-in ${plugin.id} to folder ${plugin.home}/docs/api</echo>
-	<javadoc destdir="${plugin.home}/docs/api"
-		 classpathref="plugin.classpath"
-		 sourcepath="${basedir}/source"
-		 packagenames="${plugin.id}.*">
-	</javadoc>
+	    <javadoc destdir="${plugin.home}/docs/api"
+		     classpathref="plugin.classpath"
+		     sourcepath="${basedir}/source"
+		     packagenames="${plugin.id}.*">
+	    </javadoc>
     </target>
 </project>
