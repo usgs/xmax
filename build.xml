@@ -4,6 +4,7 @@
     </description>
 
     <!-- GLOBAL PROPERTIES --> 
+    <property name="base.dir"	      location="."/> 
     <property name="src.dir"          location="src"/>
     <property name="lib.dir"          location="lib"/>
     <property name="plugins.dir"      location="plugins"/> 
@@ -32,7 +33,7 @@
     <!-- COMPILE CLASSPATH --> 
     <path id="compile.classpath">
         <fileset dir="${lib.dir}">
-            <include name="**/*.jar"/>
+            <include name="*.jar"/>
         </fileset>
     </path>
 
@@ -42,9 +43,9 @@
 	<fileset dir="${lib.dir}">
    	    <include name="*.jar"/>
 	</fileset>
-	<fileset dir="${plugins.dir}">
+	<!--fileset dir="${plugins.dir}">
 	    <include name="**/classes/*.class"/>
-	</fileset>
+	</fileset-->
    	<pathelement location="."/>
 	<!--pathelement location="${basedir}/${project.archive}"/-->
     </path>
@@ -58,7 +59,7 @@
     <path id="run.classpath">
         <pathelement path="${build.root}"/>
         <fileset dir="${lib.dir}">
-            <include name="**/*.jar"/>
+            <include name="*.jar"/>
         </fileset>
         <dirset dir="${plugins.dir}">
             <include name="**/classes"/>
@@ -87,9 +88,49 @@
         </java>
     </target>
 
+    <!-- CREATE-MANIFEST -->
+    <target name="create-manifest" description="Create MANIFEST.MF for xmax.jar archive">
+        <tstamp/><!-- needed for TODAY -->
+	<delete file="${manifest.file}"/>
+	<echo message="Creating new ${manifest.file}"/>
+	<manifest file="${manifest.file}">
+	    <!--section name="${ant.project.name}"-->
+	    <attribute name="Built-By" value="${user.name}"/>
+	    <attribute name="Built-Date" value="${TODAY}"/>
+	    <attribute name="Implementation-Version" value="${imp.version}"/>
+	    <attribute name="Implementation-Vendor" value='"${imp.vendor}"'/>
+	    <attribute name="Main-Class" value="${project.main}"/>
+	    <attribute name="Class-Path" value="${jar.classpath}"/>
+	    <!--</section-->
+	</manifest>
+    </target>
+    
+    <!-- COMPILE -->
+    <!-- target="1.7" in '<javac></javac>' --> 
+    <target name="compile" depends="init,create-manifest" description="Compile the source [depends=init]">
+        <property name="myclasspath" refid="compile.classpath"/>
+	<javac verbose="false" 
+	       srcdir="${src.dir}" 
+	       destdir="${build.root}" 
+	       listfiles="true" 
+	       encoding="utf-8" 
+	       debug="true" 
+	       includeantruntime="false">
+            <classpath refid="compile.classpath"/>
+            <compilerarg value="-Xlint"/>
+        </javac>
+        <copy todir="${build.root}">
+	    <fileset dir="${base.dir}">
+	        <include name="log4j.properties"/>
+	    </fileset>
+	    <fileset dir="${src.dir}">
+	        <include name="META-INF/**"/>
+	    </fileset>
+	</copy>
+    </target>
+
     <!-- BUILD-PLUGINS -->
-    <target name="build-plugins">
-        <!-- mkdir dir="${build.root}/plugins" / -->
+    <target name="build-plugins" description="Compile plugin source [depends=compile]">
         <ant dir="plugins/com.isti.xmax.filter.lowpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.highpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.bandpass" target="build" />
@@ -113,44 +154,9 @@
 	</copy>
     </target>
 
-    <!-- CREATE-MANIFEST -->
-    <target name="create-manifest" depends="build-plugins" description="Create MANIFEST.MF for xmax.jar archive">
-        <tstamp/><!-- needed for TODAY -->
-	<delete file="${manifest.file}"/>
-	<echo message="Creating new ${manifest.file}"/>
-	<manifest file="${manifest.file}">
-	    <!--section name="${ant.project.name}"-->
-	    <attribute name="Built-By" value="${user.name}"/>
-	    <attribute name="Built-Date" value="${TODAY}"/>
-	    <attribute name="Implementation-Version" value="${imp.version}"/>
-	    <attribute name="Implementation-Vendor" value='"${imp.vendor}"'/>
-	    <attribute name="Main-Class" value="${project.main}"/>
-	    <attribute name="Class-Path" value="${jar.classpath}"/>
-	    <!--</section-->
-	</manifest>
-    </target>
-    
-    <!-- COMPILE -->
-    <!-- target="1.7" in '<javac></javac>' --> 
-    <target name="compile" depends="init,create-manifest" description="Compile the source [depends=init]">
-        <property name="myclasspath" refid="compile.classpath"/>
-	<!--echo message="Classpath = ${myclasspath}"/-->
-	<javac verbose="false" 
-	       srcdir="${src.dir}" 
-	       destdir="${build.root}" 
-	       listfiles="true" 
-	       encoding="utf-8" 
-	       debug="true" 
-	       includeantruntime="false">
-            <classpath refid="compile.classpath"/>
-            <compilerarg value="-Xlint"/>
-        </javac>
-    </target>
-
     <!-- JAR -->
-    <target name="jar" depends="compile" description="generate the distribution">
+    <target name="jar" depends="compile,build-plugins" description="generate the distribution">
 	<!--echo message="Deleting and creating ${manifest.file}"/-->
-	<!--echo message="Classpath = ${jar.classpath}"/-->
 	<tstamp/><!-- needed for TODAY --> 
 	<jar destfile="${project.archive}" manifest="${manifest.file}" basedir="${build.root}">
 	</jar>
