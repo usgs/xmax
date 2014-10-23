@@ -39,7 +39,7 @@ public class TimeInterval {
 		DATE_FORMAT_LONG
 	};
 
-	private static Logger lg = Logger.getLogger(TimeInterval.class);
+	private static Logger logger = Logger.getLogger(TimeInterval.class);
 	public static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD,HH:mm:ss.SSS");
 	public static SimpleDateFormat df_middle = new SimpleDateFormat("yyyy,DDD,HH:mm:ss");
 	public static SimpleDateFormat df_long = new SimpleDateFormat("yyyy,DDD,HH:mm");
@@ -224,7 +224,6 @@ public class TimeInterval {
 	 * String representation of duration in seconds (if duration less then hour), hours (if duration less then day) or decimal days
 	 */
 	public static String getStringDiff(long duration) {
-		//lg.debug("TimeInterval.getStringDiff: duration="+ duration);
 		String ret = "";
 		if (duration < 0) {
 			duration = -duration;
@@ -245,7 +244,6 @@ public class TimeInterval {
 			Double days = new Double(duration) / 86400000;
 			ret = ret + new DecimalFormat("#######.###").format(days) + " d";
 		}
-		//lg.debug("TimeInterval.getStringDiff return: "+ ret);
 		return ret;
 	}
 
@@ -253,7 +251,6 @@ public class TimeInterval {
 	 * String representation of duration in the form +-##days ##hours ##min ##.## s
 	 */
 	public static String getStringDiffDDHHMMSS(long duration) {
-		//lg.debug("TimeInterval.getStringDiffDDHHMMSS: duration="+ duration);
 		String ret = "";
 		if (duration < 0) {
 			duration = -duration;
@@ -286,7 +283,6 @@ public class TimeInterval {
 			ret = ret + ", ";
 		}
 		ret = ret + sec + " s";
-		//lg.debug("TimeInterval.getStringDiffDDHHMMSS return: "+ ret);
 		return ret;
 	}
 
@@ -369,10 +365,12 @@ public class TimeInterval {
 				ret = df_long.parse(date);
 				break;
 			default:
-				lg.error("Wrong date format type: " + type);
+				logger.error("Wrong date format type: " + type);
 			}
 		} catch (ParseException e) {
-			lg.error("Cant parse date from string " + date + "; " + e);
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("Cant parse date from string " + date));
+			logger.error(message.toString(), e);
 		}
 		return ret;
 	}
@@ -395,7 +393,7 @@ public class TimeInterval {
 		case DATE_FORMAT_LONG:
 			return df_long.format(date);
 		default:
-			lg.error("Wrong date format type: " + type);
+			logger.error("Wrong date format type: " + type);
 			return null;
 		}
 	}
