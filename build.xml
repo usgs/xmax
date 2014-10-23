@@ -135,7 +135,6 @@
 	<ant dir="plugins/com.isti.xmax.filter.highpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.bandpass" target="build" />
         <ant dir="plugins/com.isti.xmax.filter.dyo" target="build" />
-       	<!-- 
 	<ant dir="plugins/com.isti.xmax.filter.reconvolution" target="build" /> 
 	<ant dir="plugins/com.isti.xmax.correlation" target="build" />
         <ant dir="plugins/com.isti.xmax.ppm" target="build" />
@@ -153,7 +152,6 @@
 	        <include name="*.class"/>
 	    </fileset>
 	</copy>
-   	--> 
     </target>
 
     <!-- JAR -->
