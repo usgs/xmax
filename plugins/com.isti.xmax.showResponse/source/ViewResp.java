@@ -16,7 +16,6 @@ import org.jfree.data.xy.XYDataset;
 
 import com.isti.traceview.common.TraceViewChartPanel;
 
-
 public class ViewResp extends JDialog implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;

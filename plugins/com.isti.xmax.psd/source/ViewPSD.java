@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
@@ -72,7 +73,7 @@ import com.isti.traceview.processing.Spectra;
 public class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressListener {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(ViewPSD.class);
+	private static Logger logger = Logger.getLogger(ViewPSD.class);
 	private static final String huttFreqsFile = "hutt_freqs";
 	private static final String huttPeriodsKey = "HuttPeriods";
 	private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
@@ -174,6 +175,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 							stream.close();
 						} catch (IOException e1) {
 							// do nothing
+							logger.error("Can't close buffered output stream");	
 						}
 					}
 				}
@@ -203,6 +205,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 							ds.close();
 						} catch (Exception e1) {
 							// do nothing
+							logger.error("Can't close data output stream");	
 						}
 					}
 				}
@@ -232,6 +235,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 						stream.close();
 					} catch (IOException e1) {
 						// do nothing
+						logger.error("Can't close data stream");	
 					}
 				}
 			} else if (value.equals("Export GRAPH")) {

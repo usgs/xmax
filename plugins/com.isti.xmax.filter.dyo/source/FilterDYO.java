@@ -10,7 +10,12 @@ import javax.swing.JPanel;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.IFilter;
+import com.isti.traceview.processing.BPFilterException;
+import com.isti.traceview.processing.HPFilterException;
+import com.isti.traceview.processing.LPFilterException;
 import com.isti.xmax.gui.XMAXframe;
+
+import org.apache.log4j.Logger;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
@@ -31,6 +36,8 @@ import javax.swing.border.EtchedBorder;
 public class FilterDYO extends JDialog implements IFilter, PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = Logger.getLogger(FilterDYO.class);
+
 	private static Double cutLowFrequency = null;
 	private static Double cutHighFrequency = null;
 	private static Integer order = null;
@@ -152,11 +159,13 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 				try {
 					cutLowFrequency = Double.parseDouble(lowFrequencyTF.getText());
 				} catch (NumberFormatException e1) {
+					logger.warn("NumberFormatException (cutLowFrequency=NaN):", e1);
 					cutLowFrequency = Double.NaN;
 				}
 				try {
 					cutHighFrequency = Double.parseDouble(highFrequencyTF.getText());
 				} catch (NumberFormatException e1) {
+					logger.warn("NumberFormatException (cutHighFrequency=NaN):", e1);	
 					cutHighFrequency = Double.NaN;
 				}
 				order = (Integer) orderCB.getSelectedItem();
@@ -234,8 +243,25 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 
 	// From interface IFilter
 
-	public double[] filter(double[] data, int length)  throws TraceViewException {
-		return filter.filter(data, length);
+	public double[] filter(double[] data, int length) 
+	{
+		double[] fltdata = null;
+		try {
+			fltdata = filter.filter(data, length);
+		} catch (TraceViewException e) {
+			logger.error("TraceviewException:", e);
+			System.exit(0);
+		} catch (BPFilterException e) {
+			logger.error("BPFilterException:", e);
+			System.exit(0);
+		} catch (HPFilterException e) {
+			logger.error("HPFilterException:", e);
+			System.exit(0);
+		} catch (LPFilterException e) {
+			logger.error("LPFilterException:", e);
+			System.exit(0);
+		}
+		return fltdata;
 	}
 
 	public void init(RawDataProvider channel) {
