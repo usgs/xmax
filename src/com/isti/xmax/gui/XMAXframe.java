@@ -8,7 +8,9 @@ import java.awt.GraphicsEnvironment;
 
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+
 import java.awt.Dimension;
+
 import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.MouseInputListener;
@@ -17,6 +19,7 @@ import com.isti.traceview.ICommand;
 import com.isti.traceview.IUndoableCommand;
 import com.isti.traceview.CommandExecutor;
 import com.isti.traceview.TraceViewException;
+import com.isti.traceview.UndoException;
 import com.isti.traceview.commands.OverlayCommand;
 import com.isti.traceview.commands.RotateCommand;
 import com.isti.traceview.commands.SaveAllDataCommand;
@@ -29,7 +32,6 @@ import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.common.Pick;
 import com.isti.xmax.data.XMAXDataModule;
 import com.isti.xmax.gui.XMAXGraphPanel;
-import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.ChannelView;
@@ -96,7 +98,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
@@ -111,7 +112,7 @@ import javax.swing.JRadioButtonMenuItem;
  * @author Max Kokoulin
  */
 public class XMAXframe extends JFrame implements MouseInputListener, ActionListener, ItemListener, Observer {
-	private static Logger lg = Logger.getLogger(XMAXframe.class); // @jve:decl-index=0:
+	private static Logger logger = Logger.getLogger(XMAXframe.class); // @jve:decl-index=0:
 
 	private static final long serialVersionUID = 1L;
 	private static XMAXframe instance = null;
@@ -212,7 +213,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 */
 	public XMAXframe() {
 		super("XMAX version " + XMAX.getVersionMessage());
-		lg.debug("Creating XMAXframe");
+		logger.debug("Creating XMAXframe");
 		setLocation(XMAX.getConfiguration().getFramePos());
 		setSize(XMAX.getConfiguration().getFrameSize());
 		setMinimumSize(new Dimension(400, 300));
@@ -388,7 +389,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * This method initializes this frame
 	 */
 	private void initialize() {
-        lg.debug("== XMAXframe.initialize() Enter");
+        logger.debug("== ENTER");
 		this.setContentPane(getJContentPane());
 		graphPanel.addObserver(statusBar);
 		this.setJMenuBar(getMainMenuBar());
@@ -453,7 +454,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			JOptionPane.showMessageDialog(this, "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
 		}
 		statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(), dm.getAllChannels().size());
-        lg.debug("== XMAXframe.initialize() Exit");
+        logger.debug("== Exit");
 	}
 
 	public static synchronized XMAXframe getInstance() {
@@ -531,13 +532,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf, getInstance());
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error("ClassNotFoundException:", e1);	
 		} catch (InstantiationException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error("InstantiationException:", e1);	
 		} catch (IllegalAccessException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error("IllegalAccessException:", e1);	
 		}
 		statusBar.setMessage("");
 	}
@@ -545,7 +546,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	// Method from Observer interface
 	// Update cursor after notification that all tasks were executed
 	public void update(Observable o, Object arg) {
-		lg.debug("XMAXframe updating due to request from " + o.getClass().getName());
+		logger.debug("updating due to request from " + o.getClass().getName());
 		setWaitCursor(false);
 		executorBusy = false;
 	}
@@ -573,7 +574,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e1) {
-
+				logger.error("InterruptedException:", e1);
 			}
 		}
 	}
@@ -1362,7 +1363,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
 				getGraphPanel().forceRepaint();
 			} catch (Exception e1) {
-				lg.error("NextAction error: " + e1);
+				logger.error("NextAction error: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -1403,7 +1404,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the first set", "Information", JOptionPane.INFORMATION_MESSAGE);
 				getGraphPanel().forceRepaint();
 			} catch (Exception e1) {
-				lg.error("PreviousAction error: " + e1);
+				logger.error("PreviousAction error: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -1461,7 +1462,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				phaseMenuCheckBox.setState(graphPanel.getPhaseState());
 				graphPanel.forceRepaint();
 			} catch (Exception e1) {
-				lg.error("PhasesAction error: " + e1);
+				logger.error("PhasesAction error: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -1498,7 +1499,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				graphPanel.forceRepaint();
 			} catch (RuntimeException e1) {
-				lg.error("QCAction error: " + e1);
+				logger.error("QCAction error: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -1887,7 +1888,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				if (selectedChannels.size() == 0) {
 					// Try to fill default channels
 					List<PlotDataProvider> channelSet = graphPanel.getChannelSet();
-					Station station = null;
+					//Station station = null;
 					PlotDataProvider Nchannel = null;
 					PlotDataProvider Echannel = null;
 					for (PlotDataProvider channel: channelSet) {
@@ -1912,11 +1913,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
 			} catch (ClassNotFoundException e1) {
-				lg.error("Can't compute PPM: " + e1);
+				logger.error("Can't compute PPM: " + e1);
 			} catch (InstantiationException e1) {
-				lg.error("Can't compute PPM: " + e1);
+				logger.error("Can't compute PPM: " + e1);
 			} catch (IllegalAccessException e1) {
-				lg.error("Can't compute PPM: " + e1);
+				logger.error("Can't compute PPM: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -1951,11 +1952,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance().getConfigurationAt("Configuration.Plugins.PSD");
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf, getInstance());
 			} catch (ClassNotFoundException e1) {
-				lg.error("Can't compute PSD: " + e1);
+				logger.error("Can't compute PSD: " + e1);
 			} catch (InstantiationException e1) {
-				lg.error("Can't compute PSD: " + e1);
+				logger.error("Can't compute PSD: " + e1);
 			} catch (IllegalAccessException e1) {
-				lg.error("Can't compute PSD: " + e1);
+				logger.error("Can't compute PSD: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -1989,11 +1990,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
 			} catch (ClassNotFoundException e1) {
-				lg.error("Can't compute Spectra: " + e1);
+				logger.error("Can't compute Spectra: " + e1);
 			} catch (InstantiationException e1) {
-				lg.error("Can't compute Spectra: " + e1);
+				logger.error("Can't compute Spectra: " + e1);
 			} catch (IllegalAccessException e1) {
-				lg.error("Can't compute Spectra: " + e1);
+				logger.error("Can't compute Spectra: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2024,11 +2025,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
 			} catch (ClassNotFoundException e1) {
-				lg.error("Can't compute Correlation: " + e1);
+				logger.error("Can't compute Correlation: " + e1);
 			} catch (InstantiationException e1) {
-				lg.error("Can't compute Correlation: " + e1);
+				logger.error("Can't compute Correlation: " + e1);
 			} catch (IllegalAccessException e1) {
-				lg.error("Can't compute Correlation: " + e1);
+				logger.error("Can't compute Correlation: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2088,11 +2089,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), null, null, getInstance());
 			} catch (ClassNotFoundException e1) {
-				lg.error("Can't compute responses: " + e1);
+				logger.error("Can't compute responses: " + e1);
 			} catch (InstantiationException e1) {
-				lg.error("Can't compute responses: " + e1);
+				logger.error("Can't compute responses: " + e1);
 			} catch (IllegalAccessException e1) {
-				lg.error("Can't compute responses: " + e1);
+				logger.error("Can't compute responses: " + e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2215,11 +2216,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 					getGraphPanel().forceRepaint();
 				} catch (IOException e1) {
-					lg.error("Can't export to Mseed channel " + channel.getChannelName() + ": " + e1);
+					logger.error("Can't export to Mseed channel " + channel.getChannelName() + ": " + e1);
 				} finally {
 					try {
 						ds.close();
 					} catch (IOException e1) {
+						logger.error("IOException:", e1);	
 					}
 					setWaitCursor(false);
 				}
@@ -2282,12 +2284,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 								ds = new DataOutputStream(new FileOutputStream(new File(exportFileName)));
 								channel.dumpSacAscii(ds, graphPanel.getTimeRange(), graphPanel.getFilter());
 							} catch (IOException e1) {
-								lg.error("Can't export to SAC channel " + channel.getChannelName() + ": " + e1);
+								logger.error("Can't export to SAC channel " + channel.getChannelName() + ": " + e1);
 							}
 							finally {
 								try {
 									ds.close();
 								} catch (Exception e1) {
+									logger.error("Exception:", e1);	
 								}
 							}
 							i++;
@@ -2300,7 +2303,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 					getGraphPanel().forceRepaint();
 				} catch (TraceViewException e2) {
-					lg.error("Can't export to SAC channel " + channel.getChannelName() + ": " + e2);	
+					logger.error("Can't export to SAC channel " + channel.getChannelName() + ": " + e2);	
 				} finally {
 					setWaitCursor(false);
 				}
@@ -2363,11 +2366,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 					getGraphPanel().forceRepaint();
 				} catch (IOException e1) {
-					lg.error("Can't export to XML channel " + channel.getChannelName() + ": " + e1);
+					logger.error("Can't export to XML channel " + channel.getChannelName() + ": " + e1);
 				} finally {
 					try {
 						fw.close();
 					} catch (IOException e1) {
+						logger.error("IOException:", e1);	
 					}
 					setWaitCursor(false);
 				}
@@ -2424,7 +2428,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 					getGraphPanel().forceRepaint();
 				} catch (IOException e1) {
-					lg.error("Can't export to ASCII channel " + channel.getChannelName() + ": " + e1);
+					logger.error("Can't export to ASCII channel " + channel.getChannelName() + ": " + e1);
 				} finally {
 					try {
 						fw.close();
@@ -2478,11 +2482,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 				}
 			} catch (ClassNotFoundException e1) {
-				lg.error("Can't get " + pluginId + " plugin filter: " + e1);
+				logger.error("Can't get " + pluginId + " plugin filter: " + e1);
 			} catch (InstantiationException e1) {
-				lg.error("Can't get " + pluginId + " plugin filter: " + e1);
+				logger.error("Can't get " + pluginId + " plugin filter: " + e1);
 			} catch (IllegalAccessException e1) {
-				lg.error("Can't get " + pluginId + " plugin filter: " + e1);
+				logger.error("Can't get " + pluginId + " plugin filter: " + e1);
 			} finally {
 				setWaitCursor(false);
 			}
@@ -2698,7 +2702,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(), dm.getAllChannels().size());
 			} catch (TraceViewException e1) {
-				lg.error("Can't reload trace data: " + e1);
+				logger.error("Can't reload trace data: " + e1);
 			} 
 			finally {
 				setWaitCursor(false);
