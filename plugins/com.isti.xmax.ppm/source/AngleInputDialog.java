@@ -1,5 +1,3 @@
-
-
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;

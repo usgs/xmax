@@ -26,19 +26,19 @@ import com.isti.xmax.gui.XMAXframe;
  * @author Max Kokoulin
  */
 public class TransPSD implements ITransformation {
-	private static Logger lg = Logger.getLogger(TransPSD.class);
+	private static final Logger logger = Logger.getLogger(TransPSD.class);
 	private static final boolean verboseDebug = false;
 	public int maxDataLength = 65536;
 	private int effectiveLength = 0;
 
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration, JFrame parentFrame) {
-		lg.debug("PSD PLUGIN CALLED!!!!!!!!!!!!!!!!!!!");
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "PSD computation warning", JOptionPane.WARNING_MESSAGE);
 		} else {
 			try {
 				List<Spectra> spList = createData(input, filter, ti, parentFrame);
 				TimeInterval effectiveInterval = new TimeInterval(ti.getStart(), ti.getStart() + new Double(input.get(0).getSampleRate()*effectiveLength).longValue());
+				@SuppressWarnings("unused")	
 				ViewPSD vp = new ViewPSD(parentFrame, spList, effectiveInterval, (Configuration)configuration, input);
 			} catch (XMAXException e) {
 				if (!e.getMessage().equals("Operation cancelled")) {
@@ -70,11 +70,10 @@ public class TransPSD implements ITransformation {
 
 	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame) throws TraceViewException,
 			XMAXException {
-		// lg.debug("TransPSD: createDataset started");
 		List<Spectra> dataset = new ArrayList<Spectra>();
 		ListIterator<PlotDataProvider> li = input.listIterator();
 		String respNotFound = "";
-		int userAnswer = -1;
+		//int userAnswer = -1;
 		while (li.hasNext()) {
 			PlotDataProvider channel = li.next();
 			List<Segment> segments = channel.getRawData(ti);
@@ -121,7 +120,7 @@ public class TransPSD implements ITransformation {
 			 * (userAnswer == JOptionPane.CANCEL_OPTION) { throw new XMAXException("Operation
 			 * cancelled"); } }
 			 */
-			lg.debug("data size = " + ds);
+			logger.debug("data size = " + ds);
 			int[] data = new int[ds];
 			for (int i = 0; i < ds; i++) {
 				data[i] = intData[i];
