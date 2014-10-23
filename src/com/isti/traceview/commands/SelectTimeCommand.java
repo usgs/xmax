@@ -33,7 +33,7 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 	public void run() {
 		try {
 			super.run();
-			logger.debug("Selection command:", ti);
+			logger.debug("Selection command:" + ti.toString());
 			graphPanel.setTimeRange(ti);
 		} catch (Exception e) {
 			logger.error("Exception:", e);

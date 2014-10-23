@@ -13,5 +13,4 @@ public class XMAXUndoAdapter implements IUndoAdapter {
 	public void setUndoEnabled(boolean ue) {
 		XMAXframe.getInstance().setUndoEnabled(ue);
 	}
-
 }
