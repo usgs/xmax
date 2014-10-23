@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.8.4
+Ant-Version: Apache Ant 1.9.4
 Created-By: 1.7.0_67-b01 (Oracle Corporation)
 Built-By: asluser
 Built-Date: October 23 2014
@@ -17,5 +17,5 @@ Class-Path: build/ lib/BareBonesBrowserLaunch.jar lib/JEvalResp.jar li
  echart-1.0.14.jar lib/jfreechart-1.0.14.jar lib/jpf-tools.jar lib/jpf
  .jar lib/jtransforms-2.4.jar lib/jxp.jar lib/log4j-1.2.16.jar lib/mig
  layout-3.6.3-swing-java14.jar lib/oscache-2.1-mod2.jar lib/saxpath.ja
- r lib/seedCodec-1.0.6.jar lib/seisFile-1.5.2.jar /
+ r lib/seedCodec-1.0.6.jar lib/seisFile-1.5.2.jar ./
 
