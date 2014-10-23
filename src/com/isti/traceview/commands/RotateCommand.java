@@ -12,7 +12,7 @@ import com.isti.traceview.processing.Rotation;
  * @author Max Kokoulin
  */
 public class RotateCommand extends AbstractUndoableCommand {
-	private static Logger lg = Logger.getLogger(SelectCommand.class);
+	private static Logger logger = Logger.getLogger(SelectCommand.class);
 	private GraphPanel graphPanel = null;
 	private Rotation previous = null;
 	private Rotation rotation = null;
@@ -31,7 +31,7 @@ public class RotateCommand extends AbstractUndoableCommand {
 
 	public void run() {
 		super.run();
-		lg.debug("Rotation command: " + rotation);
+		logger.debug("Rotation command: " + rotation);
 		graphPanel.setRotation(rotation);
 	}
 

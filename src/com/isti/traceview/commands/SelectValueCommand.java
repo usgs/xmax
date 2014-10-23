@@ -11,7 +11,7 @@ import com.isti.traceview.gui.GraphPanel;
  * @author Max Kokoulin
  */
 public class SelectValueCommand extends AbstractUndoableCommand {
-	private static Logger lg = Logger.getLogger(SelectValueCommand.class); // @jve:decl-index=0:
+	private static Logger logger = Logger.getLogger(SelectValueCommand.class); // @jve:decl-index=0:
 
 	private GraphPanel graphPanel = null;
 	private double previousMax;
@@ -38,11 +38,11 @@ public class SelectValueCommand extends AbstractUndoableCommand {
 	public void run() {
 		try {
 			super.run();
-			lg.debug("Selection values from " + min + " to " + max);
+			logger.debug("Selection values from " + min + " to " + max);
 			graphPanel.setManualValueMax(max);
 			graphPanel.setManualValueMin(min);
 		} catch (Exception e) {
-			lg.error("SelectValueCommand error: " + e);
+			logger.error("Exception:", e);
 		}
 	}
 
@@ -53,6 +53,7 @@ public class SelectValueCommand extends AbstractUndoableCommand {
 			graphPanel.setManualValueMin(previousMin);
 		} catch (RuntimeException e) {
 			// do nothing
+			logger.error("RuntimeException:", e);	
 		}
 	}
 
