@@ -34,11 +34,11 @@
     
     <!-- Plugin Classpath -->
     <path id="plugin.classpath">
-        <pathelement location="../../build"/>
+        <pathelement location="${build.dir}"/>
         <dirset dir="../">
             <include name="**/classes"/>
         </dirset>
-        <fileset dir="../../lib/">
+        <fileset dir="${lib.dir}">
             <include name="*.jar"/>
         </fileset>
     </path>
