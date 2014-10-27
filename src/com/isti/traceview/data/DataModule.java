@@ -34,7 +34,7 @@ import com.isti.traceview.gui.IColorModeState;
  * @author Max Kokoulin
  */
 public class DataModule extends Observable {
-	private static Logger logger = Logger.getLogger(DataModule.class);
+	private static final Logger logger = Logger.getLogger(DataModule.class);
 
 	/**
 	 * List of found files with trace data
@@ -769,10 +769,10 @@ public class DataModule extends Observable {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			logger.error("Can't open station file: " + e);
+			logger.error("Can't open station file: ", e);
 
 		} catch (IOException e) {
-			logger.error("Error during reading station file: " + e);
+			logger.error("Error during reading station file: ", e);
 		} finally {
 			try {
 				r.close();

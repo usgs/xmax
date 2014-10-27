@@ -47,7 +47,7 @@ public class RawDataProvider extends Channel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(RawDataProvider.class);
+	private static final Logger logger = Logger.getLogger(RawDataProvider.class);
 
 	/**
 	 * @uml.property name="rawData"

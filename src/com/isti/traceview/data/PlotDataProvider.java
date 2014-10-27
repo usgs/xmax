@@ -52,7 +52,7 @@ import com.isti.traceview.processing.Rotation;
 
 public class PlotDataProvider extends RawDataProvider implements Observer {
 	public static final long serialVersionUID = 1;
-	private static Logger lg = Logger.getLogger(PlotDataProvider.class);
+	private static final Logger logger = Logger.getLogger(PlotDataProvider.class);
 
 	/**
 	 * Point count which we have in RAM for whole time range
@@ -105,18 +105,22 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * parts of data, and raw data access during zooming happens only to limited small parts of data
 	 */
 	public void initPointCache(IColorModeState colorMode) {
-        lg.debug("== PDP.initPointCache ENTER");
-		pointsCache = pixelize(getTimeRange(), initPointCount, null, colorMode);
-        lg.debug("== PDP.initPointCache EXIT");
+       		try { 
+			logger.debug("== ENTER");
+			pointsCache = pixelize(getTimeRange(), initPointCount, null, colorMode);
+        		logger.debug("== EXIT");
+		} catch (PlotDataException e) {
+			logger.errror("PlotDataException:", e);
+		}
 	}
 
 	/**
 	 * From interface Observer
 	 */
 	public void update(Observable o, Object arg) {
-		lg.debug(this + ": update request from " + o);
+		logger.debug(this + ": update request from " + o);
 		TimeInterval ti = (TimeInterval) arg;
-		lg.debug("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
+		logger.debug("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
 		if ((viewingInterval == null) || viewingInterval.isIntersect(ti)) {
 			notifyObservers(ti);
 		}
@@ -157,7 +161,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @throws TraceViewException
 	 */
 	private PlotData getPlotData(TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode) {
-		lg.debug("getPlotData: " + this + "; " + ti + "(" + ti.getStart() + "-" + ti.getEnd() + ")" + "; pointCount " + pointCount);
+		logger.debug(this + "; " + ti + "(" + ti.getStart() + "-" + ti.getEnd() + ")" + "; pointCount " + pointCount);
 
 		// This list used when we cannot use pointsCache due to too small zoom, calculated every
 		// time afresh.
@@ -174,10 +178,15 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		TimeInterval effectiveTimeRange = TimeInterval.getIntersect(ti, getTimeRange());
 		if (effectiveTimeRange != null) {
 			if ((pointCount > pointsCache.size() * new Double(effectiveTimeRange.getDuration()) / new Double(getTimeRange().getDuration()))
-					|| filter != null) {
-//System.out.format("== getPlotData: pointCount > pointsCache.size !!\n");
-				points = pixelize(effectiveTimeRange, new Double(2 * pointCount * effectiveTimeRange.getDuration()
+					|| filter != null) 
+			{
+				try {		
+					//System.out.format("== getPlotData: pointCount > pointsCache.size !!\n");
+					points = pixelize(effectiveTimeRange, new Double(2 * pointCount * effectiveTimeRange.getDuration()
 						/ new Double(ti.getDuration()).intValue()).intValue(), filter, colorMode);
+				} catch (PlotDataException e) {
+					logger.error("PlotDataException:", e);	
+				}
 			} else {
 				points = new ArrayList<PlotDataPoint[]>();
 				int startIndex = new Double((effectiveTimeRange.getStart() - getTimeRange().getStart()) * initPointCount
@@ -237,6 +246,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					}
 					List<PlotDataPoint[]> data = points.subList(startIndex, endIndex);
 					List<SliceData> sliceDataList = new ArrayList<SliceData>();
+					@SuppressWarnings("unused")	
 					int j =0;
 					for (PlotDataPoint[] sublist: data) {
 						int k =0;
@@ -293,7 +303,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					}
 					ret.addPixel(pdpArray);
 					if (evts.size() > 0) {
-						lg.debug("Event time: "
+						logger.debug("Event time: "
 								+ TimeInterval.formatDate(evts.first().getEvent().getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 								+ "(" + evts.first().getEvent().getStartTime().getTime() + ")" + "; point number " + ret.getPointCount());
 					}
@@ -306,7 +316,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			}
 			lastAccessed = new Date();
 		}
-		lg.debug("== PlotDataProvider getPlotData() END: " + this);
+		logger.debug("== END: " + this);
 		return ret;
 	}
 	
@@ -323,20 +333,23 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *            filter to apply to raw data before pixelization
 	 * @return List of PlotDataPoint
 	 */
-	private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode) {
-		lg.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
+	private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode) 
+	throws PlotDataException
+	{
+		logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
 		List<PlotDataPoint[]> pointSet = Collections.synchronizedList(new ArrayList<PlotDataPoint[]>());
 		// waiting if data still is not loaded
 		int attemptCount = 0;
 		while (!isLoaded()) {
 			try {
 				if (attemptCount > 60)
-					throw new RuntimeException("Channel " + this + " wait for data more than " + attemptCount + " seconds");
-				lg.debug("Channel " + this + " getPlotData() is waiting for data loading");
+					throw new PlotDataException("Channel " + this + " wait for data more than " + attemptCount + " seconds");
+				logger.debug("Channel " + this + " getPlotData() is waiting for data loading");
 				Thread.sleep(500);
 				attemptCount++;
 			} catch (InterruptedException e) {
 				// do nothing
+				logger.error("InterruptedException:", e);	
 			}
 		}
 		List<SegmentData> rawData = new ArrayList<SegmentData>();
@@ -379,7 +392,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				for (SegmentData segData: intervalData) {
 					TimeInterval currentSegmentDataTI = new TimeInterval(segData.startTime, segData.endTime());
 					//lg.debug("Processing segment " + segment + "on interval " + currentSegmentDataTI);
-					lg.debug("Processing segment [seg] on interval " + currentSegmentDataTI);
+					logger.debug("Processing segment [seg] on interval " + currentSegmentDataTI);
 					double top = Double.NEGATIVE_INFINITY;
 					double bottom = Double.POSITIVE_INFINITY;
 					double sum = 0.0;
@@ -429,10 +442,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			}
 			time = time + interval;
 		}
-		lg.debug("pixelizing end " + this);
+		logger.debug("pixelizing end " + this);
 		return pointSet;
 	}
-
 
 
 	/**
@@ -476,6 +488,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *         the normal situation is none or one segment, but it can be bigger count in the case
 	 *         of segment overlapping. If no segments found, return null.
 	 */
+	@SuppressWarnings("unused")	
 	private static Segment[] getSegment(List<Segment> sps, double start, double end) {
 		List<Segment> ret = new ArrayList<Segment>();
 		Iterator<Segment> it = sps.iterator();
@@ -566,7 +579,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @param evt
 	 */
 	public void addEvents(Set<IEvent> evt) {
-		lg.debug("Adding " + evt.size() + " events to plot data provider" + this);
+		logger.debug("Adding " + evt.size() + " events to plot data provider" + this);
 		if (events == null) {
 			events = Collections.synchronizedSortedSet(new TreeSet<IEvent>());
 		}
@@ -591,7 +604,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			try {
 				return rotation.rotate(this, getTimeRange());
 			} catch (TraceViewException e) {
-				e.printStackTrace();
+				logger.error("TraceViewException:", e);	
 				return null;
 			}
 		}
@@ -621,18 +634,18 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public void dump(String serialFileName) {
 		ObjectOutputStream out = null;
 		try {
-            lg.debug("== PDP.dump() -- ENTER: serfialFileName=" + serialFileName);
+            		logger.debug("== ENTER: serfialFileName=" + serialFileName);
 			out = new ObjectOutputStream(new FileOutputStream(serialFileName + ".SER"));
 			setDataStream(serialFileName + ".DATA");
 			synchronized (this) {
-				lg.info("Serializing " + this + " to file " + serialFileName);
+				logger.info("Serializing " + this + " to file " + serialFileName);
 				//System.out.println("== PDP.dump() --> out.writeObject\n");
 				out.writeObject(this);
 				//System.out.println("== PDP.dump() --> out.writeObject DONE\n");
 				notifyAll();
 			}
 		} catch (Exception ex) {
-			lg.error("Can't save channel: " + ex);
+			logger.error("Can't save channel: ", ex);
 		} finally {
 			try {
 				//System.out.println("== PDP.dump() --> setDataStream(null) and do out.close()");
@@ -640,25 +653,26 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				out.close();
 			} catch (IOException e) {
 				// Do nothing
+				logger.error("IOException:", e);	
 			}
 		}
-        lg.debug("== PDP.dump() -- EXIT");
+        logger.debug("== EXIT");
 	}
 
 	/**
 	 * Loads trace from serialized file in temporary storage
 	 */
 	public static PlotDataProvider load(String fileName) {
-        lg.debug("\n== PlotDataProvider.load() -- ENTER: Deserialize channel from file:" + fileName);
+        	logger.debug("\n== ENTER: Deserialize channel from file:" + fileName);
 		PlotDataProvider channel = null;
 		ObjectInputStream ois = null;
 		String serialDataFileName = TemporaryStorage.getDataFileName(fileName);
 		try {
 			Object objRead = null;
 			ois = new ObjectInputStream(new FileInputStream(fileName));
-            lg.debug("== PlotDataProvider.load(): call ois.readObject()");
+            logger.debug("== call ois.readObject()");
 			objRead = ois.readObject();
-            lg.debug("== PlotDataProvider.load(): call ois.readObject() DONE");
+            logger.debug("== call ois.readObject() DONE");
 			channel = (PlotDataProvider) objRead;
 			channel.setStation(DataModule.getOrAddStation(channel.getStation().getName()));
 //MTH: added Segment.isLoaded boolean
@@ -667,19 +681,20 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
                 seg.setIsLoaded(true);
             }
 		} catch (FileNotFoundException e) {
-			lg.error(e);
+			logger.error("FileNotFoundException:", e);	
 		} catch (IOException e) {
-			lg.error(e);
+			logger.error("IOException:", e);	
 		} catch (ClassNotFoundException e) {
-			lg.error(e);
+			logger.error("ClassNotFoundException:", e);	
 		} finally {
 			try {
 				ois.close();
 			} catch (IOException e) {
 				// Do nothing
+				logger.error("IOException:", e);	
 			}
 		}
-        lg.debug("== PlotDataProvider.load(fileName=%s) -- EXIT\n");
+        logger.debug("== load(fileName=%s) -- EXIT\n");
 		return channel;
 	}
 

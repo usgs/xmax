@@ -20,7 +20,7 @@ public class PlotDataPoint implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(PlotDataPoint.class);
+	private static final Logger logger = Logger.getLogger(PlotDataPoint.class);
 
 	/**
 	 * High value in representing section
