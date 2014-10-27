@@ -195,7 +195,7 @@ public class DataModule extends Observable {
                 Boolean success = dir.mkdirs();
                 if (!success) {
                     //System.out.format("== DataModule.dumpData(): ERROR: unable to create directory dataTempPath=[%s]\n", dataTempPath);
-                   	logger.error(String.format("unable to create directory dataTempPath=[%s]\n", dataTempPath); 
+                   	logger.error(String.format("unable to create directory dataTempPath=[%s]\n", dataTempPath)); 
 		    System.exit(1);
                 }
                 //System.out.format("== DataModule.dumpData(): successfully created dir dataTempPath=[%s]\n", dataTempPath);
@@ -777,7 +777,7 @@ public class DataModule extends Observable {
 			try {
 				r.close();
 			} catch (IOException e) {
-				logger.("IOException:", e);
+				logger.error("IOException:", e);
 			}
 		}
 	}

@@ -26,10 +26,10 @@ import com.isti.traceview.common.Wildcard;
 
 import edu.iris.Fissures.seed.builder.SeedObjectBuilder;
 import edu.iris.Fissures.seed.director.SeedImportDirector;
-import edu.sc.seis.seisFile.mseed.ControlHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.mseed.SeedRecord;
+import edu.sc.seis.seisFile.segd.SegdException;
 import edu.sc.seis.seisFile.segd.SegdRecord;
 
 /**
