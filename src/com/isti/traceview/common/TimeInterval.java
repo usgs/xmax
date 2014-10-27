@@ -252,7 +252,7 @@ public class TimeInterval {
 	 * String representation of duration in the form +-##days ##hours ##min ##.## s
 	 */
 	public static String getStringDiffDDHHMMSS(long duration) {
-		logger.debug("duration = " _+ duration);	
+		logger.debug("duration = " + duration);	
 		String ret = "";
 		if (duration < 0) {
 			duration = -duration;

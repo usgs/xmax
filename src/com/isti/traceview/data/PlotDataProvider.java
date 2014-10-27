@@ -110,7 +110,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			pointsCache = pixelize(getTimeRange(), initPointCount, null, colorMode);
         		logger.debug("== EXIT");
 		} catch (PlotDataException e) {
-			logger.errror("PlotDataException:", e);
+			logger.error("PlotDataException:", e);
 		}
 	}
 

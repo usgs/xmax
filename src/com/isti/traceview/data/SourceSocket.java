@@ -9,7 +9,7 @@ import java.util.Set;
  * @author Max Kokoulin
  */
 public abstract class SourceSocket implements ISource, Serializable {
-	private static final serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	public SourceType getSourceType() {
 		return SourceType.SOCKET;

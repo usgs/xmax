@@ -305,7 +305,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
 			dis.seek(blockStartOffset);
-			FileInputStream d = null;
+			//FileInputStream d = null;
 			SeedRecord sr = SynchronizedSeedRecord.read(dis, TraceView.getConfiguration().getDefaultBlockLength());
 			ControlHeader ch = null;
 			ch = sr.getControlHeader();
