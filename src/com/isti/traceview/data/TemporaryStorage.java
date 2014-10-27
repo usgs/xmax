@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  * @author Max Kokoulin
  */
 public class TemporaryStorage {
-	private static Logger lg = Logger.getLogger(TemporaryStorage.class);
+	private static final Logger logger = Logger.getLogger(TemporaryStorage.class);
 	private String tempdir = null;
 	private Set<File> files = null;
 
@@ -45,7 +45,7 @@ public class TemporaryStorage {
 							dir[i].delete();
 						} else if (SourceFile.getExtension(dir[i]).equals("ser")) {
 							files.add(dir[i]);
-							lg.debug("Tepmorary file added: " + dir[i].getName());
+							logger.debug("Tepmorary file added: " + dir[i].getName());
 						}
 					}
 				}
@@ -82,6 +82,7 @@ public class TemporaryStorage {
 			new File(getDataFileName(file.getName())).delete();
 		} catch (Exception e) {
 			// do nothing
+			logger.error("Exception:", e);	
 		}
 		file = null;
 	}
@@ -100,7 +101,7 @@ public class TemporaryStorage {
 			try { // deleting datafile, if exist
 				new File(tempdir + File.separator + getDataFileName(file.getName())).delete();
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception:", e);	
 			}
 			file = null;
 		}

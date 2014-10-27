@@ -20,11 +20,11 @@ import com.isti.traceview.TraceViewException;
 public class SourceFileSEGY extends SourceFile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(SourceFileSEGY.class);
+	private static final Logger logger = Logger.getLogger(SourceFileSEGY.class);
 
 	public SourceFileSEGY(File file) {
 		super(file);
-		lg.debug("Created: " + this);
+		logger.debug("Created: " + this);
 	}
 	
 	public FormatType getFormatType(){
@@ -41,16 +41,15 @@ public class SourceFileSEGY extends SourceFile implements Serializable {
 			Segment segment = new Segment(this, 0, segy.getTimeRange().getStartTime(), segy.getRateMicroSampPerSec()/1000.0, segy.getNumSamples(), 0);
 			channel.addSegment(segment);
 		} catch (IOException e) {
-			lg.error("IO error: " + e);
+			logger.error("IO error: " + e);
 		} catch (TraceViewException e) {
-			lg.error("IO error: " + e);
+			logger.error("IO error: " + e);
 		}
 		return ret;
 	}
 	
 	
 	public void load(Segment segment){
-		lg.debug("SourceFileSEGY.load(): " + this);
 		int[] data = null;
 		try {
 			SegyTimeSeries segy = new SegyTimeSeries();
@@ -61,9 +60,13 @@ public class SourceFileSEGY extends SourceFile implements Serializable {
 				data[i++]=new Float(val).intValue();
 			}
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			logger.error("IOException:", e);
+			//throw new RuntimeException(e);
+			System.exit(0);	
 		} catch (TraceViewException e) {
-			throw new RuntimeException(e);
+			logger.error("TraceViewException:", e);	
+			//throw new RuntimeException(e);
+			System.exit(0);	
 		}
 		for (int value: data) {
 			segment.addDataPoint(value);
