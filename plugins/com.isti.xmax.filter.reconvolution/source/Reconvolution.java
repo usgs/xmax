@@ -36,7 +36,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
 public class Reconvolution extends JDialog implements IFilter, PropertyChangeListener {
 	
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(Reconvolution.class);
+	private static final Logger logger = Logger.getLogger(Reconvolution.class);
 	
 	private final static int comboBoxHeight = 22;
 	private final static int maxDataLength = 16385;

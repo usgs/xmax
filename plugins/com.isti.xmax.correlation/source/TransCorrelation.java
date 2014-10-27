@@ -24,7 +24,7 @@ import com.isti.xmax.gui.XMAXframe;
  */
 public class TransCorrelation implements ITransformation {
 
-	private static Logger logger = Logger.getLogger(TransCorrelation.class);
+	private static final Logger logger = Logger.getLogger(TransCorrelation.class);
 
 	public int maxDataLength = 64128;
 	private double sampleRate = 0;

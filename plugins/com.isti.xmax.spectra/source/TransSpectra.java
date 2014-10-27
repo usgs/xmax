@@ -23,7 +23,7 @@ import com.isti.xmax.gui.XMAXframe;
  * @author Max Kokoulin
  */
 public class TransSpectra implements ITransformation {
-	private static Logger logger = Logger.getLogger(TransSpectra.class);
+	private static final Logger logger = Logger.getLogger(TransSpectra.class);
 	private static final boolean verboseDebug = false;
 
 	public int maxDataLength = 65536;
