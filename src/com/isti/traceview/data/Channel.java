@@ -56,7 +56,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	private static final String fissuresPropFileName = "fissures.properties";
 
-	private static Logger logger = Logger.getLogger(Channel.class);
+	private static final Logger logger = Logger.getLogger(Channel.class);
 
 	private static Properties propsObj = null;
 

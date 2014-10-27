@@ -29,7 +29,7 @@ import com.isti.traceview.common.TimeInterval;
  * samp_rate, to contain that value.
  */
 public class SegyTimeSeries { /* Offset Description */
-	private static Logger lg = Logger.getLogger(SegyTimeSeries.class);
+	private static final Logger logger = Logger.getLogger(SegyTimeSeries.class);
 	static final boolean doRepacketize = false;
 
 	String oNetwork = "";
@@ -147,8 +147,8 @@ public class SegyTimeSeries { /* Offset Description */
 	 * @see
 	 */
 	public SegyTimeSeries() {
-		lg.debug("SegyTimeSeries::SegyTimeSeries() entered");
-		lg.debug("SegyTimeSeries::SegyTimeSeries() left");
+		logger.debug("ENTER");
+		//lg.debug("SegyTimeSeries::SegyTimeSeries() left");
 	}
 
 	/**
@@ -158,8 +158,6 @@ public class SegyTimeSeries { /* Offset Description */
 	 * @see
 	 */
 	public int[] getDataArray() {
-		lg.debug("SegyTimeSeries::getDataArray() entered");
-		lg.debug("SegyTimeSeries::getDataArray() left");
 		return y;
 	}
 
@@ -168,7 +166,6 @@ public class SegyTimeSeries { /* Offset Description */
 	 * array as an int array
 	 */
 	public int[] getDataArray(TimeInterval ti) throws TraceViewException {
-		lg.debug("SegyTimeSeries::getDataArray(TimeInterval ti) entered");
 		int retAR[];
 		if (!ti.isIntersect(getTimeRange())) {
 			throw (new TraceViewException("SegyTimeSeries: start after end time"));
@@ -211,7 +208,7 @@ public class SegyTimeSeries { /* Offset Description */
 		retAR = new int[endPos - startPos + 1];
 		// retAR = new int[endPos + 1];
 		for (int i = startPos; i <= endPos; i++) {
-			lg.debug("i: " + i + " count: " + count + " retAR: " + retAR.length + " y: " + y.length);
+			logger.debug("i: " + i + " count: " + count + " retAR: " + retAR.length + " y: " + y.length);
 			retAR[count] = y[i];
 			count++;
 			if (min > y[i]) {
@@ -221,7 +218,7 @@ public class SegyTimeSeries { /* Offset Description */
 				max = y[i];
 			}
 		}
-		lg.debug("SegyTimeSeries::getDataArray(TimeInterval ti) left");
+		logger.debug("SegyTimeSeries::getDataArray(TimeInterval ti) left");
 		return retAR;
 	}
 
@@ -235,9 +232,8 @@ public class SegyTimeSeries { /* Offset Description */
 	 *             if it happens
 	 */
 	public void read(File file) throws FileNotFoundException, IOException, TraceViewException {
-		lg.debug("SegyTimeSeries::read(File file) entered");
+		logger.debug("Read file");	
 		read(file.getCanonicalPath());
-		lg.debug("SegyTimeSeries::read(File file) left");
 	}
 
 	/**
@@ -250,14 +246,14 @@ public class SegyTimeSeries { /* Offset Description */
 	 *             if it happens
 	 */
 	public void read(String filename) throws FileNotFoundException, IOException, TraceViewException {
-		lg.debug("SegyTimeSeries::read() entered");
 		BufferedRandomAccessFile dis = new BufferedRandomAccessFile(filename, "r");
-		double bgn = System.currentTimeMillis();
+		//double bgn = System.currentTimeMillis();
 		/*
 		 * checkNeedToSwap(dis); skipHeader(dis);
 		 */
 		readHeader(dis);
-		double afterHead = System.currentTimeMillis();
+		//double afterHead = System.currentTimeMillis();
+		@SuppressWarnings("unused")	
 		int num_bits = 4;
 		if (data_form == 1) {
 			num_bits = 4;
@@ -265,17 +261,16 @@ public class SegyTimeSeries { /* Offset Description */
 		if (data_form == 0) {
 			num_bits = 2;
 		}
-		lg.debug("SEGY File Length Check temporarily disabled.");
+		logger.debug("SEGY File Length Check temporarily disabled.");
 		/*
 		 * if ((sampleLength != 32767 && segyFile.length() != sampleLength * num_bits + 240) ||
 		 * (sampleLength == 32767 && segyFile.length() != num_samps * num_bits + 240)) { throw new
 		 * IOException(segyFileName + " does not appear to be a segy file!"); }
 		 */
-		double beforeData = System.currentTimeMillis();
+		//double beforeData = System.currentTimeMillis();
 		readData(dis);
 		dis.close();
-		double afterData = System.currentTimeMillis();
-		lg.debug("SegyTimeSeries::read() left");
+		//double afterData = System.currentTimeMillis();
 	}
 
 	/**
@@ -317,7 +312,6 @@ public class SegyTimeSeries { /* Offset Description */
 	 * really is a segy file.
 	 */
 	public void readHeader(String filename) throws FileNotFoundException, TraceViewException {
-		lg.debug("SegyTimeSeries::readHeader(String filename) entered");
 		BufferedRandomAccessFile dis = null;
 		try {
 			dis = new BufferedRandomAccessFile(filename, "r");
@@ -329,9 +323,9 @@ public class SegyTimeSeries { /* Offset Description */
 				dis.close();
 			} catch (IOException e) {
 				// do nothing
+				logger.error("IOException:", e);	
 			}
 		}
-		lg.debug("SegyTimeSeries::readHeader(String filename) left");
 	}
 
 	/**
@@ -339,7 +333,6 @@ public class SegyTimeSeries { /* Offset Description */
 	 */
 	protected void readHeader(BufferedRandomAccessFile dis) throws FileNotFoundException, IOException, TraceViewException {
 		checkNeedToSwap(dis, dis.getFilePointer());
-		lg.debug("SegyTimeSeries::readHeader(BufferedRandomAccessFile dis) entered");
 		lineSeq = dis.readInt(); /* 0 Sequence numbers within line */
 		reelSeq = dis.readInt(); /* 4 Sequence numbers within reel */
 		event_number = dis.readInt(); /* 8 Original field record number or trigger number */
@@ -487,14 +480,12 @@ public class SegyTimeSeries { /* Offset Description */
 		 */
 		max = dis.readInt(); /* 232 Maximum value in Counts */
 		min = dis.readInt(); /* 236 Minimum value in Counts */
-		lg.debug("SegyTimeSeries::readHeader(BufferedRandomAccessFile dis) left");
 	}
 
 	/**
 	 * read the data portion of the given File
 	 */
 	protected void readData(BufferedRandomAccessFile fis) throws IOException {
-		lg.debug("SegyTimeSeries::readData(BufferedRandomAccessFile fis) entered");
 		if (sampleLength != 32767) {
 			y = new int[sampleLength];
 		} else {
@@ -535,7 +526,6 @@ public class SegyTimeSeries { /* Offset Description */
 				}
 			}
 		}
-		lg.debug("SegyTimeSeries::readData(BufferedRandomAccessFile fis) left");
 	}
 
 	/**
@@ -545,7 +535,6 @@ public class SegyTimeSeries { /* Offset Description */
 	 * @see
 	 */
 	public TimeInterval getTimeRange() {
-		lg.debug("SegyTimeSeries::getTimeRange() entered");
 		if (year < 100) {
 			if (year < 70) {
 				year += 2000;
@@ -560,7 +549,6 @@ public class SegyTimeSeries { /* Offset Description */
 		// System.out.println("samp/sec " + rate);
 		double tot_time = (double) (samples - 1) / rate;
 		// System.out.println("tot_time " + tot_time );
-		lg.debug("SegyTimeSeries::getTimeRange() left");
 		return new TimeInterval(start, new Double(start + tot_time).longValue());
 	}
 
@@ -571,7 +559,6 @@ public class SegyTimeSeries { /* Offset Description */
 	 * @see
 	 */
 	public int getNumSamples() {
-		lg.debug("SegyTimeSeries::getNumSamples() entered");
 		int samples;
 		// get the number of samples
 		if (sampleLength != 32767) {
@@ -579,7 +566,6 @@ public class SegyTimeSeries { /* Offset Description */
 		} else {
 			samples = num_samps;
 		}
-		lg.debug("SegyTimeSeries::getNumSamples() left");
 		return samples;
 	}
 
@@ -587,14 +573,12 @@ public class SegyTimeSeries { /* Offset Description */
 	 * get the sample rate as samples/second
 	 */
 	public double getRateSampPerSec() {
-		lg.debug("SegyTimeSeries::getRateSampPerSec() entered");
 		double rate;
 		if (deltaSample != 1) {
 			rate = 1000000.0 / ((double) deltaSample);
 		} else {
 			rate = 1000000.0 / ((double) samp_rate);
 		}
-		lg.debug("SegyTimeSeries::getRateSampPerSec() left");
 		return rate;
 	}
 
@@ -602,16 +586,13 @@ public class SegyTimeSeries { /* Offset Description */
 	 * get the sample rate as microSec/sample
 	 */
 	public double getRateMicroSampPerSec() {
-		lg.debug("SegyTimeSeries::getRateMicroSampPerSec() entered");
 		double rate;
 		if (deltaSample != 1) {
 			rate = (double) deltaSample;
 		} else {
 			rate = (double) samp_rate;
 		}
-		lg.debug("SegyTimeSeries::getRateMicroSampPerSec() left");
 		return rate;
-
 	}
 
 	private void initOInfo() {
@@ -650,8 +631,6 @@ public class SegyTimeSeries { /* Offset Description */
 		if (!setOInfo) {
 			initOInfo();
 		}
-		lg.debug("SegyTimeSeries::getNetwork() entered");
-		lg.debug("SegyTimeSeries::getNetwork() left");
 		return oNetwork;
 		// if (!((station_name.trim()).equals("")))
 		// return (new String(station_name));
@@ -669,8 +648,6 @@ public class SegyTimeSeries { /* Offset Description */
 		if (!setOInfo) {
 			initOInfo();
 		}
-		lg.debug("SegyTimeSeries::getStation() entered");
-		lg.debug("SegyTimeSeries::getStation() left");
 		return oStation;
 		// return (Integer.toString((int) inst_no));
 	}
@@ -685,8 +662,6 @@ public class SegyTimeSeries { /* Offset Description */
 		if (!setOInfo) {
 			initOInfo();
 		}
-		lg.debug("SegyTimeSeries::getChannel() entered");
-		lg.debug("SegyTimeSeries::getChannel() left");
 		return oChannel;
 		// return (Integer.toString(channel_number));
 	}
@@ -695,10 +670,8 @@ public class SegyTimeSeries { /* Offset Description */
 	 * writes this object out as a segy file.
 	 */
 	public void write(String filename) throws FileNotFoundException, IOException {
-		lg.debug("SegyTimeSeries::write(String filename) entered");
 		DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
 		dos.close();
-		lg.debug("SegyTimeSeries::write(String filename) left");
 		throw new IOException("SEGY write not yet implmented");
 	}
 
@@ -707,22 +680,24 @@ public class SegyTimeSeries { /* Offset Description */
 	 * "tempsegyfile".
 	 */
 	public static void main(String[] args) {
-		lg.debug("SegyTimeSeries::main(String[] args) entered");
 		SegyTimeSeries data = new SegyTimeSeries();
 		if (args.length != 1) {
-			System.out.println("Usage: java SegyTimeSeries sourcefile ");
+			//System.out.println("Usage: java SegyTimeSeries sourcefile ");
+			logger.error("Usage: java SegyTimeSeries sourcefile ");	
 			System.exit(1);
 		}
 		try {
 			data.read(args[0]);
-			System.out.println("Done reading");
+			//System.out.println("Done reading");
+			logger.info("Done reading");	
 		} catch (FileNotFoundException e) {
-			System.out.println("File " + args[0] + " doesn't exist.");
+			StringBuilder message = new StringBuilder();
+			message.append("File " + args[0] + " doesnt exist.");
+			logger.error(message.toString(), e);
 		} catch (IOException e) {
-			System.out.println("IOException: " + e.getMessage());
+			logger.error("IOException:", e);	
 		} catch (TraceViewException e) {
-			System.out.println("TraceViewException: " + e.getMessage());
+			logger.error("TraceViewException:", e);	
 		}
-		lg.debug("SegyTimeSeries::main(String[] args) left");
 	}
 }

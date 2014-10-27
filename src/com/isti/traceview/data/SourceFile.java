@@ -39,7 +39,8 @@ import edu.sc.seis.seisFile.segd.SegdRecord;
  */
 public abstract class SourceFile implements ISource {
 
-	private static Logger lg = Logger.getLogger(SourceFile.class);
+	private static final long serialVersionUID = 1L;	
+	private static final Logger logger = Logger.getLogger(SourceFile.class);
 
 	/**
 	 * @uml.property name="file"
@@ -102,15 +103,15 @@ public abstract class SourceFile implements ISource {
 	 *            wildcarded path to search
 	 */
 	public static List<ISource> getDataFiles(String wildcardedMask) throws TraceViewException {
-		lg.debug("Loading data using path: " + wildcardedMask);
+		logger.debug("Loading data using path: " + wildcardedMask);
 		List<File> listFiles = new Wildcard().getFilesByMask(wildcardedMask);
 		Iterator<File> it = listFiles.iterator();
 		while (it.hasNext()) {
 			File file = it.next();
-            System.out.format("         Found file:%s\n", file.toString());
-            lg.debug("== getDataFiles: file=" + file.toString());
+            		System.out.format("         Found file:%s\n", file.toString());
+            		logger.debug("== getDataFiles: file=" + file.toString());
 			if (file.getName().matches(".*\\.log(\\.\\d{1,2}){0,1}$")) {
-				lg.warn("Excluding file " + file.getName() + " from loading list");
+				logger.warn("Excluding file " + file.getName() + " from loading list");
 				it.remove();
 			}
 		}
@@ -130,24 +131,24 @@ public abstract class SourceFile implements ISource {
 		for (File file: files) {
 			if (isIMS(file)) {
 				lst.add(new SourceFileIMS(file));
-				lg.debug("IMS data file added: " + file.getAbsolutePath());
+				logger.debug("IMS data file added: " + file.getAbsolutePath());
 			} else if (isMSEED(file)) {
 				lst.add(new SourceFileMseed(file));
-				lg.debug("MSEED data file added: " + file.getAbsolutePath());
+				logger.debug("MSEED data file added: " + file.getAbsolutePath());
 			} else if (isSAC(file)) {
 				lst.add(new SourceFileSAC(file));
-				lg.debug("SAC data file added: " + file.getAbsolutePath());
+				logger.debug("SAC data file added: " + file.getAbsolutePath());
 			} else if (isSEGY(file)) {
 				lst.add(new SourceFileSEGY(file));
-				lg.debug("SEGY data file added: " + file.getAbsolutePath());
+				logger.debug("SEGY data file added: " + file.getAbsolutePath());
 			} else if (isSEGD(file)) {
 				lst.add(new SourceFileSEGD(file));
-				lg.debug("SEGD data file added: " + file.getAbsolutePath());
+				logger.debug("SEGD data file added: " + file.getAbsolutePath());
 			} else if (isSEED(file)) {
 				lst.add(new SourceFileSeed(file));
-				lg.debug("SEED data file added: " + file.getAbsolutePath());
+				logger.debug("SEED data file added: " + file.getAbsolutePath());
 			}else {
-				lg.warn("Unknown file format: " + file.getName());
+				logger.warn("Unknown file format: " + file.getName());
 			}
 		}
 		return lst;
@@ -214,7 +215,7 @@ public abstract class SourceFile implements ISource {
 	public static boolean isMSEED(File file) {
 		if (file.length() > 0) {
 			BufferedRandomAccessFile dis = null;
-			ControlHeader ch = null;
+			//ControlHeader ch = null;
 			try {
 				dis = new BufferedRandomAccessFile(file.getCanonicalPath(), "r");
 				dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
@@ -223,7 +224,7 @@ public abstract class SourceFile implements ISource {
 			            while (blockNumber < 5) {
 			                SeedRecord sr = SeedRecord.read(dis, 4096);
 			                if (sr instanceof DataRecord) {
-			                    DataRecord dr = (DataRecord)sr;
+			                    //DataRecord dr = (DataRecord)sr;
 			                } else {
 			                    //control record, skip...
 			                }
@@ -253,22 +254,34 @@ public abstract class SourceFile implements ISource {
 				}
 				*/	
 			} catch (EOFException ex) {
-System.out.format("==     [file:%s] Caught EOFException:%s\n", file.getName(), ex.toString());
+				//System.out.format("==     [file:%s] Caught EOFException:%s\n", file.getName(), ex.toString());
+				StringBuilder message = new StringBuilder();
+				message.append(String.format("==     [file:%s] Caught EOFException:\n", file.getName()));
+				logger.error(message.toString(), ex);	
 				return true;
 			} catch (FileNotFoundException e) {
+				logger.error("FileNotFoundException:", e);	
 				return false;
 			} catch (IOException e) {
+				logger.error("IOException:", e);	
 				return false;
 			} catch (SeedFormatException e) {
-System.out.format("==     [file:%s] Caught SeedFormatException:%s\n", file.getName(), e.toString());
+				//System.out.format("==     [file:%s] Caught SeedFormatException:%s\n", file.getName(), e.toString());
+				StringBuilder message = new StringBuilder();
+				message.append(String.format("==     [file:%s] Caught SeedFormatException:\n", file.getName()));
+				logger.error(message.toString(), e);
 				return false;
             } catch (RuntimeException e) {
-System.out.format("==     [file:%s] Caught RuntimeException:%s\n", file.getName(), e.toString());
-                return false;
+	    	//System.out.format("==     [file:%s] Caught RuntimeException:%s\n", file.getName(), e.toString());
+               	StringBuilder message = new StringBuilder();
+		message.append(String.format("==     [file:%s] Caught RuntimeException:\n", file.getName()));
+		logger.error(message.toString(), e);
+		return false;
 			} finally {
 				try {
 					dis.close();
 				} catch (IOException e) {
+					logger.error("IOException:", e);	
 				}
 			}
 		} else {
@@ -293,11 +306,13 @@ System.out.format("==     [file:%s] Caught RuntimeException:%s\n", file.getName(
 			ras.seek(316);
 			ras.read(buffer, 0, 4);
 		} catch (Exception e) {
+			logger.error("Exception:", e);	
 			return false;
 		} finally {
 			try {
 				ras.close();
 			} catch (IOException e) {
+				logger.error("IOException:", e);	
 			}
 		}
 		ByteBuffer bb = ByteBuffer.wrap(buffer);
@@ -324,6 +339,7 @@ System.out.format("==     [file:%s] Caught RuntimeException:%s\n", file.getName(
 		try {
 			ts.readHeader(file.getCanonicalPath());
 		} catch (Exception e) {
+			logger.error("Exception:", e);	
 			return false;
 		}
 		return true;
@@ -342,12 +358,17 @@ System.out.format("==     [file:%s] Caught RuntimeException:%s\n", file.getName(
 			inputStream = new BufferedInputStream(new FileInputStream(file));
 			SegdRecord rec = new SegdRecord(file); 
 			rec.readHeader1(new DataInputStream(inputStream));
-		} catch (Exception e) {
+		} catch (IOException e) {
+			logger.error("IOException:", e);	
+			return false;
+		} catch (SegdException e) {
+			logger.error("SegdException:", e);
 			return false;
 		} finally {
 			try{
 				inputStream.close();
 			} catch (Exception ex){
+				logger.error("Exception:", ex);	
 			}
 		}
 		return true;
@@ -371,12 +392,14 @@ System.out.format("==     [file:%s] Caught RuntimeException:%s\n", file.getName(
 			// read record, build objects, and optionally store the objects in a container
 			importDirector.read(false);
 		} catch (Exception e) {
+			logger.error("Exception:", e);	
 			return false;
 		} finally {
 			try{
 				importDirector.close();
 				fileInputStream.close();
 			} catch (Exception ex){
+				logger.error("Exception:", ex);	
 			}
 		}
 		return true;
@@ -402,11 +425,13 @@ System.out.format("==     [file:%s] Caught RuntimeException:%s\n", file.getName(
 				}
 			}
 		} catch (Exception e) {
+			logger.error("Exception:", e);	
 			return false;
 		} finally {
 			try{
 				input.close();
 			} catch (Exception ex){
+				logger.error("Exception:", ex);	
 			}
 		}
 		return false;
