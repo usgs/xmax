@@ -25,7 +25,7 @@ public class TraceView {
 	 * @see JFrame
 	 */
 	
-	private static Logger logger = Logger.getLogger(TraceView.class);
+	private static final Logger logger = Logger.getLogger(TraceView.class);
 	/**
 	 * Library version label holder
 	 */

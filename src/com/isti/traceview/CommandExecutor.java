@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  * @author Max Kokoulin
  */
 public class CommandExecutor extends ThreadPoolExecutor {
-	private static Logger logger = Logger.getLogger(CommandExecutor.class);
+	private static final Logger logger = Logger.getLogger(CommandExecutor.class);
 	/*
 	 * the number of threads to keep in the pool, even if they are idle
 	 */
