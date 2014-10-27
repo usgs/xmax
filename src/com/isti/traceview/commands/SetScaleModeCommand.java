@@ -13,7 +13,7 @@ import com.isti.traceview.gui.IScaleModeState;
  * @author Max Kokoulin
  */
 public class SetScaleModeCommand extends AbstractUndoableCommand {
-	private static Logger logger = Logger.getLogger(SetScaleModeCommand.class);
+	private static final Logger logger = Logger.getLogger(SetScaleModeCommand.class);
 	GraphPanel graphPanel = null;
 	IScaleModeState state = null;
 	IScaleModeState prevState = null;

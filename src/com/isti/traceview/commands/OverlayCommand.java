@@ -10,7 +10,7 @@ import com.isti.traceview.gui.GraphPanel;
  * @author Max Kokoulin
  */
 public class OverlayCommand extends AbstractUndoableCommand {
-	private static Logger logger = Logger.getLogger(OverlayCommand.class);
+	private static final Logger logger = Logger.getLogger(OverlayCommand.class);
 	private GraphPanel graphPanel = null;
 
 	/**

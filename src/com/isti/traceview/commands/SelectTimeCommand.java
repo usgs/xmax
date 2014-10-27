@@ -12,7 +12,7 @@ import com.isti.traceview.gui.GraphPanel;
  * @author Max Kokoulin
  */
 public class SelectTimeCommand extends AbstractUndoableCommand {
-	private static Logger logger = Logger.getLogger(SelectTimeCommand.class); // @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(SelectTimeCommand.class); // @jve:decl-index=0:
 
 	private GraphPanel graphPanel = null;
 	private TimeInterval previousRange = null;
