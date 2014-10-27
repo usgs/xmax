@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class DataTypeWaveform extends DataType {
-	private static Logger lg = Logger.getLogger(DataTypeWaveform.class);
+	private static final Logger logger = Logger.getLogger(DataTypeWaveform.class);
 
 	private List<BlockSet> channels = null;
 
@@ -27,7 +27,6 @@ public class DataTypeWaveform extends DataType {
 	}
 	
 	public void read(BufferedRandomAccessFile input, boolean parseOnly) throws IOException, IMSFormatException, ParseException, CanadaException {
-		lg.debug("DataTypeWaveform.read begin");
 		long filePointer = 0;
 		try {
 			while (true) {
@@ -54,9 +53,8 @@ public class DataTypeWaveform extends DataType {
 			}
 		} catch (EOFException e) {
 			// Do nothing
+			logger.error("EOFException:", e);	
 		}
-
-		lg.debug("DataTypeWaveform.read end");
 	}
 
 	@Override
@@ -69,4 +67,3 @@ public class DataTypeWaveform extends DataType {
 		}
 	}
 }
-

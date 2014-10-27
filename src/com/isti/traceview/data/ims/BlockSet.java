@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class BlockSet {
-	private static Logger logger = Logger.getLogger(BlockSet.class);
+	private static final Logger logger = Logger.getLogger(BlockSet.class);
 
 	private long startOffset;
 	private WID2 wid2;
