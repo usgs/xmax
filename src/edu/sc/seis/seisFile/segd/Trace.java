@@ -13,7 +13,7 @@ import com.isti.traceview.common.TimeInterval;
 
 public class Trace {
 	private static final Logger logger = Logger.getLogger(Trace.class);
-
+	
 	public enum TraceEdit {
 		NO_EDIT, 
 		DEAD_CHANNEL, 
@@ -147,7 +147,7 @@ public class Trace {
 			fileNumber = SegdRecord.getDataValue(SegdRecord.getSections(SegdRecord.readBytes(inStream, 2, check), 4), 10);
 		} catch (CheckFailedException e) {
 			// Does nothing
-			logger.error("CheckFailedException:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
 			logger.error("SegdException:", e);
 		}
@@ -156,7 +156,7 @@ public class Trace {
 			scanTypeNumber = SegdRecord.getDataValue(SegdRecord.getSections(SegdRecord.readBytes(inStream, 1, check), 4), 10);
 		} catch (CheckFailedException e) {
 			// Does nothing
-			logger.error("CheckFailedException:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
 			logger.error("SegdException:", e);
 		}
@@ -165,14 +165,14 @@ public class Trace {
 			channelSetNumber = SegdRecord.getDataValue(SegdRecord.getSections(SegdRecord.readBytes(inStream, 1, check), 4), 10);
 		} catch (CheckFailedException e) {
 			// Does nothing
-			logger.error("CheckFailedException:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
 			logger.error("SegdException:", e);
+		}
 		try {
 			traceNumber = SegdRecord.getDataValue(SegdRecord.getSections(SegdRecord.readBytes(inStream, 2, null), 4), 10);
 		} catch (CheckFailedException e) {
-			// Does nothing
-			logger.error("CheckFailedExceptin:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
 			logger.error("SegdException:", e);
 		}
@@ -181,21 +181,21 @@ public class Trace {
 			short timeWordFraction = SegdRecord.readBytes(inStream, 1, null)[0];
 			timingWord = timeWordInteger + timeWordFraction/256.0;
 		} catch (CheckFailedException e) {
-			logger.error("CheckFailedException:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
 			logger.error("SegdException:", e);
 		}
 		try {
 			traceHeaderExtensions_number = SegdRecord.readBytes(inStream, 1, null)[0];
 		} catch (CheckFailedException e) {
-			logger.error("CheckFailedException:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
 			logger.error("SegdException:", e);
 		}
 		try {
 			sampleSkew_fraction = SegdRecord.readBytes(inStream, 1, null)[0]/256;
 		} catch (CheckFailedException e) {
-			logger.error("CheckFailedException:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
 			logger.error("SegdException:", e);
 		}
@@ -218,7 +218,7 @@ public class Trace {
 				traceEdit = null;
 			}
 		} catch (CheckFailedException e) {
-			logger.error("CheckFailedException:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
 			logger.error("SegdException:", e);
 		}
@@ -227,9 +227,9 @@ public class Trace {
 			short timeBreakFraction = SegdRecord.readBytes(inStream, 1, null)[0];
 			timeBreakWindow = timeBreakInteger + timeBreakFraction/256.0;
 		} catch (CheckFailedException e) {
-			logger.error("CheckFailedException:", e);	
+			logger.error("CheckFailedException:", e);
 		} catch (SegdException e) {
-			logger.error("SegdException:", e);
+			logger.error("SigdException:", e);
 		}
 		//if(channelSetNumber == -1){
 			channelSetNumber = SegdRecord.readShorts(inStream, 1)[0];
@@ -299,7 +299,7 @@ public class Trace {
 					sensorType= null;
 				}
 			} catch (CheckFailedException e) {
-				logger.error("CheckFailedException:", e);	
+				logger.error("CheckFailedException:", e);
 			} catch (SegdException e) {
 				logger.error("SegdException:", e);
 			}
