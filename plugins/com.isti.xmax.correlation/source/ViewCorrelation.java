@@ -44,7 +44,7 @@ import com.isti.traceview.processing.IstiUtilsMath;
 public class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(ViewCorrelation.class);
+	private static final Logger logger = Logger.getLogger(ViewCorrelation.class);
 	private static DecimalFormat dFormat = new DecimalFormat("###.###");
 	
 	List<double[]> data = null;
