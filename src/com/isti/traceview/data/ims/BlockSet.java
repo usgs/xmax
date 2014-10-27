@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class BlockSet {
-	private static Logger lg = Logger.getLogger(BlockSet.class);
+	private static Logger logger = Logger.getLogger(BlockSet.class);
 
 	private long startOffset;
 	private WID2 wid2;
@@ -40,7 +40,6 @@ public class BlockSet {
 	}
 
 	public void read(BufferedRandomAccessFile input, boolean parseOnly) throws IOException, IMSFormatException, ParseException, CanadaException {
-		lg.debug("BlockSet.read begin");
 		long filePointer = 0;
 		String line = null;
 		startOffset = input.getFilePointer();
@@ -74,9 +73,8 @@ public class BlockSet {
 			}
 		} catch (EOFException e) {
 			// Do nothing
+			logger.error("EOFException:", e);	
 		}
-
-		lg.debug("BlockSet.read end");
 	}
 
 	public void check() throws IMSFormatException {

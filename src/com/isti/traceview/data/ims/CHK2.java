@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class CHK2 extends Block {
-	private static Logger lg = Logger.getLogger(CHK2.class);
+	private static Logger logger = Logger.getLogger(CHK2.class);
 	private int chksum;
 	
 	public CHK2(long startOffset){
