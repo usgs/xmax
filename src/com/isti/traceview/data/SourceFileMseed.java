@@ -2,7 +2,6 @@ package com.isti.traceview.data;
 
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,7 +33,7 @@ import edu.sc.seis.seisFile.mseed.SeedRecord;
 public class SourceFileMseed extends SourceFile implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private static Logger lg = Logger.getLogger(SourceFileMseed.class);
+	private static final Logger logger = Logger.getLogger(SourceFileMseed.class);
 
 	// used during parsing
 	private int segmentSampleCount = 0;
@@ -44,7 +43,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	// -----
 	public SourceFileMseed(File file) {
 		super(file);
-		lg.debug("Created: " + this);
+		logger.debug("Created: " + this);
 	}
 
 	public FormatType getFormatType() {
@@ -52,7 +51,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	}
 
 	public synchronized Set<RawDataProvider> parse(DataModule dataModule) {
-		lg.debug("SourceFileMseed.parse begin " + this);
 		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
 		long blockNumber = 0;
 		long endPointer = 0;
@@ -63,7 +61,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			RawDataProvider currentChannel = new RawDataProvider("", new Station(""), "", "");
 			long blockEndTime = 0;
 			double sampleRate = -1.0;
-			double correction = 0.0;
+			//double correction = 0.0;
 			boolean skipChannel = true;
 
 			segmentSampleCount = 0;
@@ -145,45 +143,48 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								blockEndTime = getBlockEndTime(dh, sampleRate);
 								segmentSampleCount = segmentSampleCount + dh.getNumSamples();
 							} else {
-								lg.debug("Skipping 0-length block #" + blockNumber);
+								logger.debug("Skipping 0-length block #" + blockNumber);
 							}
 						} else {
-							lg.error("Block # " + blockNumber + " is not a data record");
+							logger.error("Block # " + blockNumber + " is not a data record");
 						}
 					}
 				} else {
-					lg.error("File " + getFile().getCanonicalPath() + " has null length");
+					logger.error("File " + getFile().getCanonicalPath() + " has null length");
 				}
 			} catch (EOFException ex) {
+				logger.error("EOFException:", ex);	
 				if (!skipChannel) {
 					addSegment(currentChannel, null, 0, sampleRate, currentChannel.getSegmentCount());
 				}
-				lg.debug("Read " + blockNumber + " blocks");
+				logger.debug("Read " + blockNumber + " blocks");
 			}
 		} catch (FileNotFoundException e) {
-			lg.error("File not found: " + e);
+			logger.error("File not found: " + e);
 		} catch (IOException e) {
-			lg.error("IO error: " + e);
+			logger.error("IO error: " + e);
 		} catch (SeedFormatException e) {
-			lg.error("Wrong mseed file format: " + e);
+			logger.error("Wrong mseed file format: " + e);
 		} finally {
 			try {
 				endPointer = dis.getFilePointer();
 				dis.close();
 			} catch (IOException e) {
+				logger.error("IOException:", e);	
 			}
 		}
-		lg.debug("SourceFileMseed.parse end " + this + " end position " + endPointer);
+		logger.debug(this + " end position " + endPointer);
 		setParsed(true);
 		return ret;
 	}
 
 	public synchronized void load(Segment segment) {
-		lg.debug("SourceFileMSEED.load(): " + this + " " + segment);
+		logger.debug(this + " " + segment);
 		long filePointer = 0;
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
+			logger.error("InterruptedException:", e);	
 		}
 //		try{
 //			throw new Exception();
@@ -201,12 +202,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		int headerSampleCount = 0; //Counter on the basis of header information
 		int blockNumber = 0;
 		try {
-            lg.debug("== SourceFileMSEED.load() segment from source=" + getFile().getCanonicalPath() );
 			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
 			dis.seek(segment.getStartOffset());
-			lg.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
+			logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
 			while (currentSampleCount < segment.getSampleCount()) {
+				@SuppressWarnings("unused")	
 				int blockSampleCount = 0;
 				long blockStartOffset = dis.getFilePointer();
 				SeedRecord sr = SynchronizedSeedRecord.read(dis, TraceView.getConfiguration().getDefaultBlockLength());
@@ -229,7 +230,9 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 							}
 							intData = lsi.get_as_longs();
 						} catch (FissuresException fe) {
-							lg.error("File " + getFile().getName() + ": Can't decompress data of block " + dr.getHeader().getSequenceNum() + ", setting block data to 0: " + fe);
+							StringBuilder message = new StringBuilder();
+							message.append(String.format("File " + getFile().getName() + ": Can't decompress data of block " + dr.getHeader().getSequenceNum() + ", setting block data to 0: "));
+							logger.error(message.toString(), fe);	
 							for (int i = 0; i < intData.length; i++) {
 								intData[i] = 0;
 							}
@@ -243,47 +246,52 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								data[currentSampleCount++] = sample;
 								blockSampleCount++;
 							} else {
-								lg.warn("currentSampleCount > segment.getSampleCount(): " + currentSampleCount + ", " + segment.getSampleCount() + "block " + sr.getControlHeader().getSequenceNum());
+								logger.warn("currentSampleCount > segment.getSampleCount(): " + currentSampleCount + ", " + segment.getSampleCount() + "block " + sr.getControlHeader().getSequenceNum());
 							}
 						}
 //						if(blockSampleCount != intData.length){
 //							lg.warn("Sample count mismatch!!! block " + sr.getControlHeader().getSequenceNum() + ", headers: " + dr.getHeader().getNumSamples() + "; real "+ blockSampleCount);
 //						}
 					} else {
-						lg.warn("File " + getFile().getName() + ": Skipping block " + dr.getHeader().getSequenceNum() + " due to absence of data");
+						logger.warn("File " + getFile().getName() + ": Skipping block " + dr.getHeader().getSequenceNum() + " due to absence of data");
 					}
 				} else {
-					lg.warn("File " + getFile().getName() + ": Skipping block " + sr.getControlHeader().getSequenceNum() + " so as no-data record");
+					logger.warn("File " + getFile().getName() + ": Skipping block " + sr.getControlHeader().getSequenceNum() + " so as no-data record");
 
 				}
 			}
 			// TraceViewCore.dumpMemory();
 
 		} catch (FileNotFoundException e) {
-			lg.error("Can't find file: " + e);
-			throw new RuntimeException(e);
+			logger.error("Can't find file: ", e);
+			//throw new RuntimeException(e);
+			System.exit(0);	
 		} catch (IOException e) {
+			StringBuilder message = new StringBuilder();	
 			try{
-				e.printStackTrace();
-				lg.debug("ERROR:" + this + " " + segment + " Ending position " + dis.getFilePointer() + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
-				}  catch (IOException ex) {
-				}
-
-			throw new RuntimeException(e);
+				message.append(String.format(this + " " + segment + " Ending position " + dis.getFilePointer() + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber));
+				logger.error(message.toString(), e);			
+			}  catch (IOException eIO) {
+				logger.error("IOException:", eIO);
+			}
+			//throw new RuntimeException(e);
+			System.exit(0);	
 		} catch (SeedFormatException e) {
-			lg.error("Wrong seed format: " + e);
-			throw new RuntimeException(e);
+			logger.error("Wrong seed format: ", e);
+			//throw new RuntimeException(e);
+			System.exit(0);	
 		} finally {
 			try {
 				dis.close();
 			} catch (IOException e) {
+				logger.error("IOException:", e);	
 			}
 		}
 		for (int value: data) {
 			segment.addDataPoint(value);
 		}
 
-		lg.debug("Loaded " + this + " " + segment + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
+		logger.debug("Loaded " + this + " " + segment + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
 	}
 
 	public String toString() {
@@ -323,13 +331,16 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 				ret = ret + "<br><i>Size:</i> " + ch.getSize();
 			}
 		} catch (IOException e) {
+			logger.error("IOException:", e);	
 			ret = ret + "<br>Header block text is unavailable";
 		} catch (SeedFormatException e) {
+			logger.error("SeedFormatException:", e);	
 			ret = ret + "<br>Header block text is unavailable";
 		} finally {
 			try {
 				dis.close();
 			} catch (IOException e) {
+				logger.error("IOException:", e);	
 			}
 		}
 

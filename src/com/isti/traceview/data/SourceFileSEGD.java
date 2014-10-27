@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-
 import edu.sc.seis.seisFile.segd.ChannelSet;
 import edu.sc.seis.seisFile.segd.ScanType;
 import edu.sc.seis.seisFile.segd.SegdRecord;
@@ -18,12 +17,12 @@ import edu.sc.seis.seisFile.segd.Trace;
 public class SourceFileSEGD extends SourceFile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(SourceFileSEGD.class);
+	private static final Logger logger = Logger.getLogger(SourceFileSEGD.class);
 	private final int NORM_AMPLITUDE =100000;
 	
 	public SourceFileSEGD(File file) {
 		super(file);
-		lg.debug("Created: " + this);
+		logger.info("Created: " + this);
 	}
 
 	@Override
@@ -50,16 +49,15 @@ public class SourceFileSEGD extends SourceFile implements Serializable {
 					}
 				}
 			}
-
 		} catch (IOException e) {
-			lg.error("IO error: " + e);
+			logger.error("IO error: " + e);
 		}
 		return ret;
 	}
 
 	@Override
 	public void load(Segment segment) {
-		lg.debug("SourceFileSEGD.load(): " + this);
+		logger.debug("Loading: " + this);
 		int[] data = null;
 		try {
 			float[] traceData = Trace.getData(getFile(), segment.getStartOffset(), segment.getSampleCount());
@@ -80,7 +78,9 @@ public class SourceFileSEGD extends SourceFile implements Serializable {
 				data[i++]=new Double(normCoeff*val).intValue();
 			}
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			logger.error("IOException:", e);	
+			//throw new RuntimeException(e);
+			System.exit(0);	
 		}
 		for (int value: data) {
 			segment.addDataPoint(value);

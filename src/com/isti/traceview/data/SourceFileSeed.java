@@ -47,7 +47,7 @@ import edu.iris.Fissures.seed.util.Utility;
 public class SourceFileSeed extends SourceFile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(SourceFileSeed.class);
+	private static final Logger logger = Logger.getLogger(SourceFileSeed.class);
 	private boolean verboseMode = false; // set to true to turn Jseedr verbose mode ON
 
 	// when exporting
@@ -80,13 +80,13 @@ public class SourceFileSeed extends SourceFile implements Serializable {
 			exportDirector.fillTemplate(null);
 			exportDirector.construct();
 		} catch (Exception e) {
-			lg.error(e);
-			e.printStackTrace();
+			logger.error("Exception:", e);	
 		} finally {
 			try {
 				dataInputStream.close();
 			} catch (IOException e) {
 				// do nothing
+				logger.error("IOException:", e);	
 			}
 		}
 		return ret;
@@ -115,7 +115,7 @@ public class SourceFileSeed extends SourceFile implements Serializable {
  * @version 11/5/2004
  */
 class TraceViewSacExportBuilder extends ExportBuilder {
-	private static Logger lg = Logger.getLogger(TraceViewSacExportBuilder.class);
+	private static final Logger logger = Logger.getLogger(TraceViewSacExportBuilder.class);
 
 	/**
 	 * Create a new Sac Export Buider.
@@ -549,8 +549,9 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 				// fall back to some default encoding and proceed forward with a
 				// printed warning.
 				String defaultEncoding = "Steim1";
-				System.err.println("WARNING: " + e);
-				System.err.println("proceeding using default encoding " + defaultEncoding);
+				StringBuilder message = new StringBuilder();	
+				message.append("proceeding using default encoding " + defaultEncoding);
+				logger.error(message.toString(), e);	
 				thisWaveform.setEncoding(defaultEncoding);
 				dataValues = thisWaveform.getDecodedFloats(lastSampleValue); // using
 																				// lastSampleValue
@@ -979,7 +980,7 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 					TraceView.getDataModule().addDataSource(new SourceFileSAC(new File(TraceView.getConfiguration().getDataTempPath() + File.separator + filenameBuffer)));
 				}
 			} catch (IOException e1) {
-				System.err.println("I/O Error in SAC file splitter: " + e1);
+				logger.error("I/O Error in SAC file splitter: ", e1);
 			}
 		}
 
