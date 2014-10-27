@@ -39,7 +39,7 @@ public class TimeInterval {
 		DATE_FORMAT_LONG
 	};
 
-	private static Logger logger = Logger.getLogger(TimeInterval.class);
+	private static final Logger logger = Logger.getLogger(TimeInterval.class);
 	public static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD,HH:mm:ss.SSS");
 	public static SimpleDateFormat df_middle = new SimpleDateFormat("yyyy,DDD,HH:mm:ss");
 	public static SimpleDateFormat df_long = new SimpleDateFormat("yyyy,DDD,HH:mm");
@@ -224,6 +224,7 @@ public class TimeInterval {
 	 * String representation of duration in seconds (if duration less then hour), hours (if duration less then day) or decimal days
 	 */
 	public static String getStringDiff(long duration) {
+		logger.debug("duration = " + duration);	
 		String ret = "";
 		if (duration < 0) {
 			duration = -duration;
@@ -251,6 +252,7 @@ public class TimeInterval {
 	 * String representation of duration in the form +-##days ##hours ##min ##.## s
 	 */
 	public static String getStringDiffDDHHMMSS(long duration) {
+		logger.debug("duration = " _+ duration);	
 		String ret = "";
 		if (duration < 0) {
 			duration = -duration;

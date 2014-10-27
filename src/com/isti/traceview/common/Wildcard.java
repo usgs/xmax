@@ -16,7 +16,7 @@ import com.isti.traceview.TraceViewException;
  * @author Max Kokoulin
  */
 public class Wildcard {
-	private static Logger logger = Logger.getLogger(Wildcard.class);
+	private static final Logger logger = Logger.getLogger(Wildcard.class);
 
 	List<String> path = null;
 	List<File> lst = new ArrayList<File>();
