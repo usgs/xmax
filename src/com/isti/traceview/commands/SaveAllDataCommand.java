@@ -13,7 +13,7 @@ import com.isti.traceview.data.PlotDataProvider;
  * @author Max Kokoulin
  */
 public class SaveAllDataCommand extends AbstractCommand {
-	private static Logger logger = Logger.getLogger(SaveAllDataCommand.class);
+	private static final Logger logger = Logger.getLogger(SaveAllDataCommand.class);
 
 	public void run() {
 		try {

@@ -14,7 +14,7 @@ import com.isti.traceview.data.PlotDataProvider;
  */
 
 public class LoadDataCommand extends AbstractCommand {
-	private static Logger logger = Logger.getLogger(LoadDataCommand.class);
+	private static final Logger logger = Logger.getLogger(LoadDataCommand.class);
 
 	List<PlotDataProvider> channels;
 	TimeInterval ti = null;

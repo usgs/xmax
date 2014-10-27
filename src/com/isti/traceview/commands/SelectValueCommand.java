@@ -11,7 +11,7 @@ import com.isti.traceview.gui.GraphPanel;
  * @author Max Kokoulin
  */
 public class SelectValueCommand extends AbstractUndoableCommand {
-	private static Logger logger = Logger.getLogger(SelectValueCommand.class); // @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(SelectValueCommand.class); // @jve:decl-index=0:
 
 	private GraphPanel graphPanel = null;
 	private double previousMax;

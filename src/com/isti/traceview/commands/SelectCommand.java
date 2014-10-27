@@ -11,7 +11,7 @@ import com.isti.traceview.gui.GraphPanel;
  * @author Max Kokoulin
  */
 public class SelectCommand extends AbstractUndoableCommand {
-	private static Logger logger = Logger.getLogger(SelectCommand.class);
+	private static final Logger logger = Logger.getLogger(SelectCommand.class);
 	private GraphPanel graphPanel = null;
 
 	/**
