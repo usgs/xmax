@@ -14,10 +14,6 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -25,7 +21,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.GnuParser;	// used for build.xml?
 
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
@@ -184,6 +179,7 @@ public class XMAX extends TraceView {
 					Logger.getRootLogger().setLevel(Level.OFF);
 					// Collecting plug-in locations.
 					PluginLocation[] pluginLocations = collectPluginLocations();
+					
 					// Creating plug-in manager instance.
 					pluginManager = ObjectFactory.newInstance().createManager();
 					// Publishing discovered plug-ins.
@@ -200,6 +196,7 @@ public class XMAX extends TraceView {
 					for (Extension ext: transformExtPoint.getConnectedExtensions()) {
 						transformations.add(ext);
 					}
+					
 					//restoring logging level
 					Logger.getRootLogger().setLevel(level);
 					setDataModule(XMAXDataModule.getInstance());
