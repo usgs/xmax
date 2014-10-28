@@ -13,7 +13,7 @@ import com.isti.traceview.data.Segment;
  * @author Max Kokoulin
  */
 public class FilterFacade {
-	private static Logger logger = Logger.getLogger(FilterFacade.class);
+	private static final Logger logger = Logger.getLogger(FilterFacade.class);
 
 	private IFilter filter;
 
