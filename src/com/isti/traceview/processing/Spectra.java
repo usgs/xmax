@@ -25,7 +25,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
  * @author Max Kokoulin
  */
 public class Spectra {
-	private static Logger lg = Logger.getLogger(Spectra.class);
+	private static final Logger logger = Logger.getLogger(Spectra.class);
 	/**
 	 * Noise Spectra.
 	 */
@@ -154,7 +154,11 @@ public class Spectra {
 	public double[] getSpectraAmp(boolean isDeconvolve, String respToConvolve) {
 		Cmplx[] processed = copyOf(spectra, spectra.length, spectra.getClass());
 		if (isDeconvolve && resp != null) {
-			processed = IstiUtilsMath.complexDeconvolution(spectra, resp);
+			try {	
+				processed = IstiUtilsMath.complexDeconvolution(spectra, resp);
+			} catch (IllegalArgumentException e) {
+				logger.error("IllegalArgumentException:", e);
+			}
 		}
 		if (respToConvolve != null && !respToConvolve.equals("None")) {
 			File respFile = new File(TraceView.getConfiguration().getResponsePath() + File.separator + respToConvolve);
@@ -167,7 +171,7 @@ public class Spectra {
 					// frequenciesArray.length));
 					processed = IstiUtilsMath.complexConvolution(processed, respExt);
 				} catch (TraceViewException e) {
-					lg.error("Cant convolve with response " + respToConvolve + ": " + e);
+					logger.error("Cant convolve with response " + respToConvolve + ": " + e);
 				}
 			}
 		}
@@ -178,27 +182,32 @@ public class Spectra {
 	 * Compute PSD for this spectra
 	 */
 	public double[] getPSD(int inputUnits) {
-		//log("Spectra", spectra);
-		//log("RESP", resp);
-		Cmplx[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);
-		//log("Deconvolved", deconvolved);
-		double[] psd = new double[deconvolved.length];
-		for (int i = 0; i < deconvolved.length; i++) {
-			psd[i] = (deconvolved[i].r * deconvolved[i].r + deconvolved[i].i * deconvolved[i].i) / (getSampleRate() / 2.0 * getSampleRate() / 2.0) * 2.0
-					* sampFreq;
+		try {	
+			Cmplx[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);
+		
+			//log("Deconvolved", deconvolved);
+			double[] psd = new double[deconvolved.length];
+			for (int i = 0; i < deconvolved.length; i++) {
+				psd[i] = (deconvolved[i].r * deconvolved[i].r + deconvolved[i].i * deconvolved[i].i) / (getSampleRate() / 2.0 * getSampleRate() / 2.0) * 2.0
+						* sampFreq;
+			}
+		
+			switch (inputUnits) {
+			case OutputGenerator.DISPLACE_UNIT_CONV:
+				IstiUtilsMath.dispToAccel(psd, sampFreq, spectra.length);
+				break;
+			case OutputGenerator.VELOCITY_UNIT_CONV:
+				IstiUtilsMath.velToAccel(psd, sampFreq, spectra.length);
+				break;
+			default:
+				; // Do nothing
+				break;
+			}
+			return psd;
+		} catch (IllegalArgumentException e) {
+			logger.error("IllegalArgumentException:", e);
+			return null;
 		}
-		switch (inputUnits) {
-		case OutputGenerator.DISPLACE_UNIT_CONV:
-			IstiUtilsMath.dispToAccel(psd, sampFreq, spectra.length);
-			break;
-		case OutputGenerator.VELOCITY_UNIT_CONV:
-			IstiUtilsMath.velToAccel(psd, sampFreq, spectra.length);
-			break;
-		default:
-			; // Do nothing
-			break;
-		}
-		return psd;
 	}
 
 	/**
@@ -238,7 +247,7 @@ public class Spectra {
 			}
 			pStr.close();
 		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
+			logger.error("FileNotFoundException:", ex);	
 		}
 	}
 	

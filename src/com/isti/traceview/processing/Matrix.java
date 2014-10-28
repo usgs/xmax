@@ -91,10 +91,11 @@ final public class Matrix {
 	/**
 	 * @return C = A + B
 	 */
-	public Matrix plus(Matrix B) {
+	public Matrix plus(Matrix B) 
+	throws MatrixException {
 		Matrix A = this;
 		if (B.M != A.M || B.N != A.N)
-			throw new RuntimeException("Illegal matrix dimensions.");
+			throw new MatrixException("Illegal matrix dimensions.");
 		Matrix C = new Matrix(M, N);
 		for (int i = 0; i < M; i++)
 			for (int j = 0; j < N; j++)
@@ -105,10 +106,11 @@ final public class Matrix {
 	/**
 	 * @return C = A - B
 	 */
-	public Matrix minus(Matrix B) {
+	public Matrix minus(Matrix B) 
+	throws MatrixException {
 		Matrix A = this;
 		if (B.M != A.M || B.N != A.N)
-			throw new RuntimeException("Illegal matrix dimensions.");
+			throw new MatrixException("Illegal matrix dimensions.");
 		Matrix C = new Matrix(M, N);
 		for (int i = 0; i < M; i++)
 			for (int j = 0; j < N; j++)
@@ -119,10 +121,11 @@ final public class Matrix {
 	/**
 	 * does A = B exactly?
 	 */
-	public boolean eq(Matrix B) {
+	public boolean eq(Matrix B) 
+	throws MatrixException {
 		Matrix A = this;
 		if (B.M != A.M || B.N != A.N)
-			throw new RuntimeException("Illegal matrix dimensions.");
+			throw new MatrixException("Illegal matrix dimensions.");
 		for (int i = 0; i < M; i++)
 			for (int j = 0; j < N; j++)
 				if (A.data[i][j] != B.data[i][j])
@@ -133,10 +136,11 @@ final public class Matrix {
 	/**
 	 * @return C = A * B
 	 */
-	public Matrix times(Matrix B) {
+	public Matrix times(Matrix B) 
+	throws MatrixException {
 		Matrix A = this;
 		if (A.N != B.M)
-			throw new RuntimeException("Illegal matrix dimensions.");
+			throw new MatrixException("Illegal matrix dimensions.");
 		Matrix C = new Matrix(A.M, B.N);
 		for (int i = 0; i < C.M; i++)
 			for (int j = 0; j < C.N; j++)
@@ -148,9 +152,10 @@ final public class Matrix {
 	/**
 	 * return x = A^-1 b, assuming A is square and has full rank
 	 */
-	public Matrix solve(Matrix rhs) {
+	public Matrix solve(Matrix rhs) 
+	throws MatrixException {
 		if (M != N || rhs.M != N || rhs.N != 1)
-			throw new RuntimeException("Illegal matrix dimensions.");
+			throw new MatrixException("Illegal matrix dimensions.");
 
 		// create copies of the data
 		Matrix A = new Matrix(this);
@@ -169,7 +174,7 @@ final public class Matrix {
 
 			// singular
 			if (A.data[i][i] == 0.0)
-				throw new RuntimeException("Matrix is singular.");
+				throw new MatrixException("Matrix is singular.");
 
 			// pivot within b
 			for (int j = i + 1; j < N; j++)
