@@ -30,6 +30,10 @@ package gov.usgs.anss.cd11;
 public class CanadaException extends Exception {
 
 	private static final long serialVersionUID = 1L;
+	
+	public CanadaException() {
+		super();
+	}
 
 public CanadaException(String msg) {
     super(msg);
