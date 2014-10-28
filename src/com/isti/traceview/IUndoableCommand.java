@@ -11,7 +11,7 @@ public interface IUndoableCommand extends ICommand {
 	/**
 	 * Undo this command and restore state before it's execution
 	 */
-	public void undo();
+	public void undo() throws UndoException;
 	
 	/**
 	 * @return flag this command can be undone

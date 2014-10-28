@@ -112,7 +112,7 @@ import javax.swing.JRadioButtonMenuItem;
  * @author Max Kokoulin
  */
 public class XMAXframe extends JFrame implements MouseInputListener, ActionListener, ItemListener, Observer {
-	private static Logger logger = Logger.getLogger(XMAXframe.class); // @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(XMAXframe.class); // @jve:decl-index=0:
 
 	private static final long serialVersionUID = 1L;
 	private static XMAXframe instance = null;
@@ -220,7 +220,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		setExtendedState(XMAX.getConfiguration().getFrameExtendedState());
 		// lg.debug("Java version message: " + XMAX.getJavaVersionMessage());
 		if ((getExtendedState() == Frame.MAXIMIZED_BOTH || getExtendedState() == Frame.MAXIMIZED_HORIZ || getExtendedState() == Frame.MAXIMIZED_VERT) && (XMAX.getJavaVersionMessage().toLowerCase().contains("linux") || XMAX.getJavaVersionMessage().toLowerCase().contains("sunos"))
-				|| XMAX.getJavaVersionMessage().toLowerCase().contains("solaris")) {
+			     || XMAX.getJavaVersionMessage().toLowerCase().contains("solaris")) {
 			// Manual size setting for Linux and Solaris, setExtendedState doesn't work
 			GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			GraphicsDevice[] devices = graphicsEnvironment.getScreenDevices();
@@ -630,6 +630,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return com.isti.xmax.gui.QCPanel
 	 */
+	@SuppressWarnings("unused")	
 	private JPanel getQCPanel() {
 		if (qCPanel == null) {
 			qCPanel = new QCPanel();
@@ -1253,6 +1254,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return javax.swing.JMenuItem
 	 */
+	@SuppressWarnings("unused")	
 	private JMenuItem getSaveInternalMenuItem() {
 		if (saveInternalMenuItem == null) {
 			saveInternalMenuItem = new JMenuItem();
@@ -1323,8 +1325,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	public static void main(String[] args) {
-		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] devices = graphicsEnvironment.getScreenDevices();
+		//GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		//GraphicsDevice[] devices = graphicsEnvironment.getScreenDevices();
 		XMAXframe frame = XMAXframe.getInstance();
 		frame.setVisible(true);
 	}
@@ -1362,6 +1364,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			} catch (TraceViewException e1) {
 				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
 				getGraphPanel().forceRepaint();
+				logger.error("TraceViewException:", e1);	
 			} catch (Exception e1) {
 				logger.error("NextAction error: " + e1);
 			} finally {
@@ -1403,6 +1406,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			} catch (TraceViewException e1) {
 				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the first set", "Information", JOptionPane.INFORMATION_MESSAGE);
 				getGraphPanel().forceRepaint();
+				logger.error("TraceViewException:", e1);	
 			} catch (Exception e1) {
 				logger.error("PreviousAction error: " + e1);
 			} finally {
@@ -1855,8 +1859,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			ICommand command = history.getLast();
 			if (command instanceof IUndoableCommand) {
 				IUndoableCommand undCommand = (IUndoableCommand) command;
-				if (undCommand.canUndo()) {
-					undCommand.undo();
+				try {	
+					if (undCommand.canUndo()) {
+						undCommand.undo();
+					}
+				} catch (UndoException e1) {
+					logger.error("UndoException:", e1);
 				}
 			}
 			statusBar.setMessage("");
@@ -2433,6 +2441,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					try {
 						fw.close();
 					} catch (IOException e1) {
+						logger.error("IOException:", e1);	
 					}
 					setWaitCursor(false);
 				}
