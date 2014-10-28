@@ -175,7 +175,7 @@ public class XMAX extends TraceView {
 				} else {
 					// Ordinary initialization
 					// switch off logging to suppress unneeded messages
-					Level level = Logger.getRootLogger().getLevel();
+					//Level level = Logger.getRootLogger().getLevel();
 					Logger.getRootLogger().setLevel(Level.OFF);
 					// Collecting plug-in locations.
 					PluginLocation[] pluginLocations = collectPluginLocations();
@@ -198,7 +198,8 @@ public class XMAX extends TraceView {
 					}
 					
 					//restoring logging level
-					Logger.getRootLogger().setLevel(level);
+					Logger.getRootLogger().setLevel(Level.ALL);
+					System.out.format("Logger LEVEL == [%s]\n", Logger.getRootLogger().getLevel().toString());	
 					setDataModule(XMAXDataModule.getInstance());
                     
 					getDataModule().loadData();

@@ -525,6 +525,7 @@ public class XMAXconfiguration extends Configuration {
 				MappedByteBuffer mbf = fch.map(FileChannel.MapMode.READ_ONLY, 0, fch.size());
 				byte[] barray = new byte[(int) (fch.size())];
 				mbf.get(barray);
+				fis.close();	
 				return new String(barray);
 			} catch (FileNotFoundException e) {
 				logger.error("Can't get html pattern: " + e);
