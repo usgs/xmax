@@ -32,7 +32,7 @@ import com.isti.traceview.gui.FileChooser;
  * Sets of general procedures used for gui construction
  */
 public class GraphUtil {
-	private static Logger lg = Logger.getLogger(GraphUtil.class);
+	private static final Logger logger = Logger.getLogger(GraphUtil.class);
 	private static final double default_compression = 0.9; // the compression level (0.0-1.0).
 
 	/**
@@ -47,9 +47,7 @@ public class GraphUtil {
 	 * @see JButton
 	 */
 	static public JButton createNoURLGraphicalButton(String imageName, String alternateText) {
-
 		return new JButton(alternateText, new ImageIcon(imageName));
-
 	}
 
 	/**
@@ -64,11 +62,11 @@ public class GraphUtil {
 	 * @see JButton
 	 */
 	static public JButton createGraphicalButton(String imageName, String alternateText) {
-
 		try {
 			JButton tb = new JButton(new ImageIcon(ClassLoader.getSystemResource(imageName)));
 			return tb;
 		} catch (Exception e) {
+			logger.error("Exception:", e);	
 			return new JButton(alternateText);
 		}
 	}
@@ -85,9 +83,7 @@ public class GraphUtil {
 	 * @see JButton
 	 */
 	static public JLabel createGraphicalLabel(String imageName, String alternateText) {
-
 		try {
-
 			BufferedImage bi = javax.imageio.ImageIO.read(ClassLoader.getSystemResource("images/" + imageName));
 			int w = (int) (bi.getWidth() * 0.75);
 			int h = (int) (bi.getHeight() * 0.75);
@@ -97,6 +93,7 @@ public class GraphUtil {
 			// imageName)));
 			return tmplab;
 		} catch (Exception e) {
+			logger.error("Exception:", e);	
 			return new JLabel(alternateText);
 		}
 	}
@@ -144,12 +141,13 @@ public class GraphUtil {
 				raf.seek(insertPlace);
 				raf.writeBytes(insertText + "</body></html>");
 				raf.close();
+				fis.close();	
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				logger.error("FileNotFoundException:", e1);	
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				logger.error("IOException:", e1);	
 			}
 		}
 		return file;
@@ -215,14 +213,19 @@ public class GraphUtil {
 			g2.dispose();
 			ImageIO.write(image, encFormat, out);
 		} catch (FileNotFoundException e1) {
-			lg.error("Can't export graphics to file " + filename + ": " + e1);
+			StringBuilder message = new StringBuilder();
+			message.append("Can't export graphics to file " + filename + ": ");
+			logger.error(message.toString(), e1);
 		} catch (IOException e1) {
-			lg.error("Can't export graphics to file " + filename + ": " + e1);
+			StringBuilder message = new StringBuilder();
+			message.append("Can't export graphics to file " + filename + ": ");
+			logger.error(message.toString(), e1);
 		} finally {
 			try {
 				out.close();
 			} catch (IOException e1) {
 				// do nothing
+				logger.error("IOException:", e1);	
 			}
 		}
 	}

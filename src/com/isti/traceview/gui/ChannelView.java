@@ -43,6 +43,7 @@ import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 
 import org.apache.log4j.Logger;
+
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.RangeType;
 import org.jfree.ui.RectangleEdge;
@@ -66,7 +67,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger lg = Logger.getLogger(ChannelView.class); // @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(ChannelView.class); // @jve:decl-index=0:
 
 	public static boolean tooltipVisible = false;
 	public static final int defaultInfoPanelWidth = 80;
@@ -95,7 +96,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 
 	private List<MarkPosition> markPositions = null;
 	private int selectionNumber = 0;
-	private boolean isDrawSelectionCheckBox = true;
+	//private boolean isDrawSelectionCheckBox = true;
 
 	/**
 	 * Mouse adapter for GraphAreaPanel - internal panel containing graphs
@@ -108,14 +109,14 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		for (PlotDataProvider channel: channels) {
 			names = names + channel.toString() + ";";
 		}
-		lg.debug("ChannelView created for list: " + names);
+		logger.debug("ChannelView created for list: " + names);
 		initialize(infoPanelWidth, isDrawSelectionCheckBox, graphAreaBgColor, infoAreaBgColor);
 		setPlotDataProviders(channels);
 	}
 
 	public ChannelView(PlotDataProvider channel, int infoPanelWidth, boolean isDrawSelectionCheckBox, Color graphAreaBgColor, Color infoAreaBgColor) {
 		super();
-		lg.debug("ChannelView created for " + channel.toString());
+		logger.debug("ChannelView created for " + channel.toString());
 		initialize(infoPanelWidth, isDrawSelectionCheckBox, graphAreaBgColor, infoAreaBgColor);
 		List<PlotDataProvider> lst = new ArrayList<PlotDataProvider>();
 		lst.add(channel);
@@ -208,10 +209,10 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	}
 
 	public void update(Observable observable, Object arg) {
-		lg.debug(this + ": update request from " + observable);
+		logger.debug(this + ": update request from " + observable);
 		if (arg instanceof TimeInterval) {
 			TimeInterval ti = (TimeInterval) arg;
-			lg.debug(this + " updating for range " + ti + " due to request from " + observable.getClass().getName());
+			logger.debug(this + " updating for range " + ti + " due to request from " + observable.getClass().getName());
 			graphAreaPanel.repaint();
 		}
 	}
@@ -301,7 +302,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		plotDataProviders = channels;
 		for (PlotDataProvider channel: plotDataProviders) {
 			channel.addObserver(this);
-			lg.debug("Observer for " + channel.toString() + " added");
+			logger.debug("Observer for " + channel.toString() + " added");
 			if (channel.getMaxValue() > maxValueAllChannels) {
 				maxValueAllChannels = channel.getMaxValue();
 			}
@@ -335,7 +336,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 
 		int width = graphAreaPanel.getWidth();// - graphAreaPanel.getInsets().left -
 		// graphAreaPanel.getInsets().right;
-		lg.debug("Updating data " + this + "Width = " + width);
+		logger.debug("Updating data " + this + "Width = " + width);
 		graphs = new ArrayList<PlotData>();
 /**
 System.out.println();
@@ -366,6 +367,7 @@ System.out.println();
 					data = channel.getPlotData(graphPanel.getTimeRange(), width, null, graphPanel.getFilter(), graphPanel.getColorMode());
 				} catch (TraceViewException e1) {
 					// do nothing
+					logger.error("TraceViewException:", e1);	
 				}
 			}
 
@@ -597,7 +599,7 @@ System.out.println();
 		}
 
 		public void paint(Graphics g) {
-			lg.debug("Repainting " + this);
+			logger.debug("Repainting " + this);
 			super.paint(g);
 			// maxValue = Integer.MIN_VALUE;
 			// minValue = Integer.MAX_VALUE;
@@ -614,13 +616,13 @@ System.out.println();
 			}
 			//Offset step is 1/20 of graph height
 			offsetState.setShift((scaleMode.getMaxValue() - scaleMode.getMinValue()) / 20);
-			lg.debug("Set ChannelView " + this + " boundaries: " + scaleMode.getMaxValue() + "-" + scaleMode.getMinValue());
+			logger.debug("Set ChannelView " + this + " boundaries: " + scaleMode.getMaxValue() + "-" + scaleMode.getMinValue());
 			// Graph's number, used to separate graphs then overlay mode is activated
 			int graphNum = 0;
 			Color segmentColor = null;
 			for (PlotData data: graphs) {
 				int i = 0;
-				lg.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
 				// strokes for previous pixel
 				List<Stroke> yprev = new ArrayList<Stroke>();
 				for (PlotDataPoint[] points: data.getPixels()) {
@@ -663,9 +665,9 @@ System.out.println();
 							yprev.set(j, new Stroke());
 						}
 						// drawing events
-						long currentTime = getTime(i);
+						//long currentTime = getTime(i);
 						for (EventWrapper eventWrapper: point.getEvents()) {
-							lg.debug("drawing event front");
+							logger.debug("drawing event front");
 							g.setColor(eventWrapper.getEvent().getColor());
 							if (eventWrapper.getEvent().getType().equals("ARRIVAL") && graphPanel.getPhaseState()) {
 								// drawing phases
@@ -699,7 +701,7 @@ System.out.println();
 			}
 
 			if (plotDataProviders != null) {
-				lg.debug("drawing channel labels");
+				logger.debug("drawing channel labels");
 				g.setFont(GraphPanel.getAxisFont());
 				fontHeight = g.getFontMetrics().getHeight();
 				int i = 1;
@@ -725,7 +727,7 @@ System.out.println();
 							- image.getHeight(this) / 2, this);
 				}
 			}
-			lg.debug("Repainting end " + this);
+			logger.debug("Repainting end " + this);
 		}
 		
 		
@@ -897,19 +899,19 @@ System.out.println();
 			private static final long serialVersionUID = 1L;
 
 			public CVToolTip(){
-				lg.debug("CVToolTip: create");
+				logger.debug("CVToolTip: create");
 				tooltipVisible = true;
 			}
 			
 			@SuppressWarnings("deprecation")
 			public void show(){
-				lg.debug("CVToolTip: show");
+				logger.debug("CVToolTip: show");
 				super.show();
 			}
 			
 			@SuppressWarnings("deprecation")
 			public void hide(){
-				lg.debug("CVToolTip: hide");
+				logger.debug("CVToolTip: hide");
 				super.hide();
 			}
 			
@@ -919,7 +921,7 @@ System.out.println();
 			}
 			
 			protected void finalize()throws Throwable {
-				lg.debug("CVToolTip: false");
+				logger.debug("CVToolTip: false");
 				tooltipVisible = false;
 				super.finalize();
 			}
