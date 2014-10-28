@@ -1308,7 +1308,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	private void paintSelection(Graphics g, long Xbegin, long Xend, double Ybegin, double Yend, String message) {
 		int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
 		if (Xbegin != Long.MAX_VALUE && Xend != Long.MIN_VALUE && mouseSelectionEnabled) {
-			logger.debug(message + " selection X: " + getXposition(Xbegin) + ", " +
+			logger.debug(message + " selection X: " + getXposition(Xbegin) + ", " + getXposition(Xend));
 			if (Xend > Xbegin) {
 				int begPos = getXposition(Xbegin);
 				int leftPos = begPos >= 0 ? begPos + infoPanelWidth + getInsets().left : infoPanelWidth + getInsets().left;
