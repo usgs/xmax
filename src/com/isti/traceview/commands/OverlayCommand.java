@@ -26,7 +26,7 @@ public class OverlayCommand extends AbstractUndoableCommand {
 			super.run();
 			graphPanel.overlay();
 		} catch (Exception e) {
-			logger.error("OverlayCommand error: " + e);
+			logger.error("OverlayCommand error: ", e);
 		}
 	}
 

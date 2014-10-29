@@ -238,7 +238,7 @@ public class RawDataProvider extends Channel {
 			    //sc.getSegment().load();
             }
             else {
-                logger.debug("== RDP.loadData(): Segment is ALREADY loaded:" + seg.toString() );
+                logger.debug("== Segment is ALREADY loaded:" + seg.toString() );
                 //System.out.format("== RawDataProvider.loadData(): Segment is Already Loaded:%s\n", seg.toString() );
                 // MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
                 //      in order to have the segment's int[] data filled before serialization, but we're
@@ -600,9 +600,9 @@ System.out.println("== Segment dumpMseed ENTER");
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		logger.debug("== Deserializing RawDataProvider" + toString());
         // MTH: Once we've read in the .SER file, serialFile(=... .DATA) will be set
-        logger.debug("== in.defaultReadObject()");
+        logger.debug("== call defaultReadObject()");
 		in.defaultReadObject();
-        logger.debug("== in.defaultReadObject() DONE");
+        logger.debug("== defaultReadObject() DONE");
 		if (serialFile != null) {
 			serialStream = new BufferedRandomAccessFile(serialFile, "rw");
 			serialStream.order(BufferedRandomAccessFile.BIG_ENDIAN);

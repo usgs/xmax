@@ -291,6 +291,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * @param end
 	 *            end time in milliseconds
 	 */
+	@SuppressWarnings("null")	
 	public SegmentData getData(double start, double end) {
 		// lg.debug("startTime=" + startTime +", endTime=" + getEndTime().getTime());
 		int[] ret = null;
@@ -332,7 +333,7 @@ public class Segment implements Externalizable, Cloneable {
 					}
             // MTH: Use this if we are in the -T mode and we need to load existing serialized data (from .DATA)
                     if (com.isti.traceview.TraceView.getConfiguration().getDumpData()) {
-                        logger.debug("== We are in -T dataDump mode --> read this Segment from dataStream");
+                        logger.debug("We are in -T dataDump mode --> read this Segment from dataStream");
                         if (data == null) {
                             if (ret.length != sampleCount) {
           			//System.out.format("== Segment.getData(): Warning: sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length);
