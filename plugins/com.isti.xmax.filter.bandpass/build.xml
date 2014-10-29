@@ -7,7 +7,7 @@
         ${plugin.home}/plugin.xml
     Note that plugin.xml specifies where the class file is wrt the plugin.xml file: 
         <runtime> 
-                <library id="filterHP" path="classes/" type="code"/> 
+                <library id="filterBP" path="classes/" type="code"/> 
         </runtime> 
 
     Requires that you've already compiled the isti traceview classes into ../../build/com/isti/... etc.
