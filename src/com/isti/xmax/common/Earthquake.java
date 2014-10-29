@@ -188,14 +188,14 @@ public class Earthquake extends AbstractEvent implements IEvent {
 						}
 					} catch (NumberFormatException e) {
 						logger.error("Can't parse earthquake, line " 
-								+ (r.getLineNumber() - rawData.length) + ": " + e);
+								+ (r.getLineNumber() - rawData.length) + ": ", );
 					} catch (ParseException e) {
 						logger.error("Can't parse earthquake, line " 
-								+ (r.getLineNumber() - rawData.length) + ": " + e);
+								+ (r.getLineNumber() - rawData.length) + ": ", e);
 					}
 				}
 			} catch (FileNotFoundException e) {
-				logger.error("Can't open earthquake file " + ": " + e);
+				logger.error("Can't open earthquake file " + ": ", e);
 			}
 		}
 		Collections.sort(ret);
@@ -233,7 +233,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 		try {
 			TauP_Time timeTool = new TauP_Time("iasp91");
 			timeTool.setPhaseNames(phases);
-			for (IEvent earthquake: XMAX.getDataModule().getEarthquakes()) {
+			for (IEvent earthquake : XMAX.getDataModule().getEarthquakes()) {
 				timeTool.depthCorrect((Double) earthquake
 						.getParameterValue("DEPTH"));
 				DistAz da = new DistAz(
@@ -254,7 +254,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 				}
 			}
 		} catch (TauModelException e) {
-			logger.error("Can't load TauP earth model: " + e);
+			logger.error("Can't load TauP earth model: ", e);
 		}
 		return ret;
 	}

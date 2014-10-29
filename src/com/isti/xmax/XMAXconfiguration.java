@@ -528,10 +528,10 @@ public class XMAXconfiguration extends Configuration {
 				fis.close();	
 				return new String(barray);
 			} catch (FileNotFoundException e) {
-				logger.error("Can't get html pattern: " + e);
+				logger.error("Can't get html pattern: ", e);
 				return getDefaultHTMLPattern();
 			} catch (IOException e) {
-				logger.error("Can't get html pattern: " + e);
+				logger.error("Can't get html pattern: ", e);
 				return getDefaultHTMLPattern();
 			}
 		} else {
@@ -547,7 +547,7 @@ public class XMAXconfiguration extends Configuration {
 		try {
 			config.save(confFileName);
 		} catch (ConfigurationException e) {
-			logger.error("can't save configuration to file " + confFileName + ": " + e);
+			logger.error("can't save configuration to file " + confFileName + ": ", e);
 		}
 	}
 }
