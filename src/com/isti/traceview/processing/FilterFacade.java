@@ -69,7 +69,7 @@ public class FilterFacade {
 				data[i] = new Double(toFilt[i]).intValue();
 			}
 		} catch (TraceViewException e) {
-			logger.error("Can't filter data: " + e);
+			logger.error("Can't filter data: ", e);
 		} catch (BPFilterException e) {
 			logger.error("BPFilterException:", e);
 		} catch (HPFilterException e) {

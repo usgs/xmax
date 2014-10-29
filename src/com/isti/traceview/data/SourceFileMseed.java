@@ -160,11 +160,11 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 				logger.debug("Read " + blockNumber + " blocks");
 			}
 		} catch (FileNotFoundException e) {
-			logger.error("File not found: " + e);
+			logger.error("File not found: ", e);
 		} catch (IOException e) {
-			logger.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		} catch (SeedFormatException e) {
-			logger.error("Wrong mseed file format: " + e);
+			logger.error("Wrong mseed file format: ", e);
 		} finally {
 			try {
 				endPointer = dis.getFilePointer();
@@ -180,7 +180,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
 	public synchronized void load(Segment segment) {
 		logger.debug(this + " " + segment);
-		long filePointer = 0;
+		//long filePointer = 0;
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -202,6 +202,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		int headerSampleCount = 0; //Counter on the basis of header information
 		int blockNumber = 0;
 		try {
+			logger.debug("source = " + getFile().getCanonicalPath());	
 			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
 			dis.seek(segment.getStartOffset());

@@ -1139,7 +1139,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				select = true;
 				drawAreaPanel.removeAll();
 				for (ChannelView cv: selected) {
-					List<PlotDataProvider> toProcess = new ArrayList<PlotDataProvider>();
+					//List<PlotDataProvider> toProcess = new ArrayList<PlotDataProvider>();
 					for (PlotDataProvider channel: cv.getPlotDataProviders()) {
 						ChannelView sel_cv = channelViewFactory.getChannelView(channel);
 						sel_cv.setGraphPanel(this);

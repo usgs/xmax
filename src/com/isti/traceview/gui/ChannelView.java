@@ -768,7 +768,7 @@ System.out.println();
 		public void mouseClicked(MouseEvent e) {
 			int clickedX = e.getX();
 			int clickedY = e.getY();
-			long clickedTime = graphPanel.getTime(clickedX);
+			//long clickedTime = graphPanel.getTime(clickedX);
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				if (mouseAdapter != null) {
 					mouseAdapter.mouseClickedButton1(clickedX, clickedY, cv);

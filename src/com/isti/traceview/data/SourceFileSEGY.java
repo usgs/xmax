@@ -3,9 +3,7 @@ package com.isti.traceview.data;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -24,7 +22,7 @@ public class SourceFileSEGY extends SourceFile implements Serializable {
 
 	public SourceFileSEGY(File file) {
 		super(file);
-		logger.debug("Created: " + this);
+		logger.info("Created: " + this);
 	}
 	
 	public FormatType getFormatType(){
@@ -41,9 +39,9 @@ public class SourceFileSEGY extends SourceFile implements Serializable {
 			Segment segment = new Segment(this, 0, segy.getTimeRange().getStartTime(), segy.getRateMicroSampPerSec()/1000.0, segy.getNumSamples(), 0);
 			channel.addSegment(segment);
 		} catch (IOException e) {
-			logger.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		} catch (TraceViewException e) {
-			logger.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		}
 		return ret;
 	}

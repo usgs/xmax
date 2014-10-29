@@ -50,14 +50,14 @@ public class SourceFileSEGD extends SourceFile implements Serializable {
 				}
 			}
 		} catch (IOException e) {
-			logger.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		}
 		return ret;
 	}
 
 	@Override
 	public void load(Segment segment) {
-		logger.debug("Loading: " + this);
+		logger.info("Loading: " + this);
 		int[] data = null;
 		try {
 			float[] traceData = Trace.getData(getFile(), segment.getStartOffset(), segment.getSampleCount());
