@@ -1,7 +1,7 @@
 <?xml version="1.0" ?> 
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.5" 
 "http://jpf.sourceforge.net/plugin_0_5.dtd"> 
-<plugin id="com.isti.xmax.reconvolution" version="1.0"> 
+<plugin id="com.isti.xmax.filter.reconvolution" version="1.0"> 
 	<requires> 
 		<import plugin-id="com.isti.xmax.core"/> 
 	</requires> 
@@ -10,7 +10,7 @@
 	</runtime> 
 	<extension plugin-id="com.isti.xmax.core" point-id="Filter" id="Reconvolve"> 
 		<parameter id="class" value="Reconvolution"/>
-		<parameter id="name" value="Reconvolve"/> 
+		<parameter id="name" value="Reconvolution"/> 
 		<parameter id="description" value="Deconvolve/Reconvolve channels"/>  
 	</extension> 
 </plugin> 
