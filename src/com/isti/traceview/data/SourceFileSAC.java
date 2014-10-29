@@ -57,7 +57,7 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 			Segment segment = new Segment(this, 0, new Date(getSACtime(sac)), sac.getHeader().getDelta() * 1000, sac.getHeader().getNpts(), 0);
 			channel.addSegment(segment);
 		} catch (IOException e) {
-			logger.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		} 
 		return ret;
 	}

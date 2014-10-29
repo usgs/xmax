@@ -95,7 +95,7 @@ public class WID2 extends Block {
 	}
 
 	public void read(BufferedRandomAccessFile input) throws IMSFormatException, IOException, ParseException{
-		logger.debug("WID2.read begin");
+		logger.debug("== START WID2 Read");
 		header = input.readLine();
 		if(!header.startsWith("WID2")){
 			throw new IMSFormatException("Wrong waveform block header: " + header);

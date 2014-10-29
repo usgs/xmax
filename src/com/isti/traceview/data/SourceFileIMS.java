@@ -56,15 +56,15 @@ public class SourceFileIMS extends SourceFile {
 			}
 
 		} catch (FileNotFoundException e) {
-			logger.error("File not found: " + e);
+			logger.error("File not found: ", e);
 		} catch (IOException e) {
-			logger.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		} catch (IMSFormatException e) {
-			logger.error("Wrong IMS file format: " + e);
+			logger.error("Wrong IMS file format: ", e);
 		} catch (ParseException e) {
-			logger.error("Parsing problems: " + e);
+			logger.error("Parsing problems: ", e);
 		} catch (CanadaException e) {
-			logger.error("Canada decompression problems: " + e);
+			logger.error("Canada decompression problems: ", e);
 		} finally {
 			try {
 				dis.close();
@@ -98,15 +98,15 @@ public class SourceFileIMS extends SourceFile {
 			}
 
 		} catch (FileNotFoundException e) {
-			logger.error("File not found: " + e);
+			logger.error("File not found: ", e);
 		} catch (IOException e) {
-			logger.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		} catch (IMSFormatException e) {
-			logger.error("Wrong IMS file format: " + e);
+			logger.error("Wrong IMS file format: ", e);
 		} catch (ParseException e) {
-			logger.error("Parsing problems: " + e);
+			logger.error("Parsing problems: ", e);
 		} catch (CanadaException e) {
-			logger.error("Canada decompression problems: " + e);
+			logger.error("Canada decompression problems: ", e);
 		} finally {
 			try {
 				dis.close();
