@@ -19,8 +19,8 @@
          basedir=".">
     
     <!-- Global Properties -->
-    <property name="lib.dir"	location="../../lib"/>
-    <property name="build.dir"	location="../../build"/>
+    <property name="lib.dir"	location="../../lib/"/>
+    <property name="build.dir"	location="../../build/"/>
 
     <!-- Build Classpath (Java Plugins) -->
     <path id="classpath">
