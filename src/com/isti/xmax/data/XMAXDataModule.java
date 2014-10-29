@@ -64,7 +64,7 @@ public class XMAXDataModule extends DataModule {
 		try {
 			Pick.loadPicks();
 		} catch (XMAXException e) {
-			logger.error("Can't load picks: " + e);
+			logger.error("Can't load picks: ", e);
 		}
 	}
 	

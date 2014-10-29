@@ -389,17 +389,17 @@ class SAXHandler extends DefaultHandler {
 
 	/** Warning. */
 	public void warning(SAXParseException ex) {
-		logger.warn(getLocationString(ex) + ": " + ex.getMessage());
+		logger.warn(getLocationString(ex) + ": ", ex);
 	}
 
 	/** Error. */
 	public void error(SAXParseException ex) {
-		logger.error(getLocationString(ex) + ": " + ex.getMessage());
+		logger.error(getLocationString(ex) + ": ", ex);
 	}
 
 	/** Fatal error. */
 	public void fatalError(SAXParseException ex) {
-		logger.error(getLocationString(ex) + ": " + ex.getMessage());
+		logger.error(getLocationString(ex) + ": ", ex);
 	}
 
 	/** Returns a string of the location. */
