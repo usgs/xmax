@@ -256,7 +256,7 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 					}
 				}
 			} catch (TraceViewException e) {
-				logger.error("Can't load response from file: " + e);
+				logger.error("Can't load response from file: ", e);
 			}
 			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
 			convolveCB.setModel(convolveCBModel);

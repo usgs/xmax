@@ -10,7 +10,7 @@
 	</runtime> 
 	<extension plugin-id="com.isti.xmax.core" point-id="Transformation" id="Response"> 
 		<parameter id="class" value="TransResp"/>
-		<parameter id="name" value="TransResp"/> 
+		<parameter id="name" value="ShowResponse"/> 
 		<parameter id="description" value="Shows responses for selected channels"/>  
 	</extension> 
 </plugin> 
