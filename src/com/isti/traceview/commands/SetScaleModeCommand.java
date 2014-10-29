@@ -3,6 +3,7 @@ package com.isti.traceview.commands;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.AbstractUndoableCommand;
+import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.IScaleModeState;
 
@@ -36,12 +37,12 @@ public class SetScaleModeCommand extends AbstractUndoableCommand {
 		graphPanel.setScaleMode(state);
 	}
 
-	public void undo() {
+	public void undo() throws UndoException {
 		try {
 			super.undo();
 			graphPanel.setScaleMode(prevState);
-		} catch (Exception e) {
-			logger.error("Exception:", e);
+		} catch (UndoException e) {
+			logger.error("UndoException:", e);
 		}
 	}
 

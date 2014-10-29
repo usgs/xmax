@@ -666,7 +666,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
         	logger.debug("\n== ENTER: Deserialize channel from file:" + fileName);
 		PlotDataProvider channel = null;
 		ObjectInputStream ois = null;
-		String serialDataFileName = TemporaryStorage.getDataFileName(fileName);
+		//String serialDataFileName = TemporaryStorage.getDataFileName(fileName);
 		try {
 			Object objRead = null;
 			ois = new ObjectInputStream(new FileInputStream(fileName));

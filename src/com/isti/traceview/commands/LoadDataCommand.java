@@ -41,7 +41,7 @@ public class LoadDataCommand extends AbstractCommand {
 				//}
 			}
 		} catch (Exception e) {
-			logger.error("LoadDataCommand error: " + e);
+			logger.error("Exception: ", e);
 		}
 	}
 }

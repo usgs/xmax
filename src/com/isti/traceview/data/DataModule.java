@@ -96,7 +96,7 @@ public class DataModule extends Observable {
 	 * directory and parse file data sources which absent in temp storage area
 	 */
 	public void loadData() throws TraceViewException {
-        logger.debug("\n== Enter\n");
+        logger.debug("== Enter\n");
      // -t: Read serialized PlotDataProviders from TEMP_DATA
 		if (TraceView.getConfiguration().getUseTempData()) {
             logger.debug("-t: Read from temp storage\n");
@@ -104,7 +104,7 @@ public class DataModule extends Observable {
 				storage = new TemporaryStorage(TraceView.getConfiguration().getDataTempPath());
 			}
 			for (String tempFileName : storage.getAllTempFiles()) {
-                logger.debug("PDP.load: tempFileName=" + tempFileName);
+                logger.debug("PDP.load: tempFileName = " + tempFileName);
                 System.out.format("         Read serialized file:%s\n", tempFileName);
 				PlotDataProvider channel = PlotDataProvider.load(tempFileName);
              // MTH:
@@ -177,7 +177,7 @@ public class DataModule extends Observable {
         System.out.format("     -T: Serialize data to temp storage ");
 
 		if (storage == null) {
-            logger.debug("== storage == null --> new TemporaryStorage()");
+            logger.debug("storage == null --> new TemporaryStorage()");
 			storage = new TemporaryStorage(TraceView.getConfiguration().getDataTempPath());
 
     // MTH: Check if dataTempPath exists and if not, try to create it:
@@ -377,7 +377,7 @@ public class DataModule extends Observable {
 	private static Station addStation(String stationName) {
 		Station station = new Station(stationName);
 		stations.put(station.getName(), station);
-		logger.debug("Station added: name " + stationName);
+		logger.debug("Station added: " + stationName);
 		return station;
 	}
 

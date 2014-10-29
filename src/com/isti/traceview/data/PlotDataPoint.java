@@ -63,7 +63,7 @@ public class PlotDataPoint implements Serializable {
 	private Set<EventWrapper> events = null;
 
 	public PlotDataPoint(double top, double bottom, double mean, int segmentNumber, int continueAreaNumber, int rawDataProviderNumber, Set<EventWrapper> events) {
-		logger.debug("Created: + this");
+		logger.debug("Created:" + this);
 		this.top = top;
 		this.bottom = bottom;
 		this.mean = mean;

@@ -27,7 +27,7 @@ public class SelectCommand extends AbstractUndoableCommand {
 			super.run();
 			graphPanel.select();
 		} catch (Exception e) {
-			logger.error("SelectCommand error: " + e);
+			logger.error("SelectCommand error: ", e);
 		}
 	}
 

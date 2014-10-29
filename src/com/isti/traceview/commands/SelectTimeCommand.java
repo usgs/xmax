@@ -3,6 +3,8 @@ package com.isti.traceview.commands;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.AbstractUndoableCommand;
+import com.isti.traceview.UndoException;
+
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.GraphPanel;
 
@@ -46,9 +48,9 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 			if (previousRange.getStartTime().getTime() != Long.MAX_VALUE || previousRange.getEndTime().getTime() != Long.MIN_VALUE) {
 				graphPanel.setTimeRange(previousRange);
 			}
-		} catch (RuntimeException e) {
+		} catch (UndoException e) {
 			// do nothing
-			logger.error("RuntimeException:", e);	
+			logger.error("UndoException:", e);	
 		}
 	}
 
