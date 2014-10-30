@@ -13,7 +13,7 @@ import com.isti.traceview.data.PlotDataProvider;
  * @author Max Kokoulin
  */
 public class SaveAllDataCommand extends AbstractCommand {
-	private static Logger lg = Logger.getLogger(SaveAllDataCommand.class);
+	private static final Logger logger = Logger.getLogger(SaveAllDataCommand.class);
 
 	public void run() {
 		try {
@@ -22,7 +22,7 @@ public class SaveAllDataCommand extends AbstractCommand {
 				channel.dump(DataModule.getTemporaryStorage().getSerialFileName(channel));
 			}
 		} catch (Exception e) {
-			lg.error("SaveAllDataCommand error: " + e);
+			logger.error("Exception:", e);
 		}
 	}
 }

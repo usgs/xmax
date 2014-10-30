@@ -1,5 +1,3 @@
-
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -35,7 +33,6 @@ public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 	 * @param dataset the dataset.
 	 * @param seriesIndex the series index.
 	 */
-	@SuppressWarnings("deprecation")
 	public void drawSeries(Graphics2D g2, Rectangle2D dataArea, PlotRenderingInfo info, PolarPlot plot, XYDataset dataset, int seriesIndex) {
 		GeneralPath gp = new GeneralPath();
 		int numPoints = dataset.getItemCount(seriesIndex);
@@ -47,6 +44,7 @@ public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 			if(radius > maxRadius){
 				maxRadius = radius;
 			}
+			@SuppressWarnings("deprecation")
 			Point p = plot.translateValueThetaRadiusToJava2D(theta, radius, dataArea);
 			if (i == 0) {
 				gp.moveTo(new Float(p.getX()), new Float(p.getY()));
@@ -64,7 +62,9 @@ public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 		//Drawing ruler
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(2));
+		@SuppressWarnings("deprecation")	
 		Point ruler1 = plot.translateValueThetaRadiusToJava2D(rulerTheta, maxRadius, dataArea);
+		@SuppressWarnings("deprecation")	
 		Point ruler2 = plot.translateValueThetaRadiusToJava2D(rulerTheta+180, maxRadius, dataArea);
 		g2.drawLine(ruler1.x, ruler1.y, ruler2.x, ruler2.y);	
 	}

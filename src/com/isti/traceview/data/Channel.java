@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -57,7 +56,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	private static final String fissuresPropFileName = "fissures.properties";
 
-	private static Logger lg = Logger.getLogger(Channel.class);
+	private static final Logger logger = Logger.getLogger(Channel.class);
 
 	private static Properties propsObj = null;
 
@@ -198,6 +197,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 		this.sampleRate = sampleRate;
 	}
 
+	@SuppressWarnings("unused")	
 	private String[] getArray(String str) {
 		String[] arr = new String[1];
 		if (str == null || str.length() == 0) {
@@ -242,7 +242,8 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	public void setStatus(Status status) {
 		this.status = status;
 	}
-	
+
+	@SuppressWarnings("unused")
 	private void loadProperties() {
 		propsObj = new Properties();// System.getProperties();
 		InputStream inStm = null;
@@ -258,16 +259,21 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 			RespUtils.enterDefaultPropValue(propsObj, "org.omg.CORBA.ORBClass", "com.ooc.CORBA.ORB");
 			RespUtils.enterDefaultPropValue(propsObj, "org.omg.CORBA.ORBSingletonClass", "com.ooc.CORBA.ORBSingleton");
 		} catch (FileNotFoundException e) {
-			lg.error("Unable to open FISSURES property file \"" + fissuresPropFileName + "\":  " + e);
-			throw new RuntimeException(e);
+			StringBuilder message = new StringBuilder();
+			message.append("Unable to open FISSURES property file \"" + fissuresPropFileName + "\":");
+			logger.error(message.toString(), e);
+			//throw new RuntimeException(e);
 		} catch (IOException e) {
-			lg.error("Error loading FISSURES property file \"" + fissuresPropFileName + "\":  " + e);
-			throw new RuntimeException(e);
+			StringBuilder message = new StringBuilder();
+			message.append("Error loading FISSURES property file \"" + fissuresPropFileName + "\":");
+			logger.error(message.toString(), e);
+			//throw new RuntimeException(e);
 		} finally {
 			try {
 				inStm.close();
 			} catch (Exception ex) {
 				// ignore any exceptions on close
+				logger.error("Exception:", ex);
 			}
 		}
 	}
@@ -281,9 +287,9 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @throws IOException
 	 */
 	private void writeObject(ObjectOutputStream out) throws IOException {
-        lg.debug("== Channel.writeObject() ENTER: Serializing " + toString());
+        //logger.debug("== ENTER: Serializing " + toString());
 		out.defaultWriteObject();
-        lg.debug("== Channel.writeObject() EXIT");
+        //logger.debug("== EXIT");
 	}
 
 	/**
@@ -296,7 +302,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
-        lg.debug("== Channel.readObject() --> in.defaultReadObject() Deserialize " + toString());
+        //logger.debug("== reading object --> in.defaultReadObject() Deserialize " + toString());
 	}
 
 	/**

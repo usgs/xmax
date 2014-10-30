@@ -22,14 +22,14 @@ import static edu.sc.seis.seisFile.sac.SacConstants.data_offset;
 public class SourceFileSAC extends SourceFile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(SourceFileSAC.class);
+	private static final Logger logger = Logger.getLogger(SourceFileSAC.class);
 	private static final SimpleDateFormat fissTime = new SimpleDateFormat("yyyyDDD'T'HH:mm:ss.SSS'Z'"); 
 	static {
 		fissTime.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 	public SourceFileSAC(File file) {
 		super(file);
-		lg.debug("Created: " + this);
+		logger.debug("Created: " + this);
 	}
 	
 	public FormatType getFormatType(){
@@ -57,13 +57,12 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 			Segment segment = new Segment(this, 0, new Date(getSACtime(sac)), sac.getHeader().getDelta() * 1000, sac.getHeader().getNpts(), 0);
 			channel.addSegment(segment);
 		} catch (IOException e) {
-			lg.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		} 
 		return ret;
 	}
 	
 	public void load(Segment segment){
-		lg.debug("SourceFileSAC.load(): " + this);
 		int[] data = null;
 		try {
 			SacTimeSeries sac = new SacTimeSeries();

@@ -2,8 +2,6 @@ package com.isti.traceview.gui;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
 import com.isti.traceview.gui.ScaleModeAbstract;
@@ -15,7 +13,6 @@ import com.isti.traceview.gui.ScaleModeAbstract;
  * @author Max Kokoulin
  */
 public class ScaleModeXhair extends ScaleModeAbstract implements IScaleModeState {
-	private static Logger lg = Logger.getLogger(ScaleModeXhair.class); // @jve:decl-index=0:
 
 	public void init(List<PlotData> graphs, List<ChannelView> allViews, TimeInterval timeRange, IMeanState meanState, int height) {
 		maxValue = Double.NEGATIVE_INFINITY;

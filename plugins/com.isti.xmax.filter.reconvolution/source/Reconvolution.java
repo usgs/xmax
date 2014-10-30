@@ -22,14 +22,12 @@ import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
 
-import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.processing.IFilter;
 import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Spectra;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.gui.XMAXframe;
 
@@ -38,7 +36,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
 public class Reconvolution extends JDialog implements IFilter, PropertyChangeListener {
 	
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(Reconvolution.class);
+	private static final Logger logger = Logger.getLogger(Reconvolution.class);
 	
 	private final static int comboBoxHeight = 22;
 	private final static int maxDataLength = 16385;
@@ -153,74 +151,79 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 		try {
 			resp = response.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq, spectra.length);
 			resp = normData(resp);
-			//Spectra.log("Response", resp);
-		} catch (Exception e1) {
-			throw new TraceViewException("File " + response.getFileName() + ": " + e1);
-		}
 		
-		//Remove signal in spectra where response is near 0
-		spectra = removeExcessFrequencies(spectra, resp);
-		//Spectra.log("Original", spectra);
+			//Remove signal in spectra where response is near 0
+			spectra = removeExcessFrequencies(spectra, resp);
+		} catch (TraceViewException e1) {
+			throw new TraceViewException("File " + response.getFileName() + ": " + e1);
+		} catch (ReconvolutionException e2) {
+			logger.error("ReconvolutionException:", e2);
+		}
 		
 		// Deconvolve
-		Cmplx[] deconvolved = null;
-		deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);
-		//Spectra.log("Deconvolved", deconvolved);
+		try {	
+			Cmplx[] deconvolved = null;
+			deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);
 		
-		// Convolve if needed
-		Cmplx[] reconvolved = null;
-		String selectedFileName = (String) convolveCB.getSelectedItem();
-		if (!selectedFileName.equals("None")) {
-			Response respExternal = Response.getResponse(new File(selectedFileName));
-			if (respExternal != null) {
-				Cmplx[] respExt;
-				try {
-					respExt = respExternal.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq, spectra.length);
-					respExt = normData(respExt);
-					//Spectra.log("External response", respExt);
-				} catch (Exception e) {
-					throw new TraceViewException("File " + respExternal.getFileName() + ": " + e);
+			// Convolve if needed
+			Cmplx[] reconvolved = null;
+			String selectedFileName = (String) convolveCB.getSelectedItem();
+			if (!selectedFileName.equals("None")) {
+				Response respExternal = Response.getResponse(new File(selectedFileName));
+				if (respExternal != null) {
+					Cmplx[] respExt;
+					try {
+						respExt = respExternal.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq, spectra.length);
+						respExt = normData(respExt);
+						reconvolved = IstiUtilsMath.complexConvolution(removeExcessFrequencies(deconvolved,respExt), respExt);
+					} catch (TraceViewException e) {
+						throw new TraceViewException("File " + respExternal.getFileName() + ": " + e);
+					} catch (ReconvolutionException e) {
+						logger.error("ReconvolutionException:", e);
+					}
 				}
-				reconvolved = IstiUtilsMath.complexConvolution(removeExcessFrequencies(deconvolved,respExt), respExt);
-				//Spectra.log("Reconvolved", reconvolved);
 			}
-		}
 		
-		if (reconvolved==null && deconvolved==null){
-			return data;
-		}
+			if (reconvolved==null && deconvolved==null){
+				return data;
+			}
 
-		// Reverse fourier transformation
-		double[] inversedTrace = null;
-		if(reconvolved !=null){
-			inversedTrace = IstiUtilsMath.inverseFft_Even(reconvolved);
-		} else if (deconvolved != null){
-			inversedTrace = IstiUtilsMath.inverseFft_Even(deconvolved);
-		}
-		
-		double inversedMax = Double.NEGATIVE_INFINITY;
-		double inversedMin = Double.POSITIVE_INFINITY;
-		
-		//Count inversed trace limits
-		for (int i = 0; i < inversedTrace.length; i++){
-			if(data[i]>inversedMax){
-				inversedMax = inversedTrace[i];
+			// Reverse fourier transformation
+			double[] inversedTrace = null;
+			if(reconvolved !=null){
+				inversedTrace = IstiUtilsMath.inverseFft_Even(reconvolved);
+			} else if (deconvolved != null){
+				inversedTrace = IstiUtilsMath.inverseFft_Even(deconvolved);
 			}
-			if(data[i]<inversedMin){
-				inversedMin = inversedTrace[i];
+		
+			double inversedMax = Double.NEGATIVE_INFINITY;
+			double inversedMin = Double.POSITIVE_INFINITY;
+		
+			//Count inversed trace limits
+			for (int i = 0; i < inversedTrace.length; i++){
+				if(data[i]>inversedMax){
+					inversedMax = inversedTrace[i];
+				}
+				if(data[i]<inversedMin){
+					inversedMin = inversedTrace[i];
+				}
+			}		
+			double normCoeff = (max-min)/(inversedMax-inversedMin);
+			double[] processedTrace = new double[data.length];
+			for(int i = 0; i < inversedTrace.length; i++){
+				processedTrace[i] = normCoeff*inversedTrace[i]+mean;
 			}
-		}		
-		double normCoeff = (max-min)/(inversedMax-inversedMin);
-		double[] processedTrace = new double[data.length];
-		for(int i = 0; i < inversedTrace.length; i++){
-			processedTrace[i] = normCoeff*inversedTrace[i]+mean;
+			if(data.length%2==1){
+				processedTrace[data.length-1] = processedTrace[data.length-2];
+			} 			
+			return processedTrace;
+		} catch (IllegalArgumentException e) {
+			logger.error("IllegalArgumentException:", e);
+			System.exit(0);
+			return null;
 		}
-		if(data.length%2==1){
-			processedTrace[data.length-1] = processedTrace[data.length-2];
-		} 			
-		return processedTrace;
 	}
-
+	
 	public String getName() {
 		return "Reconvolve";
 	}
@@ -253,7 +256,7 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 					}
 				}
 			} catch (TraceViewException e) {
-				lg.error("Can't load response from file: " + e);
+				logger.error("Can't load response from file: ", e);
 			}
 			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
 			convolveCB.setModel(convolveCBModel);
@@ -337,10 +340,12 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 	}
 */
 
-	public static Cmplx[] removeExcessFrequencies(Cmplx[] spectra, Cmplx[] resp){
+	public static Cmplx[] removeExcessFrequencies(Cmplx[] spectra, Cmplx[] resp)
+	throws ReconvolutionException
+	{
 		double cutOffRatio = 100.0;
 		if(spectra.length!=resp.length){
-			throw new RuntimeException("Arrays length should be equal");
+			throw new ReconvolutionException("Arrays length should be equal");
 		}
 		double maxAmp = 0;
 		for (int i = 0; i < resp.length; i++){

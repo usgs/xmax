@@ -163,9 +163,10 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.EventListener;
 import java.util.ResourceBundle;
+
+import org.apache.log4j.Logger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -173,7 +174,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.EventListenerList;
@@ -197,7 +197,6 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.Zoomable;
 import org.jfree.ui.ExtensionFileFilter;
 
-
 /**
  * This code was copied from JFreeChart {@link ChartPanel} class.
  * It was fixed ChartPanel's bug with lack of double buffering and problems during working
@@ -206,6 +205,9 @@ import org.jfree.ui.ExtensionFileFilter;
  */
 public class TraceViewChartPanel extends JPanel implements ChartChangeListener, ChartProgressListener, ActionListener, MouseListener, MouseMotionListener,
 		Printable, Serializable {
+
+	/** For Logger */
+	private static final Logger logger = Logger.getLogger(TraceViewChartPanel.class);
 
 	/** For serialization. */
 	private static final long serialVersionUID = 6046366297214274674L;
@@ -1284,7 +1286,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			try {
 				doSaveAs();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("IOException:", e);	
 			}
 		} else if (command.equals(PRINT_COMMAND)) {
 			createChartPrintJob();

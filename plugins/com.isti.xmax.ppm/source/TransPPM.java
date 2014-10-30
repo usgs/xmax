@@ -4,8 +4,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
-
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -27,12 +25,9 @@ import com.isti.xmax.gui.XMAXframe;
  */
 public class TransPPM implements ITransformation {
 
-	private static Logger lg = Logger.getLogger(TransPPM.class);
-
 	public int maxDataLength = 65536;
 
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration, JFrame parentFrame) {
-		lg.debug("PPM PLUGIN CALLED!!!!!!!!!!!!!!!!!!!");
 		if ((input == null) || (input.size() != 2)) {
 			JOptionPane.showMessageDialog(parentFrame, "You should select two channels to view PPM", "Error", JOptionPane.ERROR_MESSAGE);
 		} else {
@@ -53,6 +48,7 @@ public class TransPPM implements ITransformation {
 					inputRepositioned.add(input.get(0));
 					inputRepositioned.add(input.get(1));
 				}
+				@SuppressWarnings("unused")	
 				ViewPPM vr = new ViewPPM(parentFrame, createDataset(inputRepositioned, filter, ti), ti, "N:" + inputRepositioned.get(0).getName() + "  E:" + inputRepositioned.get(1).getName(), filter);
 			} catch (XMAXException e) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
@@ -158,10 +154,12 @@ public class TransPPM implements ITransformation {
 			average = average / size;
 		}
 
+		@SuppressWarnings("unused")
 		public int getMax() {
 			return max;
 		}
 
+		@SuppressWarnings("unused")
 		public int getMin() {
 			return max;
 		}

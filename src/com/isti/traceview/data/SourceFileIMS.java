@@ -23,23 +23,22 @@ import gov.usgs.anss.cd11.CanadaException;
 
 public class SourceFileIMS extends SourceFile {
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(SourceFileIMS.class);
+	private static final Logger logger = Logger.getLogger(SourceFileIMS.class);
 
 	public SourceFileIMS(File file) {
 		super(file);
-		lg.debug("Created: " + this);
+		logger.debug("Created: " + this);
 	}
 
 	@Override
 	public Set<RawDataProvider> parse(DataModule dataModule) {
-		lg.debug("SourceFileIMS.parse begin");
 		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
 		BufferedRandomAccessFile dis = null;
 		try {
 			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
 			if (getFile().length() > 0) {
-				long currentOffset = dis.getFilePointer();
+				//long currentOffset = dis.getFilePointer();
 				IMSFile ims = IMSFile.read(dis, true);
 				for (DataType dataType : ims.getDataTypes()) {
 					if (dataType instanceof DataTypeWaveform) {
@@ -53,32 +52,31 @@ public class SourceFileIMS extends SourceFile {
 					}
 				}
 			} else {
-				lg.error("File " + getFile().getCanonicalPath() + " has null length");
+				logger.error("File " + getFile().getCanonicalPath() + " has null length");
 			}
 
 		} catch (FileNotFoundException e) {
-			lg.error("File not found: " + e);
+			logger.error("File not found: ", e);
 		} catch (IOException e) {
-			lg.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		} catch (IMSFormatException e) {
-			lg.error("Wrong IMS file format: " + e);
+			logger.error("Wrong IMS file format: ", e);
 		} catch (ParseException e) {
-			lg.error("Parsing problems: " + e);
+			logger.error("Parsing problems: ", e);
 		} catch (CanadaException e) {
-			lg.error("Canada decompression problems: " + e);
+			logger.error("Canada decompression problems: ", e);
 		} finally {
 			try {
 				dis.close();
 			} catch (IOException e) {
+				logger.error("IOException:", e);	
 			}
 		}
-		lg.debug("SourceFileIMS.parse end");
 		return ret;
 	}
 
 	public void load(Segment segment) {
-		lg.debug("SourceFileIMS.load(): " + this);
-		int[] data = null;
+		//int[] data = null;
 		BufferedRandomAccessFile dis = null;
 		try {
 			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
@@ -96,23 +94,24 @@ public class SourceFileIMS extends SourceFile {
 				}
 
 			} else {
-				lg.error("File " + getFile().getCanonicalPath() + " has null length");
+				logger.error("File " + getFile().getCanonicalPath() + " has null length");
 			}
 
 		} catch (FileNotFoundException e) {
-			lg.error("File not found: " + e);
+			logger.error("File not found: ", e);
 		} catch (IOException e) {
-			lg.error("IO error: " + e);
+			logger.error("IO error: ", e);
 		} catch (IMSFormatException e) {
-			lg.error("Wrong IMS file format: " + e);
+			logger.error("Wrong IMS file format: ", e);
 		} catch (ParseException e) {
-			lg.error("Parsing problems: " + e);
+			logger.error("Parsing problems: ", e);
 		} catch (CanadaException e) {
-			lg.error("Canada decompression problems: " + e);
+			logger.error("Canada decompression problems: ", e);
 		} finally {
 			try {
 				dis.close();
 			} catch (IOException e) {
+				logger.error("IOException:", e);	
 			}
 		}
 	}

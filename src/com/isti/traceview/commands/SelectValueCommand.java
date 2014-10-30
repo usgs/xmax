@@ -3,6 +3,7 @@ package com.isti.traceview.commands;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.AbstractUndoableCommand;
+import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
 
 /**
@@ -11,7 +12,7 @@ import com.isti.traceview.gui.GraphPanel;
  * @author Max Kokoulin
  */
 public class SelectValueCommand extends AbstractUndoableCommand {
-	private static Logger lg = Logger.getLogger(SelectValueCommand.class); // @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(SelectValueCommand.class); // @jve:decl-index=0:
 
 	private GraphPanel graphPanel = null;
 	private double previousMax;
@@ -38,21 +39,22 @@ public class SelectValueCommand extends AbstractUndoableCommand {
 	public void run() {
 		try {
 			super.run();
-			lg.debug("Selection values from " + min + " to " + max);
+			logger.debug("Selection values from " + min + " to " + max);
 			graphPanel.setManualValueMax(max);
 			graphPanel.setManualValueMin(min);
 		} catch (Exception e) {
-			lg.error("SelectValueCommand error: " + e);
+			logger.error("Exception:", e);
 		}
 	}
 
-	public void undo() {
+	public void undo() throws UndoException {
 		try {
 			super.undo();
 			graphPanel.setManualValueMax(previousMax);
 			graphPanel.setManualValueMin(previousMin);
-		} catch (RuntimeException e) {
+		} catch (UndoException e) {
 			// do nothing
+			logger.error("UndoException:", e);	
 		}
 	}
 

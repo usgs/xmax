@@ -24,7 +24,7 @@ import com.isti.xmax.common.QCIssue;
  * @author Max Kokoulin
  */
 public class XMAXDataModule extends DataModule {
-	private static Logger lg = Logger.getLogger(XMAXDataModule.class);
+	private static final Logger logger = Logger.getLogger(XMAXDataModule.class);
 
 	/**
 	 * List of known earthquakes
@@ -64,7 +64,7 @@ public class XMAXDataModule extends DataModule {
 		try {
 			Pick.loadPicks();
 		} catch (XMAXException e) {
-			lg.error("Can't load picks: " + e);
+			logger.error("Can't load picks: ", e);
 		}
 	}
 	

@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -43,8 +44,9 @@ import com.isti.traceview.processing.IstiUtilsMath;
 public class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(ViewCorrelation.class);
+	private static final Logger logger = Logger.getLogger(ViewCorrelation.class);
 	private static DecimalFormat dFormat = new DecimalFormat("###.###");
+	
 	List<double[]> data = null;
 	String seriesName = null;
 	double sampleRate = 0.0;
@@ -143,17 +145,20 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 	}
 
 	private XYDataset filterData(List<double[]> ds) {
-		lg.debug("filterData");
 		this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		double[] correlation = null;
 		double[] dblData1 = applyWindow(ds.get(0), (String) getTaperCB().getSelectedItem());
-		if (ds.size() == 1) {
-			correlation = IstiUtilsMath.correlate(dblData1, dblData1);
-		} else {
-			double[] dblData2 = applyWindow(ds.get(1), (String) taperCB.getSelectedItem());
-			correlation = IstiUtilsMath.correlate(dblData1, dblData2);
+		try {	
+			if (ds.size() == 1) {
+				correlation = IstiUtilsMath.correlate(dblData1, dblData1);
+			} else {
+				double[] dblData2 = applyWindow(ds.get(1), (String) taperCB.getSelectedItem());
+				correlation = IstiUtilsMath.correlate(dblData1, dblData2);
+			}
+		} catch (IllegalArgumentException e) {
+			logger.error("IllegalArgumentException:", e);
 		}
-		lg.debug("correlation computed, size = " + correlation.length);
+		logger.debug("correlation computed, size = " + correlation.length);
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		XYSeries series = new XYSeries(seriesName);
 		double ampMax = 0;
@@ -168,7 +173,6 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 		dataset.addSeries(series);
 		getAmpMaxL().setText("Max Amplitude: " + dFormat.format(ampMax));
 		getLagTimeL().setText("Lag time: " + sampleRate * (ampMaxPoint - correlation.length / 2) / 1000 + " s");
-		lg.debug("dataset returned");
 		this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		return dataset;
 	}

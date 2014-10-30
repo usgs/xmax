@@ -6,7 +6,6 @@ import javax.swing.JPanel;
 import javax.swing.BorderFactory;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
-import javax.swing.ToolTipManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -41,7 +40,7 @@ import org.apache.log4j.Logger;
 public class PhasePanel extends JPanel implements ListSelectionListener {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(PhasePanel.class); // @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(PhasePanel.class); // @jve:decl-index=0:
 	private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD,HH:mm:ss");
 	private static Object[] initialSelectedPhases = { "P" };
 
@@ -174,13 +173,13 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 	}
 
 	public void setEverSelectedPhases(Set<IEvent> earthquakes, Set<String> phases) {
-		lg.debug("PhasePanel: setting selected values");
+		logger.debug("setting selected values");
 		everSelectedEarthquakes = earthquakes;
 		everSelectedPhases = phases;
 	}
 
 	public void addEverSelectedPhases(Set<IEvent> earthquakes, Set<String> phases) {
-		// lg.debug("PhasePanel: adding selected values");
+		logger.debug("adding selected values");
 		everSelectedEarthquakes = earthquakes;
 		everSelectedPhases.addAll(phases);
 	}
@@ -189,7 +188,7 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 	 * we must call with method after time scale changes in graph panel
 	 */
 	public void refreshAvailableEarthQuakes() {
-		// lg.debug("refreshing earthquakes");
+		logger.debug("refreshing earthquakes");
 		init = true;
 		earthquakesL.setListData(graphPanel.getAvailableEarthquakes());
 		earthquakesL.setSelectedValues(getEverSelectedEarthquakes().toArray(), false);
@@ -202,12 +201,11 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 	 */
 	@SuppressWarnings("deprecation")
 	private void refreshAvailablePhases() {
-		// lg.debug("refreshing phases");
+		logger.debug("refreshing phases");
 		init = true;
 		phasesL.setListData(graphPanel.getAvailablePhases(earthquakesL.getSelectedValues()));
 		phasesL.setSelectedValues(getEverSelectedPhases().toArray(), false);
 		init = false;
-
 	}
 
 	/**

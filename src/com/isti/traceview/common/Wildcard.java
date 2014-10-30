@@ -16,7 +16,7 @@ import com.isti.traceview.TraceViewException;
  * @author Max Kokoulin
  */
 public class Wildcard {
-	private static Logger lg = Logger.getLogger(Wildcard.class);
+	private static final Logger logger = Logger.getLogger(Wildcard.class);
 
 	List<String> path = null;
 	List<File> lst = new ArrayList<File>();
@@ -30,7 +30,7 @@ public class Wildcard {
 	 */
 	public static boolean matches(String pattern, String text) {
 		boolean ret = text.matches(wildcardToRegex(pattern));
-		//lg.debug("Match " + text + " with pattern " + wildcardToRegex(pattern) + ": " + ret);
+		logger.debug("Match " + text + " with pattern " + wildcardToRegex(pattern) + ": " + ret);
 		return ret;
 	}
 
@@ -75,7 +75,9 @@ public class Wildcard {
 				}
 			}
 		} catch (Exception e) {
-			throw new TraceViewException("Can't parse wildcarded path: '" + mask + "'");
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("Can't parse wildcarded path: '" + mask + "'" + e.toString()));
+			throw new TraceViewException(message.toString());
 		}
 		return lst;
 	}
@@ -128,8 +130,7 @@ public class Wildcard {
 
 	public static String wildcardToRegex(String wild) {
 		if (wild == null)
-			return null;
-
+			return null; 
 		StringBuffer buffer = new StringBuffer();
 		char[] chars = wild.toCharArray();
 		for (int i = 0; i < chars.length; ++i) {

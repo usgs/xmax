@@ -54,6 +54,7 @@ public class XMAXChannel extends PlotDataProvider {
 		for (IEvent event: events) {
 			if (event.getType().equals("ARRIVAL")) {
 				Earthquake earthquake = (Earthquake) event.getParameterValue("EARTHQUAKE");
+				@SuppressWarnings("unused")	
 				int i = -1;
 				if ((i = Arrays.binarySearch(earthquakes, earthquake)) >= 0) {
 					String phaseName = (String) event.getParameterValue("PHASE");

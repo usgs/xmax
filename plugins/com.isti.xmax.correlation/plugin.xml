@@ -10,7 +10,7 @@
 	</runtime> 
 	<extension plugin-id="com.isti.xmax.core" point-id="Transformation" id="Correlation"> 
 		<parameter id="class" value="TransCorrelation"/>
-		<parameter id="name" value="Correlation"/> 
+		<parameter id="name" value="TransCorrelation"/> 
 		<parameter id="description" value="Shows 2 channels correlation"/>  
 		<parameter id="max_data_length" value="131072"/>   
 	</extension> 

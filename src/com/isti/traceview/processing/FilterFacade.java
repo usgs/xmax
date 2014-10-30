@@ -13,7 +13,7 @@ import com.isti.traceview.data.Segment;
  * @author Max Kokoulin
  */
 public class FilterFacade {
-	private static Logger lg = Logger.getLogger(FilterFacade.class);
+	private static final Logger logger = Logger.getLogger(FilterFacade.class);
 
 	private IFilter filter;
 
@@ -49,7 +49,7 @@ public class FilterFacade {
 			}
 			data = filter(data);
 		} catch (CloneNotSupportedException e) {
-			lg.error("Can't filter segment: " + e);
+			logger.error("Can't filter segment: " + e);
 			return segment;
 		}
 		return clone;
@@ -69,8 +69,13 @@ public class FilterFacade {
 				data[i] = new Double(toFilt[i]).intValue();
 			}
 		} catch (TraceViewException e) {
-			lg.error("Can't filter data: " + e);
-			
+			logger.error("Can't filter data: ", e);
+		} catch (BPFilterException e) {
+			logger.error("BPFilterException:", e);
+		} catch (HPFilterException e) {
+			logger.error("HPFilterException:", e);
+		} catch (LPFilterException e) {
+			logger.error("LPFilterException:", e);
 		}
 		return data;
 	}

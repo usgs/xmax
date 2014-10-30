@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.util.Date;
-import java.text.SimpleDateFormat;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 
+import javax.swing.JOptionPane;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -20,12 +21,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.GnuParser;	// used for build.xml?
-//import org.apache.commons.cli.DefaultParser;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
 import org.java.plugin.PluginManager.PluginLocation;
@@ -48,8 +44,7 @@ import com.isti.xmax.gui.XMAXframe;
  * @author Max Kokoulin
  */
 public class XMAX extends TraceView {
-	//private static final String version = "1.06";
-	//private static final String releaseDate = "Sept 14, 2011";
+	private static final Logger logger = Logger.getLogger(XMAX.class);	
 	private static final String version = "1.08";
 	private static final String releaseDate = "Aug 29, 2013";
 
@@ -184,6 +179,7 @@ public class XMAX extends TraceView {
 					Logger.getRootLogger().setLevel(Level.OFF);
 					// Collecting plug-in locations.
 					PluginLocation[] pluginLocations = collectPluginLocations();
+					
 					// Creating plug-in manager instance.
 					pluginManager = ObjectFactory.newInstance().createManager();
 					// Publishing discovered plug-ins.
@@ -200,7 +196,9 @@ public class XMAX extends TraceView {
 					for (Extension ext: transformExtPoint.getConnectedExtensions()) {
 						transformations.add(ext);
 					}
+					
 					//restoring logging level
+					System.out.format("Logger LEVEL == [%s]\n", level.toString());	
 					Logger.getRootLogger().setLevel(level);
 					setDataModule(XMAXDataModule.getInstance());
                     
@@ -216,7 +214,7 @@ public class XMAX extends TraceView {
 							// Wait while frame will be created to correct repaint
 							Thread.sleep(200);
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							logger.error("InterruptedException:", e);	
 						}
 						getFrame().setVisible(true);
 						getFrame().setShouldManageTimeRange(true);
@@ -227,8 +225,7 @@ public class XMAX extends TraceView {
 				}
 			}
 		} catch (Exception e) {
-
-			e.printStackTrace();
+			logger.error("Exception:", e);	
 			System.exit(0);
 		}
 	}
@@ -306,6 +303,7 @@ public class XMAX extends TraceView {
 					transform.setMaxDataLength(maxDataLength);
 				} catch (NullPointerException e) {
 					// do nothing
+					logger.error("NullPointerException:", e);	
 				}
 				return transform;
 			}
@@ -435,6 +433,7 @@ public class XMAX extends TraceView {
 		return releaseDate;
 	}
 
+	@SuppressWarnings("unused")	
 	public static void main(String[] args) {
 		options = getOptions();
 		try {
@@ -442,7 +441,9 @@ public class XMAX extends TraceView {
 			cmd = parser.parse(options, args);
 			XMAX xyz = new XMAX();	
 		} catch (ParseException e) {
-			System.err.println("Command line parsing failed.  Reason: " + e.getMessage());
+			//System.err.println("Command line parsing failed.  Reason: " + e.getMessage());
+			String message = "Command line parsing failed. Reason:";
+			logger.error(message, e);
 		}
 	}
 
@@ -456,6 +457,7 @@ public class XMAX extends TraceView {
 		apd.setMaxFileSize("1000KB");
 		apd.setMaxBackupIndex(10);
 		apd.setLayout(new PatternLayout("%d %5p %m%n"));
+		apd.setAppend(false);	
 		apd.activateOptions();
 		Logger.getRootLogger().addAppender(apd);
 		Runtime.getRuntime().addShutdownHook(new ClearLogShutDownHook());

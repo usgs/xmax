@@ -24,13 +24,12 @@ import com.isti.xmax.gui.XMAXframe;
  */
 public class TransCorrelation implements ITransformation {
 
-	private static Logger lg = Logger.getLogger(TransCorrelation.class);
+	private static final Logger logger = Logger.getLogger(TransCorrelation.class);
 
 	public int maxDataLength = 64128;
 	private double sampleRate = 0;
 
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration, JFrame parentFrame) {
-		lg.debug("CORRELATION PLUGIN CALLED!!!!!!!!!!!!!!!!!!!");
 		if ((input == null) || (input.size() == 0) || (input.size() > 2)) {
 			JOptionPane.showMessageDialog(parentFrame, "You should select two channels to view correlation\nor one channel to view autocorrelation",
 					"Error", JOptionPane.ERROR_MESSAGE);
@@ -40,6 +39,7 @@ public class TransCorrelation implements ITransformation {
 				for (PlotDataProvider channel: input) {
 					channelNames.add(channel.getName());
 				}
+				@SuppressWarnings("unused")	
 				ViewCorrelation vc = new ViewCorrelation(parentFrame, createData(input, filter, ti), channelNames, sampleRate, ti);
 			} catch (XMAXException e) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
@@ -63,7 +63,6 @@ public class TransCorrelation implements ITransformation {
 	 * @throws XMAXException
 	 */
 	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti) throws XMAXException {
-		lg.debug("Create data");
 		List<double[]> ret = new ArrayList<double[]>();
 		PlotDataProvider channel1 = input.get(0);
 		List<Segment> segments1 = channel1.getRawData(ti);
@@ -86,7 +85,7 @@ public class TransCorrelation implements ITransformation {
 			throw new XMAXException("You have no data for channel " + channel1.getName());
 		}
 
-		lg.debug("size = " + intData1.length);
+		logger.debug("size = " + intData1.length);
 		if (filter != null) {
 			intData1 = new FilterFacade(filter, channel1).filter(intData1);
 		}

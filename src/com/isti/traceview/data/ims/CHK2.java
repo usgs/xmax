@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class CHK2 extends Block {
-	private static Logger lg = Logger.getLogger(CHK2.class);
+	private static final Logger logger = Logger.getLogger(CHK2.class);
 	private int chksum;
 	
 	public CHK2(long startOffset){
@@ -20,14 +20,13 @@ public class CHK2 extends Block {
 	}
 
 	public void read(BufferedRandomAccessFile input) throws IMSFormatException, IOException, ParseException {
-		lg.debug("CHK2.read begin");
+		logger.debug("Reading buffered random access file");
 		header = input.readLine();
 		if (!header.startsWith("CHK2")) {
 			throw new IMSFormatException("Wrong check block header: " + header);
 		}
 		String[] lineParts = header.split("\\s+");
 		chksum = Integer.parseInt(lineParts[1].trim());
-		lg.debug("CHK2.read end");
 	}
 
 	public int checksum(DAT2 dat2) {

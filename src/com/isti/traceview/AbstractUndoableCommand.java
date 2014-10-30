@@ -21,7 +21,7 @@ public abstract class AbstractUndoableCommand extends AbstractCommand implements
 	/**
 	 * @see IUndoableCommand#undo()
 	 */
-	public void undo() throws RuntimeException {
+	public void undo() throws UndoException {
 		//Descended classes should call this method in their undo()
 
 		LinkedList<ICommand> history = CommandExecutor.getInstance().getCommandHistory();
@@ -37,7 +37,7 @@ public abstract class AbstractUndoableCommand extends AbstractCommand implements
 		}
 		else{
 			TraceView.setUndoEnabled(false);
-			//throw new RuntimeException("History list is empty");
+			//throw new UndoException("History list is empty");
 		}
 	}
 	

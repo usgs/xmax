@@ -10,8 +10,10 @@ import java.util.Arrays;
 import java.util.Date;
 
 import com.isti.traceview.common.TimeInterval;
+import org.apache.log4j.Logger;
 
 public class SegdRecord {
+	private static final Logger logger = Logger.getLogger(SegdRecord.class);
 
 	public enum Format {
 		BINARY_MULTIPLEXED_20_BIT, // (not implemented)
@@ -165,7 +167,13 @@ public class SegdRecord {
 	}
 	
 	private void readHeaders(DataInput inStream) throws IOException {
-		readHeader1(inStream);
+		try {	
+			readHeader1(inStream);
+		} catch (IOException e) {
+			logger.error("IOException:", e);
+		} catch (SegdException e) {
+			logger.error("SegdException:", e);
+		}
 		readHeader2(inStream);
 		additionalGeneralHeaders = new AdditionalGeneralHeader[additionalGeneralHeaderBlocksNumber-1];
 		for(int i=1; i<additionalGeneralHeaderBlocksNumber; i++){
@@ -204,7 +212,9 @@ public class SegdRecord {
 		}
 	}
 
-	public void readHeader1(DataInput inStream) throws IOException {
+	public void readHeader1(DataInput inStream) 
+			throws IOException,
+				   SegdException {
 		// BYTES 1 -2 file number; if 'FFFF', see general header block #3
 		try {
 			short[] check = { 0xFF, 0xFF };
@@ -212,6 +222,7 @@ public class SegdRecord {
 					readBytes(inStream, 2, check), 4), 10);
 		} catch (CheckFailedException e) {
 			// Does nothing
+			logger.error("CheckFailedException:", e);	
 		}
 		try {
 			int formatCode = getDataValue(getSections(readBytes(inStream, 2,
@@ -273,9 +284,10 @@ public class SegdRecord {
 				break;
 			default:
 				format = null;
-				throw new RuntimeException("Wrong format code: " + formatCode);
+				throw new SegdException("Wrong format code: " + formatCode);
 			}
 		} catch (CheckFailedException e) {
+			logger.error("CheckFailedException:", e);	
 		}
 		try {
 			general_constants = getSections(readBytes(inStream, 6, null), 4);
@@ -289,13 +301,13 @@ public class SegdRecord {
 			day_digits[1] = day_digits_byte13[0];
 			day_digits[2] = day_digits_byte13[1];
 			int jDay = getDataValue(day_digits, 10);
-			if(jDay>366) throw new RuntimeException("Wrong Julian day: " + jDay);
+			if(jDay>366) throw new SegdException("Wrong Julian day: " + jDay);
 			int hour = getDataValue(getSections(readBytes(inStream, 1, null), 4), 10);
-			if(hour>24) throw new RuntimeException("Wrong hour: " + hour);
+			if(hour>24) throw new SegdException("Wrong hour: " + hour);
 			int minute = getDataValue(getSections(readBytes(inStream, 1, null),	4), 10);
-			if(minute>60) throw new RuntimeException("Wrong minute: " + minute);
+			if(minute>60) throw new SegdException("Wrong minute: " + minute);
 			int second = getDataValue(getSections(readBytes(inStream, 1, null), 4), 10);
-			if(second>60) throw new RuntimeException("Wrong second: " + second);
+			if(second>60) throw new SegdException("Wrong second: " + second);
 			date = new Date(TimeInterval.getTime(year > 50 ? 1900 + year: 2000 + year, jDay, hour, minute, second, 0));
 			manufacturer_code = getDataValue(getSections(readBytes(inStream, 1,	null), 4), 10);
 			manufacturer_serial_num = getDataValue(getSections(readBytes(inStream, 2, null), 4), 10);
@@ -336,10 +348,11 @@ public class SegdRecord {
 				break;
 			default:
 				polarity = null;
-				throw new RuntimeException("Wrong polarity: " + polarity);
+				throw new SegdException("Wrong polarity: " + polarity);
 			}
 			inStream.skipBytes(1); // not used
 		} catch (CheckFailedException e) {
+			logger.error("CheckFailedException:", e);	
 		}
 		try {
 			short byte26 = readBytes(inStream, 1, null)[0];
@@ -362,7 +375,7 @@ public class SegdRecord {
 				break;
 			default:
 				recordType = null;
-				throw new RuntimeException("Wrong record type: " + recordType);
+				throw new SegdException("Wrong record type: " + recordType);
 			}
 			short[] record_length_digits = new short[3];
 			record_length_digits[0] = (short) (byte26 & 0xF);
@@ -375,6 +388,7 @@ public class SegdRecord {
 			recordLength = getDataValue(record_length_digits, 10)/10.0;
 		} catch (CheckFailedException e) {
 			//see Extended Record length, bytes 15-17 General Header block #2
+			logger.error("CheckFailedException:", e);	
 		}
 		try {
 			scanTypes_per_record = getDataValue(getSections(readBytes(inStream, 1, null), 4), 10);
@@ -382,6 +396,7 @@ public class SegdRecord {
 			channelSets_per_scanType = getDataValue(getSections(readBytes(inStream, 1, check), 4), 10);
 		}catch (CheckFailedException e) {
 			//see Extended channelSet/ScanTypes
+			logger.error("CheckFailedException:", e);	
 		}
 		try {
 			skewBlocks_number = getDataValue(getSections(readBytes(inStream, 1, null), 4), 10);
@@ -389,12 +404,14 @@ public class SegdRecord {
 			extendedHeaderBlocks_number = getDataValue(getSections(readBytes(inStream, 1, check), 4), 10);
 		}catch (CheckFailedException e) {
 			//see bytes 6-7 of General Header block #2
+			logger.error("CheckFailedException:", e);	
 		}
 		try {
 			short[] check = {0xFF};
 			externalHeaderBlocks_number = getDataValue(getSections(readBytes(inStream, 1, check), 4), 10);
 		}catch (CheckFailedException e) {
 			//see bytes 8-9 of General Header block #2
+			logger.error("CheckFailedException:", e);	
 		}
 	}
 	
@@ -435,13 +452,19 @@ public class SegdRecord {
 			inStream.skipBytes(10); //not used
 		} catch (CheckFailedException e) {
 			//Do nothing
-		}
+			logger.error("CheckFailedException:", e);	
+		} catch (SegdException e) {
+			logger.error("SegdException:", e);
+		}	
 	}
 	
 	private void readExtendedHeader(DataInput inStream, short[] data) throws IOException{
 		try {
 			data=readBytes(inStream, 32, null);
 		} catch (CheckFailedException e) {
+			logger.error("CheckFailedException:", e);	
+		} catch (SegdException e) {
+			logger.error("SegdException:", e);
 		}
 	}
 
@@ -449,6 +472,9 @@ public class SegdRecord {
 		try {
 			data=readBytes(inStream, 32, null);
 		} catch (CheckFailedException e) {
+			logger.error("CheckFailedException:", e);	
+		} catch (SegdException e) {
+			logger.error("SegdException:", e);
 		}
 	}
 	
@@ -457,14 +483,14 @@ public class SegdRecord {
 	}
 	
 	static short[] readBytes(DataInput inStream, int byteCount, short[] check)
-			throws IOException, CheckFailedException {
+			throws IOException, SegdException, CheckFailedException {
 		short[] ret = new short[byteCount];
 		for (int i = 0; i < byteCount; i++) {
 			ret[i] = (short)inStream.readUnsignedByte();
 		}
 		if (check != null) {
 			if (check.length != ret.length) {
-				throw new RuntimeException(
+				throw new SegdException(
 						"Check array size should be equal tested array size");
 			}
 			for (int j = 0; j < ret.length; j++) {
@@ -491,6 +517,9 @@ public class SegdRecord {
 			short[] read = readBytes(inStream, 3,null);
 			ret = read[2]|(read[1]<<8)|(read[0]<<16);
 		} catch (CheckFailedException e) {
+			logger.error("CheckFailedException:", e);	
+		} catch (SegdException e) {
+			logger.error("SegdException:", e);
 		}
 		return ret;
 	}
@@ -594,10 +623,10 @@ public class SegdRecord {
 			System.out.println(rec.toString());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("FileNotFoundException:", e);	
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IOException:", e);	
 		}
 	}
 
