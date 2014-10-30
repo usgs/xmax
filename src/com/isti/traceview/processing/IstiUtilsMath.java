@@ -4,12 +4,11 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import com.isti.traceview.jnt.FFT.ComplexDoubleFFT_Mixed;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
-import com.isti.traceview.jnt.FFT.RealDoubleFFT_Radix2;
 
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.data.Channel;
@@ -22,7 +21,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
  * ISTI utils math methods.
  */
 public class IstiUtilsMath {
-	private static Logger lg = Logger.getLogger(IstiUtilsMath.class);
+	private static final Logger logger = Logger.getLogger(IstiUtilsMath.class);
 	/**
 	 * \ingroup isti_utils_retVal \brief SUCCESS
 	 */
@@ -277,7 +276,7 @@ public class IstiUtilsMath {
 	 */
 	public static final Cmplx[] complexDeconvolution(Cmplx[] f, Cmplx[] g) {
 		if (f.length != g.length)
-			throw new IllegalArgumentException("complexDeconvolution: both arrays must have same length. " + f.length + " " + g.length);
+			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
 		Cmplx[] ret = new Cmplx[f.length];
 		for (int i = 0; i < f.length; i++)
 			ret[i] = Cmplx.div(f[i], g[i]);
@@ -289,7 +288,7 @@ public class IstiUtilsMath {
 	 */
 	public static final Cmplx[] complexConvolution(Cmplx[] f, Cmplx[] g) {
 		if (f.length != g.length)
-			throw new IllegalArgumentException("complexConvolution: both arrays must have same length. " + f.length + " " + g.length);
+			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
 		Cmplx[] ret = new Cmplx[f.length];
 		for (int i = 0; i < f.length; i++)
 			ret[i] = Cmplx.mul(f[i], g[i]);
@@ -394,7 +393,7 @@ public class IstiUtilsMath {
 	 */
 	public static Spectra getNoiseSpectra(int[] trace, Response response, Date date, Channel channel, boolean verboseDebug) {
 		// Init error string
-		lg.debug("getNoiseSpectra begin");
+		logger.debug("Getting noise spectra");
 		String errString = "";
 
 		final Response.FreqParameters fp = Response.getFreqParameters(trace.length, 1000.0 / channel.getSampleRate());
@@ -417,9 +416,9 @@ public class IstiUtilsMath {
 		try {
 			resp = response.getResp(date, fp.startFreq, fp.endFreq, Math.min(noise_spectra.length, fp.numFreq));
 		} catch (Exception e) {
-			errString = "Can't get response for channel " + channel.getName() + ": " + e.toString();
+			errString = "Can't get response for channel " + channel.getName() + ": ";
+			logger.error(errString, e);	
 		}
-		lg.debug("getNoiseSpectra end");
 		return new Spectra(date, noise_spectra, frequenciesArray, resp, fp.sampFreq, channel, errString);
 	}
 
@@ -436,7 +435,6 @@ public class IstiUtilsMath {
 	 */
 
 	public static Cmplx[] processFft(double[] indata) {
-		lg.debug("processFft begin");
 		int n = indata.length;
 		DoubleFFT_1D fft = new DoubleFFT_1D(n);
 		fft.realForward(indata);
@@ -463,7 +461,6 @@ public class IstiUtilsMath {
 				ret[k] = new Cmplx(indata[2*k], im);
 			}
 		}
-		lg.debug("processFft end");
 		return ret;
 	}
 	

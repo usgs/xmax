@@ -1,7 +1,7 @@
 <?xml version="1.0" ?> 
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.5" 
 "http://jpf.sourceforge.net/plugin_0_5.dtd"> 
-<plugin id="com.isti.xmax.particleMotion" version="1.0"> 
+<plugin id="com.isti.xmax.ppm" version="1.0"> 
 	<requires> 
 		<import plugin-id="com.isti.xmax.core"/> 
 	</requires> 
@@ -10,7 +10,7 @@
 	</runtime> 
 	<extension plugin-id="com.isti.xmax.core" point-id="Transformation" id="Particle Motion"> 
 		<parameter id="class" value="TransPPM"/>
-		<parameter id="name" value="Particle Motion"/> 
+		<parameter id="name" value="TransPPM"/> 
 		<parameter id="description" value="Shows particle motion for selected channels"/>  
 		<parameter id="max_data_length" value="8192"/>   
 	</extension> 

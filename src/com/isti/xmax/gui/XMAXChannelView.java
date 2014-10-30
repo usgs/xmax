@@ -33,7 +33,6 @@ import com.isti.xmax.common.Pick;
 public class XMAXChannelView extends ChannelView {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(XMAXChannelView.class);
 
 	public XMAXChannelView(List<PlotDataProvider> channels, int infoPanelWidth, boolean isDrawSelectionCheckBox, Color graphAreaBgColor, Color infoAreaBgColor) {
 		super(channels, infoPanelWidth, isDrawSelectionCheckBox, graphAreaBgColor, infoAreaBgColor);
@@ -50,13 +49,13 @@ public class XMAXChannelView extends ChannelView {
  * Special mouse adapter to set mouse behavior
  */
 class XMAXChannelViewMouseAdapter implements IMouseAdapter {
-	private static Logger lg = Logger.getLogger(XMAXChannelViewMouseAdapter.class);
+	private static final Logger logger = Logger.getLogger(XMAXChannelViewMouseAdapter.class);
 	public static final DecimalFormat df = new DecimalFormat("#####.##");
 
 	public void mouseClickedButton1(int x, int y, JPanel clickedAt) {
 		ChannelView cv = (ChannelView) clickedAt;
 		long clickedTime = cv.getGraphPanel().getTime(x);
-		lg.debug("ChannelView clicked: " + x + ":" + y + ", time "
+		logger.debug("ChannelView clicked: " + x + ":" + y + ", time "
 				+ TimeInterval.formatDate(new Date(clickedTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + "(" + clickedTime + ")"
 				+ ", value " + cv.getGraphPanel().getScaleMode().getValue(y));
 		double pointAmp = Double.NEGATIVE_INFINITY; // Graph amplitude in the clicked point
@@ -82,11 +81,9 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 			channel.addEvent(new Pick(new Date(clickedTime), channel));
 			cv.repaint();
 		}
-
 	}
 
 	public void mouseClickedButton2(int x, int y, JPanel clickedAt) {
-
 	}
 
 	public void mouseClickedButton3(int x, int y, JPanel clickedAt) {

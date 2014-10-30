@@ -31,7 +31,7 @@ import edu.iris.dmc.seedcodec.B1000Types;
  * @author Max Kokoulin
  */
 public class Configuration extends Observable {
-	private static Logger lg = Logger.getLogger(Configuration.class);
+	private static final Logger logger = Logger.getLogger(Configuration.class);
 
 	private String default_pattern_html = "<html><head><title>HTML report</title></head><body><h1>HTML report</h1> </body></html>";
 	protected static String listSeparator = ",";
@@ -236,7 +236,7 @@ public class Configuration extends Observable {
 	 * @uml.property name="dataPath"
 	 */
 	public void setDataPath(String dataPath) {
-		lg.debug("Configuration.setDataPath(): " + dataPath);
+		logger.debug("== dataPath: " + dataPath);
 		this.dataPath = dataPath;
 	}
 
@@ -354,6 +354,7 @@ public class Configuration extends Observable {
 			}
 		} catch (TraceViewException e) {
 			// do nothing, all should be correct
+			logger.error("TraceViewException:", e);	
 		}
 
 	}
@@ -727,7 +728,7 @@ public class Configuration extends Observable {
 	public String getConfigFileDir() {
 		File confFile = new File(confFileName);
 		String ret = confFile.getAbsolutePath().substring(0, confFile.getAbsolutePath().lastIndexOf(confFile.getName()));
-		lg.debug("Configuration.getConfigFileDir(): " + ret);
+		logger.debug("== fileDir: " + ret);
 		return ret;
 	}
 }

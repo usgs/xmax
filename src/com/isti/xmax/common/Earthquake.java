@@ -31,20 +31,24 @@ import edu.sc.seis.TauP.TauP_Time;
 import edu.sc.seis.fissuresUtil.bag.DistAz;
 
 /**
- * Class holds information about particular earthquake. Also contain initialization logic from "ndk"
- * files and can compute arrivals for this earthquake.
+ * Class holds information about particular earthquake. Also contain 
+ * initialization logic from "ndk" files and can compute arrivals for this 
+ * earthquake.
  * 
  * @author Max Kokoulin
  */
 public class Earthquake extends AbstractEvent implements IEvent {
-	private static Logger lg = Logger.getLogger(Earthquake.class);
-	private static SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+	private static final Logger logger = Logger.getLogger(Earthquake.class);
+	private static SimpleDateFormat df = new SimpleDateFormat(
+			"yyyy/MM/dd HH:mm:ss.SSS");
 	/**
-	 * Time lag to load earthquakes to see phase in time interval, in milliseconds
+	 * Time lag to load earthquakes to see phase in time interval, in 
+	 * milliseconds
 	 */
 	private static long maxPhaseDelay = 7200000; // Two hours
 
-	public static String[] phases = { "p", "s", "P", "S", "Pn", "Sn", "PcP", "ScS", "Pdiff", "Sdiff", "PKP", "SKS", "PKiKP", "SKiKS", "PKIKP",
+	public static String[] phases = { "p", "s", "P", "S", "Pn", "Sn", "PcP", 
+			"ScS", "Pdiff", "Sdiff", "PKP", "SKS", "PKiKP", "SKiKS", "PKIKP",
 			"SKIKS" };
 
 	static {
@@ -69,8 +73,9 @@ public class Earthquake extends AbstractEvent implements IEvent {
 	 * @param location
 	 *            region description
 	 */
-	public Earthquake(Date time, String code, Double latitude, Double longitude, Double depth, Double magnitude_mb, Double magnitude_MS,
-			String location) {
+	public Earthquake(Date time, String code, Double latitude, 
+			Double longitude, Double depth, Double magnitude_mb, 
+			Double magnitude_MS, String location) {
 		super(time, 0);
 		setParameter("SOURCECODE", code);
 		setParameter("LATITUDE", latitude);
@@ -79,7 +84,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 		setParameter("MAGNITUDE_MB", magnitude_mb);
 		setParameter("MAGNITUDE_MS", magnitude_MS);
 		setParameter("LOCATION", location);
-		lg.debug("Created " + this);
+		logger.debug("Created " + this);
 	}
 
 	public String getType() {
@@ -115,19 +120,24 @@ public class Earthquake extends AbstractEvent implements IEvent {
 	}
 
 	public String toString() {
-		return "Earthquake: SourceCode " + getSourceCode() + ", latitude " + getLatitude() + ", longitude " + getLongitude() + ", depth "
-				+ getDepth() + ", magnitude mb " + getMagnitude_mb() + ", magnitude MS " + getMagnitude_MS() + ", location " + getLocation()
-				+ ", time " + getStartTime();
+		return "Earthquake: SourceCode " + getSourceCode() + ", latitude " 
+				+ getLatitude() + ", longitude " + getLongitude() + ", depth "
+				+ getDepth() + ", magnitude mb " + getMagnitude_mb() 
+				+ ", magnitude MS " + getMagnitude_MS() + ", location " 
+				+ getLocation() + ", time " + getStartTime();
 	}
 
 	/**
-	 * Reads earthquakes list from Global Centroid-Moment-Tensor (CMT) catalog NDK file format
+	 * Reads earthquakes list from Global Centroid-Moment-Tensor (CMT) catalog 
+	 * NDK file format
 	 */
-	public static List<IEvent> getEarthquakes(TimeInterval ti) throws TraceViewException {
+	public static List<IEvent> getEarthquakes(TimeInterval ti) 
+			throws TraceViewException {
 		List<IEvent> ret = new ArrayList<IEvent>();
-		List<File> files = new Wildcard().getFilesByMask(XMAXconfiguration.getInstance().getEarthquakeFileMask());
+		List<File> files = new Wildcard().getFilesByMask(XMAXconfiguration.
+				getInstance().getEarthquakeFileMask());
 		for (File file: files) {
-			lg.debug("Processing event file: " + file.getName());
+			logger.debug("Processing event file: " + file.getName());
 			try {
 				LineNumberReader r = new LineNumberReader(new FileReader(file));
 				String[] rawData = null;
@@ -135,42 +145,57 @@ public class Earthquake extends AbstractEvent implements IEvent {
 					try {
 						// First line: Hypocenter line
 
-						// [1-4] Hypocenter reference catalog (e.g., PDE for USGS location, ISC for
-						// ISC catalog, SWE for surface-wave location, [Ekstrom, BSSA, 2006])
-						String catalog = rawData[0].substring(0, 4).trim();
+						// [1-4] Hypocenter reference catalog (e.g., PDE for 
+						// USGS location, ISC for
+						// ISC catalog, SWE for surface-wave location, [Ekstrom, 
+						// BSSA, 2006])
+						//String catalog = rawData[0].substring(0, 4).trim();
 						// [6-15] Date of reference event
 						// [17-26] Time of reference event
-						Date date = df.parse(rawData[0].substring(5, 26).trim());
+						Date date = df
+								.parse(rawData[0].substring(5, 26).trim());
 						// [28-33] Latitude
-						Double latitude = new Double(rawData[0].substring(27, 33).trim());
+						Double latitude = new Double(rawData[0].substring(27, 
+								33).trim());
 						// [35-41] Longitude
-						Double longitude = new Double(rawData[0].substring(34, 41).trim());
+						Double longitude = new Double(rawData[0].substring(34, 
+								41).trim());
 						// [43-47] Depth
-						Double depth = new Double(rawData[0].substring(42, 47).trim());
+						Double depth = new Double(rawData[0].substring(42, 47)
+								.trim());
 						// [49-55] Reported magnitudes, usually mb and MS
-						Double magnitude_mb = new Double(rawData[0].substring(48, 51).trim());
-						Double magnitude_MS = new Double(rawData[0].substring(52, 55).trim());
+						Double magnitude_mb = new Double(rawData[0].substring(
+								48, 51).trim());
+						Double magnitude_MS = new Double(rawData[0].substring(
+								52, 55).trim());
 						// [57-80] Geographical location (24 characters)
 						String location = rawData[0].substring(56, 80).trim();
 
 						// Second line: CMT info (1)
 
-						// [1-16] CMT event name. This string is a unique CMT-event identifier.
+						// [1-16] CMT event name. This string is a unique 
+						// CMT-event identifier.
 						// Older
-						// events have 8-character names, current ones have 14-character names.
+						// events have 8-character names, current ones have 
+						// 14-character names.
 						String name = rawData[1].substring(0, 16).trim();
-						if ((date.getTime() > ti.getStart() - maxPhaseDelay) && (date.getTime() < ti.getEnd())) {
-							Earthquake earthquake = new Earthquake(date, name, latitude, longitude, depth, magnitude_mb, magnitude_MS, location);
+						if ((date.getTime() > ti.getStart() - maxPhaseDelay) 
+								&& (date.getTime() < ti.getEnd())) {
+							Earthquake earthquake = new Earthquake(date, name, 
+									latitude, longitude, depth, magnitude_mb, 
+									magnitude_MS, location);
 							ret.add(earthquake);
 						}
 					} catch (NumberFormatException e) {
-						lg.error("Can't parse earthquake, line " + (r.getLineNumber() - rawData.length) + "; " + e);
+						logger.error("Can't parse earthquake, line " 
+								+ (r.getLineNumber() - rawData.length) + ": ", e);
 					} catch (ParseException e) {
-						lg.error("Can't parse earthquake, line " + (r.getLineNumber() - rawData.length) + "; " + e);
+						logger.error("Can't parse earthquake, line " 
+								+ (r.getLineNumber() - rawData.length) + ": ", e);
 					}
 				}
 			} catch (FileNotFoundException e) {
-				lg.error("Can't open earthquake file " + "; " + e);
+				logger.error("Can't open earthquake file " + ": ", e);
 			}
 		}
 		Collections.sort(ret);
@@ -188,6 +213,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 				data[i] = r.readLine();
 			}
 		} catch (IOException e) {
+			logger.error("IOException:", e);	
 			return null;
 		}
 		return data;
@@ -197,7 +223,8 @@ public class Earthquake extends AbstractEvent implements IEvent {
 	 * Compute arrivals for this earthquake
 	 * 
 	 * @param channel
-	 *            channel describes station and time range of interested arrivals
+	 *            channel describes station and time range of interested 
+	 *            arrivals
 	 * @return set of arrivals
 	 */
 	public SortedSet<IEvent> computeArrivals(PlotDataProvider channel) {
@@ -206,20 +233,28 @@ public class Earthquake extends AbstractEvent implements IEvent {
 		try {
 			TauP_Time timeTool = new TauP_Time("iasp91");
 			timeTool.setPhaseNames(phases);
-			for (IEvent earthquake: XMAX.getDataModule().getEarthquakes()) {
-				timeTool.depthCorrect((Double) earthquake.getParameterValue("DEPTH"));
-				DistAz da = new DistAz((Double) earthquake.getParameterValue("LATITUDE"), (Double) earthquake.getParameterValue("LONGITUDE"), station
-						.getLatitude(), station.getLongitude());
+			for (IEvent earthquake : XMAX.getDataModule().getEarthquakes()) {
+				timeTool.depthCorrect((Double) earthquake
+						.getParameterValue("DEPTH"));
+				DistAz da = new DistAz(
+						(Double) earthquake.getParameterValue("LATITUDE"),
+						(Double) earthquake.getParameterValue("LONGITUDE"), 
+						station.getLatitude(), station.getLongitude());
 				double angle = da.getDelta();
 				timeTool.calculate(angle);
 				edu.sc.seis.TauP.Arrival[] arrivals = timeTool.getArrivals();
 				for (int i = 0; i < arrivals.length; i++) {
-					ret.add(new Arrival(new Date(earthquake.getStartTime().getTime() + new Double(arrivals[i].getTime() * 1000).longValue()),
-							(Earthquake) earthquake, arrivals[i].getName(), angle, da.getAz(), da.getBaz(), DistAz.degreesToKilometers(angle)));
+					ret.add(new Arrival(new Date(earthquake.getStartTime()
+							.getTime() 
+							+ new Double(arrivals[i].getTime() * 1000)
+									.longValue()), (Earthquake) earthquake, 
+							arrivals[i].getName(), angle, da.getAz(), da
+									.getBaz(), DistAz
+									.degreesToKilometers(angle)));
 				}
 			}
 		} catch (TauModelException e) {
-			lg.error("Can't load TauP earth model: " + e);
+			logger.error("Can't load TauP earth model: ", e);
 		}
 		return ret;
 	}

@@ -22,5 +22,4 @@ public class XMAXTimeRangeAdapter implements ITimeRangeAdapter {
 			pp.refreshAvailableEarthQuakes();
 		}
 	}
-
 }

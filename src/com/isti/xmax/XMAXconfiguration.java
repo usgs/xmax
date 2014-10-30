@@ -16,11 +16,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
+
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
@@ -43,7 +44,7 @@ import com.isti.xmax.XMAXException;
  * @author Max Kokoulin
  */
 public class XMAXconfiguration extends Configuration {
-
+	private static final Logger logger = Logger.getLogger(XMAXconfiguration.class);
 	private Map<String, String> userDirectories = null;
 
 	/**
@@ -110,8 +111,6 @@ public class XMAXconfiguration extends Configuration {
 	private static XMAXconfiguration instance = null;
 
 	private XMLConfiguration config = null;
-
-	private static Logger lg = Logger.getLogger(Configuration.class);
 
 	private XMAXconfiguration() throws ConfigurationException, TraceViewException, XMAXException {
 		setDefaultHTMLPattern("<html><head><title>XMAX report</title></head><body><h1>XMAX report</h1> </body></html>");
@@ -181,6 +180,7 @@ public class XMAXconfiguration extends Configuration {
 			setFilterLocation(config.getString("Configuration.Filters.Location"));
 		} catch (NoSuchElementException e) {
 			// do nothing, use defaults
+			logger.error("NoSuchElementException:", e);	
 		}
 	}
 
@@ -191,14 +191,11 @@ public class XMAXconfiguration extends Configuration {
 				instance = new XMAXconfiguration();
 			}
 		} catch (ConfigurationException e) {
-			lg.error(e);
-			e.printStackTrace();
+			logger.error("ConfigurationException:", e);	
 		} catch (XMAXException e) {
-			lg.error(e);
-			e.printStackTrace();
+			logger.error("XMAXException:", e);	
 		} catch (TraceViewException e) {
-			lg.error(e);
-			e.printStackTrace();
+			logger.error("TraceViewException:", e);	
 		}
 		return instance;
 	}
@@ -528,12 +525,13 @@ public class XMAXconfiguration extends Configuration {
 				MappedByteBuffer mbf = fch.map(FileChannel.MapMode.READ_ONLY, 0, fch.size());
 				byte[] barray = new byte[(int) (fch.size())];
 				mbf.get(barray);
+				fis.close();	
 				return new String(barray);
 			} catch (FileNotFoundException e) {
-				lg.error("Can't get html pattern: " + e);
+				logger.error("Can't get html pattern: ", e);
 				return getDefaultHTMLPattern();
 			} catch (IOException e) {
-				lg.error("Can't get html pattern: " + e);
+				logger.error("Can't get html pattern: ", e);
 				return getDefaultHTMLPattern();
 			}
 		} else {
@@ -549,7 +547,7 @@ public class XMAXconfiguration extends Configuration {
 		try {
 			config.save(confFileName);
 		} catch (ConfigurationException e) {
-			lg.error("can't save configuration to file " + confFileName + ": " + e);
+			logger.error("can't save configuration to file " + confFileName + ": ", e);
 		}
 	}
 }

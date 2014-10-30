@@ -32,6 +32,7 @@ import java.net.UnknownHostException;
 import java.util.GregorianCalendar;
 import java.util.Calendar;
 import java.text.DecimalFormat;
+
 import gov.usgs.anss.edgethread.EdgeThread;
 import gov.usgs.anss.util.SeedUtil;
 import gov.usgs.anss.util.Util;
@@ -93,6 +94,7 @@ public class CD11Frame {
   private byte [] b;
   private ByteBuffer bb;
   private byte [] crcbuf;
+  @SuppressWarnings("unused")
   private byte [] tmpcrc;
   
   // Output related fields

@@ -1,5 +1,6 @@
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.IFilter;
+import com.isti.traceview.processing.LPFilterException;
 
 /**
  * Low-pass Butterworth filter Algorithm is from Stearns, 1975
@@ -74,10 +75,12 @@ public class FilterLP implements IFilter {
 	 *            number of samples in data array
 	 * @return filtered data array
 	 */
-	synchronized public double[] filter(double[] data, int length) {
+	synchronized public double[] filter(double[] data, int length) 
+	throws LPFilterException	
+	{
 		if (data.length > length)
-			throw new RuntimeException("Requested filtering length exceeds provided array length");
-		int mean = new Double(demean(data, length)).intValue();
+			throw new LPFilterException("Requested filtering length exceeds provided array length");
+		//int mean = new Double(demean(data, length)).intValue();
 		double[][] f = new double[order + 1][3];
 		for (int i = 0; i <= order; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -114,6 +117,7 @@ public class FilterLP implements IFilter {
 	/**
 	 * remove mean from a buffer
 	 */
+	@SuppressWarnings("unused")	
 	private double demean(double buf[], int n) {
 		double sum = 0.0;
 		for (int i = 0; i < n; i++) {

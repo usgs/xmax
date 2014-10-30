@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class DAT2 extends Block {
-	private static Logger lg = Logger.getLogger(DAT2.class);
+	private static final Logger logger = Logger.getLogger(DAT2.class);
 	private int[] data;
 	private WID2 wid2;
 
@@ -30,7 +30,6 @@ public class DAT2 extends Block {
 	}
 
 	public void read(BufferedRandomAccessFile input) throws IMSFormatException, IOException, ParseException, CanadaException {
-		lg.debug("DAT2.read begin");
 		header = input.readLine();
 		if (!header.startsWith("DAT2")) {
 			throw new IMSFormatException("Wrong data block header: " + header);
@@ -71,6 +70,7 @@ public class DAT2 extends Block {
 						}
 					} catch (NumberFormatException e) {
 						input.seek(filePointer);
+						logger.error("NumberFormatException:", e);	
 						break;
 					}
 				}
@@ -81,7 +81,6 @@ public class DAT2 extends Block {
 		if (numSamples != wid2.getNumSamples()) {
 			throw new IMSFormatException("Wrong samples count in data block: read " + numSamples + ", should be " + wid2.getNumSamples());
 		}
-		lg.debug("DAT2.read end");
 	}
 
 	private int decodeCSF(int numSamples, String line) throws CanadaException {

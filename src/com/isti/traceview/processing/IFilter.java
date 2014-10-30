@@ -29,8 +29,11 @@ public interface IFilter {
 	 *            number of samples to filter
 	 * @return filtered data array
 	 */
-	public double[] filter(double[] data, int length) throws TraceViewException;
-
+	public double[] filter(double[] data, int length) 
+		throws TraceViewException,
+			   BPFilterException,
+			   HPFilterException,
+			   LPFilterException;
 	/**
 	 * @return Filter's name
 	 */

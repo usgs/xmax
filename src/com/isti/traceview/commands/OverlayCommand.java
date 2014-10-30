@@ -10,7 +10,7 @@ import com.isti.traceview.gui.GraphPanel;
  * @author Max Kokoulin
  */
 public class OverlayCommand extends AbstractUndoableCommand {
-	private static Logger lg = Logger.getLogger(OverlayCommand.class);
+	private static final Logger logger = Logger.getLogger(OverlayCommand.class);
 	private GraphPanel graphPanel = null;
 
 	/**
@@ -26,7 +26,7 @@ public class OverlayCommand extends AbstractUndoableCommand {
 			super.run();
 			graphPanel.overlay();
 		} catch (Exception e) {
-			lg.error("OverlayCommand error: " + e);
+			logger.error("OverlayCommand error: ", e);
 		}
 	}
 
@@ -38,6 +38,7 @@ public class OverlayCommand extends AbstractUndoableCommand {
 			}
 		} catch (Exception e) {
 			// do nothing
+			logger.error("Exception:", e);	
 		}
 	}
 

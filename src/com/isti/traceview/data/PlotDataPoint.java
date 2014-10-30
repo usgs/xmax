@@ -20,7 +20,7 @@ public class PlotDataPoint implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger lg = Logger.getLogger(PlotDataPoint.class);
+	private static final Logger logger = Logger.getLogger(PlotDataPoint.class);
 
 	/**
 	 * High value in representing section
@@ -63,7 +63,7 @@ public class PlotDataPoint implements Serializable {
 	private Set<EventWrapper> events = null;
 
 	public PlotDataPoint(double top, double bottom, double mean, int segmentNumber, int continueAreaNumber, int rawDataProviderNumber, Set<EventWrapper> events) {
-		// lg.debug("Created: + this);
+		logger.debug("Created:" + this);
 		this.top = top;
 		this.bottom = bottom;
 		this.mean = mean;

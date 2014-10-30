@@ -4,11 +4,8 @@ import java.awt.event.MouseEvent;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.gui.ChannelView;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.ScaleModeXhair;
 import com.isti.xmax.XMAXTimeRangeAdapter;
@@ -22,7 +19,6 @@ import com.isti.xmax.data.XMAXChannel;
 public class XMAXGraphPanel extends GraphPanel {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(XMAXGraphPanel.class);
 
 	public XMAXGraphPanel() {
 		super();

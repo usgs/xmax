@@ -2,11 +2,12 @@ package com.isti.xmax.gui;
 
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
+
 import java.awt.Dimension;
+
 import javax.swing.BoxLayout;
 
 import org.apache.log4j.Logger;
@@ -36,8 +37,9 @@ import java.util.Observer;
 public class StatusBar extends JPanel implements Observer {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger lg = Logger.getLogger(StatusBar.class);
+	private static final Logger logger = Logger.getLogger(StatusBar.class);
 
+	@SuppressWarnings("unused")	
 	private Font font = null;
 	private JLabel channelCountLabel = null;
 	private JLabel messageLabel = null;
@@ -138,7 +140,7 @@ public class StatusBar extends JPanel implements Observer {
 
 	public void update(Observable o, Object arg) {
 		if (o instanceof GraphPanelObservable) {
-			lg.debug("updating status bar due to request from " + o.getClass().getName());
+			logger.debug("updating status bar due to request from " + o.getClass().getName());
 			if (arg instanceof IScaleModeState) {
 				scaleModeLabel.setText(((IScaleModeState) arg).getStateName());
 			} else if (arg instanceof IOffsetState) {

@@ -34,7 +34,7 @@ import com.isti.traceview.gui.IColorModeState;
  * @author Max Kokoulin
  */
 public class DataModule extends Observable {
-	private static Logger lg = Logger.getLogger(DataModule.class);
+	private static final Logger logger = Logger.getLogger(DataModule.class);
 
 	/**
 	 * List of found files with trace data
@@ -96,21 +96,20 @@ public class DataModule extends Observable {
 	 * directory and parse file data sources which absent in temp storage area
 	 */
 	public void loadData() throws TraceViewException {
-        lg.debug("\n== Enter DataModule.loadData()\n");
+        logger.debug("== Enter\n");
      // -t: Read serialized PlotDataProviders from TEMP_DATA
 		if (TraceView.getConfiguration().getUseTempData()) {
-            lg.debug("-t: Read from temp storage\n");
-            System.out.format("     -t: Read from temp storage\n");
+            logger.debug("-t: Read from temp storage\n");
 			if (storage == null) {
 				storage = new TemporaryStorage(TraceView.getConfiguration().getDataTempPath());
 			}
 			for (String tempFileName : storage.getAllTempFiles()) {
-                lg.debug("PDP.load: tempFileName=" + tempFileName);
+                logger.debug("PDP.load: tempFileName = " + tempFileName);
                 System.out.format("         Read serialized file:%s\n", tempFileName);
 				PlotDataProvider channel = PlotDataProvider.load(tempFileName);
              // MTH:
                 if (TraceView.getConfiguration().getUseDataPath()) {
-                    lg.debug("== loadData(): -t AND -d chosen --> null PlotDataProvider's pointsCache");
+                    logger.debug("== -t AND -d chosen --> null PlotDataProvider's pointsCache");
                     channel.nullPointsCache();
                 }
 				if ((channels.indexOf(channel) <= 0)) {
@@ -119,22 +118,21 @@ public class DataModule extends Observable {
 			}
         // Should this be moved to after the -d read in case there are other channels ... ?
 			Collections.sort(channels, Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
-            lg.debug("-t: Read from temp storage DONE\n\n");
+            logger.debug("-t: Read from temp storage DONE\n\n");
 		}
      // -d: Read data from data path. Note that at this point we are merely *parsing* the
      //     data (e.g., mseed files) to construct PlotDataProviders, and the actual 
      //     traces (=Segments) won't be read in until just before they are displayed on the screen. 
 		if (TraceView.getConfiguration().getUseDataPath()) {
-            System.out.format("     -d: Read from data path\n");
-            lg.debug("-d: Read from data path --> addDataSources()\n");
+            logger.debug("-d: Read from data path --> addDataSources()\n");
 		    addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
-            lg.debug("-d: Read from data path DONE\n\n");
+            logger.debug("-d: Read from data path DONE\n\n");
         }
 		else {
             if (!TraceView.getConfiguration().getUseTempData()) {
-            	lg.debug("-d + -t are both false: Read from data path --> addDataSources()\n");
+            	logger.debug("-d + -t are both false: Read from data path --> addDataSources()\n");
             	addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
-            	lg.debug("-d + -t: Read from data path DONE\n\n");
+            	logger.debug("-d + -t: Read from data path DONE\n\n");
             }
         }
 
@@ -144,7 +142,7 @@ public class DataModule extends Observable {
 		notifyObservers();
 
         //printAllChannels();
-        lg.debug("== Exit DataModule.loadData()\n\n");
+        logger.debug("== Exit loadData()\n\n");
 	}
 
 	public void reLoadData() throws TraceViewException {
@@ -171,15 +169,15 @@ public class DataModule extends Observable {
 	 * Cleanup temp storage and dump all found data to temp storage
 	 */
 	public void dumpData(IColorModeState colorMode) throws TraceViewException {
-        lg.debug("== DataModule.dumpData() ENTER");
-        lg.debug("== DataModule.dumpData() call DataModule.loadData()");
+        logger.debug("== ENTER");
+        logger.debug("== call loadData()");
         loadData();
-        lg.debug("== DataModule.dumpData() call DataModule.loadData() DONE");
+        logger.debug("== call loadData() DONE");
 
         System.out.format("     -T: Serialize data to temp storage ");
 
 		if (storage == null) {
-            lg.debug("== DataModule.dumpData() storage == null --> new TemporaryStorage()");
+            logger.debug("storage == null --> new TemporaryStorage()");
 			storage = new TemporaryStorage(TraceView.getConfiguration().getDataTempPath());
 
     // MTH: Check if dataTempPath exists and if not, try to create it:
@@ -187,16 +185,18 @@ public class DataModule extends Observable {
             File dir = new File(dataTempPath);
             if (dir.exists() ) {
                 if (!dir.isDirectory()) {
-                    System.out.format("== DataModule.dumpData(): ERROR: dataTempPath=[%s] is NOT a directory!\n", dataTempPath);
-                    System.exit(1);
+                    //System.out.format("== DataModule.dumpData(): ERROR: dataTempPath=[%s] is NOT a directory!\n", dataTempPath);
+                   	logger.error(String.format("== dataTempPath=[%s] is NOT a directory!\n", dataTempPath)); 
+		    System.exit(1);
                 }
                 //System.out.format("== DataModule.dumpData(): dataTempPath=[%s] exists\n", dataTempPath);
             }
             else {
                 Boolean success = dir.mkdirs();
                 if (!success) {
-                    System.out.format("== DataModule.dumpData(): ERROR: unable to create directory dataTempPath=[%s]\n", dataTempPath);
-                    System.exit(1);
+                    //System.out.format("== DataModule.dumpData(): ERROR: unable to create directory dataTempPath=[%s]\n", dataTempPath);
+                   	logger.error(String.format("unable to create directory dataTempPath=[%s]\n", dataTempPath)); 
+		    System.exit(1);
                 }
                 //System.out.format("== DataModule.dumpData(): successfully created dir dataTempPath=[%s]\n", dataTempPath);
             }
@@ -215,9 +215,9 @@ public class DataModule extends Observable {
 		Iterator<PlotDataProvider> it = getAllChannels().iterator();
 		while (it.hasNext()) {
 			PlotDataProvider channel = it.next();
-            lg.debug("== DataModule.dumpData() call channel.load() for channel=" + channel);
+            logger.debug("== call channel.load() for channel=" + channel);
 			channel.load();
-            lg.debug("== DataModule.dumpData() call channel.load() DONE for channel=" + channel);
+            logger.debug("== call channel.load() DONE for channel=" + channel);
 			channel.initPointCache(colorMode);
             System.out.format("         Serialize to file:%s\n", storage.getSerialFileName(channel));
 			channel.dump(storage.getSerialFileName(channel));
@@ -227,7 +227,7 @@ public class DataModule extends Observable {
 			//channel = null;
 		}
         //printAllChannels();
-        lg.debug("== DataModule.dumpData() EXIT");
+        logger.debug("== EXIT");
 	}
 
 	/**
@@ -248,10 +248,9 @@ public class DataModule extends Observable {
 	 */
 	public Set<RawDataProvider> addDataSource(ISource datafile) {
 		Set<RawDataProvider> changedChannels = null;
-		lg.debug("DataModule.addDataSource() begin");
 		if (!isSourceLoaded(datafile)) {
 			dataSources.add(datafile);
-			lg.debug("Parsing file " + datafile.getName());
+			logger.debug("Parsing file " + datafile.getName());
 			changedChannels = datafile.parse(this);
 			dataSources.add(datafile);
 			checkDataIntegrity(changedChannels);
@@ -260,7 +259,6 @@ public class DataModule extends Observable {
 				notifyObservers(datafile);
 			}
 		}
-		lg.debug("DataModule.addDataSource() end");
 		return changedChannels;
 	}
 
@@ -275,10 +273,9 @@ public class DataModule extends Observable {
 		boolean wasAdded = false;
 		Set<RawDataProvider> changedChannels = new HashSet<RawDataProvider>();
 
-		lg.debug("DataModule.addDataSources() begin");
 		for (ISource datafile : datafiles) {
 			if (!isSourceLoaded(datafile)) {
-				lg.debug("Parsing " + datafile.getName());
+				logger.debug("Parsing " + datafile.getName());
 				wasAdded = true;
 				changedChannels.addAll(datafile.parse(this));
 				dataSources.add(datafile);
@@ -291,7 +288,6 @@ public class DataModule extends Observable {
 				notifyObservers(datafiles);
 			}
 		}
-		lg.debug("DataModule.addDataSources() end");
 
 		return changedChannels;
 	}
@@ -313,7 +309,7 @@ public class DataModule extends Observable {
 			RawDataProvider channel = it.next();
 			// lg.debug("Sorting " + channel.toString());
 			if (channel.getRawData().size() == 0) {
-				lg.warn("Deleting " + channel.toString()
+				logger.warn("Deleting " + channel.toString()
 						+ " due to absence of data");
 				channels.remove(channel);
 			} else {
@@ -326,6 +322,7 @@ public class DataModule extends Observable {
 	/**
 	 * Check if we have found all sources for given channel
 	 */
+	@SuppressWarnings("unused")	
 	private boolean channelHasAllSources(RawDataProvider channel) {
 		List<ISource> sources = channel.getSources();
 		for (Object o : sources) {
@@ -380,7 +377,7 @@ public class DataModule extends Observable {
 	private static Station addStation(String stationName) {
 		Station station = new Station(stationName);
 		stations.put(station.getName(), station);
-		lg.debug("Station added: name " + stationName);
+		logger.debug("Station added: " + stationName);
 		return station;
 	}
 
@@ -389,21 +386,20 @@ public class DataModule extends Observable {
 	 */
 	public List<PlotDataProvider> getAllChannels() {
 		synchronized (channels) {
-			lg.debug("DataModule.getAllChannels() ");
+			logger.debug("getting channels");
 			return channels;
 		}
 	}
 
 	private void addChannel(PlotDataProvider channel) {
 		synchronized (channels) {
-			lg.debug("DataModule.addChannel() begin");
 			channels.add(channel);
 			for (ISource src : channel.getSources()) {
 				if (!isSourceLoaded(src)) {
 					dataSources.add(src);
 				}
 			}
-			lg.debug("Channel added: " + channel.toString());
+			logger.debug("Channel added: " + channel.toString());
 		}
 	}
 
@@ -415,13 +411,12 @@ public class DataModule extends Observable {
 	 */
 	public void deleteChannel(PlotDataProvider channel) {
 		synchronized (channels) {
-			lg.debug("DataModule.deleteChannel() begin");
 			channels.remove(channel);
 			if (!isChangedAllChannelsTI()) {
 				setChanged();
 				notifyObservers(channel);
 			}
-			lg.debug("Channel removed: " + channel.toString());
+			logger.debug("Channel removed: " + channel.toString());
 		}
 	}
 
@@ -438,7 +433,7 @@ public class DataModule extends Observable {
 				setChanged();
 				notifyObservers(toDelete);
 			}
-			lg.debug("Channels removed: list");
+			logger.debug("Channels removed: list");
 		}
 	}
 
@@ -540,7 +535,6 @@ public class DataModule extends Observable {
 	 */
 	public List<PlotDataProvider> getNextCnannelSet() throws TraceViewException {
 		synchronized (channels) {
-			lg.debug("DataModule.getNextCnannelSet() begin");
 			int newWindowSize = getWindowSize(true);
 			if ((newWindowSize != 0)
 					&& ((markerPosition + newWindowSize) <= channels.size())) {
@@ -548,7 +542,7 @@ public class DataModule extends Observable {
 				to = Math.min(markerPosition + newWindowSize, channels.size());
 				markerPosition = markerPosition + newWindowSize;
 				windowSize = newWindowSize;
-				lg.debug("DataModule.getNextCnannelSet() end: from " + from
+				logger.debug("END: from " + from
 						+ ", to " + to);
 				return channels.subList(from, to);
 			} else {
@@ -566,14 +560,13 @@ public class DataModule extends Observable {
 	public List<PlotDataProvider> getPreviousCnannelSet()
 			throws TraceViewException {
 		synchronized (channels) {
-			lg.debug("DataModule.getPreviousCnannelSet() begin");
 			int newWindowSize = getWindowSize(false);
 			if ((newWindowSize != 0) && (markerPosition > 1)) {
 				markerPosition = markerPosition - windowSize - newWindowSize;
 				from = markerPosition;
 				to = Math.min(markerPosition + newWindowSize, channels.size());
 				windowSize = 0;
-				lg.debug("DataModule.getPreviousCnannelSet() end: from " + from
+				logger.debug("END: from " + from
 						+ ", to " + to);
 				return channels.subList(from, to);
 			} else {
@@ -765,7 +758,7 @@ public class DataModule extends Observable {
 						station.setLongitude(new Double(longitude));
 						station.setElevation(new Double(elevation));
 						station.setDepth(new Double(depth));
-						lg.debug("Station loaded: name " + name + ", network "
+						logger.debug("Station loaded: name " + name + ", network "
 								+ network + ", longName " + longName
 								+ ", startDate " + startDate + ", endDate "
 								+ endDate + ", latitude " + latitude
@@ -776,15 +769,15 @@ public class DataModule extends Observable {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			lg.error("Can't open station file: " + e);
+			logger.error("Can't open station file: ", e);
 
 		} catch (IOException e) {
-			lg.error("Error during reading station file: " + e);
+			logger.error("Error during reading station file: ", e);
 		} finally {
 			try {
 				r.close();
 			} catch (IOException e) {
-
+				logger.error("IOException:", e);
 			}
 		}
 	}
@@ -896,7 +889,7 @@ public class DataModule extends Observable {
 				}
 			}
 		} catch (TraceViewException e) {
-			lg.error(e);
+			logger.error("TraceViewException:", e);
 		}
 		// try to load from network
 		/*

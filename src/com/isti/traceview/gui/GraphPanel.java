@@ -6,12 +6,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.RepaintManager;
 import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.MouseInputListener;
 
 import org.apache.log4j.Logger;
+
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
@@ -54,11 +54,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
-import java.io.IOException;
 
 /**
  * This is graphics container; it contains a list of ChannelView(s) (panels) and renders them as a
@@ -71,7 +69,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	private static final long serialVersionUID = 1L;
 
-	private static Logger lg = Logger.getLogger(GraphPanel.class); // @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(GraphPanel.class); // @jve:decl-index=0:
 
 	private static final Color selectionColor = Color.YELLOW;
 	private static Font axisFont = null; // @jve:decl-index=0:
@@ -94,14 +92,14 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * 
 	 * @uml.property name="manualValueMax"
 	 */
-	private int manualValueMax = Integer.MIN_VALUE;
+	//private int manualValueMax = Integer.MIN_VALUE;
 
 	/**
 	 * Minimum Y scale value for manual scale mode
 	 * 
 	 * @uml.property name="manualValueMin"
 	 */
-	private int manualValueMin = Integer.MAX_VALUE;
+	//private int manualValueMin = Integer.MAX_VALUE;
 
 	/**
 	 * List of graphs
@@ -278,9 +276,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		this.add(getSouthPanel(showTimePanel), BorderLayout.SOUTH);
 
 		/** ----------------- MTH ---------------- **/
-		//  file defaultMarkPosition.gif will NOT be found this way as java will
-		//  look for build/com/isti/traceview/gui/defaultMarkPosition.gif and will NOT find the
-		//  resource, but at least it won't crash
+		//  defaultMarkPosition.gif is now found with a change to build.xml 
 		URL url = null;
 		try {
 			URL baseUrl = GraphPanel.class.getResource(".");
@@ -289,11 +285,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			} else {
 				url = GraphPanel.class.getResource("defaultMarkPosition.gif");
 			}
-			System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
+			//System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
+			logger.info(String.format("== MTH: file=%s\n", url.getFile()));	
 			markPositionImage = javax.imageio.ImageIO.read(url);
 			//} catch (MalformedURLException e) {
 		} catch (Exception e) {
-	     // Do something appropriate
+	     		// Do something appropriate
+			logger.error("Exception:", e);	
 		}
 
 		/** ----------------- MTH ---------------- **/
@@ -340,7 +338,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *            time range to set. Graph panel redraws to show this time range.
 	 */
 	public void setTimeRange(TimeInterval timeRange) {
-		lg.debug("GraphPanel.setTimeRange " + timeRange);
+		logger.debug("timerange: " + timeRange);
 		this.timeRange = timeRange;
 		if (timeRangeAdapter != null && TraceView.getFrame() != null) {
 			timeRangeAdapter.setTimeRange(timeRange);
@@ -583,16 +581,15 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *            list of traces
 	 */
 	public void setChannelShowSet(List<PlotDataProvider> channels) {
-        lg.debug("== GraphPanel.setChannelShowSet [ENTER]");
+        logger.debug("== [ENTER]");
 		synchronized (TraceView.getDataModule().getAllChannels()) {
-			lg.debug("GraphPanel.setChannelShowSet begin");
 			if (channels != null) {
 				clearChannelShowSet();
 				CommandExecutor.getInstance().clearCommandHistory(); // or do channels loading as
 				// a command
 				if (!TraceView.getConfiguration().getMergeLocations()) {
 					for (PlotDataProvider channel: channels) {
-                        lg.debug("== GraphPanel.setChannelShowSet Handle channel=" + channel);
+                        logger.debug("== handle channel=" + channel);
 						List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
@@ -637,7 +634,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			}
 			observable.setChanged();
 			observable.notifyObservers(channels);
-            lg.debug("== GraphPanel.setChannelShowSet [EXIT]");
+            logger.debug("== [EXIT]");
 		}
 	}
 
@@ -897,7 +894,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *            IFilter to set
 	 */
 	public void setFilter(IFilter filter) {
-		lg.debug("GraphPanel: setFilter " + filter);
+		logger.debug("filter " + filter);
 		if(filter != null){
 			if(getMaxDataLength()>filter.getMaxDataLength()){
 				if(JOptionPane.showConfirmDialog(TraceView.getFrame(), "Too long data, processing could take time. Do you want to continue?", "Warning", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
@@ -1140,7 +1137,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				select = true;
 				drawAreaPanel.removeAll();
 				for (ChannelView cv: selected) {
-					List<PlotDataProvider> toProcess = new ArrayList<PlotDataProvider>();
+					//List<PlotDataProvider> toProcess = new ArrayList<PlotDataProvider>();
 					for (PlotDataProvider channel: cv.getPlotDataProviders()) {
 						ChannelView sel_cv = channelViewFactory.getChannelView(channel);
 						sel_cv.setGraphPanel(this);
@@ -1225,9 +1222,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			
 		paintNow = true;
 		int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
-		//lg.debug("Repainting graph panel");
+		logger.debug("Repainting graph panel");
 		if (!mouseRepaint || forceRepaint || ChannelView.tooltipVisible) {
-			//lg.debug("GraphPanel: force repaint");
+			logger.debug("GraphPanel: force repaint");
 			//RepaintManager rm = RepaintManager.currentManager(this);
 			//rm.markCompletelyDirty(this);
 			for (Component component: drawAreaPanel.getComponents()) {
@@ -1235,7 +1232,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				
 				if (view.getHeight() == 0 || view.getWidth() == 0) {
 					// Ugly hack to avoid lack of screen redraw sometimes
-					//lg.debug("DrawAreaPanel: rebuilding corrupted layout");
+					logger.debug("DrawAreaPanel: rebuilding corrupted layout");
 					drawAreaPanel.doLayout();
 					for (Component comp: drawAreaPanel.getComponents()) {
 						comp.doLayout();
@@ -1250,7 +1247,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
 				// Drawing cursor
 				// g.setXORMode(selectionColor); Hack for java 6
-				//lg.debug("Force drawing cursor: " + mouseX + ", " + mouseY + ", color " + selectionColor);
+				logger.debug("Force drawing cursor: " + mouseX + ", " + mouseY + ", color " + selectionColor);
 				g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
 				g.drawLine(mouseX, 0, mouseX, getHeight());
 				previousMouseX = mouseX;
@@ -1265,18 +1262,18 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			forceRepaint = false;
 		} else {
 			g.setXORMode(selectionColor);
-			//lg.debug("Repainting cursor, color " + selectionColor);
+			logger.debug("Repainting cursor, color " + selectionColor);
 			if (previousMouseX >= 0 && previousMouseY >= 0) {
 				// Erasing cursor
 				if (showBigCursor) {
-					//lg.debug("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
+					logger.debug("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
 					g.drawLine(infoPanelWidth, previousMouseY, getWidth(), previousMouseY);
 					g.drawLine(previousMouseX, 0, previousMouseX, getHeight());
 				}
 				previousMouseX = -1;
 				previousMouseY = -1;
 			}
-			//lg.debug("Erasing selection area");
+			logger.debug("Erasing selection area");
 			paintSelection(g, previousSelectedAreaXbegin, previousSelectedAreaXend, previousSelectedAreaYbegin, previousSelectedAreaYend, "Erasing");
 			previousSelectedAreaXbegin = Long.MAX_VALUE;
 			previousSelectedAreaXend = Long.MIN_VALUE;
@@ -1285,14 +1282,14 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight()) {
 				// Drawing cursor
 				if (showBigCursor) {
-					//lg.debug("Drawing cursor: " + mouseX + ", " + mouseY);
+					logger.debug("Drawing cursor: " + mouseX + ", " + mouseY);
 					g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
 					g.drawLine(mouseX, 0, mouseX, getHeight());
 				}
 				previousMouseX = mouseX;
 				previousMouseY = mouseY;
 			}
-			//lg.debug("Drawing selection area");
+			logger.debug("Drawing selection area");
 			paintSelection(g, selectedAreaXbegin, selectedAreaXend, selectedAreaYbegin, selectedAreaYend, "Drawing");
 			previousSelectedAreaXbegin = selectedAreaXbegin;
 			previousSelectedAreaXend = selectedAreaXend;
@@ -1309,8 +1306,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	private void paintSelection(Graphics g, long Xbegin, long Xend, double Ybegin, double Yend, String message) {
 		int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
 		if (Xbegin != Long.MAX_VALUE && Xend != Long.MIN_VALUE && mouseSelectionEnabled) {
-			// lg.debug(message + " selection X: " + getXposition(Xbegin) + ", " +
-			// getXposition(Xend));
+			logger.debug(message + " selection X: " + getXposition(Xbegin) + ", " + getXposition(Xend));
 			if (Xend > Xbegin) {
 				int begPos = getXposition(Xbegin);
 				int leftPos = begPos >= 0 ? begPos + infoPanelWidth + getInsets().left : infoPanelWidth + getInsets().left;
@@ -1562,6 +1558,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		 *            date format to use in axis
 		 * @see TimeInterval
 		 */
+		@SuppressWarnings("unused")	
 		private void setDateFormat(SimpleDateFormat df) {
 			if (!axis.getDateFormatOverride().equals(df)) {
 				axis.setDateFormatOverride(df);
@@ -1578,11 +1575,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
             final long THREE_DAYS = 3L*86400000;
             final long FOUR_DAYS  = 4L*86400000;
             final long ONE_WEEK   = 7L*86400000;
-            final long TWO_WEEKS  = 14L*86400000;
-            final long FOUR_WEEKS = 28L*86400000;
-            final long EIGHT_WEEKS= 56L*86400000;
+            //final long TWO_WEEKS  = 14L*86400000;
+            //final long FOUR_WEEKS = 28L*86400000;
+            //final long EIGHT_WEEKS= 56L*86400000;
 
-			lg.debug("AxisPanel setTimeRange: " + ti);
+			logger.debug("time range: " + ti);
 			boolean needwait = false;
 			if (axis.getMinimumDate().getTime() == 0 && axis.getMaximumDate().getTime() == 1) {
 				needwait = true;
@@ -1608,6 +1605,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					Thread.sleep(60);
 				} catch (InterruptedException e) {
 					// do nothing
+					logger.error("InterruptedException:", e);	
 				}
 			}
 
@@ -1691,7 +1689,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			super.paintComponent(g);
 			int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
 			if (axis.getMinimumDate().getTime() != 0 && axis.getMaximumDate().getTime() != 1) {
-				//lg.debug("min date " + axis.getMinimumDate() + ", max date " + axis.getMaximumDate());
+				logger.debug("min date " + axis.getMinimumDate() + ", max date " + axis.getMaximumDate());
 
 				//axis.draw((Graphics2D) g, 0, new Rectangle(infoPanelWidth + getInsets().left, 0, getWidth(), getHeight()), new Rectangle(
 						//infoPanelWidth + getInsets().left, 0, getWidth(), 10), RectangleEdge.BOTTOM, null);
@@ -1739,7 +1737,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 
 		public void update(TimeInterval ti) {
-			lg.debug("InfoPanel updating, ti = " + ti);
+			logger.debug("updating, ti = " + ti);
 			if (ti != null) {
 				start.setText(TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL));
 				duration.setText(ti.convert());
@@ -1804,13 +1802,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 
 		public void paint(Graphics g) {
-			lg.debug("DrawAreaPanel paint() Height: " + getHeight() + ", width: " + getWidth() + ", " + getComponents().length + " ChannelViews");
+			logger.debug("paint() Height: " + getHeight() + ", width: " + getWidth() + ", " + getComponents().length + " ChannelViews");
 			super.paint(g);
 		}
 	}
 
 	public void update(Observable observable, Object obj) {
-		lg.debug(this + ": update request from " + observable);
+		logger.debug(this + ": update request from " + observable);
 		if (obj instanceof IScaleModeState) {
 			setScaleMode((IScaleModeState) obj);
 		} else if (obj instanceof IColorModeState) {
