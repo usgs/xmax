@@ -69,11 +69,13 @@
     <!-- CLEAN_BUILD -->
     <target name="clean_build" description="Delete build/ dir">
         <delete dir="${build.root}" verbose="false"/>
+   	<delete dir="${logs.dir}" verbose="false"/> 
     </target>
 
     <!-- INIT -->
     <target name="init" depends="clean_build" description="Mkdir build/ [depends=clean_build]">
         <mkdir dir="${build.root}"/>
+   	<mkdir dir="${logs.dir}"/> 
     </target>
     
     <!-- RUN -->
@@ -127,6 +129,11 @@
 	        <include name="META-INF/**"/>
 	    </fileset>
 	</copy>
+   	<copy todir="${build.root}/com/isti/traceview/gui">
+	    <fileset dir="${src.dir}/com/isti/traceview/gui">
+	        <include name="defaultMarkPosition.gif"/>
+	    </fileset>
+   	</copy> 
     </target>
 
     <!-- BUILD-PLUGINS -->

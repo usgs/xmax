@@ -659,7 +659,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 		while (n < len) {
 			int count = this.read(b, off + n, len - n);
 			if (count < 0) {
-				throw new EOFException();
+				String message = "REACHED MSEED EOF!!!";	
+				throw new EOFException(message);
 			}
 			n += count;
 		}

@@ -188,7 +188,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 						}
 					} catch (NumberFormatException e) {
 						logger.error("Can't parse earthquake, line " 
-								+ (r.getLineNumber() - rawData.length) + ": ", );
+								+ (r.getLineNumber() - rawData.length) + ": ", e);
 					} catch (ParseException e) {
 						logger.error("Can't parse earthquake, line " 
 								+ (r.getLineNumber() - rawData.length) + ": ", e);

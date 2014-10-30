@@ -153,7 +153,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 					logger.error("File " + getFile().getCanonicalPath() + " has null length");
 				}
 			} catch (EOFException ex) {
-				logger.error("EOFException:", ex);	
+				logger.debug("EOFException: " + ex.getMessage());	
 				if (!skipChannel) {
 					addSegment(currentChannel, null, 0, sampleRate, currentChannel.getSegmentCount());
 				}
