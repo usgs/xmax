@@ -276,9 +276,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		this.add(getSouthPanel(showTimePanel), BorderLayout.SOUTH);
 
 		/** ----------------- MTH ---------------- **/
-		//  file defaultMarkPosition.gif will NOT be found this way as java will
-		//  look for build/com/isti/traceview/gui/defaultMarkPosition.gif and will NOT find the
-		//  resource, but at least it won't crash
+		//  defaultMarkPosition.gif is now found with a change to build.xml 
 		URL url = null;
 		try {
 			URL baseUrl = GraphPanel.class.getResource(".");
@@ -288,11 +286,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				url = GraphPanel.class.getResource("defaultMarkPosition.gif");
 			}
 			//System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
-			logger.info(String.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath()));	
+			logger.info(String.format("== MTH: file=%s\n", url.getFile()));	
 			markPositionImage = javax.imageio.ImageIO.read(url);
 			//} catch (MalformedURLException e) {
 		} catch (Exception e) {
-	     // Do something appropriate
+	     		// Do something appropriate
 			logger.error("Exception:", e);	
 		}
 

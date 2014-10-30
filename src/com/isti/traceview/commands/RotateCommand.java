@@ -3,6 +3,7 @@ package com.isti.traceview.commands;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.AbstractUndoableCommand;
+import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.processing.Rotation;
 
@@ -35,7 +36,7 @@ public class RotateCommand extends AbstractUndoableCommand {
 		graphPanel.setRotation(rotation);
 	}
 
-	public void undo() {
+	public void undo() throws UndoException{
 		super.undo();
 		graphPanel.setRotation(previous);
 	}

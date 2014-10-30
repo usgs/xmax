@@ -457,6 +457,7 @@ public class XMAX extends TraceView {
 		apd.setMaxFileSize("1000KB");
 		apd.setMaxBackupIndex(10);
 		apd.setLayout(new PatternLayout("%d %5p %m%n"));
+		apd.setAppend(false);	
 		apd.activateOptions();
 		Logger.getRootLogger().addAppender(apd);
 		Runtime.getRuntime().addShutdownHook(new ClearLogShutDownHook());
