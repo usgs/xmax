@@ -97,6 +97,7 @@ public class DataModule extends Observable {
 	 */
 	public void loadData() throws TraceViewException {
         logger.debug("== Enter\n");
+        List<ISource> datafiles = new ArrayList<ISource>();
      // -t: Read serialized PlotDataProviders from TEMP_DATA
 		if (TraceView.getConfiguration().getUseTempData()) {
             logger.debug("-t: Read from temp storage\n");
@@ -125,13 +126,19 @@ public class DataModule extends Observable {
      //     traces (=Segments) won't be read in until just before they are displayed on the screen. 
 		if (TraceView.getConfiguration().getUseDataPath()) {
             logger.debug("-d: Read from data path --> addDataSources()\n");
-		    addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
+            
+            // IMPLEMENT ExecutorService with multiple threads (i.e. 8)
+            datafiles = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
+		    addDataSources(datafiles);
             logger.debug("-d: Read from data path DONE\n\n");
         }
 		else {
             if (!TraceView.getConfiguration().getUseTempData()) {
             	logger.debug("-d + -t are both false: Read from data path --> addDataSources()\n");
-            	addDataSources(SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath()));
+            	
+            	// IMPLEMENT ExecutorService with multiple threads (i.e. 8)
+            	datafiles = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
+            	addDataSources(datafiles);
             	logger.debug("-d + -t: Read from data path DONE\n\n");
             }
         }
@@ -187,7 +194,7 @@ public class DataModule extends Observable {
                 if (!dir.isDirectory()) {
                     //System.out.format("== DataModule.dumpData(): ERROR: dataTempPath=[%s] is NOT a directory!\n", dataTempPath);
                    	logger.error(String.format("== dataTempPath=[%s] is NOT a directory!\n", dataTempPath)); 
-		    System.exit(1);
+                   	System.exit(1);
                 }
                 //System.out.format("== DataModule.dumpData(): dataTempPath=[%s] exists\n", dataTempPath);
             }
@@ -196,7 +203,7 @@ public class DataModule extends Observable {
                 if (!success) {
                     //System.out.format("== DataModule.dumpData(): ERROR: unable to create directory dataTempPath=[%s]\n", dataTempPath);
                    	logger.error(String.format("unable to create directory dataTempPath=[%s]\n", dataTempPath)); 
-		    System.exit(1);
+                   	System.exit(1);
                 }
                 //System.out.format("== DataModule.dumpData(): successfully created dir dataTempPath=[%s]\n", dataTempPath);
             }

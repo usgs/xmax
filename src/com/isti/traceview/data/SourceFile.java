@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -103,19 +104,29 @@ public abstract class SourceFile implements ISource {
 	 *            wildcarded path to search
 	 */
 	public static List<ISource> getDataFiles(String wildcardedMask) throws TraceViewException {
-		logger.debug("Loading data using path: " + wildcardedMask);
+		logger.info("Loading data using path: " + wildcardedMask);
+		List<ISource> dataFiles = new ArrayList<ISource>();
 		List<File> listFiles = new Wildcard().getFilesByMask(wildcardedMask);
 		Iterator<File> it = listFiles.iterator();
+		long start = 0;
+		long elapsed = 0;
+		long elapsedSeconds = 0;
 		while (it.hasNext()) {
 			File file = it.next();
-            		System.out.format("         Found file:%s\n", file.toString());
-            		logger.debug("== getDataFiles: file=" + file.toString());
+            System.out.format("         Found file:%s\n", file.toString());
+            logger.debug("== getDataFiles: file=" + file.toString());
 			if (file.getName().matches(".*\\.log(\\.\\d{1,2}){0,1}$")) {
 				logger.warn("Excluding file " + file.getName() + " from loading list");
 				it.remove();
 			}
 		}
-		return getDataFiles(listFiles);
+		start = System.nanoTime();
+		dataFiles = getDataFiles(listFiles);
+		elapsed = System.nanoTime() - start;
+		System.out.println("elapsed: " + elapsed + "ns\n");
+		elapsedSeconds = TimeUnit.SECONDS.convert(elapsed, TimeUnit.NANOSECONDS);
+		System.out.println("elapsed: " + elapsedSeconds + "s\n");
+		return dataFiles;
 	}
 
 	/**
@@ -221,67 +232,47 @@ public abstract class SourceFile implements ISource {
 				dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
 				long blockNumber = 0;
  
-			            while (blockNumber < 5) {
-			                SeedRecord sr = SeedRecord.read(dis, 4096);
-			                if (sr instanceof DataRecord) {
-			                    //DataRecord dr = (DataRecord)sr;
-			                } else {
-			                    //control record, skip...
-			                }
-			                blockNumber++;
-			            }
-
-   			 	
-				/*
-				while (blockNumber < 5) {
-					long currentOffset = dis.getFilePointer();
-					try {
-						ch = rf.getNextRecord().getControlHeader();
-						blockNumber++;
-					} catch (MissingBlockette1000 e) {
-						lg.warn("Missing Blockette1000, trying with record size of 4096");
-						dis.seek(currentOffset);
-						ch = rf.getNextRecord(4096).getControlHeader();
-						blockNumber++;
-					} catch (SeedFormatException e) {
-						if(e.getMessage().equals("Found a control header in a miniseed file")){
-							lg.debug("isMSEED: found control header in miniseed file");
-						} else {
-							lg.debug("isMSEED: " + e.getMessage());
-							return false;
-						}	
-				    }
-				}
-				*/	
+			    while (blockNumber < 5) {
+			    	SeedRecord sr = SeedRecord.read(dis, 4096);
+			        if (sr instanceof DataRecord) {
+			        	//DataRecord dr = (DataRecord)sr;
+			        } else {
+			            //control record, skip...
+			        }
+			        blockNumber++;
+			    }
 			} catch (EOFException ex) {
 				//System.out.format("==     [file:%s] Caught EOFException:%s\n", file.getName(), ex.toString());
 				StringBuilder message = new StringBuilder();
-				message.append(String.format("==     [file:%s] Caught EOFException:\n", file.getName()));
-				logger.error(message.toString(), ex);	
+				message.append(String.format("== CheckData: [file:%s] Caught EOFException:\n", file.getName()));
+				logger.debug(message.toString(), ex);	
 				return true;
 			} catch (FileNotFoundException e) {
-				logger.error("FileNotFoundException:", e);	
+				StringBuilder message = new StringBuilder();
+				message.append(String.format("== CheckData: [file:%s] FileNotFoundException:\n", file.getName()));
+				logger.debug(message.toString(), e);
 				return false;
 			} catch (IOException e) {
-				logger.error("IOException:", e);	
+				StringBuilder message = new StringBuilder();
+				message.append(String.format("== CheckData: [file:%s] IOException:\n", file.getName()));
+				logger.debug(message.toString(), e);
 				return false;
 			} catch (SeedFormatException e) {
 				//System.out.format("==     [file:%s] Caught SeedFormatException:%s\n", file.getName(), e.toString());
 				StringBuilder message = new StringBuilder();
-				message.append(String.format("==     [file:%s] Caught SeedFormatException:\n", file.getName()));
-				logger.error(message.toString(), e);
+				message.append(String.format("== CheckData: [file:%s] Caught SeedFormatException:\n", file.getName()));
+				logger.debug(message.toString(), e);
 				return false;
             } catch (RuntimeException e) {
-	    	//System.out.format("==     [file:%s] Caught RuntimeException:%s\n", file.getName(), e.toString());
                	StringBuilder message = new StringBuilder();
-		message.append(String.format("==     [file:%s] Caught RuntimeException:\n", file.getName()));
-		logger.error(message.toString(), e);
-		return false;
+               	message.append(String.format("== CheckData: [file:%s] Caught RuntimeException:\n", file.getName()));
+               	logger.debug(message.toString(), e);
+               	return false;
 			} finally {
 				try {
 					dis.close();
 				} catch (IOException e) {
-					logger.error("IOException:", e);	
+					logger.debug("IOException:", e);	
 				}
 			}
 		} else {
@@ -306,13 +297,15 @@ public abstract class SourceFile implements ISource {
 			ras.seek(316);
 			ras.read(buffer, 0, 4);
 		} catch (Exception e) {
-			logger.error("Exception:", e);	
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
+			logger.debug(message.toString(), e);
 			return false;
 		} finally {
 			try {
 				ras.close();
 			} catch (IOException e) {
-				logger.error("IOException:", e);	
+				logger.debug("IOException:", e);	
 			}
 		}
 		ByteBuffer bb = ByteBuffer.wrap(buffer);
@@ -339,7 +332,9 @@ public abstract class SourceFile implements ISource {
 		try {
 			ts.readHeader(file.getCanonicalPath());
 		} catch (Exception e) {
-			logger.error("Exception:", e);	
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
+			logger.debug(message.toString(), e);
 			return false;
 		}
 		return true;
@@ -359,16 +354,25 @@ public abstract class SourceFile implements ISource {
 			SegdRecord rec = new SegdRecord(file); 
 			rec.readHeader1(new DataInputStream(inputStream));
 		} catch (IOException e) {
-			logger.error("IOException:", e);	
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("== CheckData: [file:%s] IOException:\n", file.getName()));
+			logger.debug(message.toString(), e);
 			return false;
 		} catch (SegdException e) {
-			logger.error("SegdException:", e);
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("== CheckData: [file:%s] SegdException:\n", file.getName()));
+			logger.debug(message.toString(), e);
+			return false;
+		} catch (Exception e) {
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
+			logger.debug(message.toString(), e);
 			return false;
 		} finally {
 			try{
 				inputStream.close();
-			} catch (Exception ex){
-				logger.error("Exception:", ex);	
+			} catch (IOException ex){
+				logger.debug("IOException:", ex);	
 			}
 		}
 		return true;
@@ -392,14 +396,16 @@ public abstract class SourceFile implements ISource {
 			// read record, build objects, and optionally store the objects in a container
 			importDirector.read(false);
 		} catch (Exception e) {
-			logger.error("Exception:", e);	
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
+			logger.debug(message.toString(), e);
 			return false;
 		} finally {
 			try{
 				importDirector.close();
 				fileInputStream.close();
-			} catch (Exception ex){
-				logger.error("Exception:", ex);	
+			} catch (IOException ex){
+				logger.debug("IOException:", ex);	
 			}
 		}
 		return true;
@@ -425,13 +431,15 @@ public abstract class SourceFile implements ISource {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception:", e);	
+			StringBuilder message = new StringBuilder();
+			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
+			logger.debug(message.toString(), e);
 			return false;
 		} finally {
 			try{
 				input.close();
-			} catch (Exception ex){
-				logger.error("Exception:", ex);	
+			} catch (IOException ex){
+				logger.debug("IOException:", ex);	
 			}
 		}
 		return false;
