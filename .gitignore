@@ -4,3 +4,4 @@ build/
 logs/
 *.class
 **/**/classes
+src/META-INF/MANIFEST.MF
