@@ -10,5 +10,4 @@ public class DefaultChannelFactory implements IChannelFactory {
 	public PlotDataProvider getChannel(String channelName, Station station, String networkName, String locationName) {
 		return new PlotDataProvider(channelName, station, networkName, locationName);
 	}
-
 }

@@ -15,10 +15,19 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+
+import java.util.concurrent.Future;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ExecutionException;
+import org.apache.commons.collections.ListUtils;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
@@ -98,6 +107,106 @@ public abstract class SourceFile implements ISource {
 	}
 
 	/**
+	 * Class for storing number and remainder of thread chunks
+	 */
+	private static class Chunk {
+		int maxIterations;	// max number of iterations per thread
+		int remIterations;	// rem number of iterations for last thread
+	}
+
+	/**
+	 * Calculates thread count for getDataFiles() pool
+	 */
+	private static int calculateThreadCount() {
+		int numProc = Runtime.getRuntime().availableProcessors();
+		int threadCount = 0;
+		if (numProc % 2 == 0) 
+			threadCount = numProc / 2;
+		else
+			threadCount = (numProc + 1) / 2;
+		return threadCount;
+	}
+
+	/**
+	 * Calculates max and remainder iterations per chunk
+	 */
+	private static Chunk calculateChunks(int numThreads, int listLength) {
+		int remIter = 0;
+		int maxIter = 0;
+		remIter = listLength % numThreads;		// last iterations
+		maxIter = (listLength - remIter) / numThreads;	// max iterations
+
+		Chunk chunkIter = new Chunk();
+		chunkIter.maxIterations = maxIter;
+		chunkIter.remIterations = remIter;
+		return chunkIter;
+	}
+
+	/**
+	 * Shutdown and executor and lingering tasks (if necessary)
+	 */
+	private static void shutdownAndAwaitTermination(ExecutorService pool) {
+		pool.shutdown();
+		try {
+			// Wait awhile for existing tasks to terminate
+			if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+				pool.shutdownNow();	// cancel current executing tasks
+				// Wait awhile for tasks to respond to cancel
+				if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+					logger.error("Pool did not terminate!! SHUTTING DOWN!!");
+			}
+		} catch (InterruptedException e) {
+			pool.shutdownNow();
+		}
+	}
+
+	/**
+	 * Class to run Future task (checks data file types)
+	 *
+	 * @param inputFiles 
+	 * 	     partial input files (split from main files list)	
+	 *
+	 */
+	private static class DataTask implements Callable<List<ISource>> {
+		private List<File> inputFiles; 
+		private int filelen;
+
+		// Sets start/end indices for loop
+		private DataTask(List<File> inputFiles) { // Construct
+			this.inputFiles = inputFiles;	
+			this.filelen = inputFiles.size();	
+		}
+
+		public List<ISource> call() throws Exception { // Callable
+			List<ISource> dataFiles = new ArrayList<ISource>(filelen);
+			for (File file: inputFiles) {
+				if (isIMS(file)) {
+					dataFiles.add(new SourceFileIMS(file));
+					logger.debug("IMS data file added: " + file.getAbsolutePath());
+				} else if (isMSEED(file)) {
+					dataFiles.add(new SourceFileMseed(file));
+					logger.debug("MSEED data file added: " + file.getAbsolutePath());
+				} else if (isSAC(file)) {
+					dataFiles.add(new SourceFileSAC(file));
+					logger.debug("SAC data file added: " + file.getAbsolutePath());
+				} else if (isSEGY(file)) {
+					dataFiles.add(new SourceFileSEGY(file));
+					logger.debug("SEGY data file added: " + file.getAbsolutePath());
+				} else if (isSEGD(file)) {
+					dataFiles.add(new SourceFileSEGD(file));
+					logger.debug("SEGD data file added: " + file.getAbsolutePath());
+				} else if (isSEED(file)) {
+					dataFiles.add(new SourceFileSEGD(file));
+					logger.debug("SEED data file added: " + file.getAbsolutePath());
+				} else {
+					logger.warn("Unknown file format: " + file.getName());
+				}
+			}
+			return dataFiles;
+		}
+	}
+
+	/**
 	 * Searches for files according wildcarded path
 	 * 
 	 * @param wildcardedMask
@@ -108,24 +217,23 @@ public abstract class SourceFile implements ISource {
 		List<ISource> dataFiles = new ArrayList<ISource>();
 		List<File> listFiles = new Wildcard().getFilesByMask(wildcardedMask);
 		Iterator<File> it = listFiles.iterator();
-		long start = 0;
-		long elapsed = 0;
-		long elapsedSeconds = 0;
+		int listlen = listFiles.size();	
+		//long start = 0;
+		//long elapsed = 0;
+		//start = System.nanoTime();
 		while (it.hasNext()) {
 			File file = it.next();
-            System.out.format("         Found file:%s\n", file.toString());
-            logger.debug("== getDataFiles: file=" + file.toString());
+            		System.out.format("         Found file:%s\n", file.toString());
+            		logger.debug("== getDataFiles: file=" + file.toString());
 			if (file.getName().matches(".*\\.log(\\.\\d{1,2}){0,1}$")) {
 				logger.warn("Excluding file " + file.getName() + " from loading list");
 				it.remove();
 			}
 		}
-		start = System.nanoTime();
+		//elapsed = System.nanoTime() - start;
+		//System.out.println("ListFiles length: " + listlen);	
+		//System.out.println("Read data files elapsed: " + elapsed + "ns\n");
 		dataFiles = getDataFiles(listFiles);
-		elapsed = System.nanoTime() - start;
-		System.out.println("elapsed: " + elapsed + "ns\n");
-		elapsedSeconds = TimeUnit.SECONDS.convert(elapsed, TimeUnit.NANOSECONDS);
-		System.out.println("elapsed: " + elapsedSeconds + "s\n");
 		return dataFiles;
 	}
 
@@ -138,31 +246,106 @@ public abstract class SourceFile implements ISource {
 	 * @throws TraceViewException
 	 */
 	public static List<ISource> getDataFiles(List<File> files) throws TraceViewException {
-		List<ISource> lst = new ArrayList<ISource>();
-		for (File file: files) {
-			if (isIMS(file)) {
-				lst.add(new SourceFileIMS(file));
-				logger.debug("IMS data file added: " + file.getAbsolutePath());
-			} else if (isMSEED(file)) {
-				lst.add(new SourceFileMseed(file));
-				logger.debug("MSEED data file added: " + file.getAbsolutePath());
-			} else if (isSAC(file)) {
-				lst.add(new SourceFileSAC(file));
-				logger.debug("SAC data file added: " + file.getAbsolutePath());
-			} else if (isSEGY(file)) {
-				lst.add(new SourceFileSEGY(file));
-				logger.debug("SEGY data file added: " + file.getAbsolutePath());
-			} else if (isSEGD(file)) {
-				lst.add(new SourceFileSEGD(file));
-				logger.debug("SEGD data file added: " + file.getAbsolutePath());
-			} else if (isSEED(file)) {
-				lst.add(new SourceFileSeed(file));
-				logger.debug("SEED data file added: " + file.getAbsolutePath());
-			}else {
-				logger.warn("Unknown file format: " + file.getName());
+		// Initialize variables
+		List<ISource> dataFilesLst = new ArrayList<ISource>();	// datafiles list
+		int timeout = 120;		// timeout for getting Futures	
+		int threadCount = 0;		// num threads to use
+		int chunks = 0;			// num of iteration chunks
+		int maxCount = 0;		// max iterations per thread
+		int remCount = 0;		// remainder iterations for last thread
+		int filelen = files.size();	// used for calculating num of chunks
+		
+		// Initialize thread count, executor and thread chunks
+		threadCount = calculateThreadCount();
+		Chunk chunkStats = calculateChunks(threadCount, filelen);
+		maxCount = chunkStats.maxIterations;	// max count for threads
+		remCount = chunkStats.remIterations;	// remainder count for last thread
+		//System.out.println("List length = " + filelen);
+		//System.out.println("Thread count = " + threadCount);	
+		//System.out.println("Max iterations per thread = " + maxCount);
+		//System.out.println("Remainder iterations for last thread = " + remCount);
+
+		// Split iterations into thread chunks
+		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+		if (remCount != 0)
+			chunks = threadCount + 1;
+		else
+			chunks = threadCount;
+		//System.out.println("Number of thread chunks = " + chunks + "\n");
+
+		// Set tasks for execution
+		DataTask task = null;
+		DataTask[] tasks = new DataTask[chunks];	// data type tasks
+		List<File> taskFiles = null;	// split 'files' for threading tasks	
+		int start = 0;	// start/end for thread chunks
+		int end = 0;
+		int lastChunk = 0;	
+		for (int i = 0; i < chunks; i++) {
+			taskFiles = new ArrayList<File>(); // initialize for each block
+			if (i < (chunks-1)) { // initial blocks (size = maxCount)
+				start = maxCount * i;
+				end = start + maxCount;
+				taskFiles = files.subList(start, end); // get sub files
+				//System.out.println("start: " + start + "\tend: " + end);
+				task = new DataTask(taskFiles);
+				tasks[i] = task;
+			} else if (i == (chunks-1)) { // last block
+				lastChunk = i;
+				if (lastChunk == threadCount) {	// last block size = remCount
+					start = maxCount * i;
+					end = start + remCount;
+					taskFiles = files.subList(start, end);	// get sub files
+					//System.out.println("start: " + start + "\tend: " + end + " (LastBlock)");
+					task = new DataTask(taskFiles);
+					tasks[i] = task;
+				} else { // last block size = maxCount
+					start = maxCount * i;
+					end = start + maxCount;
+					taskFiles = files.subList(start, end);	// get sub files
+					//System.out.println("start: " + start + "\tend: " + end + " (LastBlock)");
+					task = new DataTask(taskFiles);
+					tasks[i] = task;
+				}
 			}
 		}
-		return lst;
+	
+		// Create list of Future<List<ISource>>
+		try {	
+			// Invoke all datafiles tasks	
+			//long startTime = System.nanoTime();
+			//System.out.println("\nExecuting getDataFiles.invokeAll()...");
+			List<Future<List<ISource>>> dataFilesList = executor.invokeAll(Arrays.asList(tasks));
+	
+			// Loop through dataFileList and get futures
+			for (Future<List<ISource>> future: dataFilesList) {
+				try {	
+					dataFilesLst.addAll(future.get(timeout, TimeUnit.SECONDS));	
+				} catch (TimeoutException e) {
+					logger.error("Future TimeoutException:", e);
+					future.cancel(true);
+					executor.shutdownNow();	
+				} catch (ExecutionException e) {
+					logger.error("Future ExecutionException:", e);
+					future.cancel(true);
+					executor.shutdownNow();
+				} catch (InterruptedException e) {
+					logger.error("Future InterruptedException:", e);
+					future.cancel(true);
+					executor.shutdownNow();
+				}
+			}
+			//long endTime = System.nanoTime() - startTime;
+			//System.out.println("Execution time (invokeAll()) = " + endTime + " ns");
+			//System.out.println("DataFiles length = " + dataFilesLst.size() + "\n");
+		} catch (InterruptedException e) {
+			logger.error("Executor InterruptedException:", e);
+			executor.shutdownNow();
+		}
+		// Shutdown executor and cancel lingering tasks	
+		shutdownAndAwaitTermination(executor);	
+		
+		// Loop through List<ISources> (check datafiles)	
+		return dataFilesLst;
 	}
 
 	/**
@@ -214,8 +397,6 @@ public abstract class SourceFile implements ISource {
 		return ext;
 	}
 
-	
-	
 	/**
 	 * Tests if file is mseed file
 	 * 
