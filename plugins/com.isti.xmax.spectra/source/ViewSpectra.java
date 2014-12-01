@@ -23,8 +23,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogarithmicAxis;
@@ -53,7 +51,7 @@ import com.isti.xmax.XMAX;
 public class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(ViewSpectra.class);
+	//private static final Logger logger = Logger.getLogger(ViewSpectra.class);
 	
 	//private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
 	private JOptionPane optionPane;

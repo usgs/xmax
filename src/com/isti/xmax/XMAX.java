@@ -63,18 +63,19 @@ public class XMAX extends TraceView {
 		try {
 			boolean dump = false;
 			System.out.println("  XMAX ver." + getVersionMessage() );
-            System.out.println("===============");
+            
+	    	System.out.println("===============");
             if (cmd.getOptions().length == 0) {
-                System.out.println("[ Quick Examples ]");
+            	System.out.println("[ Quick Examples ]");
             	System.out.println("* Read from -d 'data/path':");
-            	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/home/agonzales/Documents/xmax/seed/IU_PTGA/2014_1{93,94}/00_LHZ*seed'");
+            	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_PTGA/2014_1{93,94}/00_LHZ*seed'");
                 System.out.println("* Read from BOTH -d 'data/path' AND existing serialized data in DATA_TEMP:");
-                System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
-                System.out.println("* Overwrite Serialized data in DATA_TEMP:");
-                System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
-                System.out.println("* Append to Serialized data in DATA_TEMP:");
-                System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
-                System.out.println();
+               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+               	System.out.println("* Overwrite Serialized data in DATA_TEMP:");
+               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+               	System.out.println("* Append to Serialized data in DATA_TEMP:");
+               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+               	System.out.println();
             }
 			if (cmd.hasOption("h")) {
 				if (cmd.getOptions().length > 1) {
@@ -166,7 +167,6 @@ public class XMAX extends TraceView {
 				if (cmd.hasOption("L")) {
 					getConfiguration().setDefaultBlockLength(new Integer(cmd.getOptionValue("L").trim()));
 				}
-
 				if (dump) {
 					// -T option in command line, make dump
 					setConfiguration(XMAXconfiguration.getInstance());
