@@ -18,7 +18,6 @@ import com.isti.traceview.data.ims.IMSFormatException;
 import com.isti.traceview.data.ims.STA2;
 import com.isti.traceview.data.ims.WID2;
 
-import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import gov.usgs.anss.cd11.CanadaException;
 
 public class SourceFileIMS extends SourceFile {
