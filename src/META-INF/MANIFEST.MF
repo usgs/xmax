@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Ant-Version: Apache Ant 1.7.1
 Created-By: 24.51-b03 (Oracle Corporation)
 Built-By: agonzales
-Built-Date: November 14 2014
+Built-Date: December 1 2014
 Implementation-Version: 1.0
 Implementation-Vendor: "Instrumental Software Technologies"
 Main-Class: com.isti.xmax.XMAX
