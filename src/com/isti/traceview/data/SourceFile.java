@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ExecutionException;
-import org.apache.commons.collections.ListUtils;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
@@ -110,8 +109,9 @@ public abstract class SourceFile implements ISource {
 	 * Class for storing number and remainder of thread chunks
 	 */
 	private static class Chunk {
-		int maxIterations;	// max number of iterations per thread
-		int remIterations;	// rem number of iterations for last thread
+		int maxIterations;		// max number of iterations per thread
+		int remIterations;		// rem number of iterations for last thread
+		int activeThreadCount;	// number of active threads
 	}
 
 	/**
@@ -128,17 +128,34 @@ public abstract class SourceFile implements ISource {
 	}
 
 	/**
-	 * Calculates max and remainder iterations per chunk
+	 * Calculates max and remainder iterations per chunk and active threads
 	 */
 	private static Chunk calculateChunks(int numThreads, int listLength) {
 		int remIter = 0;
 		int maxIter = 0;
-		remIter = listLength % numThreads;		// last iterations
-		maxIter = (listLength - remIter) / numThreads;	// max iterations
+		int maxtmp = 0;
+		int activeThreads = 0;
+		
+		if ((listLength % numThreads) == listLength) {	// => listLength < numThreads
+			remIter = 0;
+			maxIter = listLength;	// max iterations for 1 thread
+			activeThreads = 1;
+		} else {	// => listLength >= numThreads
+			remIter = listLength % numThreads;
+			maxtmp = (listLength - remIter) / numThreads;
+			if (maxtmp < numThreads) {	// max multiplier < number of threads
+				activeThreads = maxtmp;	// set number of active threads = multiplier
+				maxIter = numThreads;	// set max iterations = number of threads
+			} else {	// max multiplier >= number of threads
+				activeThreads = numThreads;	// set number of active threads = number of threads
+				maxIter = maxtmp;			// set max iterations = multiplier
+			}
+		}
 
 		Chunk chunkIter = new Chunk();
 		chunkIter.maxIterations = maxIter;
 		chunkIter.remIterations = remIter;
+		chunkIter.activeThreadCount = activeThreads;
 		return chunkIter;
 	}
 
@@ -217,7 +234,7 @@ public abstract class SourceFile implements ISource {
 		List<ISource> dataFiles = new ArrayList<ISource>();
 		List<File> listFiles = new Wildcard().getFilesByMask(wildcardedMask);
 		Iterator<File> it = listFiles.iterator();
-		int listlen = listFiles.size();	
+		//int listlen = listFiles.size();	
 		//long start = 0;
 		//long elapsed = 0;
 		//start = System.nanoTime();
@@ -247,30 +264,32 @@ public abstract class SourceFile implements ISource {
 	 */
 	public static List<ISource> getDataFiles(List<File> files) throws TraceViewException {
 		// Initialize variables
-		List<ISource> dataFilesLst = new ArrayList<ISource>();	// datafiles list
-		int timeout = 120;		// timeout for getting Futures	
-		int threadCount = 0;		// num threads to use
-		int chunks = 0;			// num of iteration chunks
-		int maxCount = 0;		// max iterations per thread
-		int remCount = 0;		// remainder iterations for last thread
+		List<ISource> dataFileList = new ArrayList<ISource>();	// main datafiles list
+		int timeout = 120;			// timeout for getting Futures	
+		int threadCount = 0;		// num of system threads
+		int activeThreads = 0;		// num of active threads
+		int chunks = 0;				// num of thread iteration chunks
+		int maxCount = 0;			// max iterations per thread
+		int remCount = 0;			// remainder iterations for last thread
 		int filelen = files.size();	// used for calculating num of chunks
 		
 		// Initialize thread count, executor and thread chunks
 		threadCount = calculateThreadCount();
 		Chunk chunkStats = calculateChunks(threadCount, filelen);
-		maxCount = chunkStats.maxIterations;	// max count for threads
-		remCount = chunkStats.remIterations;	// remainder count for last thread
+		maxCount = chunkStats.maxIterations;			// max count for each thread
+		remCount = chunkStats.remIterations;			// remainder count for last thread
+		activeThreads = chunkStats.activeThreadCount;	// num of active threads
 		//System.out.println("List length = " + filelen);
 		//System.out.println("Thread count = " + threadCount);	
 		//System.out.println("Max iterations per thread = " + maxCount);
 		//System.out.println("Remainder iterations for last thread = " + remCount);
 
 		// Split iterations into thread chunks
-		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+		ExecutorService executor = Executors.newFixedThreadPool(activeThreads);
 		if (remCount != 0)
-			chunks = threadCount + 1;
+			chunks = activeThreads + 1;	// thread chunks for (filelen % threadCount) != 0
 		else
-			chunks = threadCount;
+			chunks = activeThreads;		// thread chunks for (filelen % threadCount) == 0
 		//System.out.println("Number of thread chunks = " + chunks + "\n");
 
 		// Set tasks for execution
@@ -291,14 +310,14 @@ public abstract class SourceFile implements ISource {
 				tasks[i] = task;
 			} else if (i == (chunks-1)) { // last block
 				lastChunk = i;
-				if (lastChunk == threadCount) {	// last block size = remCount
+				if (lastChunk == activeThreads) {	// => last block size = remCount
 					start = maxCount * i;
 					end = start + remCount;
 					taskFiles = files.subList(start, end);	// get sub files
 					//System.out.println("start: " + start + "\tend: " + end + " (LastBlock)");
 					task = new DataTask(taskFiles);
 					tasks[i] = task;
-				} else { // last block size = maxCount
+				} else { // => last block size = maxCount
 					start = maxCount * i;
 					end = start + maxCount;
 					taskFiles = files.subList(start, end);	// get sub files
@@ -314,12 +333,12 @@ public abstract class SourceFile implements ISource {
 			// Invoke all datafiles tasks	
 			//long startTime = System.nanoTime();
 			//System.out.println("\nExecuting getDataFiles.invokeAll()...");
-			List<Future<List<ISource>>> dataFilesList = executor.invokeAll(Arrays.asList(tasks));
+			List<Future<List<ISource>>> dataFileTasks = executor.invokeAll(Arrays.asList(tasks));
 	
-			// Loop through dataFileList and get futures
-			for (Future<List<ISource>> future: dataFilesList) {
+			// Loop through dataFileTasks and get futures
+			for (Future<List<ISource>> future: dataFileTasks) {
 				try {	
-					dataFilesLst.addAll(future.get(timeout, TimeUnit.SECONDS));	
+					dataFileList.addAll(future.get(timeout, TimeUnit.SECONDS));	
 				} catch (TimeoutException e) {
 					logger.error("Future TimeoutException:", e);
 					future.cancel(true);
@@ -345,7 +364,7 @@ public abstract class SourceFile implements ISource {
 		shutdownAndAwaitTermination(executor);	
 		
 		// Loop through List<ISources> (check datafiles)	
-		return dataFilesLst;
+		return dataFileList;
 	}
 
 	/**

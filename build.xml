@@ -17,7 +17,8 @@
     <property name="project.main"     value="com.isti.xmax.XMAX"/>
     <property name="project.archive"  value="xmax.jar"/>
     
-    <property name="manifest.file"    value="${src.dir}/META-INF/MANIFEST.MF"/>
+    <property name="manifest.dir"     value="${src.dir}/META_INF"/> 
+    <property name="manifest.file"    value="${manifest.dir}/MANIFEST.MF"/>
     <property name="manifest.version" value="1.0"/>
     <property name="imp.version"      value="1.0"/><!-- implementation -->
     <property name="imp.vendor"       value="Instrumental Software Technologies"/>
@@ -69,13 +70,15 @@
     <!-- CLEAN_BUILD -->
     <target name="clean_build" description="Delete build/ dir">
         <delete dir="${build.root}" verbose="false"/>
-   	<delete dir="${logs.dir}" verbose="false"/> 
+   	<delete dir="${manifest.dir}" verbose="false"/>	
+	<delete dir="${logs.dir}" verbose="false"/> 
     </target>
 
     <!-- INIT -->
     <target name="init" depends="clean_build" description="Mkdir build/ [depends=clean_build]">
         <mkdir dir="${build.root}"/>
-   	<mkdir dir="${logs.dir}"/> 
+   	<mkdir dir="${manifest.dir}"/>	
+	<mkdir dir="${logs.dir}"/> 
     </target>
     
     <!-- RUN -->
@@ -93,7 +96,6 @@
     <!-- CREATE-MANIFEST -->
     <target name="create-manifest" description="Create MANIFEST.MF for xmax.jar archive">
         <tstamp/><!-- needed for TODAY -->
-	<delete file="${manifest.file}"/>
 	<echo message="Creating new ${manifest.file}"/>
 	<manifest file="${manifest.file}">
 	    <!--section name="${ant.project.name}"-->
