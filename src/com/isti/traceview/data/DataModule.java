@@ -133,7 +133,7 @@ public class DataModule extends Observable {
             		long start = System.nanoTime(); 
 	    		datafiles = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
 	    		long end = System.nanoTime() - start;
-	    		System.out.println("\nSourceFile.getDataFiles() execution time = " + end + " ns\n");
+	    		System.out.println("SourceFile.getDataFiles() execution time = " + end + " ns\n");
 		    	addDataSources(datafiles);
             		logger.debug("-d: Read from data path DONE\n\n");
         	}
@@ -144,7 +144,7 @@ public class DataModule extends Observable {
             		long start = System.nanoTime();	
 			datafiles = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
             		long end = System.nanoTime() - start;
-	    		System.out.println("\nSourceFile.getDataFiles() execution time = " + end + " ns\n");
+	    		System.out.println("SourceFile.getDataFiles() execution time = " + end + " ns\n");
 			addDataSources(datafiles);
             		logger.debug("-d + -t: Read from data path DONE\n\n");
             	}
@@ -767,7 +767,6 @@ public class DataModule extends Observable {
 								+ ", longitude " + longitude + ", elevation "
 								+ elevation + ", depth " + depth);
 					}
-
 				}
 			}
 		} catch (FileNotFoundException e) {

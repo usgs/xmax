@@ -362,6 +362,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		return blockStart + time;
 	}
 
+	// Is a segment a trace from the Seed/DataRecord?
+	// Is a trace split into multiple segments depending on time and gaps?
 	private void addSegment(RawDataProvider channel, DataHeader dh, long currentOffset, double sampleRate, int serialNumber) {
 		if (segmentSampleCount != 0) {
 			// lg.debug("Adding segment: offset " + segmentOffset);
