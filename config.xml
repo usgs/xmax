@@ -83,10 +83,10 @@
 		<ExportDir/>
 		<Frame>
 			<State>NORMAL</State>
-			<PosY>171</PosY>
-			<PosX>2131</PosX>
-			<Width>1365</Width>
-			<Heigth>853</Heigth>
+			<PosY>126</PosY>
+			<PosX>1858</PosX>
+			<Width>1450</Width>
+			<Heigth>980</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>
