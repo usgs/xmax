@@ -217,7 +217,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 					DataRecord dr = (DataRecord) sr;
 					headerSampleCount+=dr.getHeader().getNumSamples();
 					segment.addBlockDescription(getBlockStartTime(dr.getHeader()),blockStartOffset);
-					// lg.debug("Size: data " + dr.getDataSize() + ", header " + dr.getHeader().getSize());
 					if (dr.getHeader().getNumSamples() > 0) {
 						LocalSeismogramImpl lsi = null;
 						int intData[] = new int[dr.getHeader().getNumSamples()];
@@ -238,21 +237,14 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								intData[i] = 0;
 							}
 						}
-//						if(intData.length != dr.getHeader().getNumSamples()){
-//							lg.warn("data array length mismatch!!! block " + sr.getControlHeader().getSequenceNum() + ", header: " + dr.getHeader().getNumSamples() + ", array length " + intData.length);
-//						}
 						for (int sample: intData) {
 							if (currentSampleCount < segment.getSampleCount()) {
-								// lg.debug("sample" + sample);
 								data[currentSampleCount++] = sample;
 								blockSampleCount++;
 							} else {
 								logger.warn("currentSampleCount > segment.getSampleCount(): " + currentSampleCount + ", " + segment.getSampleCount() + "block " + sr.getControlHeader().getSequenceNum());
 							}
 						}
-//						if(blockSampleCount != intData.length){
-//							lg.warn("Sample count mismatch!!! block " + sr.getControlHeader().getSequenceNum() + ", headers: " + dr.getHeader().getNumSamples() + "; real "+ blockSampleCount);
-//						}
 					} else {
 						logger.warn("File " + getFile().getName() + ": Skipping block " + dr.getHeader().getSequenceNum() + " due to absence of data");
 					}
@@ -261,11 +253,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
 				}
 			}
-			// TraceViewCore.dumpMemory();
-
 		} catch (FileNotFoundException e) {
 			logger.error("Can't find file: ", e);
-			//throw new RuntimeException(e);
 			System.exit(0);	
 		} catch (IOException e) {
 			StringBuilder message = new StringBuilder();	
@@ -275,11 +264,9 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			}  catch (IOException eIO) {
 				logger.error("IOException:", eIO);
 			}
-			//throw new RuntimeException(e);
 			System.exit(0);	
 		} catch (SeedFormatException e) {
 			logger.error("Wrong seed format: ", e);
-			//throw new RuntimeException(e);
 			System.exit(0);	
 		} finally {
 			try {
@@ -366,7 +353,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	// Is a trace split into multiple segments depending on time and gaps?
 	private void addSegment(RawDataProvider channel, DataHeader dh, long currentOffset, double sampleRate, int serialNumber) {
 		if (segmentSampleCount != 0) {
-			// lg.debug("Adding segment: offset " + segmentOffset);
 			Segment segment = new Segment(this, segmentOffset, new Date(segmentStartTime), sampleRate, segmentSampleCount, serialNumber);
 			channel.addSegment(segment);
 			if (dh != null) {

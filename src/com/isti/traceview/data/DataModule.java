@@ -132,8 +132,9 @@ public class DataModule extends Observable {
 	   		// IMPLEMENT ExecutorService to split getDataFiles() into multi-threads
             		long start = System.nanoTime(); 
 	    		datafiles = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
-	    		long end = System.nanoTime() - start;
-	    		System.out.println("SourceFile.getDataFiles() execution time = " + end + " ns\n");
+	    		long endl = System.nanoTime() - start;
+	    		double end = endl * Math.pow(10, -9);
+	    		System.out.format("DataModule: SourceFile.getDataFiles() execution time = %.9f sec\n", end);
 		    	addDataSources(datafiles);
             		logger.debug("-d: Read from data path DONE\n\n");
         	}
@@ -143,8 +144,9 @@ public class DataModule extends Observable {
 	   		// IMPLEMENT ExecutorService to split getDataFiles() into multi-threads
             		long start = System.nanoTime();	
 			datafiles = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
-            		long end = System.nanoTime() - start;
-	    		System.out.println("SourceFile.getDataFiles() execution time = " + end + " ns\n");
+					long endl = System.nanoTime() - start;
+            		double end = endl * Math.pow(10, -9);
+	    		System.out.format("DataModule: SourceFile.getDataFiles() execution time = %.9f sec\n", end);
 			addDataSources(datafiles);
             		logger.debug("-d + -t: Read from data path DONE\n\n");
             	}
@@ -251,7 +253,7 @@ public class DataModule extends Observable {
 	public Set<RawDataProvider> addDataSource(ISource datafile) {
 		Set<RawDataProvider> changedChannels = null;
 		if (!isSourceLoaded(datafile)) {
-			dataSources.add(datafile);
+			//dataSources.add(datafile);	// why is it adding twice?
 			logger.debug("Parsing file " + datafile.getName());
 			changedChannels = datafile.parse(this);
 			dataSources.add(datafile);
@@ -275,6 +277,8 @@ public class DataModule extends Observable {
 		boolean wasAdded = false;
 		Set<RawDataProvider> changedChannels = new HashSet<RawDataProvider>();
 
+		// Time MiniSEED parsing
+		long start = System.nanoTime();
 		for (ISource datafile : datafiles) {
 			if (!isSourceLoaded(datafile)) {
 				logger.debug("Parsing file " + datafile.getName());
@@ -283,6 +287,11 @@ public class DataModule extends Observable {
 				dataSources.add(datafile);
 			}
 		}
+		long endl = System.nanoTime() - start;
+		double end = endl * Math.pow(10, -9);
+		System.out.format("DataModule: addDataSources.parse() execution time = %.9f sec\n\n", end);
+		
+		// Check data integrity (checks size of channels)
 		if (wasAdded) {
 			checkDataIntegrity(changedChannels);
 			if (!isChangedAllChannelsTI()) {

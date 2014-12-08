@@ -234,10 +234,6 @@ public abstract class SourceFile implements ISource {
 		List<ISource> dataFiles = new ArrayList<ISource>();
 		List<File> listFiles = new Wildcard().getFilesByMask(wildcardedMask);
 		Iterator<File> it = listFiles.iterator();
-		//int listlen = listFiles.size();	
-		//long start = 0;
-		//long elapsed = 0;
-		//start = System.nanoTime();
 		while (it.hasNext()) {
 			File file = it.next();
             		System.out.format("         Found file:%s\n", file.toString());
@@ -247,9 +243,6 @@ public abstract class SourceFile implements ISource {
 				it.remove();
 			}
 		}
-		//elapsed = System.nanoTime() - start;
-		//System.out.println("ListFiles length: " + listlen);	
-		//System.out.println("Read data files elapsed: " + elapsed + "ns\n");
 		dataFiles = getDataFiles(listFiles);
 		return dataFiles;
 	}
@@ -279,10 +272,6 @@ public abstract class SourceFile implements ISource {
 		maxCount = chunkStats.maxIterations;			// max count for each thread
 		remCount = chunkStats.remIterations;			// remainder count for last thread
 		activeThreads = chunkStats.activeThreadCount;	// num of active threads
-		//System.out.println("List length = " + filelen);
-		//System.out.println("Thread count = " + threadCount);	
-		//System.out.println("Max iterations per thread = " + maxCount);
-		//System.out.println("Remainder iterations for last thread = " + remCount);
 
 		// Split iterations into thread chunks
 		ExecutorService executor = Executors.newFixedThreadPool(activeThreads);
@@ -290,7 +279,6 @@ public abstract class SourceFile implements ISource {
 			chunks = activeThreads + 1;	// thread chunks for (filelen % threadCount) != 0
 		else
 			chunks = activeThreads;		// thread chunks for (filelen % threadCount) == 0
-		//System.out.println("Number of thread chunks = " + chunks + "\n");
 
 		// Set tasks for execution
 		DataTask task = null;
@@ -305,7 +293,6 @@ public abstract class SourceFile implements ISource {
 				start = maxCount * i;
 				end = start + maxCount;
 				taskFiles = files.subList(start, end); // get sub files
-				//System.out.println("start: " + start + "\tend: " + end);
 				task = new DataTask(taskFiles);
 				tasks[i] = task;
 			} else if (i == (chunks-1)) { // last block
@@ -314,14 +301,12 @@ public abstract class SourceFile implements ISource {
 					start = maxCount * i;
 					end = start + remCount;
 					taskFiles = files.subList(start, end);	// get sub files
-					//System.out.println("start: " + start + "\tend: " + end + " (LastBlock)");
 					task = new DataTask(taskFiles);
 					tasks[i] = task;
 				} else { // => last block size = maxCount
 					start = maxCount * i;
 					end = start + maxCount;
 					taskFiles = files.subList(start, end);	// get sub files
-					//System.out.println("start: " + start + "\tend: " + end + " (LastBlock)");
 					task = new DataTask(taskFiles);
 					tasks[i] = task;
 				}
@@ -331,8 +316,6 @@ public abstract class SourceFile implements ISource {
 		// Create list of Future<List<ISource>>
 		try {	
 			// Invoke all datafiles tasks	
-			//long startTime = System.nanoTime();
-			//System.out.println("\nExecuting getDataFiles.invokeAll()...");
 			List<Future<List<ISource>>> dataFileTasks = executor.invokeAll(Arrays.asList(tasks));
 	
 			// Loop through dataFileTasks and get futures
@@ -353,9 +336,6 @@ public abstract class SourceFile implements ISource {
 					executor.shutdownNow();
 				}
 			}
-			//long endTime = System.nanoTime() - startTime;
-			//System.out.println("Execution time (invokeAll()) = " + endTime + " ns");
-			//System.out.println("DataFiles length = " + dataFilesLst.size() + "\n");
 		} catch (InterruptedException e) {
 			logger.error("Executor InterruptedException:", e);
 			executor.shutdownNow();
