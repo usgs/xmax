@@ -541,6 +541,7 @@ class ChannelTypeComparator implements Comparator<Object> {
 
 /**
  * Comparator by network - station - sample rate - location code - channel type
+ * return: 0=>Equal, 1=>(Obj1 > Obj2), -1=>(Obj1 < Obj2)
  */
 class NetworkStationSamplerateComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {
@@ -561,18 +562,23 @@ class NetworkStationSamplerateComparator implements Comparator<Object> {
 						if (loc1.equals(loc2)) {
 							char type1 = channel1.getType();
 							char type2 = channel2.getType();
-							return Channel.channelTypeCompare(type1, type2);
+							int compareChan = Channel.channelTypeCompare(type1, type2);
+							return compareChan;
 						} else {
-							return loc1.compareTo(loc2);
+							int compareLoc = loc1.compareTo(loc2);
+							return compareLoc;
 						}
 					} else {
-						return sr1.compareTo(sr2);
+						int compareSR = sr1.compareTo(sr2);
+						return compareSR;
 					}
 				} else {
-					return st1.compareTo(st2);
+					int compareStat = st1.compareTo(st2);
+					return compareStat;
 				}
 			} else {
-				return net1.compareTo(net2);
+				int compareNet = net1.compareTo(net2);
+				return compareNet;
 			}
 		} else if ((o1 instanceof Channel) && !(o2 instanceof Channel)) {
 			return 1;

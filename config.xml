@@ -11,8 +11,9 @@
 --><XMAXSessionConfiguration>
 <Version>
 		<Major>1</Major>
-		<Minor>8</Minor>
-	</Version>
+		<Minor>1</Minor>
+		<Build>0</Build>
+</Version>
 <!-- Sets start time for display. Recovers by -b option -->
 <!-- StartTime>2007,055,05:00:00</StartTime -->
 <!-- Sets end time for display. Recovers by -e option -->
@@ -24,8 +25,8 @@
 		<Data>
 			<!-- Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*" -->
 			<!-- DataMask>resources/DATA</DataMask -->
-			<!--DataMask>seed/IU_MACI/2014_236</DataMask-->
-			<DataMask>seed/IU*/2014_19*,2014_2*</DataMask>
+			<DataMask>seed/IU_MACI,IU_TUC/2014_23*,2014_21*,2014_360,2014_361</DataMask>	
+			<!--DataMask>seed/IU*/2014_19*,2014_2*</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
 			
 			<!-- Temporary directory to store decompressed traces in the internal 
@@ -62,13 +63,22 @@
 		</View>
 		<OutputPath>resources/Output</OutputPath>
 
-		<!-- Panel order: 0 - trace name, currently network/station/location/channel; 
-			1 - Network/station/sample rate/channel type/location; 2 - Channel/network/station/location, 
-			3 - Channel type/channel/network/station, 4 - event -->
+		<!-- Panel order: 
+		        0 - trace name, currently network/station/location/channel; 
+			1 - Network/station/sample rate/channel type/location; 
+			2 - Channel/network/station/location; 
+			3 - Channel type/channel/network/station; 
+			4 - event; 
+		-->
 		<PanelOrder>1</PanelOrder>
 
-		<!-- Panel count unit: 0 - trace, 1 - station, 2 - channel, 3 - channel 
-			type, 4 - all -->
+		<!-- Panel count unit: 
+		        0 - trace; 
+			1 - station; 
+			2 - channel; 
+			3 - channel type; 
+			4 - all; 
+		-->
 		<PanelCountUnit>1</PanelCountUnit>
 		<UnitsInFrame>1</UnitsInFrame>
 		<LogFile>logs/XMAX.LOG</LogFile>
@@ -83,10 +93,10 @@
 		<ExportDir/>
 		<Frame>
 			<State>NORMAL</State>
-			<PosY>126</PosY>
-			<PosX>1858</PosX>
-			<Width>1450</Width>
-			<Heigth>980</Heigth>
+			<PosY>17</PosY>
+			<PosX>2172</PosX>
+			<Width>1965</Width>
+			<Heigth>1370</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>

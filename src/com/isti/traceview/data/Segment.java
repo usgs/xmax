@@ -622,15 +622,24 @@ public class Segment implements Externalizable, Cloneable {
 	 *            sample rate
 	 */
 	public static boolean isDataBreak(long firstEndTime, long secondStartTime, double sampleRate) {
-		return Math.abs(firstEndTime - secondStartTime) > gapTolerance * 2.0 * sampleRate;
+		double gap = gapTolerance * 2.0 * sampleRate;
+		long timediff = Math.abs(firstEndTime - secondStartTime);
+		boolean compare = timediff > gap;
+		return compare;
 	}
 	
 	public static boolean isDataGap(long firstEndTime, long secondStartTime, double sampleRate) {
-		return (secondStartTime - firstEndTime) > (gapTolerance * 2.0 * sampleRate);
+		double gap = gapTolerance * 2.0 * sampleRate;
+		long timediff = secondStartTime - firstEndTime;
+		boolean compare = timediff > gap;
+		return compare;
 	}
 	
 	public static boolean isDataOverlay(long firstEndTime, long secondStartTime, double sampleRate) {
-		return (firstEndTime - secondStartTime) > (gapTolerance * 2.0 * sampleRate);
+		double gap = gapTolerance * 2.0 * sampleRate;
+		long timediff = firstEndTime - secondStartTime;
+		boolean compare = timediff > gap;
+		return compare;
 	}
 
 	public boolean getIsLoaded() {

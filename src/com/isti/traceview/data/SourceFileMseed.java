@@ -153,7 +153,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 					logger.error("File " + getFile().getCanonicalPath() + " has null length");
 				}
 			} catch (EOFException ex) {
-				logger.debug("EOFException: " + ex.getMessage());	
+				logger.debug("EOF: " + ex.getMessage());	
 				if (!skipChannel) {
 					addSegment(currentChannel, null, 0, sampleRate, currentChannel.getSegmentCount());
 				}
@@ -218,17 +218,22 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 					headerSampleCount+=dr.getHeader().getNumSamples();
 					segment.addBlockDescription(getBlockStartTime(dr.getHeader()),blockStartOffset);
 					if (dr.getHeader().getNumSamples() > 0) {
-						LocalSeismogramImpl lsi = null;
+						LocalSeismogramImpl lsi = null; // stores seed data as seis id, num samples, sample rate
+														// channel id, and byte[] data (EncodedData)
 						int intData[] = new int[dr.getHeader().getNumSamples()];
 						try {
 							if (dr.getBlockettes(1000).length == 0) {
 								DataRecord dra[] = new DataRecord[1];
 								dra[0] = dr;
-								lsi = FissuresConvert.toFissures(dra, (byte) TraceView.getConfiguration().getDefaultCompression(), (byte) 1);
+								int defaultCompression = TraceView.getConfiguration().getDefaultCompression();
+								byte dataCompression = (byte) defaultCompression;
+								byte byteOrder = (byte) 1;	// big endian byte order
+								byte byteData[] = dra[0].getData();
+								lsi = FissuresConvert.toFissures(dra, dataCompression, byteOrder);
 							} else {
 								lsi = FissuresConvert.toFissures(dr);
 							}
-							intData = lsi.get_as_longs();
+							intData = lsi.get_as_longs();	// gets Encoded byte[] data
 						} catch (FissuresException fe) {
 							StringBuilder message = new StringBuilder();
 							message.append(String.format("File " + getFile().getName() + ": Can't decompress data of block " + dr.getHeader().getSequenceNum() + ", setting block data to 0: "));
@@ -245,6 +250,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								logger.warn("currentSampleCount > segment.getSampleCount(): " + currentSampleCount + ", " + segment.getSampleCount() + "block " + sr.getControlHeader().getSequenceNum());
 							}
 						}
+						System.out.println("intData size = " + intData.length);
+						System.out.println("currentSampleCount = " + currentSampleCount);
 					} else {
 						logger.warn("File " + getFile().getName() + ": Skipping block " + dr.getHeader().getSequenceNum() + " due to absence of data");
 					}
