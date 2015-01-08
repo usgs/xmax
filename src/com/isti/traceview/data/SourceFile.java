@@ -12,21 +12,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
-
-import java.util.concurrent.Future;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutionException;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
@@ -59,6 +51,7 @@ public abstract class SourceFile implements ISource {
 	private boolean parsed = false;
 
 	/**
+	 * Constructor
 	 */
 	public SourceFile(File file) {
 		this.file = file;
@@ -106,95 +99,33 @@ public abstract class SourceFile implements ISource {
 	}
 
 	/**
-	 * Class for storing number and remainder of thread chunks
-	 */
-	private static class Chunk {
-		int maxIterations;		// max number of iterations per thread
-		int remIterations;		// rem number of iterations for last thread
-		int activeThreadCount;	// number of active threads
-	}
-
-	/**
-	 * Calculates thread count for getDataFiles() pool
-	 */
-	private static int calculateThreadCount() {
-		int numProc = Runtime.getRuntime().availableProcessors();
-		int threadCount = 0;
-		if (numProc % 2 == 0) 
-			threadCount = numProc / 2;
-		else
-			threadCount = (numProc + 1) / 2;
-		return threadCount;
-	}
-
-	/**
-	 * Calculates max and remainder iterations per chunk and active threads
-	 */
-	private static Chunk calculateChunks(int numThreads, int listLength) {
-		int remIter = 0;
-		int maxIter = 0;
-		int maxtmp = 0;
-		int activeThreads = 0;
-		
-		if ((listLength % numThreads) == listLength) {	// => listLength < numThreads
-			remIter = 0;
-			maxIter = listLength;	// max iterations for 1 thread
-			activeThreads = 1;
-		} else {	// => listLength >= numThreads
-			remIter = listLength % numThreads;
-			maxtmp = (listLength - remIter) / numThreads;
-			if (maxtmp < numThreads) {	// max multiplier < number of threads
-				activeThreads = maxtmp;	// set number of active threads = multiplier
-				maxIter = numThreads;	// set max iterations = number of threads
-			} else {	// max multiplier >= number of threads
-				activeThreads = numThreads;	// set number of active threads = number of threads
-				maxIter = maxtmp;			// set max iterations = multiplier
-			}
-		}
-
-		Chunk chunkIter = new Chunk();
-		chunkIter.maxIterations = maxIter;
-		chunkIter.remIterations = remIter;
-		chunkIter.activeThreadCount = activeThreads;
-		return chunkIter;
-	}
-
-	/**
-	 * Shutdown and executor and lingering tasks (if necessary)
-	 */
-	private static void shutdownAndAwaitTermination(ExecutorService pool) {
-		pool.shutdown();
-		try {
-			// Wait awhile for existing tasks to terminate
-			if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
-				pool.shutdownNow();	// cancel current executing tasks
-				// Wait awhile for tasks to respond to cancel
-				if (!pool.awaitTermination(60, TimeUnit.SECONDS))
-					logger.error("Pool did not terminate!! SHUTTING DOWN!!");
-			}
-		} catch (InterruptedException e) {
-			pool.shutdownNow();
-		}
-	}
-
-	/**
-	 * Class to run Future task (checks data file types)
+	 * Class to run Future data file type task 
 	 *
 	 * @param inputFiles 
-	 * 	     partial input files (split from main files list)	
+	 * 	     partial input files (split using DataExecutor) 
+	 * 	
+	 * @return list of ISources depending on filetype
 	 *
 	 */
-	private static class DataTask implements Callable<List<ISource>> {
+	public static class DataTask implements Callable<List<ISource>> {
 		private List<File> inputFiles; 
 		private int filelen;
 
-		// Sets start/end indices for loop
-		private DataTask(List<File> inputFiles) { // Construct
+		/**
+		 * Constructor: sets start/end indices for loop
+		 */	
+		public DataTask(List<File> inputFiles) { 
 			this.inputFiles = inputFiles;	
 			this.filelen = inputFiles.size();	
 		}
 
-		public List<ISource> call() throws Exception { // Callable
+		/**
+		 * Callable method to store file types
+		 *
+		 * @return List<ISource>
+		 * 		dataFiles for data type
+		 */
+		public List<ISource> call() throws Exception { 
 			List<ISource> dataFiles = new ArrayList<ISource>(filelen);
 			for (File file: inputFiles) {
 				if (isIMS(file)) {
@@ -256,94 +187,19 @@ public abstract class SourceFile implements ISource {
 	 * @throws TraceViewException
 	 */
 	public static List<ISource> getDataFiles(List<File> files) throws TraceViewException {
-		// Initialize variables
+		
+		// Setup Pool of Workers to set data types for each file
 		List<ISource> dataFileList = new ArrayList<ISource>();	// main datafiles list
-		int timeout = 120;			// timeout for getting Futures	
-		int threadCount = 0;		// num of system threads
-		int activeThreads = 0;		// num of active threads
-		int chunks = 0;				// num of thread iteration chunks
-		int maxCount = 0;			// max iterations per thread
-		int remCount = 0;			// remainder iterations for last thread
-		int filelen = files.size();	// used for calculating num of chunks
+		DataExecutor execType = new DataExecutor(files);
+		execType.setVariables();
 		
-		// Initialize thread count, executor and thread chunks
-		threadCount = calculateThreadCount();
-		Chunk chunkStats = calculateChunks(threadCount, filelen);
-		maxCount = chunkStats.maxIterations;			// max count for each thread
-		remCount = chunkStats.remIterations;			// remainder count for last thread
-		activeThreads = chunkStats.activeThreadCount;	// num of active threads
-
-		// Split iterations into thread chunks
-		ExecutorService executor = Executors.newFixedThreadPool(activeThreads);
-		if (remCount != 0)
-			chunks = activeThreads + 1;	// thread chunks for (filelen % threadCount) != 0
-		else
-			chunks = activeThreads;		// thread chunks for (filelen % threadCount) == 0
-
 		// Set tasks for execution
-		DataTask task = null;
-		DataTask[] tasks = new DataTask[chunks];	// data type tasks
-		List<File> taskFiles = null;	// split 'files' for threading tasks	
-		int start = 0;	// start/end for thread chunks
-		int end = 0;
-		int lastChunk = 0;	
-		for (int i = 0; i < chunks; i++) {
-			taskFiles = new ArrayList<File>(); // initialize for each block
-			if (i < (chunks-1)) { // initial blocks (size = maxCount)
-				start = maxCount * i;
-				end = start + maxCount;
-				taskFiles = files.subList(start, end); // get sub files
-				task = new DataTask(taskFiles);
-				tasks[i] = task;
-			} else if (i == (chunks-1)) { // last block
-				lastChunk = i;
-				if (lastChunk == activeThreads) {	// => last block size = remCount
-					start = maxCount * i;
-					end = start + remCount;
-					taskFiles = files.subList(start, end);	// get sub files
-					task = new DataTask(taskFiles);
-					tasks[i] = task;
-				} else { // => last block size = maxCount
-					start = maxCount * i;
-					end = start + maxCount;
-					taskFiles = files.subList(start, end);	// get sub files
-					task = new DataTask(taskFiles);
-					tasks[i] = task;
-				}
-			}
-		}
-	
-		// Create list of Future<List<ISource>>
-		try {	
-			// Invoke all datafiles tasks	
-			List<Future<List<ISource>>> dataFileTasks = executor.invokeAll(Arrays.asList(tasks));
-	
-			// Loop through dataFileTasks and get futures
-			for (Future<List<ISource>> future: dataFileTasks) {
-				try {	
-					dataFileList.addAll(future.get(timeout, TimeUnit.SECONDS));	
-				} catch (TimeoutException e) {
-					logger.error("Future TimeoutException:", e);
-					future.cancel(true);
-					executor.shutdownNow();	
-				} catch (ExecutionException e) {
-					logger.error("Future ExecutionException:", e);
-					future.cancel(true);
-					executor.shutdownNow();
-				} catch (InterruptedException e) {
-					logger.error("Future InterruptedException:", e);
-					future.cancel(true);
-					executor.shutdownNow();
-				}
-			}
-		} catch (InterruptedException e) {
-			logger.error("Executor InterruptedException:", e);
-			executor.shutdownNow();
-		}
-		// Shutdown executor and cancel lingering tasks	
-		shutdownAndAwaitTermination(executor);	
+		long start = System.nanoTime();
+		dataFileList = execType.processDataTypes();
+		long endl = System.nanoTime() - start;
+		double end = endl * Math.pow(10, -9);
+		System.out.format("SourceFile: getDataFiles() execution time = %.9f sec\n", end);
 		
-		// Loop through List<ISources> (check datafiles)	
 		return dataFileList;
 	}
 

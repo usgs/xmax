@@ -456,7 +456,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *            end time
 	 * @return subset of segment list which lies in the requested time interval. For one channel,
 	 *         the normal situation is none or one segment, but it can be bigger count in the case
-	 *         of segment overlapping. If no segments found, return null.
+	 *         of segment overlapping or gaps. If no segments found, return null.
 	 */
 	private static SegmentData[] getSegmentData(List<SegmentData> sps, double start, double end) {
 		List<SegmentData> ret = new ArrayList<SegmentData>();

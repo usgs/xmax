@@ -210,7 +210,7 @@ public class RawDataProvider extends Channel {
 	 */
 	public boolean isLoadingStarted() {
 		synchronized (rawData) {
-		return loadingStarted;
+			return loadingStarted;
 		}
 	}
 	/**
@@ -218,7 +218,7 @@ public class RawDataProvider extends Channel {
 	 */
 	public boolean isLoaded() {
 		synchronized (rawData) {
-		return loaded;
+			return loaded;
 		}
 	}
 
@@ -229,6 +229,7 @@ public class RawDataProvider extends Channel {
 	 */
 	public void loadData(TimeInterval ti) {
         logger.debug("== ENTER");
+        long start = System.nanoTime();
 		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();
             if (!seg.getIsLoaded()) {
@@ -246,7 +247,11 @@ public class RawDataProvider extends Channel {
                 //seg.loadDataInt();
             }
 		}
-        logger.debug("== EXIT");
+		long endl = System.nanoTime() - start;
+		double end = endl * Math.pow(10, -9);
+		logger.debug("== EXIT");
+        System.out.println("== EXIT");
+        System.out.format("RawDataProvider: loadData() execution time = %.9f sec\n\n", end);
 	}
 
 	/**
@@ -626,7 +631,6 @@ System.out.println("== Segment dumpMseed ENTER");
 		public SegmentCache(Segment segment) {
 			initialData = segment;
 			filterCache = new ArrayList<Segment>();
-			;
 		}
 
 		/**

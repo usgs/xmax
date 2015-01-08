@@ -449,7 +449,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		rotateMenuCheckBox.setState(false);
 		XMAXDataModule dm = XMAX.getDataModule();
 		try {
-			graphPanel.setChannelShowSet(dm.getNextCnannelSet());
+			graphPanel.setChannelShowSet(dm.getNextChannelSet());
 		} catch (TraceViewException e) {
 			JOptionPane.showMessageDialog(this, "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
 		}
@@ -1350,7 +1350,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				XMAXDataModule dm = XMAX.getDataModule();
-				graphPanel.setChannelShowSet(dm.getNextCnannelSet()); // and also switch off OVR,
+				graphPanel.setChannelShowSet(dm.getNextChannelSet()); // and also switch off OVR,
 																		// SEL, ROT
 				graphPanel.setScaleMode(new ScaleModeAuto());
 				graphPanel.setMeanState(new MeanModeDisabled());
@@ -2704,7 +2704,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				XMAX.getFrame().getGraphPanel().removeAll();
 				dm.reLoadData();
 				try {
-					graphPanel.setChannelShowSet(dm.getNextCnannelSet());
+					graphPanel.setChannelShowSet(dm.getNextChannelSet());
 				} catch (TraceViewException ex) {
 					JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
 					getGraphPanel().forceRepaint();
