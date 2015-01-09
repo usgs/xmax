@@ -135,16 +135,13 @@ public class DataExecutor {
 					dataFileList.addAll(future.get(timeout, TimeUnit.SECONDS));
 				} catch (TimeoutException e) {
 					logger.error("Future TimeoutException:", e);
-					future.cancel(true);
-					executor.shutdownNow();
+					shutdownFuture(future, executor);	
 				} catch (ExecutionException e) {
 					logger.error("Future ExecutionException:", e);
-					future.cancel(true);
-					executor.shutdownNow();
+					shutdownFuture(future, executor);	
 				} catch (InterruptedException e) {
 					logger.error("Future InterruptedException:", e);
-					future.cancel(true);
-					executor.shutdownNow();
+					shutdownFuture(future, executor);	
 				}
 			}
 		} catch (InterruptedException e) {
@@ -152,7 +149,7 @@ public class DataExecutor {
 			executor.shutdownNow();
 		}
 		// Shutdown executor and cancel lingering tasks
-		shutdownAndAwaitTermination(executor);
+		shutdownExecutor(executor);
 		
 		// Loop through List<ISources> (check datafiles)
 		return dataFileList;
@@ -172,7 +169,7 @@ public class DataExecutor {
 		ParseTask task = null;
 		ParseTask[] tasks = new ParseTask[chunks];	// array of object tasks
 		List<ISource> taskFiles = null;	// split 'datafiles' into threading tasks
-		int start = 0;	// start:end for each thread chunk
+		int start = 0;
 		int end = 0;
 		int lastChunk = 0;
 		for (int i = 0; i < chunks; i++) {
@@ -180,7 +177,7 @@ public class DataExecutor {
 			if (i < (chunks-1)) {	// initial blocks (size = maxCount)
 				start = maxCount * i;
 				end = start + maxCount;
-				taskFiles = (List<ISource>) files.subList(start, end);	// get sub files
+				taskFiles = (List<ISource>) files.subList(start, end);	// sub files
 				task = new ParseTask(taskFiles);
 				tasks[i] = task;
 			} else if (i == (chunks-1)) {	// last block
@@ -201,39 +198,35 @@ public class DataExecutor {
 			}
 		}
 
-			// Invoke all data parse tasks (each task is a Set of RawDataProviders)
-			// We have a List of Future<Set<RawDataProvider>> to be processed
-			try {
-				List<Future<Set<RawDataProvider>>> dataParseTasks = executor.invokeAll(Arrays.asList(tasks));
-	
-				// Loop through dataParseTasks and get futures
-				for (Future<Set<RawDataProvider>> future: dataParseTasks) {
-					try {	
-						changedChannels.addAll(future.get(timeout, TimeUnit.SECONDS));
-					} catch (TimeoutException e) {
-						logger.error("Future TimeoutException:", e);
-						future.cancel(true);
-						executor.shutdownNow();
-					} catch (ExecutionException e) {
-						logger.error("Future ExecutionException:", e);
-						future.cancel(true);
-						executor.shutdownNow();
-					} catch (InterruptedException e) {
-						logger.error("Future InterruptedException:", e);
-						future.cancel(true);
-						executor.shutdownNow();
-					}
+		// Invoke all ParseTasks (each task is a Set of RawDataProviders)
+		// We have a List of Future<Set<RawDataProvider>> to be processed
+		try {
+			List<Future<Set<RawDataProvider>>> dataParseTasks = executor.invokeAll(Arrays.asList(tasks));
+
+			// Loop through dataParseTasks and get futures
+			for (Future<Set<RawDataProvider>> future: dataParseTasks) {
+				try {
+					changedChannels.addAll(future.get(timeout, TimeUnit.SECONDS));
+				} catch (TimeoutException e) {
+					logger.error("Future TimeoutException:", e);
+					shutdownFuture(future, executor);	
+				} catch (ExecutionException e) {
+					logger.error("Future ExecutionException:", e);
+					shutdownFuture(future, executor);	
+				} catch (InterruptedException e) {
+					logger.error("Future InterruptedException:", e);
+					shutdownFuture(future, executor);	
 				}
-			} catch (InterruptedException e) {
-				logger.error("Executor InterruptedException:", e);
-				executor.shutdownNow();
 			}
-			// Shutdown executor and cancel lingering tasks
-			shutdownAndAwaitTermination(executor);
-	
-			// Return parsed changedChannels
-			return changedChannels;
-	}	
+		} catch (InterruptedException e) {
+			logger.error("Executor InterruptedException:", e);
+			executor.shutdownNow();
+		}
+		shutdownExecutor(executor);
+
+		// Return parsed changedChannels
+		return changedChannels;
+	}
 	
 	/**
 	 * Calculates thread count for file pool
@@ -281,9 +274,17 @@ public class DataExecutor {
 	}
 	
 	/**
-	 * Shutdown and executor and lingering tasks (if necessary)
+	 * Shutdown future and executor
 	 */
-	private static void shutdownAndAwaitTermination(ExecutorService pool) {
+	private static void shutdownFuture(Future task, ExecutorService executor) {
+		task.cancel(true);
+		executor.shutdownNow();
+	}
+
+	/**
+	 * Shutdown executor and lingering tasks (if necessary)
+	 */
+	private static void shutdownExecutor(ExecutorService pool) {
 		pool.shutdown();
 		try {
 			// Wait awhile for existing tasks to terminate
