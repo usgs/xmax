@@ -81,7 +81,7 @@ public class DataModule extends Observable {
 	public DataModule() {
 		allChannelsTI = new TimeInterval();
 		channels = Collections.synchronizedList(new ArrayList<PlotDataProvider>());
-		dataSources = new ArrayList<ISource>();
+		dataSources = Collections.synchronizedList(new ArrayList<ISource>());
 		markerPosition = 0;
 		responses = new ArrayList<Response>();
 	}
@@ -125,19 +125,20 @@ public class DataModule extends Observable {
 		 * 		changedChannels and List<ISource> dataSources
 		 */
 		public Set<RawDataProvider> call() throws Exception {
-			Set<RawDataProvider> changedChannels = new HashSet<RawDataProvider>();
-			int count = 0;
+			synchronized (sharedLock) {
+				Set<RawDataProvider> changedChannels = new HashSet<RawDataProvider>();
+				int count = 0;
 			
-			for (ISource datafile: dataFiles) {
-				if (!isSourceLoaded(datafile)) {
-					logger.debug("Parsing file " + datafile.getName());
-					changedChannels.addAll(datafile.parse(this));
-					dataSources.add(datafile);
-					count++;
+				for (ISource datafile: dataFiles) {
+					if (!isSourceLoaded(datafile)) {
+						changedChannels.addAll(datafile.parse(this));
+						dataSources.add(datafile);
+						count++;
+					}
 				}
+				System.out.format("Number of files: %d\n", count);
+				return changedChannels;
 			}
-			System.out.format("Number of files: %d\n", count);
-			return changedChannels;
 		}	
 	}
 
