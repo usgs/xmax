@@ -1393,7 +1393,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				XMAXDataModule dm = XMAX.getDataModule();
-				graphPanel.setChannelShowSet(dm.getPreviousCnannelSet());
+				graphPanel.setChannelShowSet(dm.getPreviousChannelSet());
 				graphPanel.setScaleMode(new ScaleModeAuto());
 				graphPanel.setMeanState(new MeanModeDisabled());
 				graphPanel.setOffsetState(new OffsetModeDisabled());

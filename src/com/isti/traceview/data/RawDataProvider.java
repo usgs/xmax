@@ -64,11 +64,14 @@ public class RawDataProvider extends Channel {
 	// Used to store dataStream file name and restore it after serialization
 	private String serialFile = null;
 	private transient BufferedRandomAccessFile serialStream = null;
+	
+	// Constructor 1 (multiple args)
 	public RawDataProvider(String channelName, Station station, String networkName, String locationName) {
 		super(channelName, station, networkName, locationName);
 		rawData = new ArrayList<SegmentCache>();
 	}
 
+	// Constructor 2 (no args)
 	public RawDataProvider() {
 		super(null, null, null, null);
 		rawData = new ArrayList<SegmentCache>();

@@ -16,7 +16,15 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 
 import org.apache.log4j.Logger;
 
@@ -97,60 +105,55 @@ public abstract class SourceFile implements ISource {
 			return false;
 		}
 	}
-
-	/**
-	 * Class to run Future data file type task 
-	 *
-	 * @param inputFiles 
-	 * 	     partial input files (split using DataExecutor) 
-	 * 	
-	 * @return list of ISources depending on filetype
-	 *
+	
+	/** 
+	 * Class to call data file type task
+	 * 
+	 * @param inputFile
+	 * 		input File to process
+	 * 
+	 * @return ISource data file type
 	 */
-	public static class DataTask implements Callable<List<ISource>> {
-		private List<File> inputFiles; 
-		private int filelen;
-
+	private static class FileType implements Callable<ISource> {
+		private File file;
+		
 		/**
-		 * Constructor: sets start/end indices for loop
-		 */	
-		public DataTask(List<File> inputFiles) { 
-			this.inputFiles = inputFiles;	
-			this.filelen = inputFiles.size();	
-		}
-
-		/**
-		 * Callable method to store file types
-		 *
-		 * @return List<ISource>
-		 * 		dataFiles for data type
+		 * Constructor: sets input file
 		 */
-		public List<ISource> call() throws Exception { 
-			List<ISource> dataFiles = new ArrayList<ISource>(filelen);
-			for (File file: inputFiles) {
-				if (isIMS(file)) {
-					dataFiles.add(new SourceFileIMS(file));
-					logger.debug("IMS data file added: " + file.getAbsolutePath());
-				} else if (isMSEED(file)) {
-					dataFiles.add(new SourceFileMseed(file));
-					logger.debug("MSEED data file added: " + file.getAbsolutePath());
-				} else if (isSAC(file)) {
-					dataFiles.add(new SourceFileSAC(file));
-					logger.debug("SAC data file added: " + file.getAbsolutePath());
-				} else if (isSEGY(file)) {
-					dataFiles.add(new SourceFileSEGY(file));
-					logger.debug("SEGY data file added: " + file.getAbsolutePath());
-				} else if (isSEGD(file)) {
-					dataFiles.add(new SourceFileSEGD(file));
-					logger.debug("SEGD data file added: " + file.getAbsolutePath());
-				} else if (isSEED(file)) {
-					dataFiles.add(new SourceFileSEGD(file));
-					logger.debug("SEED data file added: " + file.getAbsolutePath());
-				} else {
-					logger.warn("Unknown file format: " + file.getName());
-				}
+		private FileType(File inputFile) {
+			this.file = inputFile;
+		}
+		
+		/**
+		 * Callable method to determine file type
+		 * 
+		 * @return ISource
+		 * 		data file for type
+		 */
+		public ISource call() throws Exception {
+			ISource datafile = null;
+			if (isIMS(file)) {
+				datafile = new SourceFileIMS(file);
+				logger.debug("IMS data file added: " + file.getAbsolutePath());
+			} else if (isMSEED(file)) {
+				datafile = new SourceFileMseed(file);
+				logger.debug("MSEED data file added: " + file.getAbsolutePath());
+			} else if (isSAC(file)) {
+				datafile = new SourceFileSAC(file);
+				logger.debug("SAC data file added: " + file.getAbsolutePath());
+			} else if (isSEGY(file)) {
+				datafile = new SourceFileSEGY(file);
+				logger.debug("SEGY data file added: " + file.getAbsolutePath());
+			} else if (isSEGD(file)) {
+				datafile = new SourceFileSEGD(file);
+				logger.debug("SEGD data file added: " + file.getAbsolutePath());
+			} else if (isSEED(file)) {
+				datafile = new SourceFileSEGD(file);
+				logger.debug("SEED data file added: " + file.getAbsolutePath());
+			} else {
+				logger.warn("Unknown file format: " + file.getName());
 			}
-			return dataFiles;
+			return datafile;
 		}
 	}
 
@@ -188,17 +191,55 @@ public abstract class SourceFile implements ISource {
 	 */
 	public static List<ISource> getDataFiles(List<File> files) throws TraceViewException {
 		
-		// Setup Pool of Workers to set data types for each file
-		List<ISource> dataFileList = new ArrayList<ISource>();	// main datafiles list
-		DataExecutor execType = new DataExecutor(files);
-		execType.setVariables();
+		// Setup pool of workers to set data types for each file (using loop)
+		// Submits FileType() tasks to multi-threaded executor
+		int numProc = Runtime.getRuntime().availableProcessors();
+		int filelen = files.size();
+		int threadCount = 0;
+		if (numProc % 2 == 0)
+			threadCount = numProc / 2;
+		else
+			threadCount = (numProc + 1) / 2;
+		ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multi-thread executor
+		List<Future<ISource>> tasks = new ArrayList<Future<ISource>>(filelen);	// list of future tasks
+		List<ISource> dataFileList = new ArrayList<ISource>(filelen);	// main datafiles list
+		try {	
+			long start = System.nanoTime();
+			for (File file: files) {
+				FileType task = new FileType(file);	// filetype task
+				Future<ISource> future = executor.submit(task);	// submit task for exec	
+				tasks.add(future);	// add future filetype to tasks list
+			}
 		
-		// Set tasks for execution
-		long start = System.nanoTime();
-		dataFileList = execType.processDataTypes();
-		long endl = System.nanoTime() - start;
-		double end = endl * Math.pow(10, -9);
-		System.out.format("SourceFile: getDataFiles() execution time = %.9f sec\n", end);
+			// Loop through tasks and get futures	
+			// ** May want to include future.get() in files loop
+			// this will eliminate extra loop for getting futures
+			for (Future<ISource> future: tasks) {
+				try {
+					dataFileList.add(future.get(3, TimeUnit.SECONDS));
+				} catch (TimeoutException e) {
+					logger.error("Future TimeoutException:", e);
+					shutdownFuture(future, executor);
+				} catch (ExecutionException e) {
+					logger.error("Future ExecutionException:", e);
+					shutdownFuture(future, executor);
+				} catch (InterruptedException e) {
+					logger.error("Future InterruptedException:", e);
+					shutdownFuture(future, executor);
+				}
+			}
+			long endl = System.nanoTime() - start;
+			double end = endl * Math.pow(10, -9);
+			System.out.format("SourceFile: getDataFiles() execution time = %.9f sec\n", end);
+		} catch (RejectedExecutionException e) {
+			logger.error("Executor RejectedExecutionException:", e);
+			executor.shutdownNow();
+		} catch (NullPointerException e) {
+			logger.error("Executor NullPointerException:", e);
+			executor.shutdownNow();
+		}
+		// Shutdown executor and cancel lingering tasks
+		shutdownExecutor(executor);
 		
 		return dataFileList;
 	}
@@ -484,6 +525,33 @@ public abstract class SourceFile implements ISource {
 	public String getBlockHeaderText(long blockStartOffset){
 		return "<html><i>File type:</i>" + getFormatType() + "<br>Header block text is unavailable</html>";
 	}
+
+	/**
+	 * Shutdown future and executor
+	 */
+	private static void shutdownFuture(Future<?> task, ExecutorService executor) {
+		task.cancel(true);
+		executor.shutdownNow();
+	}
+
+	/**
+	 * Shutdown executor and linger tasks (if necessary)
+	 */
+	private static void shutdownExecutor(ExecutorService pool) {
+		pool.shutdown();
+		try {
+			// Wait awhile for existing tasks to terminate
+			if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+				pool.shutdownNow();	// cancel current executing tasks
+				// Wait awhile for tasks to respond to cancel
+				if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+					logger.error("Pool did not terminate: Shutting down!!");
+			}
+		} catch (InterruptedException e) {
+			pool.shutdownNow();	
+		}
+	}
+	
 	/*
 	 * private void writeObject(ObjectOutputStream out) throws IOException { lg.debug("Serializing
 	 * SourceFile" + toString()); dataSource = (ISource)in.readObject(); currentPos = in.readInt();

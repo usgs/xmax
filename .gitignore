@@ -5,3 +5,4 @@ logs/
 *.class
 **/**/classes
 src/META-INF/MANIFEST.MF
+src/META-INF/
