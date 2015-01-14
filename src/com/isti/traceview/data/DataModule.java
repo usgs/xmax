@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
 
@@ -36,12 +35,6 @@ import com.isti.traceview.gui.IColorModeState;
  */
 public class DataModule extends Observable {
 	private static final Logger logger = Logger.getLogger(DataModule.class);
-	
-	/**
-	 * Shared synchronized object lock, monitors
-	 * shared resources during execution
-	 */
-	private static Object sharedLock = new Object();
 
 	private IChannelFactory channelFactory = new DefaultChannelFactory();
 
@@ -56,9 +49,14 @@ public class DataModule extends Observable {
 	private static Map<String, Station> stations = new HashMap<String, Station>();
 	
 	/**
+	 * Set of parsed channels
+	 */
+	private Set<RawDataProvider> changedChannels;
+	
+	/**
 	 * List of found files with trace data
 	 */
-	private static List<ISource> dataSources;
+	private List<ISource> dataSources;
 
 	List<Response> responses;
 
@@ -81,8 +79,9 @@ public class DataModule extends Observable {
 	public DataModule() {
 		allChannelsTI = new TimeInterval();
 		channels = Collections.synchronizedList(new ArrayList<PlotDataProvider>());
-		dataSources = Collections.synchronizedList(new ArrayList<ISource>());
 		markerPosition = 0;
+		dataSources = new ArrayList<ISource>();
+		changedChannels = new HashSet<RawDataProvider>();
 		responses = new ArrayList<Response>();
 	}
 	
@@ -95,51 +94,6 @@ public class DataModule extends Observable {
 	 */
 	public void setChannelFactory(IChannelFactory factory) {
 		this.channelFactory = factory;
-	}
-	
-	/**
-	 * Class to run Future data file parse task 
-	 * 
-	 * @param dataFiles
-	 * 		partial input data files (split using DataExecutor) 
-	 * 
-	 * @return ParseOutput 
-	 * 		contains parsed files and list of parsed files
-	 *
-	 */
-	public static class ParseTask extends DataModule implements Callable<Set<RawDataProvider>> {
-		private List<ISource> dataFiles;
-
-		/**
-		 * Constructor: sets start/end indices for loop
-		 */
-		public ParseTask(List<ISource> dataFiles) {
-			this.dataFiles = dataFiles;
-		}
-
-		/**
-		 * Callable method to parse data file
-		 *
-		 * @return ParseOutput
-		 * 		class contains partial Set<RawDataProvider>
-		 * 		changedChannels and List<ISource> dataSources
-		 */
-		public Set<RawDataProvider> call() throws Exception {
-			synchronized (sharedLock) {
-				Set<RawDataProvider> changedChannels = new HashSet<RawDataProvider>();
-				int count = 0;
-			
-				for (ISource datafile: dataFiles) {
-					if (!isSourceLoaded(datafile)) {
-						changedChannels.addAll(datafile.parse(this));
-						dataSources.add(datafile);
-						count++;
-					}
-				}
-				System.out.format("Number of files: %d\n", count);
-				return changedChannels;
-			}
-		}	
 	}
 
 	/**
@@ -212,6 +166,7 @@ public class DataModule extends Observable {
 		channels.clear();
 		dataSources.clear();
 		stations.clear();
+		changedChannels.clear();
 		loadData();
 	}
 
@@ -294,8 +249,7 @@ public class DataModule extends Observable {
 	 *            file to add
 	 * @return list of {@link RawDataProvider}s found in the data file
 	 */
-	public Set<RawDataProvider> addDataSource(ISource datafile) {
-		Set<RawDataProvider> changedChannels = null;
+	public void addDataSource(ISource datafile) {
 		
 		// Parse seed file into trace segments based on times and/or gaps
 		if (!isSourceLoaded(datafile)) {
@@ -311,7 +265,6 @@ public class DataModule extends Observable {
 				notifyObservers(datafile);
 			}
 		}
-		return changedChannels;
 	}
 
 	/**
@@ -321,35 +274,19 @@ public class DataModule extends Observable {
 	 *            sources list to add
 	 * @return list of {@link RawDataProvider}s found in the sources
 	 */
-	public Set<RawDataProvider> addDataSources(List<ISource> datafiles) {
-		// Setup Pool of workers to parse each data file into segment traces
-		Set<RawDataProvider> changedChannels = new HashSet<RawDataProvider>();
-		DataExecutor execParse = new DataExecutor(datafiles);
-		execParse.setVariables();
+	public void addDataSources(List<ISource> datafiles) {
 		
-		// Set tasks for execution
-		long start = System.nanoTime();	
-		changedChannels = execParse.processDataParse();
-		long endl = System.nanoTime() - start;
-		double end = endl * Math.pow(10, -9);
-		System.out.format("DataModule: DataExecutor.processDataParse() execution time = %.9f sec\n\n", end);
-		
-		/**
 		// Compare to parse loop
-		Set<RawDataProvider> changedChannels = new HashSet<RawDataProvider>();
 		long start = System.nanoTime();
-		synchronized (sharedLock) {
-			for (ISource datafile: datafiles) {
-				if (!isSourceLoaded(datafile)) {
-					changedChannels.addAll(datafile.parse(this));
-					dataSources.add(datafile);
-				}
+		for (ISource datafile: datafiles) {
+			if (!isSourceLoaded(datafile)) {
+				changedChannels.addAll(datafile.parse(this));
+				dataSources.add(datafile);
 			}
 		}
 		long endl = System.nanoTime() - start;
 		double end = endl * Math.pow(10, -9);
-		System.out.format("test time = %.9f sec\n\n", end);
-		*/
+		System.out.format("DataModuel: addDataSources() execution time = %.9f sec\n\n", end);
 		
 		// Check size of changed channels after processing, this 
 		// will replace 'wasAdded' boolean. Then check data 
@@ -361,8 +298,6 @@ public class DataModule extends Observable {
 				notifyObservers(datafiles);
 			}
 		}
-
-		return changedChannels;
 	}
 
 	/**
@@ -375,7 +310,7 @@ public class DataModule extends Observable {
 			return false;
 		}
 	}
-
+	
 	private void checkDataIntegrity(Set<RawDataProvider> changedChannels) {
 		Iterator<RawDataProvider> it = changedChannels.iterator();
 		int rawDataSize = 0;
@@ -400,17 +335,15 @@ public class DataModule extends Observable {
 	 */
 	@SuppressWarnings("unused")	
 	private boolean channelHasAllSources(RawDataProvider channel) {
-		synchronized (sharedLock) {
-			List<ISource> sources = channel.getSources();
-			for (Object o : sources) {
-				if (o instanceof SourceFile) {
-					if (!dataSources.contains(o)) {
-						return false;
-					}
+		List<ISource> sources = channel.getSources();
+		for (Object o : sources) {
+			if (o instanceof SourceFile) {
+				if (!dataSources.contains(o)) {
+					return false;
 				}
 			}
-			return true;
 		}
+		return true;
 	}
 
 	/**
@@ -433,13 +366,11 @@ public class DataModule extends Observable {
 	 * @return Station as class
 	 */
 	public static Station getOrAddStation(String stationName) {
-		synchronized (sharedLock) {
-			Station station = stations.get(stationName.trim());
-			if (station == null) {
-				station = addStation(stationName.trim());
-			}
-			return station;
+		Station station = stations.get(stationName.trim());
+		if (station == null) {
+			station = addStation(stationName.trim());
 		}
+		return station;
 	}
 
 	/**
@@ -450,32 +381,29 @@ public class DataModule extends Observable {
 	 * @return Station as class, or null if not found
 	 */
 	public static Station getStation(String stationName) {
-		synchronized (sharedLock) {
-			Station station = stations.get(stationName.trim());
-			return station;
-		}
+		Station station = stations.get(stationName.trim());
+		return station;
 	}
 
 	private static Station addStation(String stationName) {
-		synchronized (sharedLock) {
-			Station station = new Station(stationName);
-			stations.put(station.getName(), station);
-			logger.debug("Station added: " + stationName);
-			return station;
-	
-		}
+		Station station = new Station(stationName);
+		stations.put(station.getName(), station);
+		logger.debug("Station added: " + stationName);
+		return station;
 	}
 
 	/**
 	 * @return list of parsed traces
 	 */
 	public List<PlotDataProvider> getAllChannels() {
-		logger.debug("getting channels");
-		return channels;
+		synchronized (channels) {
+			logger.debug("getting channels");
+			return channels;
+		}
 	}
 
 	private void addChannel(PlotDataProvider channel) {
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			channels.add(channel);
 			for (ISource src : channel.getSources()) {
 				if (!isSourceLoaded(src)) {
@@ -493,7 +421,7 @@ public class DataModule extends Observable {
 	 *            trace to delete
 	 */
 	public void deleteChannel(PlotDataProvider channel) {
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			channels.remove(channel);
 			if (!isChangedAllChannelsTI()) {
 				setChanged();
@@ -510,7 +438,7 @@ public class DataModule extends Observable {
 	 *            list of traces to delete
 	 */
 	public void deleteChannels(List<PlotDataProvider> toDelete) {
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			channels.removeAll(toDelete);
 			if (!isChangedAllChannelsTI()) {
 				setChanged();
@@ -538,7 +466,7 @@ public class DataModule extends Observable {
 		Station station, String networkName, String locationName) {
 			PlotDataProvider channel = channelFactory.getChannel(channelName.trim(), 
 					station, networkName.trim(), locationName.trim());
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			int i = channels.indexOf(channel);
 			if (i >= 0) {
 				// lg.debug("DataModule.getOrAddChannel() end");
@@ -568,7 +496,7 @@ public class DataModule extends Observable {
 			Station station, String networkName, String locationName) {
 				PlotDataProvider channel = channelFactory.getChannel(channelName.trim(), 
 						station, networkName.trim(), locationName.trim());
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			int i = channels.indexOf(channel);
 			if (i >= 0) {
 				// lg.debug("DataModule.getChannel() end");
@@ -587,7 +515,7 @@ public class DataModule extends Observable {
 	 * @see DataModule#getWindowSize(boolean)
 	 */
 	public int getChannelSetStartIndex() {
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			// lg.debug("DataModule.getChannelSetStartIndex()");
 			return from;
 		}
@@ -600,7 +528,7 @@ public class DataModule extends Observable {
 	 * @see DataModule#getWindowSize(boolean)
 	 */
 	public int getChannelSetEndIndex() {
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			// lg.debug("DataModule.getChannelSetEndIndex()");
 			return to;
 		}
@@ -613,7 +541,7 @@ public class DataModule extends Observable {
 	 * @return list of traces for next display window
 	 */
 	public List<PlotDataProvider> getNextChannelSet() throws TraceViewException {
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			int newWindowSize = getWindowSize(true);
 			if ((newWindowSize != 0)
 					&& ((markerPosition + newWindowSize) <= channels.size())) {
@@ -636,9 +564,9 @@ public class DataModule extends Observable {
 	 * 
 	 * @return list of traces for previous display window
 	 */
-	public List<PlotDataProvider> getPreviousCnannelSet()
+	public List<PlotDataProvider> getPreviousChannelSet()
 			throws TraceViewException {
-		synchronized (sharedLock) {
+		synchronized (channels) {
 			int newWindowSize = getWindowSize(false);
 			if ((newWindowSize != 0) && (markerPosition > 1)) {
 				markerPosition = markerPosition - windowSize - newWindowSize;

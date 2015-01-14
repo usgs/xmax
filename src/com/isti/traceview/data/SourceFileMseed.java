@@ -186,15 +186,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		} catch (InterruptedException e) {
 			logger.error("InterruptedException:", e);	
 		}
-//		try{
-//			throw new Exception();
-//		} catch (Exception e){
-//			String err = "";
-//			for(StackTraceElement el: e.getStackTrace()){
-//				err = err + el + "\n";
-//			}
-//			lg.debug(err);
-//		}
 
 		BufferedRandomAccessFile dis = null;
 		int[] data = new int[segment.getSampleCount()];
