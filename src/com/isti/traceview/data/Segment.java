@@ -331,22 +331,22 @@ public class Segment implements Externalizable, Cloneable {
 					if(endIndex<sampleCount){
 						next = dataStream.readInt(); 
 					}
-            // MTH: Use this if we are in the -T mode and we need to load existing serialized data (from .DATA)
+					// MTH: Use this if we are in the -T mode and we need to load existing serialized data (from .DATA)
                     if (com.isti.traceview.TraceView.getConfiguration().getDumpData()) {
                         logger.debug("We are in -T dataDump mode --> read this Segment from dataStream");
                         if (data == null) {
                             if (ret.length != sampleCount) {
-          			//System.out.format("== Segment.getData(): Warning: sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length);
-          			logger.warn(String.format("sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length));
+                            	//System.out.format("== Segment.getData(): Warning: sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length);
+                            	logger.warn(String.format("sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length));
                             }
                             //data = new int[sampleCount];
                             data = new int[ret.length];
                             System.arraycopy(ret, 0, data, 0, ret.length);
                         }
                         else {
-        			//System.out.println("== Segment.getData(): We are in -T dataDump mode but data IS NOT null!!!");
+                        	//System.out.println("== Segment.getData(): We are in -T dataDump mode but data IS NOT null!!!");
                        		logger.debug("We are in -T dataDump mode but data IS NOT null!!!");
-			}
+                        }
                     }
 				} catch (IOException e) {
 					logger.error("IOException:", e);
