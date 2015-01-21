@@ -629,7 +629,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					observable.setChanged();
 					observable.notifyObservers("ROT OFF");
 				}
-//System.out.println("== GraphPanel.setChannelShowSet [Call repaint()]");
+				//System.out.println("== GraphPanel.setChannelShowSet [Call repaint()]");
 				repaint();
 			}
 			observable.setChanged();

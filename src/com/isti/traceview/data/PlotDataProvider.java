@@ -105,10 +105,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * parts of data, and raw data access during zooming happens only to limited small parts of data
 	 */
 	public void initPointCache(IColorModeState colorMode) {
-       		try { 
+       	try { 
 			logger.debug("== ENTER");
 			pointsCache = pixelize(getTimeRange(), initPointCount, null, colorMode);
-        		logger.debug("== EXIT");
+        	logger.debug("== EXIT");
 		} catch (PlotDataException e) {
 			logger.error("PlotDataException:", e);
 		}
@@ -191,7 +191,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				points = new ArrayList<PlotDataPoint[]>();
 				int startIndex = new Double((effectiveTimeRange.getStart() - getTimeRange().getStart()) * initPointCount
 						/ getTimeRange().getDuration()).intValue();
-//System.out.format("== getPlotData: startIndex=[ %d]\n", startIndex);
+				//System.out.format("== getPlotData: startIndex=[ %d]\n", startIndex);
 				if (startIndex < 0) {
 					for (int i = -startIndex; i < 0; i++) {
 						// lg.debug("getPlotData: add empty points in the beginning");
@@ -201,12 +201,11 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					}
 					startIndex = 0;
 				}
-				int endIndex = new Double((effectiveTimeRange.getEnd() - getTimeRange().getStart()) * initPointCount / getTimeRange().getDuration())
-						.intValue();
-//System.out.format("== getPlotData: endIndex=[ %d ] initPointCount=[%d]\n", endIndex, initPointCount);
+				int endIndex = new Double((effectiveTimeRange.getEnd() - getTimeRange().getStart()) * initPointCount / getTimeRange().getDuration()).intValue();
+				//System.out.format("== getPlotData: endIndex=[ %d ] initPointCount=[%d]\n", endIndex, initPointCount);
 				if (endIndex > initPointCount) {
-// MTH: We don't seem to go in here
-//System.out.format("== getPlotData: endIndex > initPointCount\n");
+					// MTH: We don't seem to go in here
+					//System.out.format("== getPlotData: endIndex > initPointCount\n");
 					points.addAll(pointsCache.subList(startIndex, initPointCount));
 					for (int i = initPointCount; i < endIndex; i++) {
 						// lg.debug("getPlotData: add empty points in the end");
@@ -215,7 +214,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 						points.add(intervalPoints);
 					}
 				} else {
-//System.out.format("== getPlotData: points.addAll\n");
+					//System.out.format("== getPlotData: points.addAll\n");
 					points.addAll(pointsCache.subList(startIndex, endIndex));
 				}
 				// lg.debug("Use data points from cache to calculate data, indexes: " + startIndex +

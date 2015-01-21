@@ -338,22 +338,23 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		// graphAreaPanel.getInsets().right;
 		logger.debug("Updating data " + this + "Width = " + width);
 		graphs = new ArrayList<PlotData>();
-/**
-System.out.println();
-System.out.println("== ChannelView updateData() Take a peak:");
-		for (PlotDataProvider channel: plotDataProviders) {
-            System.out.format("   [PDP: %s] [nsegs=%d] [isLoadingStarted=%s] [isLoaded=%s]\n",
-                channel.toString(), channel.getSegmentCount(), channel.isLoadingStarted(), channel.isLoaded() );
-            List<Segment> segs = channel.getRawData();
-            //System.out.format("     [rdp#][chanSerial#]:Segment\n");
-            for (Segment seg : segs) {
-                System.out.format("         [%d][%d]:%s [Source:%s]\n", seg.getSourceSerialNumber(), seg.getChannelSerialNumber(),
-                    seg.toString(), seg.getDataSource().getName() );
-            }
-        }
-System.out.println("== ChannelView updateData() Done");
-System.out.println();
-**/
+		
+		/**
+		System.out.println();
+		System.out.println("== ChannelView updateData() Take a peak:");
+				for (PlotDataProvider channel: plotDataProviders) {
+		            System.out.format("   [PDP: %s] [nsegs=%d] [isLoadingStarted=%s] [isLoaded=%s]\n",
+		                channel.toString(), channel.getSegmentCount(), channel.isLoadingStarted(), channel.isLoaded() );
+		            List<Segment> segs = channel.getRawData();
+		            //System.out.format("     [rdp#][chanSerial#]:Segment\n");
+		            for (Segment seg : segs) {
+		                System.out.format("         [%d][%d]:%s [Source:%s]\n", seg.getSourceSerialNumber(), seg.getChannelSerialNumber(),
+		                    seg.toString(), seg.getDataSource().getName() );
+		            }
+		        }
+		System.out.println("== ChannelView updateData() Done");
+		System.out.println();
+		**/
 
 		for (PlotDataProvider channel: plotDataProviders) {
 			// lg.debug("processing channel: " + channel);
