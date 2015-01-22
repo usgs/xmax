@@ -18,10 +18,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.MouseInputListener;
 
-import com.isti.traceview.CommandExecutor;
+//import com.isti.traceview.CommandExecutor;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
-import com.isti.traceview.commands.LoadDataCommand;
+//import com.isti.traceview.commands.LoadDataCommand;
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.EventWrapper;
@@ -310,7 +310,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				minValueAllChannels = channel.getMinValue();
 			}
 		}
-		CommandExecutor.getInstance().execute(new LoadDataCommand(channels, null));
+		//CommandExecutor.getInstance().execute(new LoadDataCommand(channels, null));
 		lastClickedY = Integer.MIN_VALUE;
 	}
 

@@ -28,6 +28,7 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.processing.IFilter;
 import com.isti.traceview.processing.Rotation;
+import com.isti.traceview.commands.LoadDataCommand;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -585,19 +586,46 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		synchronized (TraceView.getDataModule().getAllChannels()) {
 			if (channels != null) {
 				clearChannelShowSet();
-				CommandExecutor.getInstance().clearCommandHistory(); // or do channels loading as
-				// a command
+				CommandExecutor.getInstance().clearCommandHistory(); // or do channels load as a command?
+				
+				// This is the main method for all station channels for one
+				// GraphPanel (i.e. one station multiple channels per panel)
 				if (!TraceView.getConfiguration().getMergeLocations()) {
+					// This submits each single channel as a List<> which doesn't
+					// make sense. Why not submit all channels to addChannelShowSet()?
+					// or submit each channel individually?
+					// **NOTE: addChannelShowSet() calls the addGraph() method which
+					//		   creates a graph panel for each channel submitted
 					for (PlotDataProvider channel: channels) {
                         logger.debug("== handle channel=" + channel);
 						List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
 					}
+					// Get List<ChannelView> channelShowSet() and
+					// load each channel containing rawData
+					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
+					Thread loadPDP = null;
+					for (ChannelView cv: channelShowSet) {
+						pdpList = cv.getPlotDataProviders();	// usually contains one channel
+						loadPDP = new Thread(new LoadDataCommand(pdpList, null));
+						loadPDP.start();
+						try {
+							loadPDP.join();	// wait for thread to terminate before starting next
+						} catch (InterruptedException e) {
+							logger.error("InterruptedException:", e);
+						}
+					}
+					logger.debug("Channels are done loading");
 				} else {
 					List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
 					PlotDataProvider prevChannel = null;
 					for (PlotDataProvider channel: channels) {
+						// This block checks for channels with the same location code
+						// regardless of the network, channel, or station name
+						// adds list of channels based on {XX}location to one graph panel
+						// **NOTE: The toAdd List<> still needs to be revised, doesn't
+						// 		   make sense when only one channel is being submitted
 						if (prevChannel != null
 								&& (!prevChannel.getNetworkName().equals(channel.getNetworkName())
 										|| !prevChannel.getStation().getName().equals(channel.getStation().getName()) || !prevChannel
@@ -612,6 +640,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					if (toAdd.size() > 0) {
 						addChannelShowSet(toAdd);
 					}
+					// Will add loop for List<ChannelView> channelShowSet to load
+					// channels in List<PlotDataProvider> (see above)
 				}
 				selectedChannelShowSet = Collections.synchronizedList(new UniqueList<ChannelView>());
 				if (overlay) {
@@ -648,8 +678,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (this.shouldManageTimeRange) {
 				if (timeRange == null) {
 					setTimeRange(cv.getLoadedTimeRange());
+				} else {
+					setTimeRange(TimeInterval.getAggregate(timeRange, cv.getLoadedTimeRange()));
 				}
-				setTimeRange(TimeInterval.getAggregate(timeRange, cv.getLoadedTimeRange()));
 			}
 			// repaint();
 			observable.setChanged();

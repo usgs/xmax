@@ -254,7 +254,7 @@ public class RawDataProvider extends Channel {
 		double end = endl * Math.pow(10, -9);
 		logger.debug("== EXIT");
         System.out.println("== EXIT");
-        System.out.format("RawDataProvider: loadData() execution time = %.9f sec\n\n", end);
+        System.out.format("RawDataProvider: loadData() execution time = %.9f sec\n", end);
 	}
 
 	/**
@@ -373,7 +373,7 @@ public class RawDataProvider extends Channel {
 	 */
 	@SuppressWarnings("unchecked")
 	public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter) throws IOException {
-System.out.println("== Segment dumpMseed ENTER");
+		System.out.println("== Segment dumpMseed ENTER");
 		for (Segment segment: getRawData(ti)) {
 			int[] data = segment.getData(ti).data;
 			if (filter != null) {
