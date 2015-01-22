@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -189,6 +191,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
 		BufferedRandomAccessFile dis = null;
 		int[] data = new int[segment.getSampleCount()];
+		List<Integer> dataList = new ArrayList<Integer>(segment.getSampleCount());	// replace data Array with ArrayList
 		int currentSampleCount = 0; //Counter on the basis of data values
 		int headerSampleCount = 0; //Counter on the basis of header information
 		int blockNumber = 0;
@@ -236,19 +239,24 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 						for (int sample: intData) {
 							if (currentSampleCount < segment.getSampleCount()) {
 								data[currentSampleCount++] = sample;
+								dataList.add(currentSampleCount++, sample);
 								blockSampleCount++;
 							} else {
 								logger.warn("currentSampleCount > segment.getSampleCount(): " + currentSampleCount + ", " + segment.getSampleCount() + "block " + sr.getControlHeader().getSequenceNum());
 							}
 						}
-						System.out.println("intData size = " + intData.length);
-						System.out.println("currentSampleCount = " + currentSampleCount);
+						/**
+						System.out.println("Station/Channel: " + segment.getDataSource().getName());
+						System.out.println("Block number = " + blockNumber);
+						System.out.println("Current block intData[] size = " + intData.length);
+						System.out.println("currentSampleCount for data[] = " + currentSampleCount);
+						System.out.println();
+						*/
 					} else {
 						logger.warn("File " + getFile().getName() + ": Skipping block " + dr.getHeader().getSequenceNum() + " due to absence of data");
 					}
 				} else {
 					logger.warn("File " + getFile().getName() + ": Skipping block " + sr.getControlHeader().getSequenceNum() + " so as no-data record");
-
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -273,11 +281,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 				logger.error("IOException:", e);	
 			}
 		}
-		for (int value: data) {
+		for (int value: data) {	// this seems redundant, just add entire data[] to Segment.data[]?
 			segment.addDataPoint(value);
 		}
 
-		logger.debug("Loaded " + this + " " + segment + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
+		//logger.debug("Loaded " + this + " " + segment + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
+		System.out.println("Loaded " + this + " " + segment + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
 	}
 
 	public String toString() {

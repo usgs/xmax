@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +37,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * @uml.property name="data" readOnly="true"
 	 */
 	private int[] data = null;
+	private List<Integer> dataList = null;	// test: will replace int[] data with ArrayList<Integer> data
 
 	private int currentPos = 0;
 
@@ -133,6 +137,7 @@ public class Segment implements Externalizable, Cloneable {
 		this.maxValue = Integer.MIN_VALUE;
 		this.minValue = Integer.MAX_VALUE;
 		data = null;
+		dataList = null;
 		currentPos = 0;
 		logger.debug("Created: " + this);
 	}
@@ -234,16 +239,19 @@ public class Segment implements Externalizable, Cloneable {
 	 */
 	public int[] loadDataInt() {
         int[] ret = null;
+        List<Integer> retNew = null;
 		if (dataStream == null) {
             		//System.out.println("== Segment.loadDataInt() ERROR: dataStream == null!! --> Exiting");
             		logger.error("dataStream == null!! --> Exiting");	
 			System.exit(0);
 		} else {
 			ret = new int[sampleCount];
+			retNew = new ArrayList<Integer>(sampleCount);
 			try {
 				dataStream.seek(startOffsetSerial);
 				for (int i = 0; i < sampleCount; i++) {
 					ret[i] = dataStream.readInt();
+					retNew.add(i, dataStream.readInt());
 				}
 			} catch (IOException e) {
 				logger.error("IOException:", e);
@@ -251,6 +259,7 @@ public class Segment implements Externalizable, Cloneable {
             // Copy into this Segment's int[] data:
             data = new int[sampleCount];
             System.arraycopy(ret, 0, data, 0, sampleCount);
+            dataList = new ArrayList<Integer>(retNew);	// copies contents of retNew into dataList
 		}
 	    return ret;
 	}
@@ -258,20 +267,26 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Reads all data from loaded segment
+	 * 
+	 * NOTE: Will add ArrayList<Integer> dataList constructor for SegmentData (for future use)
 	 */
 	public SegmentData getData() {
 		if (dataStream == null) {
+			//return new SegmentData(startTime, sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, dataList);
 			return new SegmentData(startTime, sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, data);
 		} else {
 			int[] ret = new int[sampleCount];
+			List<Integer> retNew = new ArrayList<Integer>(sampleCount);
 			try {
 				dataStream.seek(startOffsetSerial);
 				for (int i = 0; i < sampleCount; i++) {
 					ret[i] = dataStream.readInt();
+					retNew.add(i, dataStream.readInt());
 				}
 			} catch (IOException e) {
 				logger.error("IOException:", e);
 			}
+			//return new SegmentData(startTime, sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, retNew);
 			return new SegmentData(startTime, sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, ret);
 		}
 	}
@@ -285,6 +300,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * returns array of data in requested time range, from loaded segment.
+	 * **NOTE: Testing implementation of ArrayList<Integer> data and ArrayList<Integer> ret
 	 * 
 	 * @param start
 	 *            start time in milliseconds
@@ -295,6 +311,7 @@ public class Segment implements Externalizable, Cloneable {
 	public SegmentData getData(double start, double end) {
 		// lg.debug("startTime=" + startTime +", endTime=" + getEndTime().getTime());
 		int[] ret = null;
+		List<Integer> retNew = null;
 		int previous = Integer.MAX_VALUE;
 		int next = Integer.MAX_VALUE;
 		double startt = Math.max(startTime, start);
@@ -304,6 +321,7 @@ public class Segment implements Externalizable, Cloneable {
 		int endIndex = new Double((endt - startTime) / sampleRate).intValue();
 		if (startIndex != endIndex) {
 			ret = new int[endIndex - startIndex];
+			retNew = new ArrayList<Integer>(Collections.nCopies(endIndex - startIndex, 0));
 			logger.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
 			if (dataStream == null) {
                 		logger.debug("== dataStream == null --> Get points from RAM data[] " +
@@ -312,8 +330,16 @@ public class Segment implements Externalizable, Cloneable {
 				for (int i = startIndex; i < endIndex; i++) {
 					ret[i - startIndex] = data[i];
 				}
-				if(startIndex>0) previous = data[startIndex-1];
-				if (endIndex<sampleCount) next = data[endIndex];
+				retNew = dataList.subList(startIndex, endIndex);	// in java we can get data using List<>.subList(start, end) (no loop needed)
+				
+				if (startIndex > 0) {
+					previous = data[startIndex-1];
+					//previous = dataList.get(startIndex-1);	// will set previous using new ArrayList<> dataList
+				}
+				if (endIndex < sampleCount) {
+					next = data[endIndex];
+					//next = dataList.get(endIndex);	// will set next using new ArrayList<> dataList
+				}
 			} else {
 				// we use serialized data file
                 		logger.debug("== dataStream is NOT null --> Load points from dataStream.readInt() to data[] " +
@@ -327,6 +353,7 @@ public class Segment implements Externalizable, Cloneable {
 					}					
 					for (int i = startIndex; i < endIndex; i++) {
 						ret[i - startIndex] = dataStream.readInt();
+						retNew.add((i-startIndex), dataStream.readInt());	// testing ArrayList<Integer> for ret
 					}
 					if(endIndex<sampleCount){
 						next = dataStream.readInt(); 
@@ -342,6 +369,7 @@ public class Segment implements Externalizable, Cloneable {
                             //data = new int[sampleCount];
                             data = new int[ret.length];
                             System.arraycopy(ret, 0, data, 0, ret.length);
+                            dataList = new ArrayList<Integer>(retNew);
                         }
                         else {
                         	//System.out.println("== Segment.getData(): We are in -T dataDump mode but data IS NOT null!!!");
