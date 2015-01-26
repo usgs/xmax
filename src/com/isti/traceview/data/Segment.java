@@ -241,8 +241,8 @@ public class Segment implements Externalizable, Cloneable {
         int[] ret = null;
         List<Integer> retNew = null;
 		if (dataStream == null) {
-            		//System.out.println("== Segment.loadDataInt() ERROR: dataStream == null!! --> Exiting");
-            		logger.error("dataStream == null!! --> Exiting");	
+            //System.out.println("== Segment.loadDataInt() ERROR: dataStream == null!! --> Exiting");
+           	logger.error("dataStream == null!! --> Exiting");	
 			System.exit(0);
 		} else {
 			ret = new int[sampleCount];
@@ -314,14 +314,15 @@ public class Segment implements Externalizable, Cloneable {
 		List<Integer> retNew = null;
 		int previous = Integer.MAX_VALUE;
 		int next = Integer.MAX_VALUE;
+		int previousNew = Integer.MAX_VALUE;
+		int nextNew = Integer.MAX_VALUE;
 		double startt = Math.max(startTime, start);
 		double endt = Math.min(getEndTime().getTime(), end);
 		int startIndex = new Double((startt - startTime) / sampleRate).intValue();
-		//int startIndex = new Long(Math.round(new Double((startt - startTime) / sampleRate))).intValue();
 		int endIndex = new Double((endt - startTime) / sampleRate).intValue();
 		if (startIndex != endIndex) {
 			ret = new int[endIndex - startIndex];
-			retNew = new ArrayList<Integer>(Collections.nCopies(endIndex - startIndex, 0));
+			retNew = new ArrayList<Integer>(Collections.nCopies(endIndex - startIndex, 0));	// fill list with 0s
 			logger.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
 			if (dataStream == null) {
                 		logger.debug("== dataStream == null --> Get points from RAM data[] " +
@@ -334,11 +335,11 @@ public class Segment implements Externalizable, Cloneable {
 				
 				if (startIndex > 0) {
 					previous = data[startIndex-1];
-					//previous = dataList.get(startIndex-1);	// will set previous using new ArrayList<> dataList
+					previousNew = dataList.get(startIndex-1);	// will set previous using new ArrayList<> dataList
 				}
 				if (endIndex < sampleCount) {
 					next = data[endIndex];
-					//next = dataList.get(endIndex);	// will set next using new ArrayList<> dataList
+					nextNew = dataList.get(endIndex);	// will set next using new ArrayList<> dataList
 				}
 			} else {
 				// we use serialized data file
@@ -348,6 +349,7 @@ public class Segment implements Externalizable, Cloneable {
 					if(startIndex>0){
 						dataStream.seek(startOffsetSerial + startIndex * 4 - 4);
 						previous = dataStream.readInt();
+						previousNew = previous;
 					} else {
 						dataStream.seek(startOffsetSerial);
 					}					
@@ -357,6 +359,7 @@ public class Segment implements Externalizable, Cloneable {
 					}
 					if(endIndex<sampleCount){
 						next = dataStream.readInt(); 
+						nextNew = next;
 					}
 					// MTH: Use this if we are in the -T mode and we need to load existing serialized data (from .DATA)
                     if (com.isti.traceview.TraceView.getConfiguration().getDumpData()) {
@@ -382,27 +385,38 @@ public class Segment implements Externalizable, Cloneable {
 			}
 		} else {
 			if (dataStream == null) {
-				ret = new int[1];				
+				ret = new int[1];
+				retNew = new ArrayList<Integer>(1);
 				ret[0] = data[startIndex];
-				if(startIndex>0) previous = data[startIndex-1];
-				if (endIndex<sampleCount) next = data[endIndex];
+				retNew.add(0, dataList.get(startIndex));
+				if(startIndex>0) {
+					previous = data[startIndex-1];
+					previousNew = dataList.get(startIndex-1);
+				}
+				if (endIndex<sampleCount) {
+					next = data[endIndex];
+					nextNew = dataList.get(endIndex);
+				}
 			} else {
 				try {
 					if(startIndex>0){
 						dataStream.seek(startOffsetSerial + startIndex * 4 - 4);
 						previous = dataStream.readInt();
+						previousNew = previous;
 					} else {
 						dataStream.seek(startOffsetSerial);
 					}	
 					ret[0] = dataStream.readInt();
 					if(endIndex<sampleCount){
 						next = dataStream.readInt(); 
+						nextNew = next;
 					}
 				} catch (IOException e) {
 					logger.error("IOException:", e);
 				}
 			}
 		}
+		SegmentData sd = new SegmentData(new Double(startTime + startIndex*sampleRate).longValue(), sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, previousNew, nextNew, retNew);
 		return new SegmentData(new Double(startTime + startIndex*sampleRate).longValue(), sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, previous, next, ret);
 	}
 
@@ -410,7 +424,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * Loads segment data from memory from data source
 	 */
 	public void load() {
-//System.out.format("== Segment.load() --> dataSource.load(this): dataSource=[%s]\n", dataSource);
 		dataSource.load(this);
 	}
 
@@ -418,12 +431,24 @@ public class Segment implements Externalizable, Cloneable {
 	 * Adds sample to the end of segment data
 	 */
 	public synchronized void addDataPoint(int value) {
-		if(data==null){
+		if (data == null){
 			data = new int[sampleCount];
 		}
 		data[currentPos++] = value;
 		setMaxValue(value);
 		setMinValue(value);
+	}
+	
+	/**
+	 * Adds all samples from load() method
+	 */
+	public synchronized void addDataPoints(List<Integer> segmentData) {
+		if (dataList == null) {
+			dataList = new ArrayList<Integer>(sampleCount);
+		}
+		dataList = segmentData;
+		setMaxValue(Collections.max(dataList));
+		setMinValue(Collections.min(dataList));
 	}
 
 	/**
