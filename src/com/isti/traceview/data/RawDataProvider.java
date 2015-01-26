@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceViewException;
@@ -232,7 +234,23 @@ public class RawDataProvider extends Channel {
 	 */
 	public void loadData(TimeInterval ti) {
         logger.debug("== ENTER");
+        
+        // Setup pool of workers to load data segments for current channel
+        int numProc = Runtime.getRuntime().availableProcessors();
+        int numSegs = rawData.size();
+        int threadCount = 0;
+        if (numProc % 2 == 0) {
+        	if ((numProc - 2) != 0)
+        		threadCount = numProc - 2;	// this should be greater than x/2
+        	else
+        		threadCount = numProc / 2;
+        } else {
+        	threadCount = (numProc + 1) / 2;
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multithread executor
         long start = System.nanoTime();
+        
+        // Create runnable method to submit segments
 		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();
             if (!seg.getIsLoaded()) {
@@ -254,7 +272,7 @@ public class RawDataProvider extends Channel {
 		double end = endl * Math.pow(10, -9);
 		logger.debug("== EXIT");
         System.out.println("== EXIT");
-        System.out.format("RawDataProvider: loadData() execution time = %.9f sec\n", end);
+        System.out.format("RawDataProvider: loadData(segments) execution time = %.9f sec\n", end);
 	}
 
 	/**
