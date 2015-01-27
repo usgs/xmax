@@ -78,6 +78,15 @@ public class RawDataProvider extends Channel {
 		super(null, null, null, null);
 		rawData = new ArrayList<SegmentCache>();
 	}
+	
+	/** 
+	 * Runnable class for loadData(TimeInterval ti) 
+	 */
+	private static class LoadDataWorker implements Runnable {
+		public void run() {
+			
+		}
+	}
 
 	/**
 	 * Getter of the property <tt>rawData</tt>
@@ -234,7 +243,7 @@ public class RawDataProvider extends Channel {
 	 */
 	public void loadData(TimeInterval ti) {
         logger.debug("== ENTER");
-        
+        /**
         // Setup pool of workers to load data segments for current channel
         int numProc = Runtime.getRuntime().availableProcessors();
         int numSegs = rawData.size();
@@ -248,8 +257,13 @@ public class RawDataProvider extends Channel {
         	threadCount = (numProc + 1) / 2;
         }
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multithread executor
+        */
         long start = System.nanoTime();
-        
+        String network = getNetworkName();
+        String station = getStation().getName();
+        String location = getLocationName();
+        String channel = getChannelName();
+        System.out.println(network+"."+station+"."+location+"."+channel + ": numSegments = " + rawData.size());
         // Create runnable method to submit segments
 		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();
