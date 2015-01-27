@@ -605,24 +605,15 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// Get List<ChannelView> channelShowSet() and
 					// load each channel containing rawData
 					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
-					TimeInterval ti = null;
+					Thread loadPDP = null;
 					for (ChannelView cv: channelShowSet) {
 						pdpList = cv.getPlotDataProviders();	// usually contains one channel
-						if (pdpList.size() == 1) {
-							PlotDataProvider channel = pdpList.get(0);
-							System.out.println(Thread.currentThread().getName() + " Start. Command = " + channel.toString());
-							logger.debug("== Load data command: " + channel.toString() + ti);
-							channel.load(ti);
-							System.out.println(Thread.currentThread().getName() + " End. Command = " + channel.toString());
-							System.out.println();
-						} else {
-							for (PlotDataProvider channel: pdpList) {
-								System.out.println(Thread.currentThread().getName() + " Start. Command = " + channel.toString());
-								logger.debug("== Load data command: " + channel.toString() + ti);
-								channel.load(ti);
-								System.out.println(Thread.currentThread().getName() + " End. Command = " + channel.toString());
-								System.out.println();
-							}
+						loadPDP = new Thread(new LoadDataCommand(pdpList, null));
+						loadPDP.start();
+						try {
+							loadPDP.join();	// wait for thread to terminate before starting next
+						} catch (InterruptedException e) {
+							logger.error("InterruptedException:", e);
 						}
 					}
 					logger.debug("Channels are done loading");

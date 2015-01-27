@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -193,9 +196,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		}
 		int segmentSampleCount = segment.getSampleCount();	// sample count of current segment
 		List<Integer> data = new ArrayList<Integer>(segmentSampleCount);	// replace segment data[] Array with ArrayList
+		//int[] data = new int[segmentSampleCount];	// testing for memory usage
 		BufferedRandomAccessFile dis = null;
 		int currentSampleCount = 0; //Counter on the basis of data values
 		int headerSampleCount = 0; //Counter on the basis of header information
+		int blockSampleCount = 0;	//Counter on current block 
+		int drSampleCount = 0;		//Counter on current DataRecord
 		int blockNumber = 0;
 		try {
 			logger.debug("source = " + getFile().getCanonicalPath());	
@@ -204,8 +210,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			dis.seek(segment.getStartOffset());
 			logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
 			while (currentSampleCount < segmentSampleCount) {
-				//int blockSampleCount = 0;	// reset count for each DataRecord block
-				int drSampleCount = 0;	// number of samples in current DataRecord
+				blockSampleCount = 0;	// reset count for each DataRecord block
+				drSampleCount = 0;	// number of samples in current DataRecord
 				long blockStartOffset = dis.getFilePointer();
 				SeedRecord sr = SynchronizedSeedRecord.read(dis, TraceView.getConfiguration().getDefaultBlockLength());
 				blockNumber++;
@@ -218,6 +224,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 						LocalSeismogramImpl lsi = null; // stores seed data as seis id, num samples, sample rate
 														// channel id, and byte[] data (EncodedData)
 						List<Integer> intData = new ArrayList<Integer>(drSampleCount);	// SeedRecord data ArrayList
+						//int[] intData = new int[drSampleCount];	// testing memory usage for normal array[]
 						try {
 							if (dr.getBlockettes(1000).length == 0) {
 								DataRecord dra[] = new DataRecord[1];
@@ -225,11 +232,40 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								int defaultCompression = TraceView.getConfiguration().getDefaultCompression();
 								byte dataCompression = (byte) defaultCompression;
 								byte byteOrder = (byte) 1;	// big endian byte order
+										
+								// Time Fissures, this is taking awhile to convert
+								long startl = System.nanoTime();
 								lsi = FissuresConvert.toFissures(dra, dataCompression, byteOrder);
+								long endl = System.nanoTime() - startl;
+								double end = endl * Math.pow(10, -9);
+								System.out.println("Fissures(dra, byteOrder) conversion time = " + end + " sec");
 							} else {
+								// Get byte data directly (!Fissures) and convert to ArrayList<Int>
+								byte[] byteData = dr.getData();	// will use this to get int[] data (faster than Fissures)
+								System.out.println("byteData length = " + byteData.length);
+								IntBuffer intBuf = ByteBuffer.wrap(byteData).order(ByteOrder.BIG_ENDIAN).asIntBuffer();
+								int[] array = new int[intBuf.remaining()];
+								intBuf.get(array);
+								
+								long startl = System.nanoTime();
 								lsi = FissuresConvert.toFissures(dr);
+								long endl = System.nanoTime() - startl;
+								double end = endl * Math.pow(10, -9);
+								System.out.println("Fissures(dr) conversion time = " + end + " sec");
 							}
+							/**
+							long startl = System.nanoTime();
+							intData = lsi.get_as_longs();	// testing for memory leaks using array[]
+							long endl = System.nanoTime() - startl;
+							double end = endl * Math.pow(10, -9);
+							System.out.println("lsi[] to int[] time = " + end);
+							*/
+							long startl = System.nanoTime();
 							intData = Arrays.asList(ArrayUtils.toObject(lsi.get_as_longs()));	// gets Encoded byte[] data and converts to ArrayList<Integer>
+							System.out.println("intData size = " + intData.size());
+							long endl = System.nanoTime() - startl;
+							double end = endl * Math.pow(10, -9);
+							System.out.println("int[] to ArrayList<Integer> conversion time = " + end + " sec");
 						} catch (FissuresException fe) {
 							StringBuilder message = new StringBuilder();
 							message.append(String.format("File " + getFile().getName() + ": Can't decompress data of block " + dr.getHeader().getSequenceNum() + ", setting block data to 0: "));
@@ -240,7 +276,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 						if (currentSampleCount < segmentSampleCount) {
 							data.addAll(intData);	// append current data to end of list
 							currentSampleCount += drSampleCount;	// add DataRecord sample count to current sample count
-							//blockSampleCount += drSampleCount;		// add DataRecord sample count to block sample count
+							blockSampleCount += drSampleCount;		// add DataRecord sample count to block sample count
 						} else {
 							logger.warn("currentSampleCount > segmentSampleCount: " + currentSampleCount + ", " + segmentSampleCount + "block " + sr.getControlHeader().getSequenceNum());
 						}
@@ -251,6 +287,16 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 					logger.warn("File " + getFile().getName() + ": Skipping block " + sr.getControlHeader().getSequenceNum() + " so as no-data record");
 				}
 			}
+			/**
+			if ((currentSampleCount > segmentSampleCount) || (currentSampleCount == segmentSampleCount)) {
+				System.out.println("Segment sample count = " + segmentSampleCount);
+				System.out.println("Current sample count = " + currentSampleCount);
+				System.out.println("Header sample count = " + headerSampleCount);
+				System.out.println("Data record sample count = " + drSampleCount);
+				System.out.println("Block sample count = " + blockSampleCount);
+				System.out.println("Block number = " + blockNumber);
+			}
+			*/
 		} catch (FileNotFoundException e) {
 			logger.error("Can't find file: ", e);
 			System.exit(0);	
