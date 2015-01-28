@@ -5,9 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -58,6 +55,60 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		return FormatType.MSEED;
 	}
 
+	/**
+	 * Method for converting 4 bytes to a 32bit Integer
+	 *
+	 * @param b
+	 * 	array of 4 bytes (32 bits for integer)
+	 * 
+	 * @return val
+	 * 	32bit integer
+	 */
+	public static int byteArrayToInt(byte[] b) {
+		int val = 0;	// returned 32 bit int
+
+		// Bit shifting using BIG ENDIAN
+		if (b.length == 4) {
+			val = b[3] & 0xFF |
+				(b[2] & 0xFF) << 8 |
+				(b[1] & 0xFF) << 16 |
+				(b[0] & 0xFF) << 24;
+			return val;
+		} else {
+			logger.error("Byte packet != 4bytes...");	
+			return 0;
+		}	
+	}
+
+	/**
+	 * Method for converting byte[] array to int[] array 
+	 *
+	 * @param buff
+	 * 	array of bytes (multiple of 4 bytes)
+	 *
+	 * @return data
+	 * 	array of 32bit integers returned by byteArrayToInt()
+	 */
+	public static int[] byteArrayToIntArray(byte[] buff) {
+		int len = buff.length;	
+		int start = 0;	// start index for next string of bytes
+		int end = 0;
+		int numbytes = 4;	// will implement 8 for long later
+		int tmpint = 0;		// current integer of 4 bytes	
+		int[] data = new int[len/numbytes];	// output integers	
+		byte[] tmpbytes = new byte[numbytes];	// current 4 byte packet	
+	
+		// Loop through buffer of bytes 
+		for (int i = 0; i < (len/numbytes); i++) {
+			start = i * numbytes;	// start index of 4 byte packet
+			end = start + numbytes;
+			tmpbytes = Arrays.copyOfRange(buff, start, end);	// 4 byte packet
+			tmpint = byteArrayToInt(tmpbytes);	// convert to int
+			data[i] = tmpint;
+		}
+		return data;	
+	}
+	
 	public synchronized Set<RawDataProvider> parse(DataModule dataModule) {
 		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
 		long blockNumber = 0;
@@ -242,11 +293,14 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 							} else {
 								// Get byte data directly (!Fissures) and convert to ArrayList<Int>
 								byte[] byteData = dr.getData();	// will use this to get int[] data (faster than Fissures)
-								System.out.println("byteData length = " + byteData.length);
-								IntBuffer intBuf = ByteBuffer.wrap(byteData).order(ByteOrder.BIG_ENDIAN).asIntBuffer();
-								int[] array = new int[intBuf.remaining()];
-								intBuf.get(array);
 								
+								System.out.println("byteData length = " + byteData.length);
+								// Convert byte data to int[] array using bit shifting
+								// **NOTE: May need to check if byte[] is an array of longs
+								// 	   => if (byteData % 8 == 0) ==> array of longs
+								// 	      if (byteData % 4 == 0) ==> array of ints
+								int[] tmpData = byteArrayToIntArray(buff);	// converts byte data to int[] array
+
 								long startl = System.nanoTime();
 								lsi = FissuresConvert.toFissures(dr);
 								long endl = System.nanoTime() - startl;
