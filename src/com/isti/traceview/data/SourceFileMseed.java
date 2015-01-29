@@ -22,6 +22,9 @@ import com.isti.traceview.common.TimeInterval;
 
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
+import edu.iris.Fissures.IfTimeSeries.EncodedData;
+import edu.iris.Fissures.IfTimeSeries.TimeSeriesDataSel;
+
 import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
 import edu.sc.seis.seisFile.mseed.Btime;
 import edu.sc.seis.seisFile.mseed.ControlHeader;
@@ -29,6 +32,7 @@ import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.mseed.SeedRecord;
+import edu.sc.seis.seisFile.mseed.Blockette1000;
 
 /**
  * File MSEED data source
@@ -53,60 +57,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
 	public FormatType getFormatType() {
 		return FormatType.MSEED;
-	}
-
-	/**
-	 * Method for converting 4 bytes to a 32bit Integer
-	 *
-	 * @param b
-	 * 	array of 4 bytes (32 bits for integer)
-	 * 
-	 * @return val
-	 * 	32bit integer
-	 */
-	public static int byteArrayToInt(byte[] b) {
-		int val = 0;	// returned 32 bit int
-
-		// Bit shifting using BIG ENDIAN
-		if (b.length == 4) {
-			val = b[3] & 0xFF |
-				(b[2] & 0xFF) << 8 |
-				(b[1] & 0xFF) << 16 |
-				(b[0] & 0xFF) << 24;
-			return val;
-		} else {
-			logger.error("Byte packet != 4bytes...");	
-			return 0;
-		}	
-	}
-
-	/**
-	 * Method for converting byte[] array to int[] array 
-	 *
-	 * @param buff
-	 * 	array of bytes (multiple of 4 bytes)
-	 *
-	 * @return data
-	 * 	array of 32bit integers returned by byteArrayToInt()
-	 */
-	public static int[] byteArrayToIntArray(byte[] buff) {
-		int len = buff.length;	
-		int start = 0;	// start index for next string of bytes
-		int end = 0;
-		int numbytes = 4;	// will implement 8 for long later
-		int tmpint = 0;		// current integer of 4 bytes	
-		int[] data = new int[len/numbytes];	// output integers	
-		byte[] tmpbytes = new byte[numbytes];	// current 4 byte packet	
-	
-		// Loop through buffer of bytes 
-		for (int i = 0; i < (len/numbytes); i++) {
-			start = i * numbytes;	// start index of 4 byte packet
-			end = start + numbytes;
-			tmpbytes = Arrays.copyOfRange(buff, start, end);	// 4 byte packet
-			tmpint = byteArrayToInt(tmpbytes);	// convert to int
-			data[i] = tmpint;
-		}
-		return data;	
 	}
 	
 	public synchronized Set<RawDataProvider> parse(DataModule dataModule) {
@@ -240,11 +190,13 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	// Loads current segment from RawDataProvider (this will be multithreaded)
 	public synchronized void load(Segment segment) {
 		logger.debug(this + " " + segment);
+		/**
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			logger.error("InterruptedException:", e);	
 		}
+		*/
 		int segmentSampleCount = segment.getSampleCount();	// sample count of current segment
 		List<Integer> data = new ArrayList<Integer>(segmentSampleCount);	// replace segment data[] Array with ArrayList
 		//int[] data = new int[segmentSampleCount];	// testing for memory usage
@@ -285,47 +237,34 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								byte byteOrder = (byte) 1;	// big endian byte order
 										
 								// Time Fissures, this is taking awhile to convert
-								long startl = System.nanoTime();
 								lsi = FissuresConvert.toFissures(dra, dataCompression, byteOrder);
-								long endl = System.nanoTime() - startl;
-								double end = endl * Math.pow(10, -9);
-								System.out.println("Fissures(dra, byteOrder) conversion time = " + end + " sec");
 							} else {
-								// Get byte data directly (!Fissures) and convert to ArrayList<Int>
-								byte[] byteData = dr.getData();	// will use this to get int[] data (faster than Fissures)
-								
-								System.out.println("byteData length = " + byteData.length);
-								// Convert byte data to int[] array using bit shifting
-								// **NOTE: May need to check if byte[] is an array of longs
-								// 	   => if (byteData % 8 == 0) ==> array of longs
-								// 	      if (byteData % 4 == 0) ==> array of ints
-								int[] tmpData = byteArrayToIntArray(buff);	// converts byte data to int[] array
-
-								long startl = System.nanoTime();
-								lsi = FissuresConvert.toFissures(dr);
-								long endl = System.nanoTime() - startl;
-								double end = endl * Math.pow(10, -9);
-								System.out.println("Fissures(dr) conversion time = " + end + " sec");
+								// Time Fissures conversion	
+								lsi = FissuresConvert.toFissures(dr);	// set LocalSeismogramImpl
 							}
-							/**
-							long startl = System.nanoTime();
-							intData = lsi.get_as_longs();	// testing for memory leaks using array[]
-							long endl = System.nanoTime() - startl;
-							double end = endl * Math.pow(10, -9);
-							System.out.println("lsi[] to int[] time = " + end);
-							*/
-							long startl = System.nanoTime();
+							//intData = lsi.get_as_longs();	// testing for memory leaks using array[]
 							intData = Arrays.asList(ArrayUtils.toObject(lsi.get_as_longs()));	// gets Encoded byte[] data and converts to ArrayList<Integer>
-							System.out.println("intData size = " + intData.size());
-							long endl = System.nanoTime() - startl;
-							double end = endl * Math.pow(10, -9);
-							System.out.println("int[] to ArrayList<Integer> conversion time = " + end + " sec");
 						} catch (FissuresException fe) {
 							StringBuilder message = new StringBuilder();
 							message.append(String.format("File " + getFile().getName() + ": Can't decompress data of block " + dr.getHeader().getSequenceNum() + ", setting block data to 0: "));
 							logger.error(message.toString(), fe);	
+							/**
+							for (int i = 0; i < intData.length; i++)	// testing for memory leaks on int[] array
+								intData[i] = 0;
+							*/
 							intData = Collections.nCopies(intData.size(), 0);	// file intData with 0s
 						}
+						/**
+						// Test int[] array for memory leaks
+						for (int sample: intData) {
+							if (currentSampleCount < segment.getSampleCount()) {
+								data[currentSampleCount++] = sample;
+								blockSampleCount++;
+							} else {
+								logger.warn("currentSampleCount > segmentSampleCount: " + currentSampleCount + ", " + segmentSampleCount + "block " + sr.getControlHeader().getSequenceNum());
+							}
+						}
+						*/
 						// Append new intData[] to data[] ArrayList (i.e. current seg data to all seg data)
 						if (currentSampleCount < segmentSampleCount) {
 							data.addAll(intData);	// append current data to end of list
@@ -341,16 +280,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 					logger.warn("File " + getFile().getName() + ": Skipping block " + sr.getControlHeader().getSequenceNum() + " so as no-data record");
 				}
 			}
-			/**
-			if ((currentSampleCount > segmentSampleCount) || (currentSampleCount == segmentSampleCount)) {
-				System.out.println("Segment sample count = " + segmentSampleCount);
-				System.out.println("Current sample count = " + currentSampleCount);
-				System.out.println("Header sample count = " + headerSampleCount);
-				System.out.println("Data record sample count = " + drSampleCount);
-				System.out.println("Block sample count = " + blockSampleCount);
-				System.out.println("Block number = " + blockNumber);
-			}
-			*/
 		} catch (FileNotFoundException e) {
 			logger.error("Can't find file: ", e);
 			System.exit(0);	
@@ -373,6 +302,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 				logger.error("IOException:", e);	
 			}
 		}
+		/**
+		// Test int[] array adding
+		for (int value: data) 
+			segment.addDataPoint(value);
+		*/
+		
 		// Add all segment data to current segment
 		segment.addDataPoints(data);
 		

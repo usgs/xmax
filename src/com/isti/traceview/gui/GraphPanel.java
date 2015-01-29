@@ -606,12 +606,16 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// load each channel containing rawData
 					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
 					Thread loadPDP = null;
+					LoadDataCommand loadCommand = null;
 					for (ChannelView cv: channelShowSet) {
 						pdpList = cv.getPlotDataProviders();	// usually contains one channel
-						loadPDP = new Thread(new LoadDataCommand(pdpList, null));
+						loadCommand = new LoadDataCommand(pdpList, null);
+						loadPDP = new Thread(loadCommand);
 						loadPDP.start();
 						try {
 							loadPDP.join();	// wait for thread to terminate before starting next
+							loadPDP = null;
+							loadCommand = null;
 						} catch (InterruptedException e) {
 							logger.error("InterruptedException:", e);
 						}
