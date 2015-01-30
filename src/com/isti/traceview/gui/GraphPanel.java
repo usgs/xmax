@@ -543,9 +543,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 
 	public List<ChannelView> getSelectedChannelShowSet() {
-
 		return selectedChannelShowSet;
-
 	}
 
 	/**
@@ -602,11 +600,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
 					}
+					/**
 					// Get List<ChannelView> channelShowSet() and
 					// load each channel containing rawData
 					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
 					Thread loadPDP = null;
 					LoadDataCommand loadCommand = null;
+					long startl = System.nanoTime();
 					for (ChannelView cv: channelShowSet) {
 						pdpList = cv.getPlotDataProviders();	// usually contains one channel
 						loadCommand = new LoadDataCommand(pdpList, null);
@@ -620,6 +620,26 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 							logger.error("InterruptedException:", e);
 						}
 					}
+					long endl = System.nanoTime() - startl;
+					double end = endl * Math.pow(10, -9);
+					System.out.println("Channel loading time = " + end);
+					*/
+					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
+					TimeInterval ti = null;
+					long startl = System.nanoTime();
+					for (ChannelView cv: channelShowSet) {
+						pdpList = cv.getPlotDataProviders();
+						if (pdpList.size() > 1) {
+							for (PlotDataProvider channel: pdpList)
+								channel.load(ti);
+						} else {
+							PlotDataProvider channel = pdpList.get(0);
+							channel.load(ti);
+						}
+					}
+					long endl = System.nanoTime() - startl;
+					double end = endl * Math.pow(10, -9);
+					System.out.println("Channel loading time = " + end);
 					logger.debug("Channels are done loading");
 				} else {
 					List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();

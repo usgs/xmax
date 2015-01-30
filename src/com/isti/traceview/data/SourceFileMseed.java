@@ -5,16 +5,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
-import org.apache.commons.lang.ArrayUtils;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.Station;
@@ -22,8 +18,6 @@ import com.isti.traceview.common.TimeInterval;
 
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
-import edu.iris.Fissures.IfTimeSeries.EncodedData;
-import edu.iris.Fissures.IfTimeSeries.TimeSeriesDataSel;
 
 import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
 import edu.sc.seis.seisFile.mseed.Btime;
@@ -32,7 +26,6 @@ import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.mseed.SeedRecord;
-import edu.sc.seis.seisFile.mseed.Blockette1000;
 
 /**
  * File MSEED data source
@@ -190,20 +183,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	// Loads current segment from RawDataProvider (this will be multithreaded)
 	public synchronized void load(Segment segment) {
 		logger.debug(this + " " + segment);
-		/**
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			logger.error("InterruptedException:", e);	
-		}
-		*/
+
 		int segmentSampleCount = segment.getSampleCount();	// sample count of current segment
-		List<Integer> data = new ArrayList<Integer>(segmentSampleCount);	// replace segment data[] Array with ArrayList
-		//int[] data = new int[segmentSampleCount];	// testing for memory usage
+		int[] data = new int[segmentSampleCount];	// testing for memory usage
 		BufferedRandomAccessFile dis = null;
 		int currentSampleCount = 0; //Counter on the basis of data values
 		int headerSampleCount = 0; //Counter on the basis of header information
-		int blockSampleCount = 0;	//Counter on current block 
 		int drSampleCount = 0;		//Counter on current DataRecord
 		int blockNumber = 0;
 		try {
@@ -213,7 +198,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			dis.seek(segment.getStartOffset());
 			logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
 			while (currentSampleCount < segmentSampleCount) {
-				blockSampleCount = 0;	// reset count for each DataRecord block
 				drSampleCount = 0;	// number of samples in current DataRecord
 				long blockStartOffset = dis.getFilePointer();
 				SeedRecord sr = SynchronizedSeedRecord.read(dis, TraceView.getConfiguration().getDefaultBlockLength());
@@ -226,8 +210,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 					if (drSampleCount > 0) {
 						LocalSeismogramImpl lsi = null; // stores seed data as seis id, num samples, sample rate
 														// channel id, and byte[] data (EncodedData)
-						List<Integer> intData = new ArrayList<Integer>(drSampleCount);	// SeedRecord data ArrayList
-						//int[] intData = new int[drSampleCount];	// testing memory usage for normal array[]
+						int[] intData = new int[drSampleCount];	// testing memory usage for normal array[]
 						try {
 							if (dr.getBlockettes(1000).length == 0) {
 								DataRecord dra[] = new DataRecord[1];
@@ -242,36 +225,20 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								// Time Fissures conversion	
 								lsi = FissuresConvert.toFissures(dr);	// set LocalSeismogramImpl
 							}
-							//intData = lsi.get_as_longs();	// testing for memory leaks using array[]
-							intData = Arrays.asList(ArrayUtils.toObject(lsi.get_as_longs()));	// gets Encoded byte[] data and converts to ArrayList<Integer>
+							intData = lsi.get_as_longs();	// testing for memory leaks using array[]
 						} catch (FissuresException fe) {
 							StringBuilder message = new StringBuilder();
 							message.append(String.format("File " + getFile().getName() + ": Can't decompress data of block " + dr.getHeader().getSequenceNum() + ", setting block data to 0: "));
 							logger.error(message.toString(), fe);	
-							/**
-							for (int i = 0; i < intData.length; i++)	// testing for memory leaks on int[] array
-								intData[i] = 0;
-							*/
-							intData = Collections.nCopies(intData.size(), 0);	// file intData with 0s
+							Arrays.fill(intData, 0);
 						}
-						/**
 						// Test int[] array for memory leaks
 						for (int sample: intData) {
 							if (currentSampleCount < segment.getSampleCount()) {
 								data[currentSampleCount++] = sample;
-								blockSampleCount++;
 							} else {
 								logger.warn("currentSampleCount > segmentSampleCount: " + currentSampleCount + ", " + segmentSampleCount + "block " + sr.getControlHeader().getSequenceNum());
 							}
-						}
-						*/
-						// Append new intData[] to data[] ArrayList (i.e. current seg data to all seg data)
-						if (currentSampleCount < segmentSampleCount) {
-							data.addAll(intData);	// append current data to end of list
-							currentSampleCount += drSampleCount;	// add DataRecord sample count to current sample count
-							blockSampleCount += drSampleCount;		// add DataRecord sample count to block sample count
-						} else {
-							logger.warn("currentSampleCount > segmentSampleCount: " + currentSampleCount + ", " + segmentSampleCount + "block " + sr.getControlHeader().getSequenceNum());
 						}
 					} else {
 						logger.warn("File " + getFile().getName() + ": Skipping block " + dr.getHeader().getSequenceNum() + " due to absence of data");
@@ -302,14 +269,9 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 				logger.error("IOException:", e);	
 			}
 		}
-		/**
 		// Test int[] array adding
 		for (int value: data) 
 			segment.addDataPoint(value);
-		*/
-		
-		// Add all segment data to current segment
-		segment.addDataPoints(data);
 		
 		//logger.debug("Loaded " + this + " " + segment + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
 		System.out.println("Loaded " + this + " " + segment + " [samples read = " + currentSampleCount + ", samples from headers = " + headerSampleCount + ", blocks read = " + blockNumber + "]");

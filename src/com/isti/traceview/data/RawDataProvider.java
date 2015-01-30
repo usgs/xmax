@@ -83,8 +83,32 @@ public class RawDataProvider extends Channel {
 	 * Runnable class for loadData(TimeInterval ti) 
 	 */
 	private static class LoadDataWorker implements Runnable {
+		private Segment segment;	// current segment to load	
+		int index;			// index of current segment
+
+		// Constructor initializing channel segment
+		private LoadDataWorker(Segment segment, int index) {
+			this.segment = segment;	
+			this.index = index;	
+		}
+		
+		@Override
 		public void run() {
-			
+			int sampleCount = segment.getSampleCount();	
+			if (!segment.getIsLoaded()) {
+				logger.debug("== Load Segment:" + segment.toString());
+				System.out.println(Thread.currentThread().getName()+" Start. Loading segment["+index+"]: " + segment.toString() + ", SampleCount = " + sampleCount); 
+				segment.load();
+				segment.setIsLoaded(true);
+				System.out.println(Thread.currentThread().getName()+" End. Segment["+index+"]: " + segment.toString() + ", SampleCount = " + sampleCount);
+			} else {
+				logger.debug("== Segment is ALREADY loaded:" + segment.toString());
+                //System.out.format("== RawDataProvider.loadData(): Segment is Already Loaded:%s\n", seg.toString() );
+                // MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
+                //      in order to have the segment's int[] data filled before serialization, but we're
+                //      doing this instead via PDP.initPointCache() --> PDP.pixelize(ti) --> Segment.getData(ti)
+                //seg.loadDataInt();
+			}
 		}
 	}
 
@@ -243,10 +267,10 @@ public class RawDataProvider extends Channel {
 	 */
 	public void loadData(TimeInterval ti) {
         logger.debug("== ENTER");
-        /**
+        
         // Setup pool of workers to load data segments for current channel
-        int numProc = Runtime.getRuntime().availableProcessors();
-        int numSegs = rawData.size();
+       	int index = 0;	// indexes each segment 
+       	int numProc = Runtime.getRuntime().availableProcessors();
         int threadCount = 0;
         if (numProc % 2 == 0) {
         	if ((numProc - 2) != 0)
@@ -257,36 +281,26 @@ public class RawDataProvider extends Channel {
         	threadCount = (numProc + 1) / 2;
         }
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multithread executor
-        */
-        long start = System.nanoTime();
+        
         String network = getNetworkName();
         String station = getStation().getName();
         String location = getLocationName();
         String channel = getChannelName();
         System.out.println(network+"."+station+"."+location+"."+channel + ": numSegments = " + rawData.size());
-        // Create runnable method to submit segments
+        long startl = System.nanoTime();
 		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();
-            if (!seg.getIsLoaded()) {
-                logger.debug("== Load Segment:" + seg.toString() );
-			    seg.load();
-			    seg.setIsLoaded(true);
-			    //sc.getSegment().load();
-            }
-            else {
-                logger.debug("== Segment is ALREADY loaded:" + seg.toString() );
-                //System.out.format("== RawDataProvider.loadData(): Segment is Already Loaded:%s\n", seg.toString() );
-                // MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
-                //      in order to have the segment's int[] data filled before serialization, but we're
-                //      doing this instead via PDP.initPointCache() --> PDP.pixelize(ti) --> Segment.getData(ti)
-                //seg.loadDataInt();
-            }
+            LoadDataWorker worker = new LoadDataWorker(seg, index);
+            executor.execute(worker);
+            index++; 
 		}
-		long endl = System.nanoTime() - start;
+		executor.shutdown();
+		while (!executor.isTerminated()) {}
+		long endl = System.nanoTime() - startl;
 		double end = endl * Math.pow(10, -9);
 		logger.debug("== EXIT");
         System.out.println("== EXIT");
-        System.out.format("RawDataProvider: loadData(segments) execution time = %.9f sec\n", end);
+        System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
 	}
 
 	/**

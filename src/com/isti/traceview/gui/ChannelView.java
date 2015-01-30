@@ -18,10 +18,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.MouseInputListener;
 
-//import com.isti.traceview.CommandExecutor;
+import com.isti.traceview.CommandExecutor;		// multithread executor for LoadDataCommand
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
-//import com.isti.traceview.commands.LoadDataCommand;
+import com.isti.traceview.commands.LoadDataCommand;	// testing memory usage of splitting channels
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.EventWrapper;
@@ -382,7 +382,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	 * Cistomized method to paint events.
 	 */
 	public void paintCustomEvent(Graphics g, EventWrapper eventWrapper, int x, int ymax, int ymin) {
-
 	}
 
 	/**
