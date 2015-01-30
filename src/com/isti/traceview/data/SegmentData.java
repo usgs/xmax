@@ -1,17 +1,14 @@
 package com.isti.traceview.data;
 
-import java.util.List;
-import java.util.ArrayList;
-
 public class SegmentData {
 	long startTime = 0;
 	double sampleRate = Double.POSITIVE_INFINITY;
 	int previous = Integer.MAX_VALUE;
 	int next = Integer.MAX_VALUE;
 	public int[] data = null;
-	public List<Integer> dataList = null;
 	int sourceSerialNumber = 0;
 	int channelSerialNumber = 0;
+	
 	/**
 	 * Sequential number of continue data area in trace, to which this point belongs. 
 	 * Similar to segmentNumber, but takes into account only gaps, not overlaps 
@@ -28,26 +25,9 @@ public class SegmentData {
 		this.channelSerialNumber = channelSerialNumber;
 		this.continueAreaNumber = continueAreaNumber;
 	}
-	
-	// New constructor for ArrayList<Integer> data
-	public SegmentData(long startTime, double sampleRate, int sourceSerialNumber, int channelSerialNumber, int continueAreaNumber, int previous, int next, List<Integer> dataList) {
-		this.startTime = startTime;
-		this.sampleRate = sampleRate;
-		this.previous = previous;
-		this.next = next;
-		this.dataList = dataList;
-		this.sourceSerialNumber = sourceSerialNumber;
-		this.channelSerialNumber = channelSerialNumber;
-		this.continueAreaNumber = continueAreaNumber;
-	}
 
 	public SegmentData(long startTime, double sampleRate, int sourceSerialNumber, int channelSerialNumber, int continueAreaNumber, int[] data) {
 		this(startTime, sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, Integer.MAX_VALUE, Integer.MAX_VALUE, data);
-	}
-	
-	// This is a new constructor utilizing the properties of an ArrayList<Integer> dataList
-	public SegmentData(long startTime, double sampleRate, int sourceSerialNumber, int channelSerialNumber, int continueAreaNumber, List<Integer> dataList) {
-		this(startTime, sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, Integer.MAX_VALUE, Integer.MAX_VALUE, dataList);
 	}
 
 	public long endTime() {
