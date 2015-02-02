@@ -639,8 +639,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					}
 					long endl = System.nanoTime() - startl;
 					double end = endl * Math.pow(10, -9);
-					System.out.println("Channel loading time = " + end);
 					logger.debug("Channels are done loading");
+					System.out.println("Channel load time = " + end);
 				} else {
 					List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
 					PlotDataProvider prevChannel = null;
@@ -1272,7 +1272,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	public void paint(Graphics g) {
-//System.out.println("== GraphPanel.paint(g) [Enter]");
+		//System.out.println("== GraphPanel.paint(g) [Enter]");
 		if(!paintNow){
 			
 		paintNow = true;
@@ -1295,9 +1295,19 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// end of ugly hack
 				}
 				
+				// Time updateData() which gets segment data and pixelizes
+				long startl = System.nanoTime();
 				view.updateData();
+				long endl = System.nanoTime() - startl;
+				double end = endl * Math.pow(10, -9);
+				System.out.println("updateData() and pixelize() execution time = " + end);
 			}
+			// Time plotting pixels in ChannelView.paint(Graphics)
+			long startl = System.nanoTime();
 			super.paint(g);
+			long endl = System.nanoTime() - startl;
+			double end = endl * Math.pow(10, -9);
+			System.out.println("paint(g) execution time = " + end + "\n");
 			g.setXORMode(new Color(204, 204, 51));
 			if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
 				// Drawing cursor
@@ -1355,7 +1365,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		//lg.debug("End of repainting graph panel");
 		paintNow = false;
 		}
-//System.out.println("== GraphPanel.paint(g) [Exit]");
+		//System.out.println("== GraphPanel.paint(g) [Exit]");
 	}
 
 	private void paintSelection(Graphics g, long Xbegin, long Xend, double Ybegin, double Yend, String message) {

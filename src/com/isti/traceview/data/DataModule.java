@@ -286,7 +286,7 @@ public class DataModule extends Observable {
 		}
 		long endl = System.nanoTime() - start;
 		double end = endl * Math.pow(10, -9);
-		System.out.format("DataModuel: addDataSources() execution time = %.9f sec\n\n", end);
+		System.out.format("DataModule: addDataSources() execution time = %.9f sec\n\n", end);
 		
 		// Check size of changed channels after processing, this 
 		// will replace 'wasAdded' boolean. Then check data 

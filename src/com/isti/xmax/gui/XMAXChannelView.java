@@ -119,7 +119,6 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 					}
 				}
 			}
-
 		}
 		if (message != null) {
 			XMAXframe.getInstance().getStatusBar().setMessage(message);

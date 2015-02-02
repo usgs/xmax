@@ -268,7 +268,7 @@ public class RawDataProvider extends Channel {
 	public void loadData(TimeInterval ti) {
         logger.debug("== ENTER");
         
-        // Setup pool of workers to load data segments for current channel
+/*        // Setup pool of workers to load data segments for current channel
        	int index = 0;	// indexes each segment 
        	int numProc = Runtime.getRuntime().availableProcessors();
         int threadCount = 0;
@@ -281,26 +281,31 @@ public class RawDataProvider extends Channel {
         	threadCount = (numProc + 1) / 2;
         }
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multithread executor
-        
+*/        
         String network = getNetworkName();
         String station = getStation().getName();
         String location = getLocationName();
         String channel = getChannelName();
         System.out.println(network+"."+station+"."+location+"."+channel + ": numSegments = " + rawData.size());
-        long startl = System.nanoTime();
-		for (SegmentCache sc: rawData) {
+        //long startl = System.nanoTime();
+/*		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();
             LoadDataWorker worker = new LoadDataWorker(seg, index);
             executor.execute(worker);
             index++; 
 		}
 		executor.shutdown();
-		while (!executor.isTerminated()) {}
-		long endl = System.nanoTime() - startl;
-		double end = endl * Math.pow(10, -9);
+		while (!executor.isTerminated()) {}*/
+        
+        for (SegmentCache sc: rawData) {
+        	Segment seg = sc.getSegment();
+        	seg.load();
+        }
+		//long endl = System.nanoTime() - startl;
+		//double end = endl * Math.pow(10, -9);
 		logger.debug("== EXIT");
         System.out.println("== EXIT");
-        System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
+        //System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
 	}
 
 	/**
