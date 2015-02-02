@@ -66,17 +66,17 @@ public class XMAX extends TraceView {
             
 	    	System.out.println("===============");
             if (cmd.getOptions().length == 0) {
-            	System.out.println("[ Quick Examples ]");
+            	System.out.println("[ Quick Examples ]\n");
             	System.out.println("* Read from -d 'data/path':");
-            	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_PTGA/2014_1{93,94}/00_LHZ*seed'");
+            	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_PTGA/2014_1{93,94}/00_LHZ*seed'\n");
                 System.out.println("* Read from BOTH -d 'data/path' AND existing serialized data in DATA_TEMP:");
-               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'\n");
                	System.out.println("* Overwrite Serialized data in DATA_TEMP:");
-               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'\n");
                	System.out.println("* Append to Serialized data in DATA_TEMP:");
                	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
-               	System.out.println();
             }
+            System.out.println("===============");
 			if (cmd.hasOption("h")) {
 				if (cmd.getOptions().length > 1) {
 					throw new XMAXException("It isn't allowed to use any other options with -h");
@@ -95,7 +95,7 @@ public class XMAX extends TraceView {
 				if (cmd.hasOption("g")) {
 					XMAXconfiguration.confFileName = cmd.getOptionValue("g").trim();
 				}
-				setConfiguration(XMAXconfiguration.getInstance());
+				setConfiguration(XMAXconfiguration.getInstance());	// if -g not given load current config.xml
 				if (cmd.hasOption("T")) {
 					dump = true;
 					getConfiguration().setDumpData(true);

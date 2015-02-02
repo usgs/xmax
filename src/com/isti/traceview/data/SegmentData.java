@@ -1,6 +1,5 @@
 package com.isti.traceview.data;
 
-
 public class SegmentData {
 	long startTime = 0;
 	double sampleRate = Double.POSITIVE_INFINITY;
@@ -9,6 +8,7 @@ public class SegmentData {
 	public int[] data = null;
 	int sourceSerialNumber = 0;
 	int channelSerialNumber = 0;
+	
 	/**
 	 * Sequential number of continue data area in trace, to which this point belongs. 
 	 * Similar to segmentNumber, but takes into account only gaps, not overlaps 

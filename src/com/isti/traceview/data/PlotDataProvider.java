@@ -105,10 +105,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * parts of data, and raw data access during zooming happens only to limited small parts of data
 	 */
 	public void initPointCache(IColorModeState colorMode) {
-       		try { 
+       	try { 
 			logger.debug("== ENTER");
 			pointsCache = pixelize(getTimeRange(), initPointCount, null, colorMode);
-        		logger.debug("== EXIT");
+        	logger.debug("== EXIT");
 		} catch (PlotDataException e) {
 			logger.error("PlotDataException:", e);
 		}
@@ -191,7 +191,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				points = new ArrayList<PlotDataPoint[]>();
 				int startIndex = new Double((effectiveTimeRange.getStart() - getTimeRange().getStart()) * initPointCount
 						/ getTimeRange().getDuration()).intValue();
-//System.out.format("== getPlotData: startIndex=[ %d]\n", startIndex);
+				//System.out.format("== getPlotData: startIndex=[ %d]\n", startIndex);
 				if (startIndex < 0) {
 					for (int i = -startIndex; i < 0; i++) {
 						// lg.debug("getPlotData: add empty points in the beginning");
@@ -201,12 +201,11 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					}
 					startIndex = 0;
 				}
-				int endIndex = new Double((effectiveTimeRange.getEnd() - getTimeRange().getStart()) * initPointCount / getTimeRange().getDuration())
-						.intValue();
-//System.out.format("== getPlotData: endIndex=[ %d ] initPointCount=[%d]\n", endIndex, initPointCount);
+				int endIndex = new Double((effectiveTimeRange.getEnd() - getTimeRange().getStart()) * initPointCount / getTimeRange().getDuration()).intValue();
+				//System.out.format("== getPlotData: endIndex=[ %d ] initPointCount=[%d]\n", endIndex, initPointCount);
 				if (endIndex > initPointCount) {
-// MTH: We don't seem to go in here
-//System.out.format("== getPlotData: endIndex > initPointCount\n");
+					// MTH: We don't seem to go in here
+					//System.out.format("== getPlotData: endIndex > initPointCount\n");
 					points.addAll(pointsCache.subList(startIndex, initPointCount));
 					for (int i = initPointCount; i < endIndex; i++) {
 						// lg.debug("getPlotData: add empty points in the end");
@@ -215,7 +214,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 						points.add(intervalPoints);
 					}
 				} else {
-//System.out.format("== getPlotData: points.addAll\n");
+					//System.out.format("== getPlotData: points.addAll\n");
 					points.addAll(pointsCache.subList(startIndex, endIndex));
 				}
 				// lg.debug("Use data points from cache to calculate data, indexes: " + startIndex +
@@ -456,7 +455,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *            end time
 	 * @return subset of segment list which lies in the requested time interval. For one channel,
 	 *         the normal situation is none or one segment, but it can be bigger count in the case
-	 *         of segment overlapping. If no segments found, return null.
+	 *         of segment overlapping or gaps. If no segments found, return null.
 	 */
 	private static SegmentData[] getSegmentData(List<SegmentData> sps, double start, double end) {
 		List<SegmentData> ret = new ArrayList<SegmentData>();
@@ -663,7 +662,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * Loads trace from serialized file in temporary storage
 	 */
 	public static PlotDataProvider load(String fileName) {
-        	logger.debug("\n== ENTER: Deserialize channel from file:" + fileName);
+        logger.debug("\n== ENTER: Deserialize channel from file:" + fileName);
 		PlotDataProvider channel = null;
 		ObjectInputStream ois = null;
 		//String serialDataFileName = TemporaryStorage.getDataFileName(fileName);
@@ -675,7 +674,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
             logger.debug("== call ois.readObject() DONE");
 			channel = (PlotDataProvider) objRead;
 			channel.setStation(DataModule.getOrAddStation(channel.getStation().getName()));
-//MTH: added Segment.isLoaded boolean
+			
+			//MTH: added Segment.isLoaded boolean
             List<Segment> segs = channel.getRawData();
             for (Segment seg : segs) {
                 seg.setIsLoaded(true);
