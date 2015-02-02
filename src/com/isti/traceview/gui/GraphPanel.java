@@ -28,6 +28,7 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.processing.IFilter;
 import com.isti.traceview.processing.Rotation;
+import com.isti.traceview.commands.LoadDataCommand;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -542,9 +543,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 
 	public List<ChannelView> getSelectedChannelShowSet() {
-
 		return selectedChannelShowSet;
-
 	}
 
 	/**
@@ -585,19 +584,72 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		synchronized (TraceView.getDataModule().getAllChannels()) {
 			if (channels != null) {
 				clearChannelShowSet();
-				CommandExecutor.getInstance().clearCommandHistory(); // or do channels loading as
-				// a command
+				CommandExecutor.getInstance().clearCommandHistory(); // or do channels load as a command?
+				
+				// This is the main method for all station channels for one
+				// GraphPanel (i.e. one station multiple channels per panel)
 				if (!TraceView.getConfiguration().getMergeLocations()) {
+					// This submits each single channel as a List<> which doesn't
+					// make sense. Why not submit all channels to addChannelShowSet()?
+					// or submit each channel individually?
+					// **NOTE: addChannelShowSet() calls the addGraph() method which
+					//		   creates a graph panel for each channel submitted
 					for (PlotDataProvider channel: channels) {
                         logger.debug("== handle channel=" + channel);
 						List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
 					}
+					/**
+					// Get List<ChannelView> channelShowSet() and
+					// load each channel containing rawData
+					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
+					Thread loadPDP = null;
+					LoadDataCommand loadCommand = null;
+					long startl = System.nanoTime();
+					for (ChannelView cv: channelShowSet) {
+						pdpList = cv.getPlotDataProviders();	// usually contains one channel
+						loadCommand = new LoadDataCommand(pdpList, null);
+						loadPDP = new Thread(loadCommand);
+						loadPDP.start();
+						try {
+							loadPDP.join();	// wait for thread to terminate before starting next
+							loadPDP = null;
+							loadCommand = null;
+						} catch (InterruptedException e) {
+							logger.error("InterruptedException:", e);
+						}
+					}
+					long endl = System.nanoTime() - startl;
+					double end = endl * Math.pow(10, -9);
+					System.out.println("Channel loading time = " + end);
+					*/
+					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
+					TimeInterval ti = null;
+					long startl = System.nanoTime();
+					for (ChannelView cv: channelShowSet) {
+						pdpList = cv.getPlotDataProviders();
+						if (pdpList.size() > 1) {
+							for (PlotDataProvider channel: pdpList)
+								channel.load(ti);
+						} else {
+							PlotDataProvider channel = pdpList.get(0);
+							channel.load(ti);
+						}
+					}
+					long endl = System.nanoTime() - startl;
+					double end = endl * Math.pow(10, -9);
+					logger.debug("Channels are done loading");
+					System.out.println("Channel load time = " + end);
 				} else {
 					List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
 					PlotDataProvider prevChannel = null;
 					for (PlotDataProvider channel: channels) {
+						// This block checks for channels with the same location code
+						// regardless of the network, channel, or station name
+						// adds list of channels based on {XX}location to one graph panel
+						// **NOTE: The toAdd List<> still needs to be revised, doesn't
+						// 		   make sense when only one channel is being submitted
 						if (prevChannel != null
 								&& (!prevChannel.getNetworkName().equals(channel.getNetworkName())
 										|| !prevChannel.getStation().getName().equals(channel.getStation().getName()) || !prevChannel
@@ -612,6 +664,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					if (toAdd.size() > 0) {
 						addChannelShowSet(toAdd);
 					}
+					// Will add loop for List<ChannelView> channelShowSet to load
+					// channels in List<PlotDataProvider> (see above)
 				}
 				selectedChannelShowSet = Collections.synchronizedList(new UniqueList<ChannelView>());
 				if (overlay) {
@@ -629,7 +683,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					observable.setChanged();
 					observable.notifyObservers("ROT OFF");
 				}
-//System.out.println("== GraphPanel.setChannelShowSet [Call repaint()]");
+				//System.out.println("== GraphPanel.setChannelShowSet [Call repaint()]");
 				repaint();
 			}
 			observable.setChanged();
@@ -648,8 +702,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (this.shouldManageTimeRange) {
 				if (timeRange == null) {
 					setTimeRange(cv.getLoadedTimeRange());
+				} else {
+					setTimeRange(TimeInterval.getAggregate(timeRange, cv.getLoadedTimeRange()));
 				}
-				setTimeRange(TimeInterval.getAggregate(timeRange, cv.getLoadedTimeRange()));
 			}
 			// repaint();
 			observable.setChanged();
@@ -1217,7 +1272,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	public void paint(Graphics g) {
-//System.out.println("== GraphPanel.paint(g) [Enter]");
+		//System.out.println("== GraphPanel.paint(g) [Enter]");
 		if(!paintNow){
 			
 		paintNow = true;
@@ -1240,9 +1295,19 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// end of ugly hack
 				}
 				
+				// Time updateData() which gets segment data and pixelizes
+				long startl = System.nanoTime();
 				view.updateData();
+				long endl = System.nanoTime() - startl;
+				double end = endl * Math.pow(10, -9);
+				System.out.println("updateData() and pixelize() execution time = " + end);
 			}
+			// Time plotting pixels in ChannelView.paint(Graphics)
+			long startl = System.nanoTime();
 			super.paint(g);
+			long endl = System.nanoTime() - startl;
+			double end = endl * Math.pow(10, -9);
+			System.out.println("paint(g) execution time = " + end + "\n");
 			g.setXORMode(new Color(204, 204, 51));
 			if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
 				// Drawing cursor
@@ -1300,7 +1365,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		//lg.debug("End of repainting graph panel");
 		paintNow = false;
 		}
-//System.out.println("== GraphPanel.paint(g) [Exit]");
+		//System.out.println("== GraphPanel.paint(g) [Exit]");
 	}
 
 	private void paintSelection(Graphics g, long Xbegin, long Xend, double Ybegin, double Yend, String message) {

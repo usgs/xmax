@@ -12,21 +12,21 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
-import java.util.concurrent.Future;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
+
+import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
@@ -59,6 +59,7 @@ public abstract class SourceFile implements ISource {
 	private boolean parsed = false;
 
 	/**
+	 * Constructor
 	 */
 	public SourceFile(File file) {
 		this.file = file;
@@ -104,122 +105,55 @@ public abstract class SourceFile implements ISource {
 			return false;
 		}
 	}
-
-	/**
-	 * Class for storing number and remainder of thread chunks
+	
+	/** 
+	 * Class to call data file type task
+	 * 
+	 * @param inputFile
+	 * 		input File to process
+	 * 
+	 * @return ISource data file type
 	 */
-	private static class Chunk {
-		int maxIterations;		// max number of iterations per thread
-		int remIterations;		// rem number of iterations for last thread
-		int activeThreadCount;	// number of active threads
-	}
-
-	/**
-	 * Calculates thread count for getDataFiles() pool
-	 */
-	private static int calculateThreadCount() {
-		int numProc = Runtime.getRuntime().availableProcessors();
-		int threadCount = 0;
-		if (numProc % 2 == 0) 
-			threadCount = numProc / 2;
-		else
-			threadCount = (numProc + 1) / 2;
-		return threadCount;
-	}
-
-	/**
-	 * Calculates max and remainder iterations per chunk and active threads
-	 */
-	private static Chunk calculateChunks(int numThreads, int listLength) {
-		int remIter = 0;
-		int maxIter = 0;
-		int maxtmp = 0;
-		int activeThreads = 0;
+	private static class FileType implements Callable<ISource> {
+		private File file;
 		
-		if ((listLength % numThreads) == listLength) {	// => listLength < numThreads
-			remIter = 0;
-			maxIter = listLength;	// max iterations for 1 thread
-			activeThreads = 1;
-		} else {	// => listLength >= numThreads
-			remIter = listLength % numThreads;
-			maxtmp = (listLength - remIter) / numThreads;
-			if (maxtmp < numThreads) {	// max multiplier < number of threads
-				activeThreads = maxtmp;	// set number of active threads = multiplier
-				maxIter = numThreads;	// set max iterations = number of threads
-			} else {	// max multiplier >= number of threads
-				activeThreads = numThreads;	// set number of active threads = number of threads
-				maxIter = maxtmp;			// set max iterations = multiplier
-			}
+		/**
+		 * Constructor: sets input file
+		 */
+		private FileType(File inputFile) {
+			this.file = inputFile;
 		}
-
-		Chunk chunkIter = new Chunk();
-		chunkIter.maxIterations = maxIter;
-		chunkIter.remIterations = remIter;
-		chunkIter.activeThreadCount = activeThreads;
-		return chunkIter;
-	}
-
-	/**
-	 * Shutdown and executor and lingering tasks (if necessary)
-	 */
-	private static void shutdownAndAwaitTermination(ExecutorService pool) {
-		pool.shutdown();
-		try {
-			// Wait awhile for existing tasks to terminate
-			if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
-				pool.shutdownNow();	// cancel current executing tasks
-				// Wait awhile for tasks to respond to cancel
-				if (!pool.awaitTermination(60, TimeUnit.SECONDS))
-					logger.error("Pool did not terminate!! SHUTTING DOWN!!");
+		
+		/**
+		 * Callable method to determine file type
+		 * 
+		 * @return ISource
+		 * 		data file for type
+		 */
+		public ISource call() throws Exception {
+			ISource datafile = null;
+			if (isIMS(file)) {
+				datafile = new SourceFileIMS(file);
+				logger.debug("IMS data file added: " + file.getAbsolutePath());
+			} else if (isMSEED(file)) {
+				datafile = new SourceFileMseed(file);
+				logger.debug("MSEED data file added: " + file.getAbsolutePath());
+			} else if (isSAC(file)) {
+				datafile = new SourceFileSAC(file);
+				logger.debug("SAC data file added: " + file.getAbsolutePath());
+			} else if (isSEGY(file)) {
+				datafile = new SourceFileSEGY(file);
+				logger.debug("SEGY data file added: " + file.getAbsolutePath());
+			} else if (isSEGD(file)) {
+				datafile = new SourceFileSEGD(file);
+				logger.debug("SEGD data file added: " + file.getAbsolutePath());
+			} else if (isSEED(file)) {
+				datafile = new SourceFileSEGD(file);
+				logger.debug("SEED data file added: " + file.getAbsolutePath());
+			} else {
+				logger.warn("Unknown file format: " + file.getName());
 			}
-		} catch (InterruptedException e) {
-			pool.shutdownNow();
-		}
-	}
-
-	/**
-	 * Class to run Future task (checks data file types)
-	 *
-	 * @param inputFiles 
-	 * 	     partial input files (split from main files list)	
-	 *
-	 */
-	private static class DataTask implements Callable<List<ISource>> {
-		private List<File> inputFiles; 
-		private int filelen;
-
-		// Sets start/end indices for loop
-		private DataTask(List<File> inputFiles) { // Construct
-			this.inputFiles = inputFiles;	
-			this.filelen = inputFiles.size();	
-		}
-
-		public List<ISource> call() throws Exception { // Callable
-			List<ISource> dataFiles = new ArrayList<ISource>(filelen);
-			for (File file: inputFiles) {
-				if (isIMS(file)) {
-					dataFiles.add(new SourceFileIMS(file));
-					logger.debug("IMS data file added: " + file.getAbsolutePath());
-				} else if (isMSEED(file)) {
-					dataFiles.add(new SourceFileMseed(file));
-					logger.debug("MSEED data file added: " + file.getAbsolutePath());
-				} else if (isSAC(file)) {
-					dataFiles.add(new SourceFileSAC(file));
-					logger.debug("SAC data file added: " + file.getAbsolutePath());
-				} else if (isSEGY(file)) {
-					dataFiles.add(new SourceFileSEGY(file));
-					logger.debug("SEGY data file added: " + file.getAbsolutePath());
-				} else if (isSEGD(file)) {
-					dataFiles.add(new SourceFileSEGD(file));
-					logger.debug("SEGD data file added: " + file.getAbsolutePath());
-				} else if (isSEED(file)) {
-					dataFiles.add(new SourceFileSEGD(file));
-					logger.debug("SEED data file added: " + file.getAbsolutePath());
-				} else {
-					logger.warn("Unknown file format: " + file.getName());
-				}
-			}
-			return dataFiles;
+			return datafile;
 		}
 	}
 
@@ -256,94 +190,57 @@ public abstract class SourceFile implements ISource {
 	 * @throws TraceViewException
 	 */
 	public static List<ISource> getDataFiles(List<File> files) throws TraceViewException {
-		// Initialize variables
-		List<ISource> dataFileList = new ArrayList<ISource>();	// main datafiles list
-		int timeout = 120;			// timeout for getting Futures	
-		int threadCount = 0;		// num of system threads
-		int activeThreads = 0;		// num of active threads
-		int chunks = 0;				// num of thread iteration chunks
-		int maxCount = 0;			// max iterations per thread
-		int remCount = 0;			// remainder iterations for last thread
-		int filelen = files.size();	// used for calculating num of chunks
 		
-		// Initialize thread count, executor and thread chunks
-		threadCount = calculateThreadCount();
-		Chunk chunkStats = calculateChunks(threadCount, filelen);
-		maxCount = chunkStats.maxIterations;			// max count for each thread
-		remCount = chunkStats.remIterations;			// remainder count for last thread
-		activeThreads = chunkStats.activeThreadCount;	// num of active threads
-
-		// Split iterations into thread chunks
-		ExecutorService executor = Executors.newFixedThreadPool(activeThreads);
-		if (remCount != 0)
-			chunks = activeThreads + 1;	// thread chunks for (filelen % threadCount) != 0
+		// Setup pool of workers to set data types for each file (using loop)
+		// Submits FileType() tasks to multi-threaded executor
+		int numProc = Runtime.getRuntime().availableProcessors();
+		int filelen = files.size();
+		int threadCount = 0;
+		if (numProc % 2 == 0)
+			threadCount = numProc / 2;
 		else
-			chunks = activeThreads;		// thread chunks for (filelen % threadCount) == 0
-
-		// Set tasks for execution
-		DataTask task = null;
-		DataTask[] tasks = new DataTask[chunks];	// data type tasks
-		List<File> taskFiles = null;	// split 'files' for threading tasks	
-		int start = 0;	// start/end for thread chunks
-		int end = 0;
-		int lastChunk = 0;	
-		for (int i = 0; i < chunks; i++) {
-			taskFiles = new ArrayList<File>(); // initialize for each block
-			if (i < (chunks-1)) { // initial blocks (size = maxCount)
-				start = maxCount * i;
-				end = start + maxCount;
-				taskFiles = files.subList(start, end); // get sub files
-				task = new DataTask(taskFiles);
-				tasks[i] = task;
-			} else if (i == (chunks-1)) { // last block
-				lastChunk = i;
-				if (lastChunk == activeThreads) {	// => last block size = remCount
-					start = maxCount * i;
-					end = start + remCount;
-					taskFiles = files.subList(start, end);	// get sub files
-					task = new DataTask(taskFiles);
-					tasks[i] = task;
-				} else { // => last block size = maxCount
-					start = maxCount * i;
-					end = start + maxCount;
-					taskFiles = files.subList(start, end);	// get sub files
-					task = new DataTask(taskFiles);
-					tasks[i] = task;
-				}
-			}
-		}
-	
-		// Create list of Future<List<ISource>>
+			threadCount = (numProc + 1) / 2;
+		ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multi-thread executor
+		List<Future<ISource>> tasks = new ArrayList<Future<ISource>>(filelen);	// list of future tasks
+		List<ISource> dataFileList = new ArrayList<ISource>(filelen);	// main datafiles list
 		try {	
-			// Invoke all datafiles tasks	
-			List<Future<List<ISource>>> dataFileTasks = executor.invokeAll(Arrays.asList(tasks));
-	
-			// Loop through dataFileTasks and get futures
-			for (Future<List<ISource>> future: dataFileTasks) {
-				try {	
-					dataFileList.addAll(future.get(timeout, TimeUnit.SECONDS));	
+			long start = System.nanoTime();
+			for (File file: files) {
+				FileType task = new FileType(file);	// filetype task
+				Future<ISource> future = executor.submit(task);	// submit task for exec	
+				tasks.add(future);	// add future filetype to tasks list
+			}
+		
+			// Loop through tasks and get futures	
+			// ** May want to include future.get() in files loop
+			// this will eliminate extra loop for getting futures
+			for (Future<ISource> future: tasks) {
+				try {
+					dataFileList.add(future.get(3, TimeUnit.SECONDS));
 				} catch (TimeoutException e) {
 					logger.error("Future TimeoutException:", e);
-					future.cancel(true);
-					executor.shutdownNow();	
+					shutdownFuture(future, executor);
 				} catch (ExecutionException e) {
 					logger.error("Future ExecutionException:", e);
-					future.cancel(true);
-					executor.shutdownNow();
+					shutdownFuture(future, executor);
 				} catch (InterruptedException e) {
 					logger.error("Future InterruptedException:", e);
-					future.cancel(true);
-					executor.shutdownNow();
+					shutdownFuture(future, executor);
 				}
 			}
-		} catch (InterruptedException e) {
-			logger.error("Executor InterruptedException:", e);
+			long endl = System.nanoTime() - start;
+			double end = endl * Math.pow(10, -9);
+			System.out.format("SourceFile: getDataFiles() execution time = %.9f sec\n", end);
+		} catch (RejectedExecutionException e) {
+			logger.error("Executor RejectedExecutionException:", e);
+			executor.shutdownNow();
+		} catch (NullPointerException e) {
+			logger.error("Executor NullPointerException:", e);
 			executor.shutdownNow();
 		}
-		// Shutdown executor and cancel lingering tasks	
-		shutdownAndAwaitTermination(executor);	
+		// Shutdown executor and cancel lingering tasks
+		shutdownExecutor(executor);
 		
-		// Loop through List<ISources> (check datafiles)	
 		return dataFileList;
 	}
 
@@ -628,6 +525,33 @@ public abstract class SourceFile implements ISource {
 	public String getBlockHeaderText(long blockStartOffset){
 		return "<html><i>File type:</i>" + getFormatType() + "<br>Header block text is unavailable</html>";
 	}
+
+	/**
+	 * Shutdown future and executor
+	 */
+	private static void shutdownFuture(Future<?> task, ExecutorService executor) {
+		task.cancel(true);
+		executor.shutdownNow();
+	}
+
+	/**
+	 * Shutdown executor and linger tasks (if necessary)
+	 */
+	private static void shutdownExecutor(ExecutorService pool) {
+		pool.shutdown();
+		try {
+			// Wait awhile for existing tasks to terminate
+			if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+				pool.shutdownNow();	// cancel current executing tasks
+				// Wait awhile for tasks to respond to cancel
+				if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+					logger.error("Pool did not terminate: Shutting down!!");
+			}
+		} catch (InterruptedException e) {
+			pool.shutdownNow();	
+		}
+	}
+	
 	/*
 	 * private void writeObject(ObjectOutputStream out) throws IOException { lg.debug("Serializing
 	 * SourceFile" + toString()); dataSource = (ISource)in.readObject(); currentPos = in.readInt();
