@@ -1295,19 +1295,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// end of ugly hack
 				}
 				
-				// Time updateData() which gets segment data and pixelizes
-				long startl = System.nanoTime();
+				// **NOTE: Need to check where this is being constantly called
+				//         updating the data on mouse movement is causing hangs. 
+				// 		   Maybe the observer for the data is being instantiated??
 				view.updateData();
-				long endl = System.nanoTime() - startl;
-				double end = endl * Math.pow(10, -9);
-				System.out.println("updateData() and pixelize() execution time = " + end);
 			}
-			// Time plotting pixels in ChannelView.paint(Graphics)
-			long startl = System.nanoTime();
-			super.paint(g);
-			long endl = System.nanoTime() - startl;
-			double end = endl * Math.pow(10, -9);
-			System.out.println("paint(g) execution time = " + end + "\n");
+			super.paint(g);	// This is also included in the updateData() observer
+
 			g.setXORMode(new Color(204, 204, 51));
 			if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
 				// Drawing cursor

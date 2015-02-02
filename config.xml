@@ -25,8 +25,8 @@
 		<Data>
 			<!-- Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*" -->
 			<!-- DataMask>resources/DATA</DataMask -->
-			<DataMask>/xs0/seed/IU_ANMO/2014/2014_*/00_LHZ.512.seed</DataMask>
-			<!--DataMask>seed/IU_MACI,IU_TUC/2013_1*,2014_23*,2014_21*,2014_360,2014_361</DataMask-->
+			<!--DataMask>/xs0/seed/IU_ANMO/2014/2014_*/00_LHZ.512.seed</DataMask-->
+			<DataMask>seed/IU_MACI,IU_TUC/2013_1*,2014_23*,2014_21*,2014_360,2014_361</DataMask>
 			<!--DataMask>seed/*/*/*.*.seed</DataMask-->
 			<!--DataMask>seed/IU*/2014_19*,2014_2*</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
@@ -95,10 +95,10 @@
 		<ExportDir/>
 		<Frame>
 			<State>NORMAL</State>
-			<PosY>87</PosY>
-			<PosX>1902</PosX>
-			<Width>1841</Width>
-			<Heigth>975</Heigth>
+			<PosY>71</PosY>
+			<PosX>2055</PosX>
+			<Width>1590</Width>
+			<Heigth>1127</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>
