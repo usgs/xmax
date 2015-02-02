@@ -93,6 +93,13 @@ public class XMAXconfiguration extends Configuration {
 	 * @uml.property name="version_minor"
 	 */
 	private int version_minor;
+	
+	/**
+	 * Build version number
+	 * 
+	 * @uml.property name="version_build"
+	 */
+	private int version_build;
 
 	private boolean showStatusBar = true;
 
@@ -143,6 +150,7 @@ public class XMAXconfiguration extends Configuration {
 			}
 			version_major = config.getInt("Version.Major");
 			version_minor = config.getInt("Version.Minor");
+			version_build = config.getInt("Version.Build");
 			setScaleMode(config.getString("Configuration.View.ScaleMode", "AUTO"));
 			setColorModeState(config.getString("Configuration.View.ColorMode", "SEGMENT"), false);
 			setShowBigCursor(config.getBoolean("Configuration.View.ShowBigCursor", false));
@@ -204,7 +212,7 @@ public class XMAXconfiguration extends Configuration {
 	 * @return configuration file version
 	 */
 	String getVersion() {
-		return version_major + "." + version_minor;
+		return version_major + "." + version_minor + "." + version_build;
 	}
 
 	/**

@@ -33,12 +33,22 @@ public class LoadDataCommand extends AbstractCommand {
 	public void run() {
 		try {
 			super.run();
-			for (PlotDataProvider channel: channels) {
-				//if (!channel.isLoadingStarted()) {
+			if (channels.size() == 1) {
+				PlotDataProvider channel = channels.get(0);
+				System.out.println(Thread.currentThread().getName() + " Start. Command = " + channel.toString());
+				logger.debug("== Load data command: " + channel.toString() + ti);
+				channel.load(ti);
+				System.out.println(Thread.currentThread().getName() + " End. Command = " + channel.toString());
+				System.out.println();
+				
+			} else {
+				for (PlotDataProvider channel: channels) {
+					System.out.println(Thread.currentThread().getName() + " Start. Command = " + channel.toString());
 					logger.debug("== Load data command: " + channel.toString() + ti);
 					channel.load(ti);
-					//lg.debug("Max Val = " + channel.getMaxValue() + ", Min Val = " + channel.getMinValue());
-				//}
+					System.out.println(Thread.currentThread().getName() + " End. Command = " + channel.toString());
+					System.out.println();
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Exception: ", e);

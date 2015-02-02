@@ -116,7 +116,8 @@ public class TimeInterval {
 	 * @return start time of interval
 	 */
 	public Date getStartTime() {
-		return new Date(startTime);
+		Date dateStart = new Date(startTime);
+		return dateStart;
 	}
 
 	/**
@@ -134,7 +135,8 @@ public class TimeInterval {
 	 * @return end time of interval
 	 */
 	public Date getEndTime() {
-		return new Date(endTime);
+		Date dateEnd = new Date(endTime);
+		return dateEnd;
 	}
 
 	/**

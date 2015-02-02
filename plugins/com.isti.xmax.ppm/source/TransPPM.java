@@ -161,7 +161,7 @@ public class TransPPM implements ITransformation {
 
 		@SuppressWarnings("unused")
 		public int getMin() {
-			return max;
+			return min;
 		}
 
 		public double getAverage() {

@@ -13,7 +13,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-
 import com.isti.traceview.common.TimeInterval;
 
 /**
@@ -235,8 +234,7 @@ public class Segment implements Externalizable, Cloneable {
 	public int[] loadDataInt() {
         int[] ret = null;
 		if (dataStream == null) {
-            		//System.out.println("== Segment.loadDataInt() ERROR: dataStream == null!! --> Exiting");
-            		logger.error("dataStream == null!! --> Exiting");	
+           	logger.error("dataStream == null!! --> Exiting");	
 			System.exit(0);
 		} else {
 			ret = new int[sampleCount];
@@ -258,6 +256,8 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Reads all data from loaded segment
+	 * 
+	 * NOTE: Will add ArrayList<Integer> dataList constructor for SegmentData (for future use)
 	 */
 	public SegmentData getData() {
 		if (dataStream == null) {
@@ -300,7 +300,6 @@ public class Segment implements Externalizable, Cloneable {
 		double startt = Math.max(startTime, start);
 		double endt = Math.min(getEndTime().getTime(), end);
 		int startIndex = new Double((startt - startTime) / sampleRate).intValue();
-		//int startIndex = new Long(Math.round(new Double((startt - startTime) / sampleRate))).intValue();
 		int endIndex = new Double((endt - startTime) / sampleRate).intValue();
 		if (startIndex != endIndex) {
 			ret = new int[endIndex - startIndex];
@@ -312,12 +311,17 @@ public class Segment implements Externalizable, Cloneable {
 				for (int i = startIndex; i < endIndex; i++) {
 					ret[i - startIndex] = data[i];
 				}
-				if(startIndex>0) previous = data[startIndex-1];
-				if (endIndex<sampleCount) next = data[endIndex];
+				
+				if (startIndex > 0) {
+					previous = data[startIndex-1];
+				}
+				if (endIndex < sampleCount) {
+					next = data[endIndex];
+				}
 			} else {
 				// we use serialized data file
-                		logger.debug("== dataStream is NOT null --> Load points from dataStream.readInt() to data[] " +
-                "startTime=" + startTime + " endTime=" + getEndTime().getTime());
+                logger.debug("== dataStream is NOT null --> Load points from dataStream.readInt() to data[] " +
+                		"startTime=" + startTime + " endTime=" + getEndTime().getTime());
 				try {
 					if(startIndex>0){
 						dataStream.seek(startOffsetSerial + startIndex * 4 - 4);
@@ -331,22 +335,22 @@ public class Segment implements Externalizable, Cloneable {
 					if(endIndex<sampleCount){
 						next = dataStream.readInt(); 
 					}
-            // MTH: Use this if we are in the -T mode and we need to load existing serialized data (from .DATA)
+					// MTH: Use this if we are in the -T mode and we need to load existing serialized data (from .DATA)
                     if (com.isti.traceview.TraceView.getConfiguration().getDumpData()) {
                         logger.debug("We are in -T dataDump mode --> read this Segment from dataStream");
                         if (data == null) {
                             if (ret.length != sampleCount) {
-          			//System.out.format("== Segment.getData(): Warning: sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length);
-          			logger.warn(String.format("sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length));
+                            	//System.out.format("== Segment.getData(): Warning: sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length);
+                            	logger.warn(String.format("sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length));
                             }
                             //data = new int[sampleCount];
                             data = new int[ret.length];
                             System.arraycopy(ret, 0, data, 0, ret.length);
                         }
                         else {
-        			//System.out.println("== Segment.getData(): We are in -T dataDump mode but data IS NOT null!!!");
+                        	//System.out.println("== Segment.getData(): We are in -T dataDump mode but data IS NOT null!!!");
                        		logger.debug("We are in -T dataDump mode but data IS NOT null!!!");
-			}
+                        }
                     }
 				} catch (IOException e) {
 					logger.error("IOException:", e);
@@ -354,10 +358,14 @@ public class Segment implements Externalizable, Cloneable {
 			}
 		} else {
 			if (dataStream == null) {
-				ret = new int[1];				
+				ret = new int[1];
 				ret[0] = data[startIndex];
-				if(startIndex>0) previous = data[startIndex-1];
-				if (endIndex<sampleCount) next = data[endIndex];
+				if(startIndex>0) {
+					previous = data[startIndex-1];
+				}
+				if (endIndex<sampleCount) {
+					next = data[endIndex];
+				}
 			} else {
 				try {
 					if(startIndex>0){
@@ -382,7 +390,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * Loads segment data from memory from data source
 	 */
 	public void load() {
-//System.out.format("== Segment.load() --> dataSource.load(this): dataSource=[%s]\n", dataSource);
 		dataSource.load(this);
 	}
 
@@ -390,7 +397,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * Adds sample to the end of segment data
 	 */
 	public synchronized void addDataPoint(int value) {
-		if(data==null){
+		if (data == null){
 			data = new int[sampleCount];
 		}
 		data[currentPos++] = value;
@@ -541,7 +548,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * @throws IOException
 	 */
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        	logger.debug("== ENTER");
+        logger.debug("== ENTER");
 		dataSource = (ISource) in.readObject();
 		currentPos = in.readInt();
 		startTime = in.readLong();
@@ -560,8 +567,7 @@ public class Segment implements Externalizable, Cloneable {
 		//for (int i = 0; i < sampleCount; i++) {
 		//data[i] = inData.readInt();
 		//MTH: This should be data[i] = dataStream.readInt();
-
-        	logger.debug("== EXIT: Deserialized " + this);
+		logger.debug("== EXIT: Deserialized " + this);
 	}
 
 	/**
@@ -573,12 +579,12 @@ public class Segment implements Externalizable, Cloneable {
 	 * @throws IOException
 	 */
 	public void writeExternal(ObjectOutput out) throws IOException {
-        	logger.debug("==  Output the Segment to serial stream:");
-        	logger.debug("    Segment:" + this.toString() );
-        	logger.debug("    Segment: ObjectOutputStream:" + out.toString() );
-        	logger.debug("    Segment: dataSource:"  + dataSource );
-        	logger.debug("    Segment: dataStream:"  + dataStream );
-        	logger.debug("    Segment: sampleCount:" + sampleCount );
+    	logger.debug("==  Output the Segment to serial stream:");
+    	logger.debug("    Segment:" + this.toString() );
+    	logger.debug("    Segment: ObjectOutputStream:" + out.toString() );
+    	logger.debug("    Segment: dataSource:"  + dataSource );
+    	logger.debug("    Segment: dataStream:"  + dataStream );
+    	logger.debug("    Segment: sampleCount:" + sampleCount );
 
 		out.writeObject(dataSource);
 		out.writeInt(currentPos);
@@ -595,7 +601,7 @@ public class Segment implements Externalizable, Cloneable {
 		for (int i = 0; i < sampleCount; i++) {
 			dataStream.writeInt(data[i]);
 		}
-        	logger.debug("== DONE");
+        logger.debug("== DONE");
 	}
 
 	public Object clone() throws CloneNotSupportedException {
@@ -622,15 +628,24 @@ public class Segment implements Externalizable, Cloneable {
 	 *            sample rate
 	 */
 	public static boolean isDataBreak(long firstEndTime, long secondStartTime, double sampleRate) {
-		return Math.abs(firstEndTime - secondStartTime) > gapTolerance * 2.0 * sampleRate;
+		double gap = gapTolerance * 2.0 * sampleRate;
+		long timediff = Math.abs(firstEndTime - secondStartTime);
+		boolean compare = timediff > gap;
+		return compare;
 	}
 	
 	public static boolean isDataGap(long firstEndTime, long secondStartTime, double sampleRate) {
-		return (secondStartTime - firstEndTime) > (gapTolerance * 2.0 * sampleRate);
+		double gap = gapTolerance * 2.0 * sampleRate;
+		long timediff = secondStartTime - firstEndTime;
+		boolean compare = timediff > gap;
+		return compare;
 	}
 	
 	public static boolean isDataOverlay(long firstEndTime, long secondStartTime, double sampleRate) {
-		return (firstEndTime - secondStartTime) > (gapTolerance * 2.0 * sampleRate);
+		double gap = gapTolerance * 2.0 * sampleRate;
+		long timediff = firstEndTime - secondStartTime;
+		boolean compare = timediff > gap;
+		return compare;
 	}
 
 	public boolean getIsLoaded() {
