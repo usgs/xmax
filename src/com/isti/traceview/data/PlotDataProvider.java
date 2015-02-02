@@ -662,7 +662,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * Loads trace from serialized file in temporary storage
 	 */
 	public static PlotDataProvider load(String fileName) {
-        	logger.debug("\n== ENTER: Deserialize channel from file:" + fileName);
+        logger.debug("\n== ENTER: Deserialize channel from file:" + fileName);
 		PlotDataProvider channel = null;
 		ObjectInputStream ois = null;
 		//String serialDataFileName = TemporaryStorage.getDataFileName(fileName);
@@ -674,7 +674,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
             logger.debug("== call ois.readObject() DONE");
 			channel = (PlotDataProvider) objRead;
 			channel.setStation(DataModule.getOrAddStation(channel.getStation().getName()));
-//MTH: added Segment.isLoaded boolean
+			
+			//MTH: added Segment.isLoaded boolean
             List<Segment> segs = channel.getRawData();
             for (Segment seg : segs) {
                 seg.setIsLoaded(true);
