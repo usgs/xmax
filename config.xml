@@ -26,26 +26,26 @@
 			<!-- Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*" -->
 			<!-- DataMask>resources/DATA</DataMask -->
 			<!--DataMask>/xs0/seed/IU_ANMO/2014/2014_*/00_LHZ.512.seed</DataMask-->
-			<DataMask>seed/IU_MACI,IU_TUC/2013_1*,2014_23*,2014_21*,2014_360,2014_361</DataMask>
+			<DataMask>/APPS/oth/xmax/seed/IU_MACI,IU_TUC/2013_1*,2014_23*,2014_21*,2014_360,2014_361</DataMask>
 			<!--DataMask>seed/*/*/*.*.seed</DataMask-->
 			<!--DataMask>seed/IU*/2014_19*,2014_2*</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
 			
 			<!-- Temporary directory to store decompressed traces in the internal 
 				format -->
-			<TempPath>resources/DATA_TEMP</TempPath>
+			<TempPath>/APPS/oth/xmax/resources/DATA_TEMP</TempPath>
 
 			<!-- Quality control data file. Recovers by -q option -->
 			<!--QCdataFile>/home/max/DATA/QC.xml</QCdataFile-->
 
 			<!-- Station files/paths -->
-			<EventFileMask>resources/*.ndk</EventFileMask>
-			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
-			<ResponsePath>resources/Responses</ResponsePath>
+			<EventFileMask>/APPS/oth/xmax/resources/*.ndk</EventFileMask>
+			<StationInfoFile>/APPS/oth/xmax/resources/gsn_sta_list</StationInfoFile>
+			<ResponsePath>/APPS/oth/xmax/resources/Responses</ResponsePath>
 			<AllowMultiplexedData>true</AllowMultiplexedData>
 
 			<!-- Picks directory. Recovers by -p option -->
-			<PickPath>resources/Picks</PickPath>
+			<PickPath>/APPS/oth/xmax/resources/Picks</PickPath>
 		</Data>
 
 		<!-- Contains wildcarded lists of values, separated by ";". The same as 
@@ -63,7 +63,7 @@
 			<ShowCommandButtons>true</ShowCommandButtons>
 			<ShowCommandButtonsTop>false</ShowCommandButtonsTop>
 		</View>
-		<OutputPath>resources/Output</OutputPath>
+		<OutputPath>/APPS/oth/xmax/resources/Output</OutputPath>
 
 		<!-- Panel order: 
 		        0 - trace name, currently network/station/location/channel; 
