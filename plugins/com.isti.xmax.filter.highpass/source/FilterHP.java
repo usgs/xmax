@@ -82,7 +82,7 @@ public class FilterHP implements IFilter {
 	{
 		if (data.length > length)
 			throw new HPFilterException("Requested filtering length exceeds provided array length");
-		//int mean = new Double(demean(data, length)).intValue();
+		int mean = new Double(demean(data, length)).intValue();
 		double[][] f = new double[order + 1][3];
 		for (int i = 0; i <= order; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -119,7 +119,6 @@ public class FilterHP implements IFilter {
 	/**
 	 * remove mean from a buffer
 	 */
-	@SuppressWarnings("unused")	
 	private double demean(double buf[], int n) {
 		double sum = 0.0;
 		for (int i = 0; i < n; i++) {
@@ -127,10 +126,10 @@ public class FilterHP implements IFilter {
 		}
 		sum = sum / n;
 		
-		//This removes mean from data but isnt returned
-		/*for (int i = 0; i < n; i++) {
+		//This removes mean from original data
+		for (int i = 0; i < n; i++) {
 			buf[i] = buf[i] - sum;
-		}*/
+		}
 		return sum;
 	}
 
