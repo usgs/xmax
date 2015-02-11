@@ -155,8 +155,8 @@ public class FilterBP implements IFilter {
 				f[j][2] = f[j][3];
 				f[j][3] = f[j][4];
 			}
-			data[i] = f[order][4] + mean;
-			//data[i] = f[order][4];
+			//data[i] = f[order][4] + mean;
+			data[i] = f[order][4];
 		}
 		return data;
 	}

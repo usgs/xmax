@@ -102,8 +102,8 @@ public class FilterHP implements IFilter {
 				f[j][0] = f[j][1];
 				f[j][1] = f[j][2];
 			}
-			data[i] = f[order][2] + mean;
-			//data[i] = f[order][2];
+			//data[i] = f[order][2] + mean;
+			data[i] = f[order][2];
 		}
 		return data;
 	}
