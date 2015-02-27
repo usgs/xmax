@@ -300,6 +300,7 @@ public class Segment implements Externalizable, Cloneable {
 		double startt = Math.max(startTime, start);
 		double endt = Math.min(getEndTime().getTime(), end);
 		int startIndex = new Double((startt - startTime) / sampleRate).intValue();
+		//int startIndex = new Long(Math.round(new Double((startt	- startTime) / sampleRate))).intValue();
 		int endIndex = new Double((endt - startTime) / sampleRate).intValue();
 		if (startIndex != endIndex) {
 			ret = new int[endIndex - startIndex];
