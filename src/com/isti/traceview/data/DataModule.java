@@ -249,7 +249,7 @@ public class DataModule extends Observable {
 	 *            file to add
 	 * @return list of {@link RawDataProvider}s found in the data file
 	 */
-	public void addDataSource(ISource datafile) {
+	public Set<RawDataProvider> addDataSource(ISource datafile) {
 		
 		// Parse seed file into trace segments based on times and/or gaps
 		if (!isSourceLoaded(datafile)) {
@@ -265,6 +265,7 @@ public class DataModule extends Observable {
 				notifyObservers(datafile);
 			}
 		}
+		return changedChannels;		
 	}
 
 	/**
@@ -274,7 +275,7 @@ public class DataModule extends Observable {
 	 *            sources list to add
 	 * @return list of {@link RawDataProvider}s found in the sources
 	 */
-	public void addDataSources(List<ISource> datafiles) {
+	public Set<RawDataProvider> addDataSources(List<ISource> datafiles) {
 		
 		// Compare to parse loop
 		long start = System.nanoTime();
@@ -298,6 +299,8 @@ public class DataModule extends Observable {
 				notifyObservers(datafiles);
 			}
 		}
+		
+		return changedChannels;
 	}
 
 	/**
