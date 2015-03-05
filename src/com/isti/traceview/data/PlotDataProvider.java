@@ -366,41 +366,16 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			if(i==0 || colorMode instanceof ColorModeBySource || Segment.isDataBreak(segments.get(i-1).getEndTime().getTime(), segmentData.startTime, segmentData.sampleRate)){
 				rawData.add(segmentData);
 			} else {
+				// concatenate previous data and current data
+				// replace with array copying (src, srcPos, dest, destPost, srcLen)
 				SegmentData last = rawData.get(rawData.size()-1);
 				int lastLength = last.data.length;
-				last.data = Arrays.copyOf(last.data, lastLength+segmentData.data.length);	// zero pads
-				System.out.println("\nrawData.size = " + rawData.size());
-				for (int j = 0; j < segmentData.data.length; j++) {
-					last.data[lastLength+j] = segmentData.data[j];
-				}
-				System.out.println("rawData.size = " + rawData.size());
-				System.out.println();
-				
-				/*
-				int[] lastData = rawData.get(rawData.size()-1).data;
-				int[] currentData = segmentData.data;
-				int lastLength = lastData.length;	// previous raw data length
-				int currentLength = currentData.length;	// current raw data length
-			
-				// this loop is inefficent
-				lastData = Arrays.copyOf(lastData, lastLength+currentLength);	// copies lastData and zero pads currentLength
-				for(int j = 0; j < currentLength; j++){
-					lastData[lastLength+j] = currentData[j]; 
-				}
-				
-				// concatenate previous data and current data
-				// replace with array copying (src, srcPos, dest, destPos, len)
-				int[] testData = new int[lastLength+currentLength];
-				System.arraycopy(lastData, 0, testData, 0, lastLength);
-				System.arraycopy(currentData, 0, testData, lastLength, currentLength);
-				
-				if (Arrays.equals(lastData, testData)) {
-					System.out.println("lastData.length = " + lastData.length);
-					System.out.println("testData.length = " + testData.length);
-				}
-				*/
+				int currentLength = segmentData.data.length;
+				last.data = Arrays.copyOf(last.data, lastLength+currentLength);	// allocate space for copy
+				System.arraycopy(segmentData.data, 0, last.data, lastLength, currentLength);	// replaces loop
 			}
 		}
+		
 		//filtering
 		if(filter!=null){
 			FilterFacade ff = new FilterFacade(filter, this);
@@ -410,6 +385,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			}
 			rawData = filteredRawData;
 		}
+		
 		double interval = (ti.getDuration()) / new Double(pointCount);
 		double time = ti.getStart();
 		for (int i = 0; i < pointCount; i++) {
