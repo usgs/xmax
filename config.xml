@@ -8,31 +8,32 @@
 	===MTH: Rolled back to 1.06 since there were problems with the plugins & 
 	fixed wildcard -d breaks 1.08 First MTH version: Added ability to simultaneously 
 	plot/serialize from -d + -t 
---><XMAXSessionConfiguration>
-<Version>
+-->
+<XMAXSessionConfiguration>
+	<Version>
 		<Major>1</Major>
 		<Minor>1</Minor>
 		<Build>0</Build>
-</Version>
-<!-- Sets start time for display. Recovers by -b option -->
-<!-- StartTime>2007,055,05:00:00</StartTime -->
-<!-- Sets end time for display. Recovers by -e option -->
-<!-- EndTime>2007,055,10:00:00</EndTime -->
-<Configuration>
+	</Version>
+
+	<Configuration>
+		<!-- Sets start time for display. Recovers by -b option -->
+		<!-- Sets end time for display. Recovers by -e option -->
+		<!-- StartTime>2007,055,05:00:00</StartTime -->
+		<!-- EndTime>2007,055,10:00:00</EndTime -->
 		<!-- <StartTime>2012,158,00:00:00</StartTime> --> 
 		<!-- <EndTime>2012,161,00:00:00</EndTime> -->
 
 		<Data>
 			<!-- Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*" -->
-			<!-- DataMask>resources/DATA</DataMask -->
-			<!--DataMask>/xs0/seed/IU_ANMO/2014/2014_*/00_LHZ.512.seed</DataMask-->
 			<DataMask>/APPS/oth/xmax/seed/IU_MACI,IU_TUC/2013_1*,2014_23*,2014_21*,2014_360,2014_361</DataMask>
-			<!--DataMask>seed/*/*/*.*.seed</DataMask-->
+			<!-- DataMask>resources/DATA</DataMask -->
 			<!--DataMask>seed/IU*/2014_19*,2014_2*</DataMask-->
+			<!--DataMask>/xs0/seed/IU_ANMO/2014/2014_*/00_LHZ.512.seed</DataMask-->
+			<!--DataMask>seed/*/*/*.*.seed</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
 			
-			<!-- Temporary directory to store decompressed traces in the internal 
-				format -->
+			<!-- Temporary directory to store decompressed traces in the internal format -->
 			<TempPath>/APPS/oth/xmax/resources/DATA_TEMP</TempPath>
 
 			<!-- Quality control data file. Recovers by -q option -->
@@ -66,7 +67,7 @@
 		<OutputPath>/APPS/oth/xmax/resources/Output</OutputPath>
 
 		<!-- Panel order: 
-		        0 - trace name, currently network/station/location/channel; 
+			0 - trace name, currently network/station/location/channel; 
 			1 - Network/station/sample rate/channel type/location; 
 			2 - Channel/network/station/location; 
 			3 - Channel type/channel/network/station; 
@@ -75,7 +76,7 @@
 		<PanelOrder>1</PanelOrder>
 
 		<!-- Panel count unit: 
-		        0 - trace; 
+			0 - trace; 
 			1 - station; 
 			2 - channel; 
 			3 - channel type; 
@@ -91,7 +92,7 @@
 			</PSD>
 		</Plugins>
 	</Configuration>
-<SessionData>
+	<SessionData>
 		<ExportDir/>
 		<Frame>
 			<State>NORMAL</State>

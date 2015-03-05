@@ -133,7 +133,7 @@ public class FilterBP implements IFilter {
 	{
 		if (data.length > length)
 			throw new BPFilterException("Requested filtering length exceeds provided array length");
-		int mean = new Double(demean(data, length)).intValue();
+		//int mean = new Double(demean(data, length)).intValue();
 		double[][] f = new double[order + 1][5];
 		for (int i = 0; i <= order; i++) {
 			for (int j = 0; j < 5; j++) {
@@ -171,7 +171,10 @@ public class FilterBP implements IFilter {
 
 	/**
 	 * remove mean from a buffer
+	 * 
+	 * **NOTE: This will be done with the mean button fix
 	 */
+	@SuppressWarnings("unused")
 	private double demean(double buf[], int n) {
 		double sum = 0.0;
 		for (int i = 0; i < n; i++) {

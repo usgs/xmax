@@ -12,9 +12,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+//import java.util.concurrent.ExecutorService;
+//import java.util.concurrent.Executors;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceViewException;
@@ -82,8 +82,9 @@ public class RawDataProvider extends Channel {
 	/** 
 	 * Runnable class for loadData(TimeInterval ti) 
 	 * NOTE: This is currently not used due to hardware
-	 * 	 constraints on different mcahines
+	 * 	     constraints on different machines
 	 */
+	@SuppressWarnings("unused")
 	private static class LoadDataWorker implements Runnable {
 		private Segment segment;	// current segment to load	
 		int index;			// index of current segment
@@ -269,7 +270,7 @@ public class RawDataProvider extends Channel {
 	 * @param ti
 	 */
 	public void loadData(TimeInterval ti) {
-        	logger.debug("== ENTER");
+        logger.debug("== ENTER");
         
 /*        // Setup pool of workers to load data segments for current channel
        	int index = 0;	// indexes each segment 
@@ -285,11 +286,11 @@ public class RawDataProvider extends Channel {
         }
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multithread executor
 */        
-        	String network = getNetworkName();
-        	String station = getStation().getName();
-        	String location = getLocationName();
-        	String channel = getChannelName();
-        	System.out.println(network+"."+station+"."+location+"."+channel + ": numSegments = " + rawData.size());
+        String network = getNetworkName();
+        String station = getStation().getName();
+        String location = getLocationName();
+        String channel = getChannelName();
+        System.out.println(network+"."+station+"."+location+"."+channel + ": numSegments = " + rawData.size());
         //long startl = System.nanoTime();
 /*		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();
@@ -301,24 +302,24 @@ public class RawDataProvider extends Channel {
 		while (!executor.isTerminated()) {}
 */
         
-        	for (SegmentCache sc: rawData) {
-        		Segment seg = sc.getSegment();
-        		if (!seg.getIsLoaded()) {		
-				logger.debug("== Load Segment:" + seg.toString());	
+        for (SegmentCache sc: rawData) {
+        	Segment seg = sc.getSegment();
+        	if (!seg.getIsLoaded()) {		
+        		logger.debug("== Load Segment:" + seg.toString());	
 				seg.load();
-        			seg.setIsLoaded(true);
-			} else {
-				logger.debug("== RDP.loadData(): Segment is ALREADY loaded:" + seg.toString());
-                		// MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
-                		//      in order to have the segment's int[] data filled before serialization, but we're
-                		//      doing this instead via PDP.initPointCache() --> PDP.pixelize(ti) --> Segment.getData(ti)
-				//seg.loadDataInt();	
-			}	
-		}
-		//long endl = System.nanoTime() - startl;
+				seg.setIsLoaded(true);
+        	} else {
+        		logger.debug("== RDP.loadData(): Segment is ALREADY loaded:" + seg.toString());
+                // MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
+                //      in order to have the segment's int[] data filled before serialization, but we're
+                //      doing this instead via PDP.initPointCache() --> PDP.pixelize(ti) --> Segment.getData(ti)
+        		//seg.loadDataInt();	
+        	}	
+        }
+        //long endl = System.nanoTime() - startl;
 		//double end = endl * Math.pow(10, -9);
 		logger.debug("== EXIT");
-        	//System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
+        //System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
 	}
 
 	/**
