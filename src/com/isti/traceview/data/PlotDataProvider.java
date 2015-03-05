@@ -249,7 +249,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					int j =0;
 					for (PlotDataPoint[] sublist: data) {
 						int k =0;
-						for(PlotDataPoint value: sublist){
+						for(PlotDataPoint value: sublist){	// why loop when sublist has 1 value in PlotDataPoint[]
 							//lg.debug("Index " + (startIndex + j) + ", set " + k + ", value " + value);
 							if(sliceDataList.size()<=k){
 								sliceDataList.add(new SliceData());
@@ -336,7 +336,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	throws PlotDataException
 	{
 		logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
-		List<PlotDataPoint[]> pointSet = Collections.synchronizedList(new ArrayList<PlotDataPoint[]>());
+		
+		// Why is 'pointSet' synchronized with no threading?
+		List<PlotDataPoint[]> pointSet = Collections.synchronizedList(new ArrayList<PlotDataPoint[]>(pointCount));
 		// waiting if data still is not loaded
 		int attemptCount = 0;
 		while (!isLoaded()) {
@@ -353,8 +355,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		}
 		List<SegmentData> rawData = new ArrayList<SegmentData>();
 		List<Segment> segments = getRawData(ti);
-		//combine segments if no gap and colormode is not by source, to correct filtering
-		for (int i = 0; i<segments.size(); i++) {
+		int numSegments = segments.size();
+		
+		// Combine segments if no gap and colormode is not by source, to correct filtering
+		for (int i = 0; i < numSegments; i++) {
 			//ALL requested for pixelization time range in this segment
 			Segment segment = segments.get(i);
 			TimeInterval currentSegmentDataTI = TimeInterval.getIntersect(ti, new TimeInterval(segment.getStartTime(), segment.getEndTime()));
@@ -362,14 +366,16 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			if(i==0 || colorMode instanceof ColorModeBySource || Segment.isDataBreak(segments.get(i-1).getEndTime().getTime(), segmentData.startTime, segmentData.sampleRate)){
 				rawData.add(segmentData);
 			} else {
+				// concatenate previous data and current data
+				// replace with array copying (src, srcPos, dest, destPost, srcLen)
 				SegmentData last = rawData.get(rawData.size()-1);
 				int lastLength = last.data.length;
-				last.data = Arrays.copyOf(last.data, lastLength+segmentData.data.length);
-				for(int j = 0; j<segmentData.data.length; j++){
-					last.data[lastLength+j] = segmentData.data[j]; 
-				}
+				int currentLength = segmentData.data.length;
+				last.data = Arrays.copyOf(last.data, lastLength+currentLength);	// allocate space for copy
+				System.arraycopy(segmentData.data, 0, last.data, lastLength, currentLength);	// replaces loop
 			}
 		}
+		
 		//filtering
 		if(filter!=null){
 			FilterFacade ff = new FilterFacade(filter, this);
@@ -379,15 +385,18 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			}
 			rawData = filteredRawData;
 		}
+		
 		double interval = (ti.getDuration()) / new Double(pointCount);
 		double time = ti.getStart();
 		for (int i = 0; i < pointCount; i++) {
 			//lg.debug("Iteration # "+ i + ", processing interval " + time + " - " + (time+interval));
-			//segments which has data in the interval
-			SegmentData[] intervalData = getSegmentData(rawData, time, time + interval);
+			
+			// Get segments which have data in the interval (time, time+interval)
+			SegmentData[] intervalData = getSegmentData(rawData, time, time+interval);
 			if (intervalData != null) {
 				int k = 0;
-				PlotDataPoint[] intervalPoints = new PlotDataPoint[intervalData.length];
+				int intervalDataLength = intervalData.length;
+				PlotDataPoint[] intervalPoints = new PlotDataPoint[intervalDataLength];
 				for (SegmentData segData: intervalData) {
 					TimeInterval currentSegmentDataTI = new TimeInterval(segData.startTime, segData.endTime());
 					//lg.debug("Processing segment " + segment + "on interval " + currentSegmentDataTI);
@@ -436,7 +445,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			} else {
 				//lg.debug("Pixelizing : segment null");
 				PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
-				intervalPoints[0]=new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1, -1, -1, null);
+				intervalPoints[0] = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1, -1, -1, null);
 				pointSet.add(intervalPoints);
 			}
 			time = time + interval;

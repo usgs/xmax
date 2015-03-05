@@ -337,7 +337,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 
 			public void mouseEntered(MouseEvent e) {
-				graphPanel.mouseExited(e);
+				//graphPanel.mouseExited(e);
+				graphPanel.mouseEntered(e);
 			}
 
 			public void mouseExited(MouseEvent e) {
@@ -1324,6 +1325,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		return phasePanel;
 	}
 
+	/**
+	 * Main method for XMAXFrame (sets visibility)
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		//GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		//GraphicsDevice[] devices = graphicsEnvironment.getScreenDevices();

@@ -28,7 +28,6 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.processing.IFilter;
 import com.isti.traceview.processing.Rotation;
-import com.isti.traceview.commands.LoadDataCommand;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -600,30 +599,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
 					}
-					/**
-					// Get List<ChannelView> channelShowSet() and
-					// load each channel containing rawData
-					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
-					Thread loadPDP = null;
-					LoadDataCommand loadCommand = null;
-					long startl = System.nanoTime();
-					for (ChannelView cv: channelShowSet) {
-						pdpList = cv.getPlotDataProviders();	// usually contains one channel
-						loadCommand = new LoadDataCommand(pdpList, null);
-						loadPDP = new Thread(loadCommand);
-						loadPDP.start();
-						try {
-							loadPDP.join();	// wait for thread to terminate before starting next
-							loadPDP = null;
-							loadCommand = null;
-						} catch (InterruptedException e) {
-							logger.error("InterruptedException:", e);
-						}
-					}
-					long endl = System.nanoTime() - startl;
-					double end = endl * Math.pow(10, -9);
-					System.out.println("Channel loading time = " + end);
-					*/
+					
+					// Loops through ChannelView objects and loads segment data
 					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
 					TimeInterval ti = null;
 					long startl = System.nanoTime();
@@ -1274,90 +1251,89 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public void paint(Graphics g) {
 		//System.out.println("== GraphPanel.paint(g) [Enter]");
 		if(!paintNow){
-			
-		paintNow = true;
-		int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
-		logger.debug("Repainting graph panel");
-		if (!mouseRepaint || forceRepaint || ChannelView.tooltipVisible) {
-			logger.debug("GraphPanel: force repaint");
-			//RepaintManager rm = RepaintManager.currentManager(this);
-			//rm.markCompletelyDirty(this);
-			for (Component component: drawAreaPanel.getComponents()) {
-				ChannelView view = (ChannelView) component;
-				
-				if (view.getHeight() == 0 || view.getWidth() == 0) {
-					// Ugly hack to avoid lack of screen redraw sometimes
-					logger.debug("DrawAreaPanel: rebuilding corrupted layout");
-					drawAreaPanel.doLayout();
-					for (Component comp: drawAreaPanel.getComponents()) {
-						comp.doLayout();
+			paintNow = true;
+			int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
+			logger.debug("Repainting graph panel");
+			if (!mouseRepaint || forceRepaint || ChannelView.tooltipVisible) {
+				logger.debug("GraphPanel: force repaint");
+				//RepaintManager rm = RepaintManager.currentManager(this);
+				//rm.markCompletelyDirty(this);
+				for (Component component: drawAreaPanel.getComponents()) {
+					ChannelView view = (ChannelView) component;
+					
+					if (view.getHeight() == 0 || view.getWidth() == 0) {
+						// Ugly hack to avoid lack of screen redraw sometimes
+						logger.debug("DrawAreaPanel: rebuilding corrupted layout");
+						drawAreaPanel.doLayout();
+						for (Component comp: drawAreaPanel.getComponents()) {
+							comp.doLayout();
+						}
+						// end of ugly hack
 					}
-					// end of ugly hack
+					
+					// **NOTE: Need to check where this is being constantly called
+					//         updating the data on mouse movement is causing hangs. 
+					// 		   Maybe the observer for the data is being instantiated??
+					view.updateData();
 				}
-				
-				// **NOTE: Need to check where this is being constantly called
-				//         updating the data on mouse movement is causing hangs. 
-				// 		   Maybe the observer for the data is being instantiated??
-				view.updateData();
-			}
-			super.paint(g);	// This is also included in the updateData() observer
-
-			g.setXORMode(new Color(204, 204, 51));
-			if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
-				// Drawing cursor
-				// g.setXORMode(selectionColor); Hack for java 6
-				logger.debug("Force drawing cursor: " + mouseX + ", " + mouseY + ", color " + selectionColor);
-				g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
-				g.drawLine(mouseX, 0, mouseX, getHeight());
-				previousMouseX = mouseX;
-				previousMouseY = mouseY;
-			}
-			// Drawing selection area
-			paintSelection(g, selectedAreaXbegin, selectedAreaXend, selectedAreaYbegin, selectedAreaYend, "Drawing");
-			previousSelectedAreaXbegin = selectedAreaXbegin;
-			previousSelectedAreaXend = selectedAreaXend;
-			previousSelectedAreaYbegin = selectedAreaYbegin;
-			previousSelectedAreaYend = selectedAreaYend;
-			forceRepaint = false;
-		} else {
-			g.setXORMode(selectionColor);
-			logger.debug("Repainting cursor, color " + selectionColor);
-			if (previousMouseX >= 0 && previousMouseY >= 0) {
-				// Erasing cursor
-				if (showBigCursor) {
-					logger.debug("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
-					g.drawLine(infoPanelWidth, previousMouseY, getWidth(), previousMouseY);
-					g.drawLine(previousMouseX, 0, previousMouseX, getHeight());
-				}
-				previousMouseX = -1;
-				previousMouseY = -1;
-			}
-			logger.debug("Erasing selection area");
-			paintSelection(g, previousSelectedAreaXbegin, previousSelectedAreaXend, previousSelectedAreaYbegin, previousSelectedAreaYend, "Erasing");
-			previousSelectedAreaXbegin = Long.MAX_VALUE;
-			previousSelectedAreaXend = Long.MIN_VALUE;
-			previousSelectedAreaYbegin = Double.NaN;
-			previousSelectedAreaYend = Double.NaN;
-			if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight()) {
-				// Drawing cursor
-				if (showBigCursor) {
-					logger.debug("Drawing cursor: " + mouseX + ", " + mouseY);
+				super.paint(g);	// This is also included in the updateData() observer
+	
+				g.setXORMode(new Color(204, 204, 51));
+				if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
+					// Drawing cursor
+					// g.setXORMode(selectionColor); Hack for java 6
+					logger.debug("Force drawing cursor: " + mouseX + ", " + mouseY + ", color " + selectionColor);
 					g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
 					g.drawLine(mouseX, 0, mouseX, getHeight());
+					previousMouseX = mouseX;
+					previousMouseY = mouseY;
 				}
-				previousMouseX = mouseX;
-				previousMouseY = mouseY;
+				// Drawing selection area
+				paintSelection(g, selectedAreaXbegin, selectedAreaXend, selectedAreaYbegin, selectedAreaYend, "Drawing");
+				previousSelectedAreaXbegin = selectedAreaXbegin;
+				previousSelectedAreaXend = selectedAreaXend;
+				previousSelectedAreaYbegin = selectedAreaYbegin;
+				previousSelectedAreaYend = selectedAreaYend;
+				forceRepaint = false;
+			} else {
+				g.setXORMode(selectionColor);
+				logger.debug("Repainting cursor, color " + selectionColor);
+				if (previousMouseX >= 0 && previousMouseY >= 0) {
+					// Erasing cursor
+					if (showBigCursor) {
+						logger.debug("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
+						g.drawLine(infoPanelWidth, previousMouseY, getWidth(), previousMouseY);
+						g.drawLine(previousMouseX, 0, previousMouseX, getHeight());
+					}
+					previousMouseX = -1;
+					previousMouseY = -1;
+				}
+				logger.debug("Erasing selection area");
+				paintSelection(g, previousSelectedAreaXbegin, previousSelectedAreaXend, previousSelectedAreaYbegin, previousSelectedAreaYend, "Erasing");
+				previousSelectedAreaXbegin = Long.MAX_VALUE;
+				previousSelectedAreaXend = Long.MIN_VALUE;
+				previousSelectedAreaYbegin = Double.NaN;
+				previousSelectedAreaYend = Double.NaN;
+				if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight()) {
+					// Drawing cursor
+					if (showBigCursor) {
+						logger.debug("Drawing cursor: " + mouseX + ", " + mouseY);
+						g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
+						g.drawLine(mouseX, 0, mouseX, getHeight());
+					}
+					previousMouseX = mouseX;
+					previousMouseY = mouseY;
+				}
+				logger.debug("Drawing selection area");
+				paintSelection(g, selectedAreaXbegin, selectedAreaXend, selectedAreaYbegin, selectedAreaYend, "Drawing");
+				previousSelectedAreaXbegin = selectedAreaXbegin;
+				previousSelectedAreaXend = selectedAreaXend;
+				previousSelectedAreaYbegin = selectedAreaYbegin;
+				previousSelectedAreaYend = selectedAreaYend;
+				mouseRepaint = false;
 			}
-			logger.debug("Drawing selection area");
-			paintSelection(g, selectedAreaXbegin, selectedAreaXend, selectedAreaYbegin, selectedAreaYend, "Drawing");
-			previousSelectedAreaXbegin = selectedAreaXbegin;
-			previousSelectedAreaXend = selectedAreaXend;
-			previousSelectedAreaYbegin = selectedAreaYbegin;
-			previousSelectedAreaYend = selectedAreaYend;
-			mouseRepaint = false;
-		}
-		//lg.debug("End of repainting graph panel");
-		paintNow = false;
+			//lg.debug("End of repainting graph panel");
+			paintNow = false;
 		}
 		//System.out.println("== GraphPanel.paint(g) [Exit]");
 	}
