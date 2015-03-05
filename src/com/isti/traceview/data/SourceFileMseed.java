@@ -52,6 +52,11 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		return FormatType.MSEED;
 	}
 	
+	/**
+	 * Parses *.mseed files and creates channel segments based on start times
+	 * this includes gappy data (i.e. new segment for each gap)
+	 * 
+	 */
 	public synchronized Set<RawDataProvider> parse(DataModule dataModule) {
 		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
 		long blockNumber = 0;
@@ -273,8 +278,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		for (int value: data) 
 			segment.addDataPoint(value);
 		
-		//logger.debug("Loaded " + this + " " + segment + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber);
-		System.out.println("Loaded " + this + " " + segment + " [samples read = " + currentSampleCount + ", samples from headers = " + headerSampleCount + ", blocks read = " + blockNumber + "]");
+		logger.info("Loaded " + this + " " + segment + " [samples read = " + currentSampleCount + ", samples from headers = " + headerSampleCount + ", blocks read = " + blockNumber + "]");
 	}
 
 	public String toString() {
