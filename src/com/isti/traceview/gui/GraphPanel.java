@@ -1358,8 +1358,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			// lg.debug(message + " selection Y: " + getScaleMode().getY(Ybegin) + ", " +
 			// getScaleMode().getY(Yend));
 			if (Yend > Ybegin) {
-				g
-						.fillRect(infoPanelWidth, getScaleMode().getY(Yend), getWidth(), getScaleMode().getY(Ybegin)
+				g.fillRect(infoPanelWidth, getScaleMode().getY(Yend), getWidth(), getScaleMode().getY(Ybegin)
 								- getScaleMode().getY(Yend));
 			} else {
 				g.fillRect(infoPanelWidth, getScaleMode().getY(Ybegin), getWidth(), getScaleMode().getY(Yend)
@@ -1419,13 +1418,16 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					* new Double((date - getTimeRange().getStart())) / new Double(getTimeRange().getDuration())).intValue();
 	}
 
-	// Methods from MouseInputListener interface to handle mouse events.
+	/**
+	 * Methods from MouseInputListener interface to handle mouse events.
+	 */
 
 	public void mouseMoved(MouseEvent e) {
 		if ((button != MouseEvent.NOBUTTON) && (e.isControlDown() || e.isShiftDown())) {
 			mouseDragged(e);
 		} else {
-			// lg.debug("GraphPanel.mouseMoved");
+			// Mouse movements should not be updating data
+			// **NOTE: Is this the bottleneck?
 			mouseX = e.getX();
 			mouseY = e.getY();
 			mouseRepaint = true;
@@ -1442,8 +1444,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	}
 
+	// What are the orders for Button 1,2,3
+	// Left/Middle/Right?
 	public void mouseClicked(MouseEvent e) {
-		// lg.debug("GraphPanel.mouseClicked " + e.getX() + ":" + e.getY());
 		if (e.getButton() == MouseEvent.BUTTON3) {
 			if (mouseAdapter != null) {
 				mouseAdapter.mouseClickedButton3(e.getX(), e.getY(), this);
@@ -1460,13 +1463,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	// **NOTE: Should not repaint for entering GraphPanel
 	public void mouseEntered(MouseEvent e) {
 		forceRepaint();
-		// lg.debug("mouse entered");
 	}
 
+	// **NOTE: Should not repaint for exiting GraphPanel
 	public void mouseExited(MouseEvent e) {
-		// lg.debug("GraphPanel.mouse exited");
 		if (mouseX != -1 || mouseY != -1) {
 			mouseX = -1;
 			mouseY = -1;
@@ -1502,6 +1505,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	// From Printable interface
+	// **NOTE: This method is not working correctly. 
+	//		   Default printer is not assigned
 	public int print(Graphics pg, PageFormat pf, int pageNum) {
 		if (pageNum > 0) {
 			return Printable.NO_SUCH_PAGE;
@@ -1576,7 +1581,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 		public AxisPanel() {
 			super();
-// BorderLayout: Ignores the width dimension for NORTH/SOUTH components
+			// BorderLayout: Ignores the width dimension for NORTH/SOUTH components
 			setMinimumSize(new Dimension(200, 20));
 			setPreferredSize(new Dimension(200, 20));
 			axis = new DateAxis();
