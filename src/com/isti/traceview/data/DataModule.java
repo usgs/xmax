@@ -314,6 +314,12 @@ public class DataModule extends Observable {
 		}
 	}
 	
+	/**
+	 * Checks if channel contains data (i.e. raw data segments)
+	 * 
+	 * @param changedChannels
+	 * 			parsed *.mseed files
+	 */
 	private void checkDataIntegrity(Set<RawDataProvider> changedChannels) {
 		Iterator<RawDataProvider> it = changedChannels.iterator();
 		int rawDataSize = 0;
