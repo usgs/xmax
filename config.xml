@@ -8,45 +8,42 @@
 	===MTH: Rolled back to 1.06 since there were problems with the plugins & 
 	fixed wildcard -d breaks 1.08 First MTH version: Added ability to simultaneously 
 	plot/serialize from -d + -t 
--->
-<XMAXSessionConfiguration>
-	<Version>
+--><XMAXSessionConfiguration>
+<Version>
 		<Major>1</Major>
 		<Minor>1</Minor>
 		<Build>0</Build>
 	</Version>
-
-	<Configuration>
+<Configuration>
 		<!-- Sets start time for display. Recovers by -b option -->
-		<!-- Sets end time for display. Recovers by -e option -->
 		<!-- StartTime>2007,055,05:00:00</StartTime -->
+		<!-- Sets end time for display. Recovers by -e option -->
 		<!-- EndTime>2007,055,10:00:00</EndTime -->
 		<!-- <StartTime>2012,158,00:00:00</StartTime> --> 
 		<!-- <EndTime>2012,161,00:00:00</EndTime> -->
 
 		<Data>
 			<!-- Wildcarded mask of data files to load. Recovers by -d option. Default is "./DATA/*" -->
-			<DataMask>/APPS/oth/xmax/seed/IU_MACI,IU_TUC/2013_1*,2014_23*,2014_21*,2014_360,2014_361</DataMask>
+			<DataMask>seed/IU*/2014_19*,2014_2*</DataMask>
 			<!-- DataMask>resources/DATA</DataMask -->
-			<!--DataMask>seed/IU*/2014_19*,2014_2*</DataMask-->
-			<!--DataMask>/xs0/seed/IU_ANMO/2014/2014_*/00_LHZ.512.seed</DataMask-->
-			<!--DataMask>seed/*/*/*.*.seed</DataMask-->
+			<!--DataMask>/xs0/seed/IU_ANMO/2014/2014_*/00_LHZ.512.seed</DataMask-->	
+			<!--DataMask>seed/IU_MACI/2014_236</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
 			
 			<!-- Temporary directory to store decompressed traces in the internal format -->
-			<TempPath>/APPS/oth/xmax/resources/DATA_TEMP</TempPath>
+			<TempPath>resources/DATA_TEMP</TempPath>
 
 			<!-- Quality control data file. Recovers by -q option -->
 			<!--QCdataFile>/home/max/DATA/QC.xml</QCdataFile-->
 
 			<!-- Station files/paths -->
-			<EventFileMask>/APPS/oth/xmax/resources/*.ndk</EventFileMask>
-			<StationInfoFile>/APPS/oth/xmax/resources/gsn_sta_list</StationInfoFile>
-			<ResponsePath>/APPS/oth/xmax/resources/Responses</ResponsePath>
+			<EventFileMask>resources/*.ndk</EventFileMask>
+			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
+			<ResponsePath>resources/Responses</ResponsePath>
 			<AllowMultiplexedData>true</AllowMultiplexedData>
 
 			<!-- Picks directory. Recovers by -p option -->
-			<PickPath>/APPS/oth/xmax/resources/Picks</PickPath>
+			<PickPath>resources/Picks</PickPath>
 		</Data>
 
 		<!-- Contains wildcarded lists of values, separated by ";". The same as 
@@ -59,28 +56,28 @@
 		</Filters>
 
 		<View>
-			<ShowBigCursor>true</ShowBigCursor>
+			<ShowBigCursor>false</ShowBigCursor>
 			<ShowStatusBar>true</ShowStatusBar>
 			<ShowCommandButtons>true</ShowCommandButtons>
 			<ShowCommandButtonsTop>false</ShowCommandButtonsTop>
 		</View>
-		<OutputPath>/APPS/oth/xmax/resources/Output</OutputPath>
+		<OutputPath>resources/Output</OutputPath>
 
 		<!-- Panel order: 
 			0 - trace name, currently network/station/location/channel; 
 			1 - Network/station/sample rate/channel type/location; 
-			2 - Channel/network/station/location; 
-			3 - Channel type/channel/network/station; 
-			4 - event; 
+			2 - Channel/network/station/location,;
+			3 - Channel type/channel/network/station;
+			4 - event 
 		-->
 		<PanelOrder>1</PanelOrder>
 
 		<!-- Panel count unit: 
-			0 - trace; 
-			1 - station; 
-			2 - channel; 
-			3 - channel type; 
-			4 - all; 
+			0 - trace;
+			1 - station;
+			2 - channel;
+			3 - channel type;
+			4 - all 
 		-->
 		<PanelCountUnit>1</PanelCountUnit>
 		<UnitsInFrame>1</UnitsInFrame>
@@ -92,14 +89,14 @@
 			</PSD>
 		</Plugins>
 	</Configuration>
-	<SessionData>
+<SessionData>
 		<ExportDir/>
 		<Frame>
 			<State>NORMAL</State>
-			<PosY>71</PosY>
-			<PosX>2055</PosX>
-			<Width>1590</Width>
-			<Heigth>1127</Heigth>
+			<PosY>11</PosY>
+			<PosX>2193</PosX>
+			<Width>1497</Width>
+			<Heigth>912</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>

@@ -74,6 +74,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	/**
 	 * @uml.property name="plotDataProviders" multiplicity="(0 -1)" dimension="1"
 	 */
+	private List<String> channelNames = new ArrayList<String>();
 	private List<PlotDataProvider> plotDataProviders = null; // @jve:decl-index=0:
 	List<PlotData> graphs = null;
 	int height = 0;
@@ -106,6 +107,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		String names = "";
 		for (PlotDataProvider channel: channels) {
 			names = names + channel.toString() + ";";
+			channelNames.add(channel.toString());
 		}
 		logger.debug("ChannelView created for list: " + names);
 		initialize(infoPanelWidth, isDrawSelectionCheckBox, graphAreaBgColor, infoAreaBgColor);
@@ -265,6 +267,16 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	 */
 	public void clearMarkPositions() {
 		markPositions.clear();
+	}
+	
+	/**
+	 * Getter of the property <tt>channelNames</tt>
+	 * 
+	 * @return the list of channelNames drawn in this ChannelView
+	 * @uml.property name="channelNames"
+	 */
+	public List<String> getChannelNames() {
+		return channelNames;
 	}
 
 	/**
@@ -608,6 +620,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			IOffsetState offsetState = graphPanel.getOffsetState();
 			scaleMode.init(graphs, (graphPanel.getOverlayState() == true) || (graphPanel.getSelectState() == true) ? graphPanel
 					.getCurrentChannelShowSet() : graphPanel.getChannelShowSet(), graphPanel.getTimeRange(), meanState, height);
+			
 			//lg.debug("scaleMode Initialized:" + scaleMode.getStateName() + scaleMode.getMaxValue() + scaleMode.getMinValue());
 			if (scaleMode.getMinValue() != Double.POSITIVE_INFINITY && scaleMode.getMaxValue() != Double.NEGATIVE_INFINITY) {
 				axis.setRange(scaleMode.getMinValue(), scaleMode.getMaxValue());
@@ -621,6 +634,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			for (PlotData data: graphs) {
 				int i = 0;
 				logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				System.out.println("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
 				// strokes for previous pixel
 				List<Stroke> yprev = new ArrayList<Stroke>();
 				for (PlotDataPoint[] points: data.getPixels()) {
@@ -743,6 +757,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseMoved(MouseEvent e) {
+			System.out.println("ChannelView.mouseMoved(e): graphPanel.dispatchEvent()");
 			int x = e.getX();
 			if ((button != MouseEvent.NOBUTTON) && (e.isControlDown() || e.isShiftDown())) {
 				mouseDragged(e);
@@ -782,11 +797,13 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseEntered(MouseEvent e) {
+			System.out.println("ChannelView.mouseEntered(e): graphPanel.forceRepaint()");
 			graphPanel.forceRepaint();
 		}
 
 		public void mouseExited(MouseEvent e) {
-
+			System.out.println("ChannelView.mouseExited(e)");
+			//graphPanel.forceRepaint();
 		}
 
 		public void mousePressed(MouseEvent e) {
