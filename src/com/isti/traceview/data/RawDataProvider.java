@@ -290,7 +290,7 @@ public class RawDataProvider extends Channel {
         String station = getStation().getName();
         String location = getLocationName();
         String channel = getChannelName();
-        System.out.println(network+"."+station+"."+location+"."+channel + ": numSegments = " + rawData.size());
+        System.out.println(network+"."+station+"."+location+"."+channel);
         //long startl = System.nanoTime();
 /*		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();

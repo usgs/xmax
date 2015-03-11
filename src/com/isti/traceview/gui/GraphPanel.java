@@ -1258,6 +1258,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				logger.debug("GraphPanel: force repaint");
 				//RepaintManager rm = RepaintManager.currentManager(this);
 				//rm.markCompletelyDirty(this);
+				System.out.println("\nPainting Graph Panels...");
 				for (Component component: drawAreaPanel.getComponents()) {
 					ChannelView view = (ChannelView) component;
 					
@@ -1274,9 +1275,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// **NOTE: Need to check where this is being constantly called
 					//         updating the data on mouse movement is causing hangs. 
 					// 		   Maybe the observer for the data is being instantiated??
+					System.out.println("GraphPanel.paint(Graphics g): updating ChannelView: " + view.getChannelNames());
 					view.updateData();
 				}
 				super.paint(g);	// This is also included in the updateData() observer
+				System.out.println();	// skip to next line for next repaint() readout
 	
 				g.setXORMode(new Color(204, 204, 51));
 				if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
@@ -1423,6 +1426,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 
 	public void mouseMoved(MouseEvent e) {
+		System.out.println("GraphPanel.mouseMoved(e): repaint()");
 		if ((button != MouseEvent.NOBUTTON) && (e.isControlDown() || e.isShiftDown())) {
 			mouseDragged(e);
 		} else {
@@ -1430,7 +1434,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			// **NOTE: Is this the bottleneck?
 			mouseX = e.getX();
 			mouseY = e.getY();
-			mouseRepaint = true;
+			mouseRepaint = true;	// boolean denoting repaint() execution
 			repaint();
 		}
 	}
@@ -1465,15 +1469,17 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	// **NOTE: Should not repaint for entering GraphPanel
 	public void mouseEntered(MouseEvent e) {
+		System.out.println("GraphPanel.mouseEntered(e): forceRepaint()");
 		forceRepaint();
 	}
 
 	// **NOTE: Should not repaint for exiting GraphPanel
 	public void mouseExited(MouseEvent e) {
 		if (mouseX != -1 || mouseY != -1) {
+			System.out.println("GraphPanel.mouseExited(e): repaint()");
 			mouseX = -1;
 			mouseY = -1;
-			mouseRepaint = true;
+			mouseRepaint = true;	// boolean to show that repaint() was executed
 			repaint();
 		}
 	}

@@ -1320,6 +1320,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 */
 	public void mouseEntered(MouseEvent e) {
 		if (!this.ownToolTipDelaysActive) {
+			System.out.println("TraceViewChartPanel.mouseEntered(e)");
 			ToolTipManager ttm = ToolTipManager.sharedInstance();
 
 			this.originalToolTipInitialDelay = ttm.getInitialDelay();
@@ -1344,6 +1345,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 */
 	public void mouseExited(MouseEvent e) {
 		if (this.ownToolTipDelaysActive) {
+			System.out.println("TraceViewChartPanel.mouseExited(e): resets tooltip");
 			// restore original tooltip dealys
 			ToolTipManager ttm = ToolTipManager.sharedInstance();
 			ttm.setInitialDelay(this.originalToolTipInitialDelay);
@@ -1558,6 +1560,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the event.
 	 */
 	public void mouseMoved(MouseEvent e) {
+		System.out.println("TraceViewChartPanel.mouseMoved(e): chartMouseMoved(e)");
 		Graphics2D g2 = (Graphics2D) getGraphics();
 		if (this.horizontalAxisTrace) {
 			drawHorizontalAxisTrace(g2, e.getX());
