@@ -56,7 +56,7 @@
 		</Filters>
 
 		<View>
-			<ShowBigCursor>false</ShowBigCursor>
+			<ShowBigCursor>true</ShowBigCursor>
 			<ShowStatusBar>true</ShowStatusBar>
 			<ShowCommandButtons>true</ShowCommandButtons>
 			<ShowCommandButtonsTop>false</ShowCommandButtonsTop>
@@ -93,10 +93,10 @@
 		<ExportDir/>
 		<Frame>
 			<State>NORMAL</State>
-			<PosY>11</PosY>
-			<PosX>2193</PosX>
-			<Width>1497</Width>
-			<Heigth>912</Heigth>
+			<PosY>42</PosY>
+			<PosX>2152</PosX>
+			<Width>1417</Width>
+			<Heigth>784</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>

@@ -104,7 +104,6 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 	}
 
 	public void mouseMoved(int x, int y, JPanel clickedAt) {
-		System.out.println("XMAXChannelView.mouseMoved(x,y): update events, set message in XMAXframe");
 		ChannelView cv = (ChannelView) clickedAt;
 		// ToolBar message for event
 		String message = null;

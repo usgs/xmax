@@ -212,7 +212,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		logger.debug(this + ": update request from " + observable);
 		if (arg instanceof TimeInterval) {
 			TimeInterval ti = (TimeInterval) arg;
-			logger.debug(this + " updating for range " + ti + " due to request from " + observable.getClass().getName());
+			logger.info(this + " updating for range " + ti + " due to request from observer: '" + observable.getClass().getName() + "'");
 			graphAreaPanel.repaint();
 		}
 	}
@@ -751,13 +751,11 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		 * @return time value in internal Java format
 		 */
 		public long getTime(int x) {
-			// lg.debug("ChannelView getTime: " + x);
 			TimeInterval ti = graphPanel.getTimeRange();
 			return new Double(ti.getStart() + x * new Double(ti.getDuration())/ getWidth()).longValue();
 		}
 
 		public void mouseMoved(MouseEvent e) {
-			System.out.println("ChannelView.mouseMoved(e): graphPanel.dispatchEvent()");
 			int x = e.getX();
 			if ((button != MouseEvent.NOBUTTON) && (e.isControlDown() || e.isShiftDown())) {
 				mouseDragged(e);
@@ -770,8 +768,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseDragged(MouseEvent e) {
-			// lg.debug("ChannelView.mouseDragged");
-
 			if (mouseAdapter != null) {
 				mouseAdapter.mouseDragged(e.getX(), e.getY(), cv);
 			}
@@ -781,7 +777,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		public void mouseClicked(MouseEvent e) {
 			int clickedX = e.getX();
 			int clickedY = e.getY();
-			//long clickedTime = graphPanel.getTime(clickedX);
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				if (mouseAdapter != null) {
 					mouseAdapter.mouseClickedButton1(clickedX, clickedY, cv);
@@ -797,17 +792,16 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseEntered(MouseEvent e) {
-			System.out.println("ChannelView.mouseEntered(e): graphPanel.forceRepaint()");
-			graphPanel.forceRepaint();
+			System.out.println("ChannelView.mouseEntered(e) --> REMOVED GraphPanel REPAINT");
+			//graphPanel.forceRepaint();
 		}
 
 		public void mouseExited(MouseEvent e) {
-			System.out.println("ChannelView.mouseExited(e)");
+			System.out.println("ChannelView.mouseExited(e) --> REMOVED GraphPanel REPAINT");
 			//graphPanel.forceRepaint();
 		}
 
 		public void mousePressed(MouseEvent e) {
-			// lg.debug("ChannelView.mousePressed");
 			mousePressX = e.getX();
 			mousePressY = e.getY();
 			graphPanel.getScaleMode().init(
@@ -830,7 +824,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseReleased(MouseEvent e) {
-			// lg.debug("ChannelView.mouseReleased");
 			if (button != MouseEvent.NOBUTTON && ((mousePressX != e.getX()) || (mousePressY != e.getY()))) {
 				if (button == MouseEvent.BUTTON3 || (button == MouseEvent.BUTTON1 && e.isControlDown() == true)) {
 					if (mouseAdapter != null) {
@@ -871,7 +864,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				if (toolTipTextWasChanged) {
 					toolTipTextWasChanged = false;
 					graphPanel.forceRepaint();
-					graphPanel.repaint();
+					//graphPanel.repaint();	// repetitive call to repaint()
 				}
 				return null;
 			}
