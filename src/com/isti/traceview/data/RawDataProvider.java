@@ -270,8 +270,6 @@ public class RawDataProvider extends Channel {
 	 * @param ti
 	 */
 	public void loadData(TimeInterval ti) {
-        logger.debug("== ENTER");
-        
 /*        // Setup pool of workers to load data segments for current channel
        	int index = 0;	// indexes each segment 
        	int numProc = Runtime.getRuntime().availableProcessors();
@@ -318,7 +316,6 @@ public class RawDataProvider extends Channel {
         }
         //long endl = System.nanoTime() - startl;
 		//double end = endl * Math.pow(10, -9);
-		logger.debug("== EXIT");
         //System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
 	}
 

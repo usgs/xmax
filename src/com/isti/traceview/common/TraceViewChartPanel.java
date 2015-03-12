@@ -1560,7 +1560,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the event.
 	 */
 	public void mouseMoved(MouseEvent e) {
-		System.out.println("TraceViewChartPanel.mouseMoved(e): chartMouseMoved(e)");
+		System.out.println("TraceViewChartPanel.mouseMoved(e) -> chartMouseMoved(e)");
 		Graphics2D g2 = (Graphics2D) getGraphics();
 		if (this.horizontalAxisTrace) {
 			drawHorizontalAxisTrace(g2, e.getX());
