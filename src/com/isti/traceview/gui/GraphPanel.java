@@ -600,7 +600,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// Loops through ChannelView objects and loads segment data
 					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
 					TimeInterval ti = null;
-					System.out.println("Loading channel segment data...");
+					System.out.println("Loading channel segment data:");
 					long startl = System.nanoTime();
 					for (ChannelView cv: channelShowSet) {
 						pdpList = cv.getPlotDataProviders();
@@ -1251,7 +1251,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			//logger.debug("Repainting graph panel");
 			if (!mouseRepaint || forceRepaint || ChannelView.tooltipVisible) {
 				System.out.println("GraphPanel.paint(Graphics g): forceRepaint = " + forceRepaint + ", mouseRepaint = " + mouseRepaint);
-
+				System.out.print("Pixelizing channel data...");
+				
 				//RepaintManager rm = RepaintManager.currentManager(this);
 				//rm.markCompletelyDirty(this);
 				for (Component component: drawAreaPanel.getComponents()) {
@@ -1269,17 +1270,28 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// **NOTE: Need to check where this is being constantly called
 					//         updating the data on mouse movement is causing hangs. 
 					// 		   Maybe the observer for the data is being instantiated??
-					System.out.println("GraphPanel.paint(Graphics g): pixelizing ChannelView: " + view.getChannelNames());
+					//System.out.println("GraphPanel.paint(Graphics g): pixelizing ChannelView: " + view.getChannelNames());
+					System.out.print("...");
 					view.updateData();
 				}
+				System.out.print("\nDrawing channel data...");
 				super.paint(g);	// calls ChannelView.paint(Graphics g)
+				
+				// Need a check on forceRepaint and mouseRepaint to check for exit
+				// status and leftover cursor artifacts. 
+				// 
+				// This also needs to be implemented for forceRepaint calls where 
+				// the previous data set has not been changed (i.e. resize, zooming, 
+				// filtering, etc.). This would eliminate unnecessary pixelizing()
+				// calls
+				//**if (mouseRepaint) { Erase previous cursor and draw new cursor }
 	
+				// Drawing cursor
 				g.setXORMode(new Color(204, 204, 51));
 				if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
-					// Drawing cursor
 					// g.setXORMode(selectionColor); Hack for java 6
 					//logger.debug("Force drawing cursor: " + mouseX + ", " + mouseY + ", color " + selectionColor);
-					System.out.println("Force drawing cursor: " + mouseX + ", " + 
+					System.out.println("\nForce drawing cursor: " + mouseX + ", " + 
 							mouseY + ", color " + selectionColor);
 					
 					System.out.println("g.drawLine(infoPanelWidth = " + infoPanelWidth + 
@@ -1301,25 +1313,25 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaYbegin = selectedAreaYbegin;
 				previousSelectedAreaYend = selectedAreaYend;
 				forceRepaint = false;
-				System.out.println();	// skip to next line for next repaint() readout
+				System.out.print("\n\n");	// skip to next line for next repaint() readout
 			} else {
-				System.out.println("GraphPanel.paint(Graphics g): forceRepaint = " + forceRepaint + ", mouseRepaint = " + mouseRepaint);
+				//System.out.println("GraphPanel.paint(Graphics g): forceRepaint = " + forceRepaint + ", mouseRepaint = " + mouseRepaint);
 				g.setXORMode(selectionColor);
 				logger.debug("Repainting cursor, color " + selectionColor);
 				if (previousMouseX >= 0 && previousMouseY >= 0) {
 					// Erasing cursor
 					if (showBigCursor) {
 						//logger.debug("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
-						System.out.println("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
+						//System.out.println("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
 						
-						System.out.println("g.drawLine(infoPanelWidth = " + infoPanelWidth + 
-								", previousMouseY = " + previousMouseY + ", getWidth() = " + getWidth() +
-								", previousMouseY = " + previousMouseY + ")");
+						//System.out.println("g.drawLine(infoPanelWidth = " + infoPanelWidth + 
+						//		", previousMouseY = " + previousMouseY + ", getWidth() = " + getWidth() +
+						//		", previousMouseY = " + previousMouseY + ")");
 						g.drawLine(infoPanelWidth, previousMouseY, getWidth(), previousMouseY);
 						
-						System.out.println("g.drawLine(previousMouseX = " + previousMouseX +
-								", 0, previousMouseX = " + previousMouseX + 
-								", getHeight() = " + getHeight() + ")");
+						//System.out.println("g.drawLine(previousMouseX = " + previousMouseX +
+						//		", 0, previousMouseX = " + previousMouseX + 
+						//		", getHeight() = " + getHeight() + ")");
 						g.drawLine(previousMouseX, 0, previousMouseX, getHeight());
 					}
 					previousMouseX = -1;
@@ -1335,15 +1347,15 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// Drawing cursor
 					if (showBigCursor) {
 						//logger.debug("Drawing cursor: " + mouseX + ", " + mouseY);
-						System.out.println("Drawing cursor: " + mouseX + ", " + mouseY);
+						//System.out.println("Drawing cursor: " + mouseX + ", " + mouseY);
 						
-						System.out.println("g.drawLine(infoPanelWidth = " + infoPanelWidth + 
-								", mouseY = " + mouseY + ", getWidth() = " + getWidth() + 
-								", mouseY = " + mouseY + ")");
+						//System.out.println("g.drawLine(infoPanelWidth = " + infoPanelWidth + 
+						//		", mouseY = " + mouseY + ", getWidth() = " + getWidth() + 
+						//		", mouseY = " + mouseY + ")");
 						g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
 						
-						System.out.println("g.drawLine(mouseX = " + mouseX + ", 0, mouseX = " + 
-								mouseX + ", getHeight() = " + getHeight() + ")");
+						//System.out.println("g.drawLine(mouseX = " + mouseX + ", 0, mouseX = " + 
+						//		mouseX + ", getHeight() = " + getHeight() + ")");
 						g.drawLine(mouseX, 0, mouseX, getHeight());
 					}
 					previousMouseX = mouseX;
@@ -1357,7 +1369,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaYend = selectedAreaYend;
 				forceRepaint = false;
 				mouseRepaint = false;
-				System.out.println();	// go to next readout
+				//System.out.println();	// go to next readout
 			}
 			paintNow = false;
 		}

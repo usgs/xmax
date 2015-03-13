@@ -278,7 +278,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		for (int value: data) 
 			segment.addDataPoint(value);
 		
-		logger.info("Loaded " + this + " " + segment + " [samples read = " + currentSampleCount + ", samples from headers = " + headerSampleCount + ", blocks read = " + blockNumber + "]");
+		//logger.info("Loaded " + this + " " + segment + " [samples read = " + currentSampleCount + ", samples from headers = " + headerSampleCount + ", blocks read = " + blockNumber + "]");
+		System.out.print("...");
 	}
 
 	public String toString() {

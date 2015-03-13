@@ -121,7 +121,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		logger.debug(this + ": update request from " + o);
 		TimeInterval ti = (TimeInterval) arg;
 		//logger.debug("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
-		System.out.println("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
+		//System.out.println("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
 		if ((viewingInterval == null) || viewingInterval.isIntersect(ti)) {
 			notifyObservers(ti);
 		}

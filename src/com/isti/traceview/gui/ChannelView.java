@@ -212,7 +212,8 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		logger.debug(this + ": update request from " + observable);
 		if (arg instanceof TimeInterval) {
 			TimeInterval ti = (TimeInterval) arg;
-			logger.info(this + " updating for range " + ti + " due to request from observer: '" + observable.getClass().getName() + "'");
+			//System.out.println();
+			//logger.info(this + " updating for range " + ti + " due to request from observer: '" + observable.getClass().getName() + "'");
 			graphAreaPanel.repaint();
 		}
 	}
@@ -631,10 +632,12 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			// Graph's number, used to separate graphs then overlay mode is activated
 			int graphNum = 0;
 			Color segmentColor = null;
+			System.out.print("...");
 			for (PlotData data: graphs) {
 				int i = 0;
-				logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
-				System.out.println("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				//logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				//System.out.println("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				
 				// strokes for previous pixel
 				List<Stroke> yprev = new ArrayList<Stroke>();
 				for (PlotDataPoint[] points: data.getPixels()) {

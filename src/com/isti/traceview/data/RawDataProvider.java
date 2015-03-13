@@ -288,7 +288,7 @@ public class RawDataProvider extends Channel {
         String station = getStation().getName();
         String location = getLocationName();
         String channel = getChannelName();
-        System.out.println(network+"."+station+"."+location+"."+channel);
+        System.out.print(network+"."+station+"."+location+"."+channel);
         //long startl = System.nanoTime();
 /*		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();
@@ -303,7 +303,7 @@ public class RawDataProvider extends Channel {
         for (SegmentCache sc: rawData) {
         	Segment seg = sc.getSegment();
         	if (!seg.getIsLoaded()) {		
-        		logger.debug("== Load Segment:" + seg.toString());	
+        		//logger.debug("== Load Segment:" + seg.toString());	
 				seg.load();
 				seg.setIsLoaded(true);
         	} else {
@@ -314,6 +314,7 @@ public class RawDataProvider extends Channel {
         		//seg.loadDataInt();	
         	}	
         }
+        System.out.print("\n");
         //long endl = System.nanoTime() - startl;
 		//double end = endl * Math.pow(10, -9);
         //System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
