@@ -636,7 +636,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			for (PlotData data: graphs) {
 				int i = 0;
 				//logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
-				//System.out.println("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				//System.out.println("Drawing PlotData " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
 				
 				// strokes for previous pixel
 				List<Stroke> yprev = new ArrayList<Stroke>();
@@ -795,12 +795,16 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseEntered(MouseEvent e) {
-			System.out.println("ChannelView.mouseEntered(e) --> REMOVED GraphPanel REPAINT");
+			System.out.println("ChannelView.mouseEntered(e):");
+			//System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
+			//System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
 			//graphPanel.forceRepaint();
 		}
 
 		public void mouseExited(MouseEvent e) {
-			System.out.println("ChannelView.mouseExited(e) --> REMOVED GraphPanel REPAINT");
+			System.out.println("ChannelView.mouseExited(e):");
+			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
+			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
 			//graphPanel.forceRepaint();
 		}
 
