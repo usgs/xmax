@@ -211,7 +211,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public void update(Observable observable, Object arg) {
 		logger.debug(this + ": update request from " + observable);
 		if (arg instanceof TimeInterval) {
-			TimeInterval ti = (TimeInterval) arg;
+			//TimeInterval ti = (TimeInterval) arg;
 			//System.out.println();
 			//logger.info(this + " updating for range " + ti + " due to request from observer: '" + observable.getClass().getName() + "'");
 			graphAreaPanel.repaint();
@@ -764,6 +764,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				mouseDragged(e);
 			} else {
 				if (mouseAdapter != null) {
+					graphPanel.cvMouseMoved = true;
 					mouseAdapter.mouseMoved(x, e.getY(), cv);
 				}
 				graphPanel.dispatchEvent(SwingUtilities.convertMouseEvent(this, e, graphPanel));
@@ -796,15 +797,17 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 
 		public void mouseEntered(MouseEvent e) {
 			System.out.println("ChannelView.mouseEntered(e):");
-			//System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
-			//System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
+			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
+			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
+			graphPanel.cvMouseEntered = true;
 			//graphPanel.forceRepaint();
 		}
 
 		public void mouseExited(MouseEvent e) {
-			System.out.println("ChannelView.mouseExited(e):");
+			System.out.println("\nChannelView.mouseExited(e):");
 			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
 			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
+			graphPanel.cvMouseExited = true;
 			//graphPanel.forceRepaint();
 		}
 
