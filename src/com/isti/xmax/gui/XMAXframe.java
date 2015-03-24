@@ -357,6 +357,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 			public void componentResized(ComponentEvent e) {
 				XMAX.getConfiguration().setFrameState(getExtendedState(), getX() ,getY() ,getWidth() ,getHeight());
+				graphPanel.forceRepaint();	// re-pixelize and paint data when resizing
 			}
 
 			public void componentShown(ComponentEvent e) {
