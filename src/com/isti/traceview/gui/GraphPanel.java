@@ -1352,7 +1352,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					if ((mouseX == 0) && (mouseY == 0)) {
 						System.out.println("coord = (" + mouseX + ", " + mouseY + ")");
 					} else if ((mouseX < 0) && (mouseY < 0)) {	// Top panel cursor artifact
-						System.out.println("coord = (" + mouseX + ", " + mouseY + ")");
+						System.out.println("coord = (" + mouseX + ", " + mouseY + "), prev = (" + 
+								previousMouseX + ", " + previousMouseY + ")");
 						if (previousMouseX >= 0 && previousMouseY >= 0) {
 							if (showBigCursor) {
 								if ((previousMouseX == forceMouseX) && (previousMouseY == forceMouseY)) {
@@ -1386,6 +1387,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaYend = selectedAreaYend;
 				initialPaint = false;
 				forceRepaint = false;
+				cvMouseEntered = false;
 				System.out.print("\n\n");	// skip to next line for next repaint() readout
 			} else {	// Regular MouseMovements in and between ChannelView and GraphPanel panels
 				System.out.println("SECOND BLOCK: GraphPanel.paint(Graphics g): initialPaint = " + 
@@ -1444,6 +1446,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					}
 					previousMouseX = mouseX;
 					previousMouseY = mouseY;
+					cvMouseEntered = false;
 					cvMouseMoved = false;
 				}
 				//logger.debug("Drawing selection area");
@@ -1550,14 +1553,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		} else {
 			// Mouse movements should not be updating data
 			// **NOTE: Is this the bottleneck?
+			if (cvMouseMoved) {	// only repaint and update when moving in/between ChannelView panels
+				System.out.println("ChannelView.mouseMoved(" + mouseX + ", " + mouseY + ")");
+			} else {
+				System.out.println("GraphPanel.mouseMoved(" + mouseX + ", " + mouseY + ")");
+			}
 			mouseX = e.getX();
 			mouseY = e.getY();
-			if (!cvMouseMoved) {
-				System.out.println("GraphPanel.mouseMoved(" + mouseX + ", " + mouseY + ")");
-			} else {
-				System.out.println("ChannelView.mouseMoved(" + mouseX + ", " + mouseY + ")");
-			}
-				
 			mouseRepaint = true;	// boolean denoting repaint() execution
 			repaint();
 		}
@@ -1593,23 +1595,27 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	// **NOTE: Should not repaint for entering GraphPanel
 	public void mouseEntered(MouseEvent e) {
 		if (cvMouseEntered) {
-			System.out.println("ChannelView.mouseEntered(e)\n");
+			System.out.println("ChannelView.mouseEntered(e) --> repaint()\n");
+			forceRepaint = false;
+			repaint();
 		} else {
 			System.out.println("GraphPanel.mouseEntered(e)\n");
+			forceRepaint = false;
+			//forceRepaint();	// only force if data has changed
 		}
-		//forceRepaint();	// only force if data has changed
 	}
 
 	// **NOTE: Should not repaint for exiting GraphPanel
 	public void mouseExited(MouseEvent e) {
 		if (mouseX != -1 || mouseY != -1) {
 			if (cvMouseExited) {
-				System.out.println("ChannelView.mouseExited(e)\n");
+				System.out.println("ChannelView.mouseExited(e) --> repaint()\n");
 			} else {
 				System.out.println("GraphPanel.mouseExited(e) --> repaint()\n");
 			}
 			mouseX = -1;
 			mouseY = -1;
+			forceRepaint = false;
 			mouseRepaint = true;	// boolean to show that repaint() was executed
 			repaint();
 		}
