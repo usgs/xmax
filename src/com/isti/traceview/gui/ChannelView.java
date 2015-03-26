@@ -806,7 +806,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseExited(MouseEvent e) {
-			System.out.println("\nChannelView.mouseExited(" + 
+			System.out.println("ChannelView.mouseExited(" + 
 				e.getX() + ", " + e.getY() + "):");
 			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
 			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
