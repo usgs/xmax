@@ -765,7 +765,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				mouseDragged(e);
 			} else {
 				if (mouseAdapter != null) {
-					graphPanel.cvMouseMoved = true;
 					mouseAdapter.mouseMoved(x, y, cv);
 				}
 				graphPanel.dispatchEvent(SwingUtilities.convertMouseEvent(this, e, graphPanel));
@@ -801,7 +800,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				e.getX() + ", " + e.getY() + "):");
 			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
 			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
-			graphPanel.cvMouseEntered = true;
 			//graphPanel.forceRepaint();
 		}
 
@@ -810,7 +808,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				e.getX() + ", " + e.getY() + "):");
 			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
 			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
-			graphPanel.cvMouseExited = true;
 			//graphPanel.forceRepaint();
 		}
 

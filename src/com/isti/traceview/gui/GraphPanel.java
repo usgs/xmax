@@ -140,51 +140,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	protected int previousMouseY = -1;
 	
 	/**
-	 * Mouse position during force draw of crosshair cursor, X cordinate
-	 */
-	protected int forceMouseX = -1;
-	
-	/**
-	 * Mouse position during force draw of crosshair cursor, Y coordinate
-	 */
-	protected int forceMouseY = -1;
-
-	/**
-	 * Mouse movements for ChannelView panels (excludes XMAXframe/GraphPanel movements)
-	 */
-	protected boolean cvMouseMoved = false;
-	
-	/**
-	 * Mouse enter for ChannelView panels (excludes XMAXframe/GraphPanel enter)
-	 */
-	protected boolean cvMouseEntered = false;
-	
-	/**
-	 * Mouse exit for ChannelView panels (excludes XMAXframe/GraphPanel exit)
-	 */
-	protected boolean cvMouseExited = false;
-	
-	/**
-	 * Mouse enter for XMAXframe (excludes GraphPanel/ChannelView enter)
-	 */
-	public boolean xframeMouseEntered = false;
-
-	/**
-	 * Mouse exit for XMAXframe (excludes GraphPanel/ChannelView exit)
-	 */
-	public boolean xframeMouseExited = false;
-
-	/**
-	 * Mouse enter for GraphPanel (excludes XMAXframe/ChannelView enter)
-	 */
-	private boolean gpMouseEntered = false;
-
-	/**
-	 * Mouse exit for GraphPanel (excludes XMAXframe/ChannelView exit)
-	 */
-	private boolean gpMouseExited = false;
-
-	/**
 	 * Flag if we need to repaint mouse cross cursor
 	 */
 	private boolean mouseRepaint = false;
@@ -1312,8 +1267,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (initialPaint ||  forceRepaint || !mouseRepaint || ChannelView.tooltipVisible) {
 				System.out.println("FIRST BLOCK: GraphPanel.paint(Graphics g): initialPaint = " + 
 						initialPaint + ", forceRepaint = " + 
-						forceRepaint + ", mouseRepaint = " + mouseRepaint + 
-						", cvMouseMoved = " + cvMouseMoved);
+						forceRepaint + ", mouseRepaint = " + 
+						mouseRepaint);
 				
 				//RepaintManager rm = RepaintManager.currentManager(this);
 				//rm.markCompletelyDirty(this);
@@ -1351,9 +1306,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				g.setXORMode(new Color(204, 204, 51));
 				if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
 					// g.setXORMode(selectionColor); Hack for java 6
-					//logger.debug("Force drawing cursor: " + mouseX + ", " + mouseY + ", color " + selectionColor);
-					System.out.println("GraphPanel cursor postion: " + mouseX + ", " + 
-							mouseY);
+					System.out.println("GraphPanel cursor postion: " + 
+						mouseX + ", " + mouseY);
 					
 					//System.out.println("g.drawLine(" + infoPanelWidth + 
 					//		", " + mouseY + ", " + getWidth() + 
@@ -1364,42 +1318,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					//		", 0, " + mouseX + ", " + 
 					//		getHeight()  + ")");
 					//g.drawLine(mouseX, 0, mouseX, getHeight());
-					//forceMouseX = mouseX;
-					//forceMouseY = mouseY;
 					previousMouseX = mouseX;
 					previousMouseY = mouseY;
-				} else {	// Erasing cursor artifacts
-					if ((mouseX == 0) && (mouseY == 0)) {
-						System.out.println("coord = (" + mouseX + ", " + mouseY + ")");
-					} else if ((mouseX < 0) && (mouseY < 0)) {	// Top panel cursor artifact
-						System.out.println("coord = (" + mouseX + ", " + mouseY + "), prev = (" + 
-								previousMouseX + ", " + previousMouseY + ")");
-						if (previousMouseX >= 0 && previousMouseY >= 0) {
-							if (showBigCursor) {
-								System.out.println("previous(X, Y) = (" + previousMouseX + ", " + previousMouseY + ")");	
-								if ((previousMouseX == forceMouseX) && (previousMouseY == forceMouseY)) {
-									// Need a way to distinguish cursor artifacts from equal coord pts
-									//System.out.println("Erasing cursor: mouseX = " + forceMouseX + 
-									//	", mouseY = " + forceMouseY);
-									
-									//System.out.println("g.drawLine(" + infoPanelWidth + ", " + 
-									//		forceMouseY + ", " + getWidth() + ", " + 
-									//		forceMouseY + ")");
-									//g.drawLine(infoPanelWidth, forceMouseY, getWidth(), forceMouseY);
-									
-									//System.out.println("g.drawLine(" + forceMouseX + ", 0" + 
-									//		", " + forceMouseX + ", " + getHeight() + ")");
-									//g.drawLine(forceMouseX, 0, forceMouseX, getHeight());
-								}
-							}
-							//forceMouseX = -1;
-							//forceMouseY = -1;
-							//previousMouseX = -1;
-							//previousMouseY = -1;
-						}
-					}
-				}
-				
+					System.out.println("GraphPanel prev cursor position: " + 
+						previousMouseX + ", " + previousMouseY);
+				} 
 				// Drawing selection area
 				paintSelection(g, selectedAreaXbegin, selectedAreaXend, selectedAreaYbegin, selectedAreaYend, "Drawing");
 				previousSelectedAreaXbegin = selectedAreaXbegin;
@@ -1408,45 +1331,33 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaYend = selectedAreaYend;
 				initialPaint = false;
 				forceRepaint = false;
-				cvMouseEntered = false;
-				cvMouseExited = false;	
 				System.out.print("\n\n");	// skip to next line for next repaint() readout
 			} else {	// Regular MouseMovements in and between ChannelView and GraphPanel panels
 				System.out.println("SECOND BLOCK: GraphPanel.paint(Graphics g): initialPaint = " + 
 						initialPaint + ", forceRepaint = " + 
-						forceRepaint + ", mouseRepaint = " + mouseRepaint + 
-						", cvMouseMoved = " + cvMouseMoved);
+						forceRepaint + ", mouseRepaint = " + 
+						mouseRepaint);
 				g.setXORMode(selectionColor);
 				//logger.debug("Repainting cursor, color " + selectionColor);
 				if (previousMouseX >= 0 && previousMouseY >= 0) {
 					// Erasing cursor
 					if (showBigCursor) {
-						System.out.println("previous(X, Y) = (" + 
+						System.out.println("Erasing cursor: " + 
 							previousMouseX + ", " + 
+							previousMouseY);
+							
+						System.out.println("g.drawLine(" + 
+							infoPanelWidth + ", " + 
+							previousMouseY + ", " + 
+							getWidth() + ", " + 
 							previousMouseY + ")");
-						if (gpMouseEntered && cvMouseExited) {
-							System.out.println("Erasing cursor: " + 
-								previousMouseX + ", " + 
-								previousMouseY);
-						}
-						if (cvMouseMoved && !gpMouseExited) {	// only erase cursor if in ChannelView panel
-							//logger.debug("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
-							System.out.println("Erasing cursor: " + previousMouseX + ", " + previousMouseY);
+						g.drawLine(infoPanelWidth, previousMouseY, getWidth(), previousMouseY);
 							
-							System.out.println("g.drawLine(" + infoPanelWidth + 
-									", " + previousMouseY + ", " + getWidth() +
-									", " + previousMouseY + ")");
-							g.drawLine(infoPanelWidth, previousMouseY, getWidth(), previousMouseY);
-							
-							System.out.println("g.drawLine(" + previousMouseX +
-									", 0, " + previousMouseX + ", " + 
-									getHeight() + ")");
-							g.drawLine(previousMouseX, 0, previousMouseX, getHeight());
-						} else if (cvMouseMoved && gpMouseExited) {
-							gpMouseExited = false;
-						} else {
-							System.out.println();
-						}
+						System.out.println("g.drawLine(" + 
+							previousMouseX + ", 0, " + 
+							previousMouseX + ", " + 
+							getHeight() + ")");
+						g.drawLine(previousMouseX, 0, previousMouseX, getHeight());
 					}
 					previousMouseX = -1;
 					previousMouseY = -1;
@@ -1460,27 +1371,25 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight()) {
 					// Drawing cursor
 					if (showBigCursor) {
-						if (cvMouseMoved && !gpMouseExited) {	// only draw cursor if in ChannelView panel
-							//logger.debug("Drawing cursor: " + mouseX + ", " + mouseY);
-							System.out.println("Drawing cursor: " + mouseX + ", " + mouseY);
+						//logger.debug("Drawing cursor: " + mouseX + ", " + mouseY);
+						System.out.println("Drawing cursor: " + 
+							mouseX + ", " + mouseY);
 							
-							System.out.println("g.drawLine(infoPanelWidth = " + infoPanelWidth + 
-									", mouseY = " + mouseY + ", getWidth() = " + getWidth() + 
-									", mouseY = " + mouseY + ")");
-							g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
+						System.out.println("g.drawLine(infoPanelWidth = " + 
+							infoPanelWidth + ", mouseY = " + 
+							mouseY + ", getWidth() = " + 
+							getWidth() + ", mouseY = " + 
+							mouseY + ")");
+						g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
 							
-							System.out.println("g.drawLine(mouseX = " + mouseX + ", 0, mouseX = " + 
-									mouseX + ", getHeight() = " + getHeight() + ")\n");
-							g.drawLine(mouseX, 0, mouseX, getHeight());
-						} else {
-							System.out.println();
-						}
+						System.out.println("g.drawLine(mouseX = " + 
+							mouseX + ", 0, mouseX = " + 
+							mouseX + ", getHeight() = " + 
+							getHeight() + ")\n");
+						g.drawLine(mouseX, 0, mouseX, getHeight());
 					}
 					previousMouseX = mouseX;
 					previousMouseY = mouseY;
-					cvMouseEntered = false;
-					cvMouseExited = false;	
-					cvMouseMoved = false;
 				}
 				//logger.debug("Drawing selection area");
 				paintSelection(g, selectedAreaXbegin, selectedAreaXend, selectedAreaYbegin, selectedAreaYend, "Drawing");
@@ -1587,13 +1496,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			// Only repaint mouse movements in ChannelView panels
 			mouseX = e.getX();
 			mouseY = e.getY();
-			if (cvMouseMoved) {
-				System.out.println("ChannelView.mouseMoved(" + mouseX + ", " + mouseY + ")");
-				mouseRepaint = true;	// boolean denoting repaint() execution
-				repaint();
-			} else {
-				System.out.println("GraphPanel.mouseMoved(" + mouseX + ", " + mouseY + ")");
-			}
+			System.out.println("GraphPanel.mouseMoved(" + mouseX + ", " + mouseY + ")");
+			mouseRepaint = true;	// boolean denoting repaint() execution
+			repaint();
 		}
 	}
 
@@ -1627,53 +1532,22 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	// **NOTE: Only paint/repaint crosshair movements 
 	// 	   in/btwn/exiting ChannelView JPanels
 	public void mouseEntered(MouseEvent e) {
-		mouseX = e.getX();
-		mouseY = e.getY();
-		if (cvMouseEntered) {
-			System.out.println("ChannelView.mouseEntered(" + 
-				mouseX + ", " + mouseY + ") --> repaint()\n");
-			// if (gpMouseExited), don't erase	
-			//forceRepaint = false;
-			//repaint();
-		} else if (xframeMouseEntered) {	// check for GraphPanel enter	
-			System.out.println("XMAXframe.mouseEntered(" + 
-				mouseX + ", " + mouseY + ") --> repaint()\n");
-			xframeMouseEntered = true;	
-		} else {
-			System.out.println("GraphPanel.mouseEntered(" + 
+		System.out.println("GraphPanel.mouseEntered(" + 
 				mouseX + ", " + mouseY + ")\n");
-			gpMouseEntered = true;	
-			if (cvMouseExited) {
-				forceRepaint = false;
-				mouseRepaint = true;
-				repaint();
-			}
-			//forceRepaint();	// only force if data has changed
-		}
+		forceRepaint();	// only force if data has changed
 	}
 
-	// **NOTE: Should not repaint for exiting GraphPanel
+	// **NOTE: Repaint when exiting ChannelView
+	// 	   and entering GraphPanel
 	public void mouseExited(MouseEvent e) {
 		if (mouseX != -1 || mouseY != -1) {
-			if (cvMouseExited) {
-				System.out.println("ChannelView.mouseExited(" + 
-					mouseX + ", " + mouseY + ") --> repaint()\n");
-				//mouseX = -1;
-				//mouseY = -1;
-				forceRepaint = false;
-				mouseRepaint = true;	// boolean to show that repaint() was executed
-				repaint();
-			} else if (xframeMouseExited) {	// check for GraphPanel exit
-				System.out.println("XMAXframe.mouseExited(" + 
-					mouseX + ", " + mouseY + ") --> repaint()\n");
-				xframeMouseEntered = false;	
-				xframeMouseExited = true;	
-			} else {
-				System.out.println("GraphPanel.mouseExited(" + 
-					mouseX + ", " + mouseY + ") --> repaint()\n");
-				gpMouseEntered = false;	
-				gpMouseExited = true;	
-			}
+			System.out.println("GraphPanel.mouseExited(" + 
+				mouseX + ", " + mouseY + ") --> repaint()");
+			System.out.println("e.get(X, Y) = (" + e.getX() + ", " + e.getY() + ")\n";	
+			//mouseX = -1;
+			//mouseY = -1;
+			mouseRepaint = true;	// boolean to show that repaint() was executed
+			repaint();
 		}
 	}
 
