@@ -1543,9 +1543,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		if (mouseX != -1 || mouseY != -1) {
 			System.out.println("GraphPanel.mouseExited(" + 
 				mouseX + ", " + mouseY + ") --> repaint()");
-			System.out.println("e.get(X, Y) = (" + e.getX() + ", " + e.getY() + ")\n";	
-			//mouseX = -1;
-			//mouseY = -1;
+			System.out.println("e.get(X, Y) = (" + e.getX() + ", " + e.getY() + ")\n");	
+			mouseX = -1;
+			mouseY = -1;
 			mouseRepaint = true;	// boolean to show that repaint() was executed
 			repaint();
 		}
