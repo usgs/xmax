@@ -765,6 +765,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				mouseDragged(e);
 			} else {
 				if (mouseAdapter != null) {
+					graphPanel.cvMouseMoved = true;	
 					mouseAdapter.mouseMoved(x, y, cv);
 				}
 				graphPanel.dispatchEvent(SwingUtilities.convertMouseEvent(this, e, graphPanel));
@@ -783,12 +784,16 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			int clickedY = e.getY();
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				if (mouseAdapter != null) {
+					System.out.println("ChannelView.mouseClickedButton1(" + clickedX + 
+							", " + clickedY + ")");
 					mouseAdapter.mouseClickedButton1(clickedX, clickedY, cv);
 				}
 				lastClickedY = clickedY;
 				lastClickedX = clickedX;
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
 				if (mouseAdapter != null) {
+					System.out.println("ChannelView.mouseClickedButton3(" + clickedX + 
+							", " + clickedY + ")");
 					mouseAdapter.mouseClickedButton3(clickedX, clickedY, cv);
 				}
 			}
@@ -796,24 +801,43 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseEntered(MouseEvent e) {
+			/*	
+			System.out.println("-----------------------------------------");	
 			System.out.println("ChannelView.mouseEntered(" + 
 				e.getX() + ", " + e.getY() + "):");
 			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
-			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
+			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY);
+			System.out.println("...calling GraphPanel.mouseEntered()");	
+			System.out.println("-----------------------------------------\n");
+			*/	
+			graphPanel.cvMouseExited = false;	
+			graphPanel.cvMouseEntered = true;	
+			graphPanel.mouseEntered(e);
 			//graphPanel.forceRepaint();
 		}
 
 		public void mouseExited(MouseEvent e) {
+			/*	
+			System.out.println("-----------------------------------------");	
 			System.out.println("ChannelView.mouseExited(" + 
 				e.getX() + ", " + e.getY() + "):");
 			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
-			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY + "\n");
+			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY);
+			System.out.println("...calling GraphPanel.mouseExited()");	
+			graphPanel.cvMouseExited = true;	
+			System.out.println("-----------------------------------------\n");
+			*/	
+			graphPanel.cvMouseEntered = false;	
+			graphPanel.cvMouseExited = true;	
+			graphPanel.mouseExited(e);
 			//graphPanel.forceRepaint();
 		}
 
 		public void mousePressed(MouseEvent e) {
 			mousePressX = e.getX();
 			mousePressY = e.getY();
+			System.out.println("ChannelView.mousePressed(" + mousePressX + 
+					", " + mousePressY + ") --> GraphPanel.mousePressed()");
 			graphPanel.getScaleMode().init(
 					graphs,
 					(graphPanel.getOverlayState() == true) || (graphPanel.getSelectState() == true) ? graphPanel.getCurrentChannelShowSet()
@@ -837,10 +861,14 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			if (button != MouseEvent.NOBUTTON && ((mousePressX != e.getX()) || (mousePressY != e.getY()))) {
 				if (button == MouseEvent.BUTTON3 || (button == MouseEvent.BUTTON1 && e.isControlDown() == true)) {
 					if (mouseAdapter != null) {
+						System.out.println("ChannelView.mouseReleasedButton3(" + e.getX() + 
+								", " + e.getY() + ")");
 						mouseAdapter.mouseReleasedButton3(e.getX(), e.getY(), cv);
 					}
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
 					if (mouseAdapter != null) {
+						System.out.println("ChannelView.mouseReleasedButton1(" + e.getX() + 
+								", " + e.getY() + ")");
 						mouseAdapter.mouseReleasedButton1(e.getX(), e.getY(), cv);
 					}
 				}

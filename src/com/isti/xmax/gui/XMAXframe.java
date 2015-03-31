@@ -337,13 +337,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 
 			public void mouseEntered(MouseEvent e) {
-				System.out.println("XMAXframe.mouseEntered(e) --> graphPanel.mouseEntered(e)");
-				graphPanel.mouseEntered(e);	// should not be repainting
+				System.out.println("XMAXframe.mouseEntered(e)");	
+				//System.out.println("XMAXframe.mouseEntered(e) --> graphPanel.mouseEntered(e)");
+				//graphPanel.mouseEntered(e);	// should not be repainting
 			}
 
 			public void mouseExited(MouseEvent e) {
-				System.out.println("XMAXframe.mouseExited(e) --> graphPanel.mouseExited(e)");
-				graphPanel.mouseExited(e);
+				System.out.println("XMAXframe.mouseExited(e)\n");	
+				//System.out.println("XMAXframe.mouseExited(e) --> graphPanel.mouseExited(e)");
+				//graphPanel.mouseExited(e);
 			}
 		});
 
