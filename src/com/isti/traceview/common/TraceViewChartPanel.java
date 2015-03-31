@@ -1526,6 +1526,8 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 */
 	public void mouseClicked(MouseEvent event) {
 		Insets insets = getInsets();
+		System.out.println("TraceViewChartPanel.mouseClicked()\n");
+		
 		int x = (int) ((event.getX() - insets.left) / this.scaleX);
 		int y = (int) ((event.getY() - insets.top) / this.scaleY);
 

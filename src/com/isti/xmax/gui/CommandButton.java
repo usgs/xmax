@@ -112,16 +112,19 @@ public class CommandButton extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1 && !e.isShiftDown() && !e.isControlDown()) {
 			if (action1 != null) {
+				System.out.println("CommandButton.mouseClicked(BUTTON1) --> actionPerformed()");
 				action1.actionPerformed(new ActionEvent(this, 0, (String) action1.getValue(Action.NAME)));
 			}
 			//emulate middle mouse button by shift-click
 		} else if (e.getButton() == MouseEvent.BUTTON2 || e.isShiftDown()) {
 			if (action2 != null) {
+				System.out.println("CommandButton.mouseClicked(BUTTON2) --> actionPerformed()");
 				action2.actionPerformed(new ActionEvent(this, 0, (String) action2.getValue(Action.NAME)));
 			}
 			//emulate right mouse button by control-click
 		} else if (e.getButton() == MouseEvent.BUTTON3 || e.isControlDown()) {
 			if (action3 != null) {
+				System.out.println("CommandButton.mouseClicked(BUTTON3) --> actionPerformed()");
 				action3.actionPerformed(new ActionEvent(this, 0, (String) action3.getValue(Action.NAME)));
 			}
 		}

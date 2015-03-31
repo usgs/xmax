@@ -55,7 +55,8 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 	public void mouseClickedButton1(int x, int y, JPanel clickedAt) {
 		ChannelView cv = (ChannelView) clickedAt;
 		long clickedTime = cv.getGraphPanel().getTime(x);
-		logger.debug("ChannelView clicked: " + x + ":" + y + ", time "
+		//logger.debug()
+		System.out.println("ChannelView clicked: " + x + ":" + y + ", time "
 				+ TimeInterval.formatDate(new Date(clickedTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + "(" + clickedTime + ")"
 				+ ", value " + cv.getGraphPanel().getScaleMode().getValue(y));
 		double pointAmp = Double.NEGATIVE_INFINITY; // Graph amplitude in the clicked point
@@ -79,6 +80,7 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 		if (cv.getGraphPanel().getPickState()) {
 			PlotDataProvider channel = cv.getPlotDataProviders().get(0);
 			channel.addEvent(new Pick(new Date(clickedTime), channel));
+			System.out.println("-------------XMAXChannelView.mouseClickedButton1() --> cv.repaint()-----------");
 			cv.repaint();
 		}
 	}
@@ -99,6 +101,7 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 					pick.detach();
 				}
 			}
+			System.out.println("XMAXChannelView.mouseClickedButton3() --> cv.repaint()");
 			cv.repaint();
 		}
 	}
@@ -139,6 +142,8 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 		Date from;
 		Date to;
 		ChannelView cv = (ChannelView) clickedAt;
+		System.out.println("XMAXChannelView.mouseReleasedButton1(" + x + 
+				", " + y + ")");
 		if (cv.getMousePressX() > x) {
 			to = new Date(cv.getGraphPanel().getTime(cv.getMousePressX()));
 			from = new Date(cv.getGraphPanel().getTime(x));
@@ -160,6 +165,8 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 	public void mouseReleasedButton3(int x, int y, JPanel clickedAt) {
 		ChannelView cv = (ChannelView) clickedAt;
 		IScaleModeState scaleMode = cv.getGraphPanel().getScaleMode();
+		System.out.println("XMAXChannelView.mouseReleasedButton3(" + x + 
+				", " + y + ")");
 		if (scaleMode instanceof ScaleModeXhair) {
 			double from;
 			double to;

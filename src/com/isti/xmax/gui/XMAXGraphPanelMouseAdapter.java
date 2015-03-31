@@ -8,6 +8,7 @@ import com.isti.traceview.gui.IMouseAdapter;
 
 public class XMAXGraphPanelMouseAdapter implements IMouseAdapter {
 
+	// Actions for GraphPanel mouse movements, clicks, etc.
 	public void mouseClickedButton1(int x, int y, JPanel clickedAt) {
 	}
 
