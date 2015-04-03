@@ -337,12 +337,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 
 			public void mouseEntered(MouseEvent e) {
-				//graphPanel.mouseExited(e);
-				graphPanel.mouseEntered(e);
+				graphPanel.xframeMouseEntered(e);
 			}
 
 			public void mouseExited(MouseEvent e) {
-				graphPanel.mouseExited(e);
+				graphPanel.xframeMouseExited(e);
 			}
 		});
 
@@ -356,6 +355,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 			public void componentResized(ComponentEvent e) {
 				XMAX.getConfiguration().setFrameState(getExtendedState(), getX() ,getY() ,getWidth() ,getHeight());
+				graphPanel.forceRepaint();	// re-pixelize and paint data when resizing
 			}
 
 			public void componentShown(ComponentEvent e) {
