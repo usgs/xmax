@@ -10,6 +10,8 @@ import com.isti.traceview.data.PlotDataProvider;
 /**
  * This command loads raw data into data providers from sources discovered on the parse stage
  * 
+ * **NOTE: Currently not used, replaced with loop in GraphPanel.setChannelShowSet()
+ * 
  * @author Max Kokoulin
  */
 
