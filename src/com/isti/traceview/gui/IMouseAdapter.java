@@ -15,8 +15,6 @@ public interface IMouseAdapter {
 
 	public void mouseMoved(int x, int y, JPanel clickedAt);
 	
-	public void cvMouseMoved(int x, int y, JPanel clickedAt);
-		
 	public void mouseDragged(int x, int y, JPanel clickedAt);
 
 	public void mouseReleasedButton1(int x, int y, JPanel clickedAt);

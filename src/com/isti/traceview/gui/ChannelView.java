@@ -631,7 +631,9 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			// Graph's number, used to separate graphs then overlay mode is activated
 			int graphNum = 0;
 			Color segmentColor = null;
-			System.out.print("...");
+			if (graphPanel.initialPaint) {	
+				System.out.print("...");
+			}	
 			for (PlotData data: graphs) {
 				int i = 0;
 				//logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
@@ -764,6 +766,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				mouseDragged(e);
 			} else {
 				if (mouseAdapter != null) {
+					graphPanel.cvMouseMoved = true;	
 					mouseAdapter.mouseMoved(x, y, cv);
 				}
 				graphPanel.dispatchEvent(SwingUtilities.convertMouseEvent(this, e, graphPanel));
@@ -795,34 +798,11 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseEntered(MouseEvent e) {
-			/*	
-			System.out.println("-----------------------------------------");	
-			System.out.println("ChannelView.mouseEntered(" + 
-				e.getX() + ", " + e.getY() + "):");
-			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
-			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY);
-			System.out.println("...calling GraphPanel.mouseEntered()");	
-			System.out.println("-----------------------------------------\n");
-			*/	
 			graphPanel.cvMouseEntered(e);	
-			//graphPanel.mouseEntered(e);
-			//graphPanel.forceRepaint();
 		}
 
 		public void mouseExited(MouseEvent e) {
-			/*	
-			System.out.println("-----------------------------------------");	
-			System.out.println("ChannelView.mouseExited(" + 
-				e.getX() + ", " + e.getY() + "):");
-			System.out.println("PreviousMouseX = " + graphPanel.previousMouseX);
-			System.out.println("PreviousMouseY = " + graphPanel.previousMouseY);
-			System.out.println("...calling GraphPanel.mouseExited()");	
-			graphPanel.cvMouseExited = true;	
-			System.out.println("-----------------------------------------\n");
-			*/	
 			graphPanel.cvMouseExited(e);	
-			//graphPanel.mouseExited(e);
-			//graphPanel.forceRepaint();
 		}
 
 		public void mousePressed(MouseEvent e) {
