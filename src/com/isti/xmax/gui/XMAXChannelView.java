@@ -55,8 +55,7 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 	public void mouseClickedButton1(int x, int y, JPanel clickedAt) {
 		ChannelView cv = (ChannelView) clickedAt;
 		long clickedTime = cv.getGraphPanel().getTime(x);
-		//logger.debug()
-		System.out.println("ChannelView clicked: " + x + ":" + y + ", time "
+		logger.debug("ChannelView clicked: " + x + ":" + y + ", time "
 				+ TimeInterval.formatDate(new Date(clickedTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + "(" + clickedTime + ")"
 				+ ", value " + cv.getGraphPanel().getScaleMode().getValue(y));
 		double pointAmp = Double.NEGATIVE_INFINITY; // Graph amplitude in the clicked point
