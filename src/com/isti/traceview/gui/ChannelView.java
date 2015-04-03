@@ -762,11 +762,11 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		public void mouseMoved(MouseEvent e) {
 			int x = e.getX();
 			int y = e.getY();	
+			graphPanel.cvMouseMoved = true;	
 			if ((button != MouseEvent.NOBUTTON) && (e.isControlDown() || e.isShiftDown())) {
 				mouseDragged(e);
 			} else {
 				if (mouseAdapter != null) {
-					graphPanel.cvMouseMoved = true;	
 					mouseAdapter.mouseMoved(x, y, cv);
 				}
 				graphPanel.dispatchEvent(SwingUtilities.convertMouseEvent(this, e, graphPanel));

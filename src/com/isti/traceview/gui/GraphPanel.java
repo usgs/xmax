@@ -165,6 +165,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	private boolean cvMouseExited = false;
 
 	/**
+	 * Flag when we drag mouse for zooming in ChannelView panels
+	 */
+	private boolean mouseDragged = false;
+
+	/**
 	 * Flag if we need to paint now (occurs with repaint())
 	 */
 	private boolean paintNow = false;
@@ -1286,7 +1291,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				if (initialPaint || forceRepaint) {
 					if (initialPaint) {	
 						System.out.print("Pixelizing channel data...");
-					}	
+					}
 					for (Component component: drawAreaPanel.getComponents()) {
 						ChannelView view = (ChannelView) component;
 						
@@ -1300,16 +1305,16 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						}
 						if (initialPaint) {	
 							System.out.print("...");
-						}	
+						}
 						view.updateData();
 					}
 					if (initialPaint) {	
 						System.out.print("\n");
-					}	
+					}
 				}
 				if (initialPaint) {	
 					System.out.print("Drawing channel data...");
-				}	
+				}
 				super.paint(g);	// calls ChannelView.paint(Graphics g)
 				long endl = System.nanoTime() - startl;
 				double end = endl * Math.pow(10, -9);
@@ -1335,7 +1340,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaYend = selectedAreaYend;
 				if (initialPaint) {	
 					System.out.print("\n");	// skip to next line for next repaint() readout
-				}	
+				}
 				initialPaint = false;
 				forceRepaint = false;
 			} else {	// Regular MouseMovements in and between ChannelView and GraphPanel panels
@@ -1372,7 +1377,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				forceRepaint = false;
 				mouseRepaint = false;
 				cvMouseMoved = false;	
-				//System.out.println();	// go to next readout
 			}
 			paintNow = false;
 		}
@@ -1463,7 +1467,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	
 	public void mouseMoved(MouseEvent e) {	
-		if (cvMouseMoved) {
+		if (cvMouseMoved) {	// checks if we have a ChannelView movement
 			if ((button != MouseEvent.NOBUTTON) && (e.isControlDown() || e.isShiftDown())) {
 				mouseDragged(e);
 			} else {
@@ -1477,10 +1481,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	public void mouseDragged(MouseEvent e) {
+		// need a check in paint(Graphics) for mouse
+		// clicking and dragging for zooming (forceRepaint?)
 		mouseX = e.getX();
 		mouseY = e.getY();
-		// Need to create a check in paint(Graphics) for 
-		// mouseDragged() and maybe mouseClicked()
+		mouseDragged = true;	// this may cause errs 	
 		mouseRepaint = true;
 		repaint();
 
@@ -1579,7 +1584,15 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public void mouseReleased(MouseEvent e) {
 		if (mouseSelectionEnabled) {
 			button = MouseEvent.NOBUTTON;
-			repaint();
+			if (mouseDragged) {	// forceRepaint() when zooming
+				mouseDragged = false;	
+				mouseRepaint = false;	
+				forceRepaint();	// forceRepaint=true, repaint()
+			} else {	// mouse clicked => erase cursor
+				forceRepaint = false;	
+				mouseRepaint = false;	
+				repaint();
+			}	
 		}
 	}
 
