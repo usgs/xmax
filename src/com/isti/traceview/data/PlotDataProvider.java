@@ -120,7 +120,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public void update(Observable o, Object arg) {
 		logger.debug(this + ": update request from " + o);
 		TimeInterval ti = (TimeInterval) arg;
-		logger.debug("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
+		//logger.debug("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
+		//System.out.println("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
 		if ((viewingInterval == null) || viewingInterval.isIntersect(ti)) {
 			notifyObservers(ti);
 		}
@@ -295,7 +296,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					//TimeInterval.formatDate(new Date(new Double(endSlice).longValue()),TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + "(" + startSlice + "-" + endSlice+ ")" + ", for indexes " + startIndex + " - " + endIndex);
 					PlotDataPoint[] pdpArray = new PlotDataPoint[sliceDataList.size()];
 					int m = 0;
-					for(SliceData sliceData:sliceDataList){
+					for(SliceData sliceData:sliceDataList){	// if gaps exist m > 1
 						pdpArray[m] = sliceData.getPoint(evts);
 						//lg.debug("Added point " + m + ": " + pdpArray[m].toString());
 						m++;
@@ -391,11 +392,11 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		for (int i = 0; i < pointCount; i++) {
 			//lg.debug("Iteration # "+ i + ", processing interval " + time + " - " + (time+interval));
 			
-			// Get segments which have data in the interval (time, time+interval)
+			// Get segmentData objects in the interval (time, time+interval)
 			SegmentData[] intervalData = getSegmentData(rawData, time, time+interval);
 			if (intervalData != null) {
 				int k = 0;
-				int intervalDataLength = intervalData.length;
+				int intervalDataLength = intervalData.length;	// number of continuous segmentData objects
 				PlotDataPoint[] intervalPoints = new PlotDataPoint[intervalDataLength];
 				for (SegmentData segData: intervalData) {
 					TimeInterval currentSegmentDataTI = new TimeInterval(segData.startTime, segData.endTime());
@@ -407,9 +408,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					int rawDataPointCount = 0;
 					SegmentData data;
 					if (i == (pointCount - 1)) {
-						data = segData.getData(time, ti.getEnd());
+						data = segData.getData(time, ti.getEnd());	// last chunk
 					} else {
-						data = segData.getData(time, time + interval);
+						data = segData.getData(time, time + interval);	// interval sized chunks
 					}
 					rawDataPointCount = data.data.length;
 					if (rawDataPointCount > 0) {

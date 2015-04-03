@@ -74,6 +74,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	/**
 	 * @uml.property name="plotDataProviders" multiplicity="(0 -1)" dimension="1"
 	 */
+	private List<String> channelNames = new ArrayList<String>();
 	private List<PlotDataProvider> plotDataProviders = null; // @jve:decl-index=0:
 	List<PlotData> graphs = null;
 	int height = 0;
@@ -106,6 +107,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		String names = "";
 		for (PlotDataProvider channel: channels) {
 			names = names + channel.toString() + ";";
+			channelNames.add(channel.toString());
 		}
 		logger.debug("ChannelView created for list: " + names);
 		initialize(infoPanelWidth, isDrawSelectionCheckBox, graphAreaBgColor, infoAreaBgColor);
@@ -209,8 +211,8 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public void update(Observable observable, Object arg) {
 		logger.debug(this + ": update request from " + observable);
 		if (arg instanceof TimeInterval) {
-			TimeInterval ti = (TimeInterval) arg;
-			logger.debug(this + " updating for range " + ti + " due to request from " + observable.getClass().getName());
+			//TimeInterval ti = (TimeInterval) arg;
+			//logger.info(this + " updating for range " + ti + " due to request from observer: '" + observable.getClass().getName() + "'");
 			graphAreaPanel.repaint();
 		}
 	}
@@ -265,6 +267,16 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	 */
 	public void clearMarkPositions() {
 		markPositions.clear();
+	}
+	
+	/**
+	 * Getter of the property <tt>channelNames</tt>
+	 * 
+	 * @return the list of channelNames drawn in this ChannelView
+	 * @uml.property name="channelNames"
+	 */
+	public List<String> getChannelNames() {
+		return channelNames;
 	}
 
 	/**
@@ -608,6 +620,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			IOffsetState offsetState = graphPanel.getOffsetState();
 			scaleMode.init(graphs, (graphPanel.getOverlayState() == true) || (graphPanel.getSelectState() == true) ? graphPanel
 					.getCurrentChannelShowSet() : graphPanel.getChannelShowSet(), graphPanel.getTimeRange(), meanState, height);
+			
 			//lg.debug("scaleMode Initialized:" + scaleMode.getStateName() + scaleMode.getMaxValue() + scaleMode.getMinValue());
 			if (scaleMode.getMinValue() != Double.POSITIVE_INFINITY && scaleMode.getMaxValue() != Double.NEGATIVE_INFINITY) {
 				axis.setRange(scaleMode.getMinValue(), scaleMode.getMaxValue());
@@ -618,9 +631,14 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			// Graph's number, used to separate graphs then overlay mode is activated
 			int graphNum = 0;
 			Color segmentColor = null;
+			if (graphPanel.initialPaint) {	
+				System.out.print("...");
+			}	
 			for (PlotData data: graphs) {
 				int i = 0;
-				logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				//logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				//System.out.println("Drawing PlotData " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				
 				// strokes for previous pixel
 				List<Stroke> yprev = new ArrayList<Stroke>();
 				for (PlotDataPoint[] points: data.getPixels()) {
@@ -737,26 +755,25 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		 * @return time value in internal Java format
 		 */
 		public long getTime(int x) {
-			// lg.debug("ChannelView getTime: " + x);
 			TimeInterval ti = graphPanel.getTimeRange();
 			return new Double(ti.getStart() + x * new Double(ti.getDuration())/ getWidth()).longValue();
 		}
 
 		public void mouseMoved(MouseEvent e) {
 			int x = e.getX();
+			int y = e.getY();	
+			graphPanel.cvMouseMoved = true;	
 			if ((button != MouseEvent.NOBUTTON) && (e.isControlDown() || e.isShiftDown())) {
 				mouseDragged(e);
 			} else {
 				if (mouseAdapter != null) {
-					mouseAdapter.mouseMoved(x, e.getY(), cv);
+					mouseAdapter.mouseMoved(x, y, cv);
 				}
 				graphPanel.dispatchEvent(SwingUtilities.convertMouseEvent(this, e, graphPanel));
 			}
 		}
 
 		public void mouseDragged(MouseEvent e) {
-			// lg.debug("ChannelView.mouseDragged");
-
 			if (mouseAdapter != null) {
 				mouseAdapter.mouseDragged(e.getX(), e.getY(), cv);
 			}
@@ -766,7 +783,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		public void mouseClicked(MouseEvent e) {
 			int clickedX = e.getX();
 			int clickedY = e.getY();
-			//long clickedTime = graphPanel.getTime(clickedX);
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				if (mouseAdapter != null) {
 					mouseAdapter.mouseClickedButton1(clickedX, clickedY, cv);
@@ -782,15 +798,14 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseEntered(MouseEvent e) {
-			graphPanel.forceRepaint();
+			graphPanel.cvMouseEntered(e);	
 		}
 
 		public void mouseExited(MouseEvent e) {
-
+			graphPanel.cvMouseExited(e);	
 		}
 
 		public void mousePressed(MouseEvent e) {
-			// lg.debug("ChannelView.mousePressed");
 			mousePressX = e.getX();
 			mousePressY = e.getY();
 			graphPanel.getScaleMode().init(
@@ -813,7 +828,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		}
 
 		public void mouseReleased(MouseEvent e) {
-			// lg.debug("ChannelView.mouseReleased");
 			if (button != MouseEvent.NOBUTTON && ((mousePressX != e.getX()) || (mousePressY != e.getY()))) {
 				if (button == MouseEvent.BUTTON3 || (button == MouseEvent.BUTTON1 && e.isControlDown() == true)) {
 					if (mouseAdapter != null) {
@@ -854,7 +868,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				if (toolTipTextWasChanged) {
 					toolTipTextWasChanged = false;
 					graphPanel.forceRepaint();
-					graphPanel.repaint();
+					//graphPanel.repaint();	// repetitive call to repaint()
 				}
 				return null;
 			}
