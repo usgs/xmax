@@ -28,5 +28,4 @@ public class XMAXGraphPanelMouseAdapter implements IMouseAdapter {
 	
 	public void mouseReleasedButton1(int x, int y, JPanel clickedAt){}
 	public void mouseReleasedButton3(int x, int y, JPanel clickedAt){}
-
 }

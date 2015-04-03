@@ -337,15 +337,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 
 			public void mouseEntered(MouseEvent e) {
-				System.out.println("XMAXframe.mouseEntered(e)");	
-				//System.out.println("XMAXframe.mouseEntered(e) --> graphPanel.mouseEntered(e)");
-				//graphPanel.mouseEntered(e);	// should not be repainting
+				graphPanel.xframeMouseEntered(e);
 			}
 
 			public void mouseExited(MouseEvent e) {
-				System.out.println("XMAXframe.mouseExited(e)\n");	
-				//System.out.println("XMAXframe.mouseExited(e) --> graphPanel.mouseExited(e)");
-				//graphPanel.mouseExited(e);
+				graphPanel.xframeMouseExited(e);
 			}
 		});
 
@@ -492,7 +488,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			AbstractButton button = (AbstractButton) evt.getSource();
 			Action action = button.getAction();
 			if (action != null) {
-				System.out.println("XMAXframe.mouseEntered(evt) --> set message in statusBar");
 				Object message = action.getValue(Action.LONG_DESCRIPTION);
 				statusBar.setMessage(message.toString());
 			}
@@ -501,7 +496,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	public void mouseExited(MouseEvent evt) {
 		if (evt.getSource() instanceof AbstractButton) {
-			System.out.println("XMAXframe.mouseExited(evt) --> set message in statusBar");
 			statusBar.setMessage("");
 		}
 	}
