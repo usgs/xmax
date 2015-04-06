@@ -6,7 +6,7 @@ import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.gui.GraphPanel;
 
 /**
- * This command selects choosed channels, i.e hides all unchoosed channels on graph panel
+ * This command selects chosen channels, i.e hides all unchosen channels on graph panel
  * 
  * @author Max Kokoulin
  */
