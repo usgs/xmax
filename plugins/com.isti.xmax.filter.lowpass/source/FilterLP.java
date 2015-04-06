@@ -80,7 +80,7 @@ public class FilterLP implements IFilter {
 	{
 		if (data.length > length)
 			throw new LPFilterException("Requested filtering length exceeds provided array length");
-		//int mean = new Double(demean(data, length)).intValue();
+		int mean = new Double(demean(data, length)).intValue();
 		double[][] f = new double[order + 1][3];
 		for (int i = 0; i <= order; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -100,8 +100,8 @@ public class FilterLP implements IFilter {
 				f[j][0] = f[j][1];
 				f[j][1] = f[j][2];
 			}
-			//data[i] = f[order][2] + mean;
-			data[i] = f[order][2];
+			data[i] = f[order][2] + mean;
+			//data[i] = f[order][2];
 		}
 		return data;
 	}
@@ -119,7 +119,6 @@ public class FilterLP implements IFilter {
 	 * 
 	 * **NOTE: This will be fixed with mean button fix
 	 */
-	@SuppressWarnings("unused")
 	private double demean(double buf[], int n) {
 		double sum = 0.0;
 		for (int i = 0; i < n; i++) {
