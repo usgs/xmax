@@ -11,6 +11,7 @@ import java.awt.Color;
 public class ColorModeBW implements IColorModeState {
 
 	public Color getSegmentColor(int segmentNumber, int rdpNumber, int continueAreaNumber, Color manualColor) {
-		return Color.BLACK;
+		//return Color.BLACK;
+		return Color.GRAY;	
 	}
 }
