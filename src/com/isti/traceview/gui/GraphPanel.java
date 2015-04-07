@@ -1210,7 +1210,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		observable.notifyObservers(select ? "SEL ON" : "SEL OFF");
 		observable.setChanged();
 		observable.notifyObservers(overlay ? "OVR ON" : "OVR OFF");
-		repaint();
+		forceRepaint();
 	}
 
 	public void remove(int index) {
