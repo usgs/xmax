@@ -1248,7 +1248,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			Zoomable z = (Zoomable) plot;
 			this.orientation = z.getOrientation();
 		}
-		repaint();
+		repaint();	// may need to be forceRepaint()
 	}
 
 	/**
