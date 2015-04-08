@@ -80,27 +80,6 @@ public class XMAXconfiguration extends Configuration {
 	 */
 	private TimeInterval ti;
 
-	/**
-	 * Major version number
-	 * 
-	 * @uml.property name="version_major"
-	 */
-	private int version_major;
-
-	/**
-	 * Minor version number
-	 * 
-	 * @uml.property name="version_minor"
-	 */
-	private int version_minor;
-	
-	/**
-	 * Build version number
-	 * 
-	 * @uml.property name="version_build"
-	 */
-	private int version_build;
-
 	private boolean showStatusBar = true;
 
 	private boolean showCommandButtons = true;
@@ -148,9 +127,6 @@ public class XMAXconfiguration extends Configuration {
 			if (endTimeStr != null) {
 				setEndTime(TimeInterval.parseDate(endTimeStr, TimeInterval.DateFormatType.DATE_FORMAT_MIDDLE));
 			}
-			version_major = config.getInt("Version.Major");
-			version_minor = config.getInt("Version.Minor");
-			version_build = config.getInt("Version.Build");
 			setScaleMode(config.getString("Configuration.View.ScaleMode", "AUTO"));
 			setColorModeState(config.getString("Configuration.View.ColorMode", "SEGMENT"), false);
 			setShowBigCursor(config.getBoolean("Configuration.View.ShowBigCursor", false));
@@ -206,13 +182,6 @@ public class XMAXconfiguration extends Configuration {
 			logger.error("TraceViewException:", e);	
 		}
 		return instance;
-	}
-
-	/**
-	 * @return configuration file version
-	 */
-	String getVersion() {
-		return version_major + "." + version_minor + "." + version_build;
 	}
 
 	/**

@@ -1369,7 +1369,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			} catch (TraceViewException e1) {
 				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
 				getGraphPanel().forceRepaint();
-				logger.error("TraceViewException:", e1);	
+				//logger.error("TraceViewException:", e1);	// last set exception not needed
 			} catch (Exception e1) {
 				logger.error("NextAction error: ", e1);
 			} finally {
@@ -1411,7 +1411,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			} catch (TraceViewException e1) {
 				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the first set", "Information", JOptionPane.INFORMATION_MESSAGE);
 				getGraphPanel().forceRepaint();
-				logger.error("TraceViewException:", e1);	
+				//logger.error("TraceViewException:", e1);	// first set exception not needed
 			} catch (Exception e1) {
 				logger.error("PreviousAction error: ", e1);
 			} finally {
@@ -2132,7 +2132,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 			} else if (graphPanel.getOffsetState() instanceof OffsetModeEnabled) {
 				graphPanel.getOffsetState().increaseStep();
-				graphPanel.repaint();
+				graphPanel.repaint();	// forceRepaint()? Check offsets
 			}
 			offsetMenuCheckBox.setState(graphPanel.getOffsetState() instanceof OffsetModeEnabled);
 			statusBar.setMessage("");
@@ -2178,7 +2178,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			Pick.geleteLastPick();
-			graphPanel.repaint();
+			graphPanel.repaint();	// may need to override graph when deleting (force?)
 			statusBar.setMessage("");
 		}
 	}
