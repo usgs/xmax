@@ -9,11 +9,6 @@
 	fixed wildcard -d breaks 1.08 First MTH version: Added ability to simultaneously 
 	plot/serialize from -d + -t 
 --><XMAXSessionConfiguration>
-<Version>
-		<Major>1</Major>
-		<Minor>1</Minor>
-		<Build>0</Build>
-	</Version>
 <Configuration>
 		<!-- Sets start time for display. Recovers by -b option -->
 		<!-- Sets end time for display. Recovers by -e option -->
@@ -94,10 +89,10 @@
 		<ExportDir/>
 		<Frame>
 			<State>NORMAL</State>
-			<PosY>27</PosY>
-			<PosX>1788</PosX>
-			<Width>1942</Width>
-			<Heigth>1245</Heigth>
+			<PosY>87</PosY>
+			<PosX>1756</PosX>
+			<Width>1673</Width>
+			<Heigth>1142</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>
