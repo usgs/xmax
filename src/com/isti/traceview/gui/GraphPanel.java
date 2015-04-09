@@ -687,7 +687,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					observable.setChanged();
 					observable.notifyObservers("ROT OFF");
 				}
-				repaint();
+				//repaint();	// why repaint when adding channels to Graph?
 			}
 			observable.setChanged();
 			observable.notifyObservers(channels);
@@ -708,7 +708,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					setTimeRange(TimeInterval.getAggregate(timeRange, cv.getLoadedTimeRange()));
 				}
 			}
-			// repaint();
+			//repaint();	// why repaint when adding channels to set?
 			observable.setChanged();
 			observable.notifyObservers(channels);
 		}
@@ -1001,8 +1001,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			observable.notifyObservers("ROT OFF");
 			observable.setChanged();
 			observable.notifyObservers("SEL OFF");
-			repaint();
-
+			//repaint();
+			forceRepaint();	// needed when selecting certain channels to rotate
 		} else {
 			if(rotation.getMatrix()==null){
 				forceRepaint();
@@ -1163,7 +1163,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 		observable.setChanged();
 		observable.notifyObservers(overlay ? "OVR ON" : "OVR OFF");
-		repaint();
+		//repaint();
+		forceRepaint();	// needed when selecting certain channels with new paint() method
 	}
 
 	/**
@@ -1210,7 +1211,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		observable.notifyObservers(select ? "SEL ON" : "SEL OFF");
 		observable.setChanged();
 		observable.notifyObservers(overlay ? "OVR ON" : "OVR OFF");
-		forceRepaint();
+		forceRepaint();	// needed for new paint() method
 	}
 
 	public void remove(int index) {
@@ -1261,7 +1262,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public void setSelectedPhases(Set<IEvent> earthquakes, Set<String> phases) {
 		selectedEarthquakes = earthquakes;
 		selectedPhases = phases;
-		repaint();
+		repaint();	// potential bug with redrawing quake/phase on graph
 	}
 
 	public void addObserver(Observer o) {
