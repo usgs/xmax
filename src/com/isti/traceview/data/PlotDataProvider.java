@@ -167,6 +167,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		// This list used when we cannot use pointsCache due to too small zoom, calculated every
 		// time afresh.
 		List<PlotDataPoint[]> points = null;
+		System.out.println("PlotDataProvider.getPlotData( pointCount = " + pointCount + " )");
 
 		if (pointsCache == null) {
 			initPointCache(colorMode);
@@ -174,15 +175,29 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 
 		// Time range need to be pixelized - intersection of requested pixalization range and
 		// channel's time range
+		System.out.println("PlotDataProvider.pointsCache.size = [ " + pointsCache.size() + " ]");
 		PlotData ret = new PlotData(this.getName(), this.getColor());
+			
+		System.out.println("TimeInterval ti = " + ti);	
+		System.out.println("getTimeRange().getDuration() = " + getTimeRange().getDuration());
 
 		TimeInterval effectiveTimeRange = TimeInterval.getIntersect(ti, getTimeRange());
+		Double durationTest = new Double(effectiveTimeRange.getDuration()) / new Double(getTimeRange().getDuration());
+		Double pointsCacheSize = pointsCache.size() * durationTest;
+		System.out.println("effectiveTimeRange.getDuration() = " + effectiveTimeRange.getDuration());
+		System.out.println("EffectiveTimeRange / OriginalTimeRange = " + durationTest);
+		System.out.println("pointsCache.size() * durationTest = " + pointsCacheSize);
+		System.out.println("filter = " + filter);	
 		if (effectiveTimeRange != null) {
 			if ((pointCount > pointsCache.size() * new Double(effectiveTimeRange.getDuration()) / new Double(getTimeRange().getDuration()))
 					|| filter != null) 
 			{
 				try {		
 					//System.out.format("== getPlotData: pointCount > pointsCache.size !!\n");
+					System.out.println("== getPlotData: pointCount > pointsCache.size !!");
+					System.out.println("== getPlotData: " + pointCount + 
+						" > " + (pointsCache.size() * new Double(effectiveTimeRange.getDuration()) / new Double(getTimeRange().getDuration())));
+					
 					points = pixelize(effectiveTimeRange, new Double(2 * pointCount * effectiveTimeRange.getDuration()
 						/ new Double(ti.getDuration()).intValue()).intValue(), filter, colorMode);
 				} catch (PlotDataException e) {
@@ -192,7 +207,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				points = new ArrayList<PlotDataPoint[]>();
 				int startIndex = new Double((effectiveTimeRange.getStart() - getTimeRange().getStart()) * initPointCount
 						/ getTimeRange().getDuration()).intValue();
-				//System.out.format("== getPlotData: startIndex=[ %d]\n", startIndex);
+				System.out.format("== getPlotData: startIndex = [ %d ]\n", startIndex);
 				if (startIndex < 0) {
 					for (int i = -startIndex; i < 0; i++) {
 						// lg.debug("getPlotData: add empty points in the beginning");
@@ -203,13 +218,13 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					startIndex = 0;
 				}
 				int endIndex = new Double((effectiveTimeRange.getEnd() - getTimeRange().getStart()) * initPointCount / getTimeRange().getDuration()).intValue();
-				//System.out.format("== getPlotData: endIndex=[ %d ] initPointCount=[%d]\n", endIndex, initPointCount);
+				System.out.format("== getPlotData: endIndex = [ %d ], initPointCount=[%d]\n", endIndex, initPointCount);
 				if (endIndex > initPointCount) {
 					// MTH: We don't seem to go in here
-					//System.out.format("== getPlotData: endIndex > initPointCount\n");
+					System.out.format("== getPlotData: endIndex > initPointCount\n");
 					points.addAll(pointsCache.subList(startIndex, initPointCount));
 					for (int i = initPointCount; i < endIndex; i++) {
-						// lg.debug("getPlotData: add empty points in the end");
+						System.out.println("== getPlotData: add empty points in the end\n");
 						PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
 						intervalPoints[0] = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1, -1, -1, null);
 						points.add(intervalPoints);
@@ -221,7 +236,11 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				// lg.debug("Use data points from cache to calculate data, indexes: " + startIndex +
 				// "-" + endIndex);
 			}
-			double timeRatio = (ti.getDuration()) / new Double(pointCount);
+			
+			// Second level of pixelization related to screen size (i.e. width)	
+			System.out.format("== getPlotData: 2nd pixelization: pointCount = [ %d ]\n\n", 
+				pointCount);
+			double timeRatio = (ti.getDuration()) / new Double(pointCount);	
 			for (int i = 0; i < pointCount; i++) {
 				// we divide requested time range into pointCount time slices and calculate data to
 				// display for every slice
@@ -336,7 +355,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode) 
 	throws PlotDataException
 	{
-		logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
+		//logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
+		System.out.println("Pixelizing " + this + "; " + ti + "; " + "pointCount " + pointCount);
 		
 		// Why is 'pointSet' synchronized with no threading?
 		List<PlotDataPoint[]> pointSet = Collections.synchronizedList(new ArrayList<PlotDataPoint[]>(pointCount));
@@ -378,7 +398,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		}
 		
 		//filtering
-		if(filter!=null){
+		if(filter != null){
 			FilterFacade ff = new FilterFacade(filter, this);
 			List<SegmentData> filteredRawData = new ArrayList<SegmentData>();
 			for(SegmentData segmentData: rawData){

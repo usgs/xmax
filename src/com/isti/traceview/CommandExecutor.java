@@ -1,5 +1,6 @@
 package com.isti.traceview;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
@@ -65,21 +66,38 @@ public class CommandExecutor extends ThreadPoolExecutor {
 
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		logger.debug("Executing " + r.toString());
+		//logger.debug("Executing " + r.toString());
+		System.out.println("CommandExecutor.beforeExecute(): " + r.toString());
 		if (r instanceof IUndoableCommand) {
 			IUndoableCommand uc = (IUndoableCommand) r;
 			if (uc.canUndo()) {
 				history.add(uc);
 			}
 		}
+		Iterator<ICommand> iter = history.iterator();
+		while(iter.hasNext()) {
+			System.out.println("history[ " + iter.next() + " ]");
+		}
+		 
+		System.out.println("pauseLock.lock():");
 		pauseLock.lock();
+		System.out.println("	pauseLock.holdCount = " + pauseLock.getHoldCount());
+		System.out.println("	pauseLock.queueLength = " + pauseLock.getQueueLength());
+		System.out.println("	pauseLock.queuedThreads() = " + pauseLock.hasQueuedThreads());
+		System.out.println("	pauseLock.heldByCurrentThread = " + pauseLock.isHeldByCurrentThread());
+		System.out.println("	pauseLock.isLocked = " + pauseLock.isLocked());
 		try {
+			long start = System.nanoTime();
 			while (isPaused)
 				unpaused.await();
+			long endl = System.nanoTime() - start;
+			double end = endl * Math.pow(10, -9);
+			System.out.format("CommandExecutor: unpaused.await() execution time = %.9f sec\n", end);
 		} catch (InterruptedException ie) {
 			t.interrupt();
 			logger.error("InterruptedException:", ie);	
 		} finally {
+			System.out.println("CommandExecutor: pauseLock.unlock()\n");
 			pauseLock.unlock();
 		}
 	}
@@ -88,12 +106,14 @@ public class CommandExecutor extends ThreadPoolExecutor {
 		super.afterExecute(r, t);
 		// notify observers that all tasks were executed and rest nothing
 		if (getQueue().size() == 0) {
+			System.out.println("CommandExecutor.afterExecute(): observable.setChanged(), notifyObservers()\n");
 			observable.setChanged();
 			notifyObservers();
 		}
 	}
 
 	public void pause() {
+		System.out.println("CommandExecutor.pause(): pauseLock.lock()\n");
 		pauseLock.lock();
 		try {
 			isPaused = true;
