@@ -14,11 +14,13 @@ import org.apache.log4j.Logger;
 
 import com.isti.traceview.CommandExecutor;
 import com.isti.traceview.commands.SelectTimeCommand;
+import com.isti.traceview.commands.TimeRangeCommand;
 import com.isti.traceview.commands.SelectValueCommand;
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.ChannelView;
+import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.IMouseAdapter;
 import com.isti.traceview.gui.IScaleModeState;
 import com.isti.traceview.gui.ScaleModeXhair;
@@ -54,13 +56,14 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 
 	public void mouseClickedButton1(int x, int y, JPanel clickedAt) {
 		ChannelView cv = (ChannelView) clickedAt;
-		long clickedTime = cv.getGraphPanel().getTime(x);
+		GraphPanel graphPanel = cv.getGraphPanel();	
+		long clickedTime = graphPanel.getTime(x);
 		logger.debug("ChannelView clicked: " + x + ":" + y + ", time "
 				+ TimeInterval.formatDate(new Date(clickedTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + "(" + clickedTime + ")"
-				+ ", value " + cv.getGraphPanel().getScaleMode().getValue(y));
+				+ ", value " + graphPanel.getScaleMode().getValue(y));
 		double pointAmp = Double.NEGATIVE_INFINITY; // Graph amplitude in the clicked point
 		if (cv.getLastClickedY() != Integer.MIN_VALUE) {
-			pointAmp = cv.getGraphPanel().getScaleMode().getValue(y) - cv.getGraphPanel().getScaleMode().getValue(cv.getLastClickedY());
+			pointAmp = graphPanel.getScaleMode().getValue(y) - graphPanel.getScaleMode().getValue(cv.getLastClickedY());
 		}
 		String amp = "";
 		if (pointAmp < 0) {
@@ -70,13 +73,13 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 			amp = "+";
 		}
 		amp = pointAmp == Double.NEGATIVE_INFINITY ? "" : ":" + amp + new Double(pointAmp).intValue();
-		long lastClickedTime = cv.getGraphPanel().getLastClickedTime();
+		long lastClickedTime = graphPanel.getLastClickedTime();
 		String diff = lastClickedTime == Long.MAX_VALUE ? "" : " diff " + new TimeInterval(lastClickedTime, clickedTime).convert();
 		XMAXframe.getInstance().getStatusBar().setMessage(
 				TimeInterval.formatDate(new Date(clickedTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + ":"
-						+ new Double(cv.getGraphPanel().getScaleMode().getValue(y)).intValue() + diff + amp);
+						+ new Double(graphPanel.getScaleMode().getValue(y)).intValue() + diff + amp);
 
-		if (cv.getGraphPanel().getPickState()) {
+		if (graphPanel.getPickState()) {
 			PlotDataProvider channel = cv.getPlotDataProviders().get(0);
 			channel.addEvent(new Pick(new Date(clickedTime), channel));
 			cv.repaint();
@@ -88,10 +91,11 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 
 	public void mouseClickedButton3(int x, int y, JPanel clickedAt) {
 		ChannelView cv = (ChannelView) clickedAt;
-		if (cv.getGraphPanel().getPickState()) {
-			long clickedTime = cv.getGraphPanel().getTime(x);
+		GraphPanel graphPanel = cv.getGraphPanel();
+		if (graphPanel.getPickState()) {
+			long clickedTime = graphPanel.getTime(x);
 			PlotDataProvider channel = cv.getPlotDataProviders().get(0);
-			SortedSet<IEvent> events = channel.getEvents(new Date(clickedTime), cv.getGraphPanel().getTimeRange().getDuration()
+			SortedSet<IEvent> events = channel.getEvents(new Date(clickedTime), graphPanel.getTimeRange().getDuration()
 					/ cv.getGraphAreaWidth());
 			for (IEvent event: events) {
 				if (event.getType().equals("PICK")) {
@@ -127,11 +131,12 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 
 	public void mouseDragged(int x, int y, JPanel clickedAt) {
 		ChannelView cv = (ChannelView) clickedAt;
-		long selectionTime = cv.getGraphPanel().getSelectionTime();
-		String diff = selectionTime == Long.MAX_VALUE ? "" : " diff " + new TimeInterval(selectionTime, cv.getGraphPanel().getTime(x)).convert();
+		GraphPanel graphPanel = cv.getGraphPanel();
+		long selectionTime = graphPanel.getSelectionTime();
+		String diff = selectionTime == Long.MAX_VALUE ? "" : " diff " + new TimeInterval(selectionTime, graphPanel.getTime(x)).convert();
 		XMAXframe.getInstance().getStatusBar().setMessage(
-				TimeInterval.formatDate(new Date(cv.getGraphPanel().getTime(cv.getMousePressX())), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-						+ ":" + cv.getGraphPanel().getScaleMode().getValue(cv.getMousePressY()) + diff);
+				TimeInterval.formatDate(new Date(graphPanel.getTime(cv.getMousePressX())), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+						+ ":" + graphPanel.getScaleMode().getValue(cv.getMousePressY()) + diff);
 
 	}
 
@@ -139,17 +144,22 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 		Date from;
 		Date to;
 		ChannelView cv = (ChannelView) clickedAt;
+		GraphPanel graphPanel = cv.getGraphPanel();
 		if (cv.getMousePressX() > x) {
-			to = new Date(cv.getGraphPanel().getTime(cv.getMousePressX()));
-			from = new Date(cv.getGraphPanel().getTime(x));
+			to = new Date(graphPanel.getTime(cv.getMousePressX()));
+			from = new Date(graphPanel.getTime(x));
 		} else {
-			from = new Date(cv.getGraphPanel().getTime(cv.getMousePressX()));
-			to = new Date(cv.getGraphPanel().getTime(x));
+			from = new Date(graphPanel.getTime(cv.getMousePressX()));
+			to = new Date(graphPanel.getTime(x));
 		}
 		if (Math.abs(cv.getMousePressX() - x) > 1) {
 			// to avoid mouse bounce
 			if (to.getTime() > from.getTime()) {
-				CommandExecutor.getInstance().execute(new SelectTimeCommand(cv.getGraphPanel(), new TimeInterval(from, to)));
+				System.out.println("XMAXChannelView.mouseReleasedButton1( " + from.getTime() + ", " + to.getTime() + " ) --> SelectTimeCommand()");
+				SelectTimeCommand timeTask = new SelectTimeCommand(graphPanel, new TimeInterval(from, to));
+				CommandExecutor.getInstance().execute(timeTask);
+				//TimeRangeCommand timeRange = new TimeRangeCommand(cv.getGraphPanel());
+				//timeRange.setRange(new TimeInterval(from, to));	
 			} else {
 				JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Max zoom reached", "Alert", JOptionPane.WARNING_MESSAGE);
 			}
@@ -159,7 +169,8 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 
 	public void mouseReleasedButton3(int x, int y, JPanel clickedAt) {
 		ChannelView cv = (ChannelView) clickedAt;
-		IScaleModeState scaleMode = cv.getGraphPanel().getScaleMode();
+		GraphPanel graphPanel = cv.getGraphPanel();
+		IScaleModeState scaleMode = graphPanel.getScaleMode();
 		if (scaleMode instanceof ScaleModeXhair) {
 			double from;
 			double to;
@@ -173,7 +184,9 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 			if (Math.abs(cv.getMousePressY() - y) > 1) {
 				// to avoid mouse bounce
 				if (from != to) {
-					CommandExecutor.getInstance().execute(new SelectValueCommand(cv.getGraphPanel(), from, to));
+					System.out.println("XMAXChannelView.mouseReleasedButton3( " + from + 
+							", " + to + " ) --> SelectValueCommand()");
+					CommandExecutor.getInstance().execute(new SelectValueCommand(graphPanel, from, to));
 				} else {
 					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Please select non-null Y range", "Warning", JOptionPane.WARNING_MESSAGE);
 				}

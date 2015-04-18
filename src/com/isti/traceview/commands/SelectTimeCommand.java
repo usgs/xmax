@@ -30,12 +30,16 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 		this.ti = ti;
 		this.graphPanel = gp;
 		this.previousRange = graphPanel.getTimeRange();
+		System.out.println("SelectTimeCommand: New Time Range: " + ti.toString());
+		System.out.println("SelectTimeCommand: Prv Time Range: " + previousRange.toString() + "\n");
 	}
 
 	public void run() {
 		try {
 			super.run();
-			logger.debug("Selection command:" + ti.toString());
+			//logger.debug("Selection command:" + ti.toString());
+			System.out.println("SelectTimeCommand.run(): TI: " + ti.toString() + " --> graphPanel.setTimeRange()\n");
+			graphPanel.setIsSelectTimeCommand(true);
 			graphPanel.setTimeRange(ti);
 		} catch (Exception e) {
 			logger.error("Exception:", e);
@@ -46,6 +50,8 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 		try {
 			super.undo();
 			if (previousRange.getStartTime().getTime() != Long.MAX_VALUE || previousRange.getEndTime().getTime() != Long.MIN_VALUE) {
+				//logger.info("== undo(): Previous range: " + previousRange.toString() + "\n");
+				System.out.println("SelectTimeCommand.undo(): Previous range: " + previousRange.toString() + "\n");
 				graphPanel.setTimeRange(previousRange);
 			}
 		} catch (UndoException e) {

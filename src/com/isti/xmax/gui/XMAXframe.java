@@ -569,6 +569,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 */
 	public void setTimeRange(TimeInterval ti) {
 		executorBusy = true;
+		System.out.println("XMAXframe.setTimeRange(): Time range: " + ti.toString());
 		CommandExecutor.getInstance().execute(new SelectTimeCommand(graphPanel, ti));
 		// We should to wait while command will be executed for
 		while (executorBusy) {
@@ -2541,6 +2542,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			TimeInterval ti = LimXDialog.showDialog(XMAXframe.getInstance(), graphPanel.getTimeRange());
 			if (ti != null) {
 				setWaitCursor(true);
+				System.out.println("XMAXframe.LimXAction(): Time Range: " + ti.toString() + 
+						" --> SelectTimeCommand()");
 				CommandExecutor.getInstance().execute(new SelectTimeCommand(graphPanel, ti));
 			} else {
 				getGraphPanel().forceRepaint();
@@ -2569,6 +2572,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					scaleModeXHairMenuRadioBt.setSelected(true);
 				}
 				setWaitCursor(true);
+				System.out.println("XMAXframe.LimYAction( " + dialog.min + 
+						", " + dialog.max + " ) --> SelectValueCommand()");
 				CommandExecutor.getInstance().execute(new SelectValueCommand(graphPanel, dialog.min, dialog.max));
 			} else {
 				getGraphPanel().forceRepaint();

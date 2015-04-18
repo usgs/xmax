@@ -345,6 +345,9 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public synchronized void updateData() {
 
 		int width = graphAreaPanel.getWidth();// - graphAreaPanel.getInsets().left -
+		System.out.println("ChannelView.updateData(width = " + width + 
+			", plotDataProviders.size = " + plotDataProviders.size() + ")");
+		
 		// graphAreaPanel.getInsets().right;
 		logger.debug("Updating data " + this + "Width = " + width);
 		graphs = new ArrayList<PlotData>();
@@ -368,8 +371,12 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 
 		for (PlotDataProvider channel: plotDataProviders) {
 			// lg.debug("processing channel: " + channel);
+			System.out.println("== updateData: processing channel: [ " + channel + 
+				" ]");
 			PlotData data = null;
 			try {
+				System.out.println("== updateData: graphPanel.timeRange = [ " + 
+					graphPanel.getTimeRange() + " ]");
 				data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getRotation(), graphPanel.getFilter(), graphPanel.getColorMode());
 			} catch (TraceViewException e) {
 				graphPanel.setRotation(null);
@@ -631,14 +638,22 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			// Graph's number, used to separate graphs then overlay mode is activated
 			int graphNum = 0;
 			Color segmentColor = null;
-			if (graphPanel.initialPaint) {	
+			/*	
+			if (graphPanel.initialPaint || graphPanel.mouseDragged) {	
 				System.out.print("...");
 			}	
+			*/	
 			for (PlotData data: graphs) {
 				int i = 0;
 				//logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
-				//System.out.println("Drawing PlotData " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
-				
+				if (graphPanel.initialPaint || graphPanel.mouseDragged) {	
+					System.out.println("Drawing PlotData " + 
+						data.getLabel() + ": max " + 
+						data.getMaxValue() + ", min " + 
+						data.getMinValue() + ", mean " + 
+						data.getMeanValue());
+				}
+
 				// strokes for previous pixel
 				List<Stroke> yprev = new ArrayList<Stroke>();
 				for (PlotDataPoint[] points: data.getPixels()) {
@@ -835,6 +850,8 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 					}
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
 					if (mouseAdapter != null) {
+						System.out.println("ChannelView.GraphAreaPanel.mouseReleased( " + e.getX() + 
+								", " + e.getY() + " ) --> XMAXChannelView.mouseReleasedButton1()");
 						mouseAdapter.mouseReleasedButton1(e.getX(), e.getY(), cv);
 					}
 				}

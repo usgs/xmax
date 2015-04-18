@@ -96,12 +96,18 @@ public class Zoomer extends JPanel implements ActionListener {
 		long centerTime = (graphPanel.getTimeRange().getStart() + graphPanel.getTimeRange().getEnd()) / 2;
 		long duration = graphPanel.getTimeRange().getDuration();
 		if (e.getSource().equals(zoomInButton)) {
+			System.out.println("Zoomer.zoomIn(): centerTime = " + centerTime + ", duration = " + 
+					duration);
 			graphPanel.setTimeRange(new TimeInterval(centerTime - new Double(duration / (2 * factor)).longValue(), centerTime
 					+ new Double(duration / (2 * factor)).longValue()));
 		} else if (e.getSource().equals(zoomOutButton)) {
+			System.out.println("Zoomer.zoomOut(): centerTime = " + centerTime + ", duration = " + 
+					duration);
 			graphPanel.setTimeRange(new TimeInterval(centerTime - new Double(duration * factor / 2).longValue(), centerTime
 					+ new Double(duration * factor / 2).longValue()));
 		} else if (e.getSource().equals(allData)) {
+			System.out.println("Zoomer.allData(): centerTime = " + centerTime + ", duration = " + 
+					duration);
 			graphPanel.setTimeRange(TraceView.getDataModule().getAllDataTimeInterval());
 		}
 	}

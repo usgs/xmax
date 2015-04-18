@@ -36,7 +36,7 @@ public abstract class AbstractCommand implements ICommand, Comparable<Object> {
 	}
 	
 	/**
-	 * @see Runnable#run()
+	 * @see Runnable run()
 	 */
 	public void run() {
 		this.startTime = new Date();
