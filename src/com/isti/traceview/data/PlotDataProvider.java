@@ -194,7 +194,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			{
 				try {		
 					//System.out.format("== getPlotData: pointCount > pointsCache.size !!\n");
-					System.out.println("== getPlotData: pointCount > pointsCache.size !!");
 					System.out.println("== getPlotData: " + pointCount + 
 						" > " + (pointsCache.size() * new Double(effectiveTimeRange.getDuration()) / new Double(getTimeRange().getDuration())));
 					

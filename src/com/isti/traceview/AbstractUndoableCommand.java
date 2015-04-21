@@ -1,6 +1,7 @@
 package com.isti.traceview;
 
 import java.util.LinkedList;
+import java.util.Iterator;
 
 /**
  * Abstract class to represent a command to be executed by {@link CommandExecutor}
@@ -25,6 +26,14 @@ public abstract class AbstractUndoableCommand extends AbstractCommand implements
 		//Descended classes should call this method in their undo()
 
 		LinkedList<ICommand> history = CommandExecutor.getInstance().getCommandHistory();
+		Iterator<ICommand> iter = history.listIterator();
+
+		System.out.println("AbstractUndoableCommand.undo(): history:");
+		// print list with the iterator
+		while (iter.hasNext()) {
+			System.out.println(iter.next());	
+		}
+
 		if (history.size() > 1) {
 			history.remove(this);
 			ICommand prevCommand = history.getLast();
