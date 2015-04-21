@@ -639,13 +639,20 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			int graphNum = 0;
 			Color segmentColor = null;
 			/*	
+			if (graphPanel.initialPaint) {}	// this is production code	
 			if (graphPanel.initialPaint || graphPanel.mouseDragged) {	
 				System.out.print("...");
 			}	
 			*/	
 			for (PlotData data: graphs) {
 				int i = 0;
-				//logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
+				/*	
+				System.out.println("Drawing PlotData " + i + 
+					", " + data.getLabel() + ": max " + 
+					data.getMaxValue() + ", min " + 
+					data.getMinValue() + ", mean " + data.getMeanValue());
+				*/
+
 				if (graphPanel.initialPaint || graphPanel.mouseDragged) {	
 					System.out.println("Drawing PlotData " + 
 						data.getLabel() + ": max " + 
@@ -850,8 +857,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 					}
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
 					if (mouseAdapter != null) {
-						System.out.println("ChannelView.GraphAreaPanel.mouseReleased( " + e.getX() + 
-								", " + e.getY() + " ) --> XMAXChannelView.mouseReleasedButton1()");
+						System.out.println("ChannelView.GraphAreaPanel.mouseReleased[ " + e.getX() + ", " + e.getY() + " ] --> XMAXChannelView.mouseReleasedButton1()");
 						mouseAdapter.mouseReleasedButton1(e.getX(), e.getY(), cv);
 					}
 				}

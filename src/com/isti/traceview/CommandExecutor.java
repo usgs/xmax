@@ -1,6 +1,5 @@
 package com.isti.traceview;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
@@ -53,6 +52,7 @@ public class CommandExecutor extends ThreadPoolExecutor {
 	private static CommandExecutor instance = null;
 
 	private CommandExecutor() {
+			
 		super(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 		history = new LinkedList<ICommand>();
 		observable = new Obs();
@@ -64,28 +64,26 @@ public class CommandExecutor extends ThreadPoolExecutor {
 
 	private Condition unpaused = pauseLock.newCondition();
 
+	/*
+	 * Launching threads for buttons doesn't make sense. Unless the user has
+	 * the ability to submit multiple commands at once (which they can't).
+	 * Consider adding methods for LinkList<ICommand> history and notifying
+	 * Observers when threads have finished executing
+	 *
+	 * NOTE: Threads should only be used for process intensive code
+	 */	
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		//logger.debug("Executing " + r.toString());
-		System.out.println("CommandExecutor.beforeExecute(): " + r.toString());
+		System.out.println("CommandExecutor.beforeExecute():"); 
 		if (r instanceof IUndoableCommand) {
 			IUndoableCommand uc = (IUndoableCommand) r;
 			if (uc.canUndo()) {
+				System.out.println("history.add[ " + uc.toString() + " ]");	
 				history.add(uc);
 			}
 		}
-		Iterator<ICommand> iter = history.iterator();
-		while(iter.hasNext()) {
-			System.out.println("history[ " + iter.next() + " ]");
-		}
-		 
-		System.out.println("pauseLock.lock():");
+		
 		pauseLock.lock();
-		System.out.println("	pauseLock.holdCount = " + pauseLock.getHoldCount());
-		System.out.println("	pauseLock.queueLength = " + pauseLock.getQueueLength());
-		System.out.println("	pauseLock.queuedThreads() = " + pauseLock.hasQueuedThreads());
-		System.out.println("	pauseLock.heldByCurrentThread = " + pauseLock.isHeldByCurrentThread());
-		System.out.println("	pauseLock.isLocked = " + pauseLock.isLocked());
 		try {
 			long start = System.nanoTime();
 			while (isPaused)
@@ -106,10 +104,26 @@ public class CommandExecutor extends ThreadPoolExecutor {
 		super.afterExecute(r, t);
 		// notify observers that all tasks were executed and rest nothing
 		if (getQueue().size() == 0) {
-			System.out.println("CommandExecutor.afterExecute(): observable.setChanged(), notifyObservers()\n");
+			System.out.println("CommandExecutor.afterExecute(): observable.setChanged(), notifyObservers()\n");	
 			observable.setChanged();
 			notifyObservers();
 		}
+	}
+
+	public void finalize() {
+		super.finalize();
+		System.out.println("CommandExecutor.finalize() --> super.shutdown()");	
+		try {	// try to terminate and force shutdown	
+			super.awaitTermination(10, TimeUnit.SECONDS);	
+			if (!super.isTerminated())
+				super.shutdownNow();
+			System.out.println("CommandExecutor.getCompletedTaskCount() = " + 
+				super.getCompletedTaskCount());
+			System.out.println("CommandExecutor.shutdown(): COMPLETE!\n");	
+		} catch (InterruptedException e) {
+			//logger.error	
+			System.out.println("CommandExecutor: InterruptedException:" + e);
+		}	
 	}
 
 	public void pause() {
@@ -145,9 +159,19 @@ public class CommandExecutor extends ThreadPoolExecutor {
 	/**
 	 */
 	public static CommandExecutor getInstance() {
+		/** NOTE: Need a way to determine if pool is TERMINATED, if
+		 * 	  TRUE, then create new POOL of WORKERS
+		 **/
 		if (instance == null) {
+			System.out.println("CommandExecutor.getInstance: instance = NULL\n");	
 			instance = new CommandExecutor();
-		}
+		} else {
+			System.out.println("CommandExecutor.getInstance: instance = " + 
+				instance + "\n");
+			if (instance.isTerminated()) {
+				System.out.println("CommandExecutor: POOL == TERMINATED!!\n");	
+			}
+		}	
 		return instance;
 	}
 

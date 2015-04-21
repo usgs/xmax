@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -14,7 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.isti.traceview.CommandExecutor;
 import com.isti.traceview.commands.SelectTimeCommand;
-import com.isti.traceview.commands.TimeRangeCommand;
+//import com.isti.traceview.commands.TimeRangeCommand;
 import com.isti.traceview.commands.SelectValueCommand;
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.common.TimeInterval;
@@ -155,9 +156,22 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 		if (Math.abs(cv.getMousePressX() - x) > 1) {
 			// to avoid mouse bounce
 			if (to.getTime() > from.getTime()) {
-				System.out.println("XMAXChannelView.mouseReleasedButton1( " + from.getTime() + ", " + to.getTime() + " ) --> SelectTimeCommand()");
+				System.out.println("XMAXChannelView.mouseReleasedButton1() --> SelectTimeCommand()");
 				SelectTimeCommand timeTask = new SelectTimeCommand(graphPanel, new TimeInterval(from, to));
-				CommandExecutor.getInstance().execute(timeTask);
+				//CommandExecutor.getInstance().execute(timeTask);
+				CommandExecutor executor = CommandExecutor.getInstance(); 
+				executor.execute(timeTask);	
+				System.out.println("XMAXChannelView.mouseReleasedButton1() --> CommandExecutor.finalize()");	
+				executor.finalize();	
+				/*	
+				executor.shutdown();
+				try {	
+					executor.awaitTermination(10, TimeUnit.SECONDS); 
+					System.out.println("XMAXChannelView.mouseReleasedButton1() --> executor.shutdown() COMPLETE");	
+				} catch (InterruptedException e) {
+					System.out.println("InterruptedException:", e);
+				}
+				*/	
 				//TimeRangeCommand timeRange = new TimeRangeCommand(cv.getGraphPanel());
 				//timeRange.setRange(new TimeInterval(from, to));	
 			} else {

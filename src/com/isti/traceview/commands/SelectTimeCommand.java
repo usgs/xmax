@@ -48,10 +48,12 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 
 	public void undo() {
 		try {
+			System.out.println("SelectTimeCommand.undo() --> AbstractUndoableCommand.undo()");	
 			super.undo();
 			if (previousRange.getStartTime().getTime() != Long.MAX_VALUE || previousRange.getEndTime().getTime() != Long.MIN_VALUE) {
 				//logger.info("== undo(): Previous range: " + previousRange.toString() + "\n");
-				System.out.println("SelectTimeCommand.undo(): Previous range: " + previousRange.toString() + "\n");
+				System.out.println("SelectTimeCommand.undo(): Previous range: " + previousRange.toString() + " --> GraphPanel.setTimeRange()\n");
+				graphPanel.setIsSelectTimeCommand(true);	
 				graphPanel.setTimeRange(previousRange);
 			}
 		} catch (UndoException e) {
