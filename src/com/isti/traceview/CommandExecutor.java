@@ -3,6 +3,8 @@ package com.isti.traceview;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Iterator;
+
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -29,12 +31,14 @@ public class CommandExecutor extends ThreadPoolExecutor {
 	/*
 	 * the number of threads to keep in the pool, even if they are idle
 	 */
-	private static final int corePoolSize = 3;
+	//private static final int corePoolSize = 3;
+	private static final int corePoolSize = 1;
 
 	/*
 	 * the maximum number of threads to allow in the pool.
 	 */
-	private static final int maximumPoolSize = 10;
+	//private static final int maximumPoolSize = 10;
+	private static final int maximumPoolSize = 3;	
 
 	/*
 	 * when the number of threads is greater than the core, this is the maximum time that excess
@@ -45,17 +49,18 @@ public class CommandExecutor extends ThreadPoolExecutor {
 	/**
 	 * @uml.property name="history"
 	 */
-	private LinkedList<ICommand> history;
+	private static LinkedList<ICommand> history = null;
 
-	private Obs observable = null;
+	private static Obs observable = null;
 
 	private static CommandExecutor instance = null;
 
 	private CommandExecutor() {
-			
 		super(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
-		history = new LinkedList<ICommand>();
-		observable = new Obs();
+		if ((history == null) || (history.size() == 0)) {	
+			history = new LinkedList<ICommand>();
+			observable = new Obs();
+		}	
 	}
 
 	private boolean isPaused;
@@ -75,10 +80,12 @@ public class CommandExecutor extends ThreadPoolExecutor {
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
 		System.out.println("CommandExecutor.beforeExecute():"); 
+		System.out.println("CommandExecutor.Runnable = " + r.getClass());	
+
 		if (r instanceof IUndoableCommand) {
 			IUndoableCommand uc = (IUndoableCommand) r;
 			if (uc.canUndo()) {
-				System.out.println("history.add[ " + uc.toString() + " ]");	
+				System.out.println("	history.add[ " + uc.toString() + " ]");	
 				history.add(uc);
 			}
 		}
@@ -104,7 +111,7 @@ public class CommandExecutor extends ThreadPoolExecutor {
 		super.afterExecute(r, t);
 		// notify observers that all tasks were executed and rest nothing
 		if (getQueue().size() == 0) {
-			System.out.println("CommandExecutor.afterExecute(): observable.setChanged(), notifyObservers()\n");	
+			System.out.println("\nCommandExecutor.afterExecute(): observable.setChanged(), notifyObservers()");	
 			observable.setChanged();
 			notifyObservers();
 		}
@@ -112,12 +119,11 @@ public class CommandExecutor extends ThreadPoolExecutor {
 
 	public void finalize() {
 		super.finalize();
-		System.out.println("CommandExecutor.finalize() --> super.shutdown()");	
 		try {	// try to terminate and force shutdown	
 			super.awaitTermination(10, TimeUnit.SECONDS);	
 			if (!super.isTerminated())
 				super.shutdownNow();
-			System.out.println("CommandExecutor.getCompletedTaskCount() = " + 
+			System.out.println("CommandExecutor.finalize(): completedTaskCount = " + 
 				super.getCompletedTaskCount());
 			System.out.println("CommandExecutor.shutdown(): COMPLETE!\n");	
 		} catch (InterruptedException e) {
@@ -159,19 +165,29 @@ public class CommandExecutor extends ThreadPoolExecutor {
 	/**
 	 */
 	public static CommandExecutor getInstance() {
-		/** NOTE: Need a way to determine if pool is TERMINATED, if
+		/** NOTE1: Need a way to determine if pool is TERMINATED, if
 		 * 	  TRUE, then create new POOL of WORKERS
+		 *
+		 *  NOTE2: Don't like the idea of keeping a pool of threads open
+		 *         need to shutdown if there are no commands in 'history'
+		 *
 		 **/
 		if (instance == null) {
-			System.out.println("CommandExecutor.getInstance: instance = NULL\n");	
+			System.out.println("CommandExecutor.getInstance: instance = NULL --> CommandExecutor(CONSTRUCTOR)\n");	
 			instance = new CommandExecutor();
 		} else {
 			System.out.println("CommandExecutor.getInstance: instance = " + 
-				instance + "\n");
-			if (instance.isTerminated()) {
-				System.out.println("CommandExecutor: POOL == TERMINATED!!\n");	
+				instance);
+			System.out.println("CommandExecutor.getInstance: history.size() = " + 
+				history.size());
+			if (history.size() > 1) {
+				Iterator<ICommand> iter = history.listIterator();
+				System.out.println("CommandExecutor.getInstance: history:");	
+				while (iter.hasNext()) 
+					System.out.println("	" + iter.next());
 			}
-		}	
+			System.out.println();	
+		}
 		return instance;
 	}
 

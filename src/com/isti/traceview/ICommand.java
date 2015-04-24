@@ -2,11 +2,12 @@ package com.isti.traceview;
 
 import java.util.Date;
 /**
- * Interface to represent a command to be executed by {@link CommandExecutor}
+ * Interface to represent a command to be executed by {@link CommandHandler}
+ * 
  * @author Max Kokoulin
  */
 
-public interface ICommand extends Runnable{
+public interface ICommand extends Runnable {
 
 
 	/**

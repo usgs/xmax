@@ -1,8 +1,9 @@
 package com.isti.traceview;
 
 /**
- * Interface to represent a command to be executed by {@link CommandExecutor}
+ * Interface to represent a command to be executed by {@link CommandHandler}
  * with undo possibility
+ * 
  * @author Max Kokoulin
  */
 

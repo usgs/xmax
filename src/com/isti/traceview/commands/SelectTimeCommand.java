@@ -3,6 +3,7 @@ package com.isti.traceview.commands;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.AbstractUndoableCommand;
+//import com.isti.traceview.NewAbstractUndoableCommand;
 import com.isti.traceview.UndoException;
 
 import com.isti.traceview.common.TimeInterval;
@@ -38,7 +39,7 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 		try {
 			super.run();
 			//logger.debug("Selection command:" + ti.toString());
-			System.out.println("SelectTimeCommand.run(): TI: " + ti.toString() + " --> graphPanel.setTimeRange()\n");
+			System.out.println("SelectTimeCommand.run(): " + ti.toString() + " --> graphPanel.setTimeRange()");
 			graphPanel.setIsSelectTimeCommand(true);
 			graphPanel.setTimeRange(ti);
 		} catch (Exception e) {
@@ -52,7 +53,7 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 			super.undo();
 			if (previousRange.getStartTime().getTime() != Long.MAX_VALUE || previousRange.getEndTime().getTime() != Long.MIN_VALUE) {
 				//logger.info("== undo(): Previous range: " + previousRange.toString() + "\n");
-				System.out.println("SelectTimeCommand.undo(): Previous range: " + previousRange.toString() + " --> GraphPanel.setTimeRange()\n");
+				System.out.println("SelectTimeCommand.undo(): Previous range: " + previousRange.toString() + " --> GraphPanel.setTimeRange()");
 				graphPanel.setIsSelectTimeCommand(true);	
 				graphPanel.setTimeRange(previousRange);
 			}
