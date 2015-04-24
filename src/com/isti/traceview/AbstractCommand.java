@@ -3,7 +3,7 @@ package com.isti.traceview;
 import java.util.Date;
 
 /**
- * Abstract base class to represent a command to be executed by {@link CommandExecutor}
+ * Abstract base class to represent a command to be executed by {@link CommandHandler}
  * 
  * @author Max Kokoulin
  */

@@ -17,7 +17,8 @@ import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
-import com.isti.traceview.CommandExecutor;
+//import com.isti.traceview.CommandExecutor;
+import com.isti.traceview.CommandHandler;
 import com.isti.traceview.ITimeRangeAdapter;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.IEvent;
@@ -381,7 +382,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public void setTimeRange(TimeInterval ti) {
 		//logger.debug("timerange: " + timeRange);
 		if (isSelectTimeCommand) {		
-			System.out.println("GraphPanel.setTimeRange(): Time range: " + ti);
+			System.out.println("GraphPanel.setTimeRange(): " + ti);
 		}	
 		this.timeRange = ti;
 		if (timeRangeAdapter != null && TraceView.getFrame() != null) {
@@ -392,6 +393,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		southPanel.getInfoPanel().update(ti);
 		observable.setChanged();
 		observable.notifyObservers(ti);
+		if (isTimeRangeSet) {	
+			System.out.println("GraphPanel.getIsTimeRangeSet = " + getIsTimeRangeSet());	
+			System.out.println("GraphPanel.setTimeRange() --> forceRepaint()");
+		}	
 		forceRepaint();	// why is this force repainting?
 				// might be overwriting new TI
 	}
@@ -516,7 +521,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * 		Boolean for setting range time, for zooming
 	 */
 	public void setIsTimeRangeSet(boolean timeRangeSet) {
-		System.out.println("GraphPanel.setIsTimeRangeSet = " + timeRangeSet + "\n");
 		isTimeRangeSet = timeRangeSet;	
 	}
 	
@@ -536,7 +540,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * 		Boolean for setting SelectTimeCommand
 	 */
 	public void setIsSelectTimeCommand(boolean selectTimeCommand) {
-		System.out.println("GraphPanel.setIsSelectTimeCommand = " + selectTimeCommand + "\n");	
 		isSelectTimeCommand = selectTimeCommand;
 	}
 
@@ -673,7 +676,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		synchronized (TraceView.getDataModule().getAllChannels()) {
 			if (channels != null) {
 				clearChannelShowSet();
-				CommandExecutor.getInstance().clearCommandHistory(); // or do channels load as a command?
+				//CommandExecutor.getInstance().clearCommandHistory(); // or do channels load as a command?
+				CommandHandler.getInstance().clearCommandHistory();
 				
 				// This is the main method for all station channels for one
 				// GraphPanel (i.e. one station multiple channels per panel)
@@ -1675,8 +1679,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				//mouseDragged = false;	
 				//if (isTimeRangeSet) {
 					mouseRepaint = false;	
-					System.out.println("GraphPanel.setTimeRange( " + isTimeRangeSet + 
-							" ) --> forceRepaint()\n");
+					System.out.println("GraphPanel.mouseReleased(" + e.getX() + 
+						", " + e.getY() + ") --> forceRepaint()\n");	
 					forceRepaint();	// forceRepaint=true, repaint()
 				//}
 			} else {	// mouse clicked => erase cursor
@@ -1805,7 +1809,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
             boolean isSelectTimeCommand = getIsSelectTimeCommand();
             if (isSelectTimeCommand) {	
             	setIsTimeRangeSet(true);
-            	System.out.println("AxisPanel.setTimeRange(): Time Interval: " + ti);
+            	System.out.println("AxisPanel.setTimeRange(): " + ti);
             	setIsSelectTimeCommand(false);
             }
 			boolean needwait = false;

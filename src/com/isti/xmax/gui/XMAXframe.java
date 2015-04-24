@@ -15,9 +15,11 @@ import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.MouseInputListener;
 
+import com.isti.traceview.ExecuteCommand;
 import com.isti.traceview.ICommand;
 import com.isti.traceview.IUndoableCommand;
 import com.isti.traceview.CommandExecutor;
+import com.isti.traceview.CommandHandler;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.commands.OverlayCommand;
@@ -1861,8 +1863,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			LinkedList<ICommand> history = CommandExecutor.getInstance().getCommandHistory();
+			System.out.println("XMAXframe.UndoAction: actionPerformed():");
+			//LinkedList<ICommand> history = CommandExecutor.getInstance().getCommandHistory();
+			LinkedList<ICommand> history = CommandHandler.getInstance().getCommandHistory();
 			ICommand command = history.getLast();
+			System.out.println("XMAXframe: command = history.getLast() = " + command.toString() + "\n");
 			if (command instanceof IUndoableCommand) {
 				IUndoableCommand undCommand = (IUndoableCommand) command;
 				try {	
@@ -2542,9 +2547,17 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			TimeInterval ti = LimXDialog.showDialog(XMAXframe.getInstance(), graphPanel.getTimeRange());
 			if (ti != null) {
 				setWaitCursor(true);
-				System.out.println("XMAXframe.LimXAction(): Time Range: " + ti.toString() + 
-						" --> SelectTimeCommand()");
-				CommandExecutor.getInstance().execute(new SelectTimeCommand(graphPanel, ti));
+				System.out.println("XMAXframe.LimXAction() --> Execute SelectTimeCommand()");
+				//CommandExecutor.getInstance().execute(new SelectTimeCommand(graphPanel, ti));
+				
+				// Create Runnable SelectTimeCommand obj
+				SelectTimeCommand timeTask = new SelectTimeCommand(graphPanel, ti);
+
+				// Create ExecuteCommand obj for executing Runnable
+				ExecuteCommand executor = new ExecuteCommand(timeTask);
+				executor.initialize();
+				executor.start();
+				executor.shutdown();
 			} else {
 				getGraphPanel().forceRepaint();
 			}
@@ -2568,13 +2581,31 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			LimYDialog dialog = new LimYDialog(XMAXframe.getInstance(), new Double(graphPanel.getManualValueMin()).intValue(), new Double(graphPanel.getManualValueMax()).intValue());
 			if (dialog.min != Integer.MAX_VALUE && dialog.max != Integer.MIN_VALUE) {
 				if (!(graphPanel.getScaleMode() instanceof ScaleModeXhair)) {
-					CommandExecutor.getInstance().execute(new SetScaleModeCommand(graphPanel, new ScaleModeXhair()));
+					//CommandExecutor.getInstance().execute(new SetScaleModeCommand(graphPanel, new ScaleModeXhair()));
+				
+					System.out.println("XMAXframe.LimYAction() --> Execute SetScaleModeCommand()");
+					// Create Runnable SetScaleModeCommand obj
+					SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeXhair());
+
+					// Create ExecuteCommand obj for executing Runnable
+					ExecuteCommand executor = new ExecuteCommand(scaleTask);
+					executor.initialize();
+					executor.start();
+					executor.shutdown();
+					
 					scaleModeXHairMenuRadioBt.setSelected(true);
 				}
 				setWaitCursor(true);
-				System.out.println("XMAXframe.LimYAction( " + dialog.min + 
-						", " + dialog.max + " ) --> SelectValueCommand()");
-				CommandExecutor.getInstance().execute(new SelectValueCommand(graphPanel, dialog.min, dialog.max));
+				//CommandExecutor.getInstance().execute(new SelectValueCommand(graphPanel, dialog.min, dialog.max));
+				System.out.println("XMAXframe.LimYAction() --> Execute SelectValueCommand()");
+				// Create SelectValueCommand obj
+				SelectValueCommand valueTask = new SelectValueCommand(graphPanel, dialog.min, dialog.max);
+
+				// Create ExecuteCommand obj for Runnable
+				ExecuteCommand executor = new ExecuteCommand(valueTask);
+				executor.initialize();
+				executor.start();
+				executor.shutdown();
 			} else {
 				getGraphPanel().forceRepaint();
 			}
