@@ -17,7 +17,6 @@ public class ExecuteCommand {
 	private Runnable command = null;
 
 	public ExecuteCommand(Runnable command) {
-		System.out.println("ExecuteCommand( " + command.getClass() + " )");	
 		this.executor = Executors.newSingleThreadExecutor();
 		this.handler = CommandHandler.getInstance();
 		this.command = command;	
@@ -27,7 +26,6 @@ public class ExecuteCommand {
 	 * Initializes CommandHandler for Runnable class
 	 */
 	public void initialize() {
-		System.out.println("ExecuteCommand().intialize() --> Handler.beforeExecute()");	
 		handler.beforeExecute(command);	
 	}
 
@@ -35,7 +33,6 @@ public class ExecuteCommand {
 	 * Execute runnable task
 	 */
 	public void start() {
-		System.out.println("ExecuteCommand().start() --> Execute()");	
 		executor.execute(command);
 	}
 
@@ -48,9 +45,7 @@ public class ExecuteCommand {
 			executor.awaitTermination(10, TimeUnit.SECONDS);
 			if (!executor.isTerminated())
 				executor.shutdownNow();
-			System.out.println("ExecuteCommand.shutdown() --> Handler.afterExecute()");	
 			handler.afterExecute();
-			System.out.println("ExecuteCommand.shutdown(): COMPLETE!!!\n");	
 		} catch (InterruptedException e) {
 			logger.error("InterruptedException:", e);	
 		}

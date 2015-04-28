@@ -39,9 +39,6 @@ public class SelectValueCommand extends AbstractUndoableCommand {
 	public void run() {
 		try {
 			super.run();
-			//logger.debug("Selection values from " + min + " to " + max);
-			System.out.println("SelectValueCommand.run(): Range: ( " + min + 
-					", " + max + " ) --> GraphPanel.setManualValueMin/Max()\n");
 			graphPanel.setManualValueMax(max);
 			graphPanel.setManualValueMin(min);
 		} catch (Exception e) {

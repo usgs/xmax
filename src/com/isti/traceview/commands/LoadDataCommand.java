@@ -37,19 +37,13 @@ public class LoadDataCommand extends AbstractCommand {
 			super.run();
 			if (channels.size() == 1) {
 				PlotDataProvider channel = channels.get(0);
-				System.out.println(Thread.currentThread().getName() + " Start. Command = " + channel.toString());
 				logger.debug("== Load data command: " + channel.toString() + ti);
 				channel.load(ti);
-				System.out.println(Thread.currentThread().getName() + " End. Command = " + channel.toString());
-				System.out.println();
 				
 			} else {
 				for (PlotDataProvider channel: channels) {
-					System.out.println(Thread.currentThread().getName() + " Start. Command = " + channel.toString());
 					logger.debug("== Load data command: " + channel.toString() + ti);
 					channel.load(ti);
-					System.out.println(Thread.currentThread().getName() + " End. Command = " + channel.toString());
-					System.out.println();
 				}
 			}
 		} catch (Exception e) {

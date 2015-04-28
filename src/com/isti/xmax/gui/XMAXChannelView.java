@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -16,7 +13,6 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.ExecuteCommand;
-import com.isti.traceview.CommandHandler;
 import com.isti.traceview.commands.SelectTimeCommand;
 import com.isti.traceview.commands.SelectValueCommand;
 import com.isti.traceview.common.IEvent;
@@ -159,7 +155,6 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 			// to avoid mouse bounce
 			if (to.getTime() > from.getTime()) {
 				// Create Runnable SelectTimeCommand object 
-				System.out.println("XMAXChannelView --> Execute SelectTimeCommand()");
 				SelectTimeCommand timeTask = new SelectTimeCommand(graphPanel, new TimeInterval(from, to));
 				
 				// Create ExecuteCommand object for executing Runnable
@@ -192,7 +187,6 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 				// to avoid mouse bounce
 				if (from != to) {
 					// Create Runnable SelectValueCommand object
-					System.out.println("XMAXChannelView --> Execute SelectValueCommand()");
 					SelectValueCommand valueTask = new SelectValueCommand(graphPanel, from, to);
 
 					// Create ExecuteCommand object for executing Runnable

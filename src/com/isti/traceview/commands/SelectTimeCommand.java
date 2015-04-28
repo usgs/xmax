@@ -3,7 +3,6 @@ package com.isti.traceview.commands;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.AbstractUndoableCommand;
-//import com.isti.traceview.NewAbstractUndoableCommand;
 import com.isti.traceview.UndoException;
 
 import com.isti.traceview.common.TimeInterval;
@@ -31,16 +30,11 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 		this.ti = ti;
 		this.graphPanel = gp;
 		this.previousRange = graphPanel.getTimeRange();
-		System.out.println("SelectTimeCommand: New Time Range: " + ti.toString());
-		System.out.println("SelectTimeCommand: Prv Time Range: " + previousRange.toString() + "\n");
 	}
 
 	public void run() {
 		try {
 			super.run();
-			//logger.debug("Selection command:" + ti.toString());
-			System.out.println("SelectTimeCommand.run(): " + ti.toString() + " --> graphPanel.setTimeRange()");
-			graphPanel.setIsSelectTimeCommand(true);
 			graphPanel.setTimeRange(ti);
 		} catch (Exception e) {
 			logger.error("Exception:", e);
@@ -49,12 +43,9 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 
 	public void undo() {
 		try {
-			System.out.println("SelectTimeCommand.undo() --> AbstractUndoableCommand.undo()");	
 			super.undo();
 			if (previousRange.getStartTime().getTime() != Long.MAX_VALUE || previousRange.getEndTime().getTime() != Long.MIN_VALUE) {
-				//logger.info("== undo(): Previous range: " + previousRange.toString() + "\n");
-				System.out.println("SelectTimeCommand.undo(): Previous range: " + previousRange.toString() + " --> GraphPanel.setTimeRange()");
-				graphPanel.setIsSelectTimeCommand(true);	
+				//logger.info("== undo(): Previous range: " + previousRange.toString() + "\n");	
 				graphPanel.setTimeRange(previousRange);
 			}
 		} catch (UndoException e) {
