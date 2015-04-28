@@ -320,7 +320,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				minValueAllChannels = channel.getMinValue();
 			}
 		}
-		//CommandExecutor.getInstance().execute(new LoadDataCommand(channels, null));
 		lastClickedY = Integer.MIN_VALUE;
 	}
 
@@ -345,26 +344,10 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public synchronized void updateData() {
 
 		int width = graphAreaPanel.getWidth();// - graphAreaPanel.getInsets().left -
+		
 		// graphAreaPanel.getInsets().right;
 		logger.debug("Updating data " + this + "Width = " + width);
 		graphs = new ArrayList<PlotData>();
-		
-		/**
-		System.out.println();
-		System.out.println("== ChannelView updateData() Take a peak:");
-				for (PlotDataProvider channel: plotDataProviders) {
-		            System.out.format("   [PDP: %s] [nsegs=%d] [isLoadingStarted=%s] [isLoaded=%s]\n",
-		                channel.toString(), channel.getSegmentCount(), channel.isLoadingStarted(), channel.isLoaded() );
-		            List<Segment> segs = channel.getRawData();
-		            //System.out.format("     [rdp#][chanSerial#]:Segment\n");
-		            for (Segment seg : segs) {
-		                System.out.format("         [%d][%d]:%s [Source:%s]\n", seg.getSourceSerialNumber(), seg.getChannelSerialNumber(),
-		                    seg.toString(), seg.getDataSource().getName() );
-		            }
-		        }
-		System.out.println("== ChannelView updateData() Done");
-		System.out.println();
-		**/
 
 		for (PlotDataProvider channel: plotDataProviders) {
 			// lg.debug("processing channel: " + channel);
@@ -631,14 +614,13 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			// Graph's number, used to separate graphs then overlay mode is activated
 			int graphNum = 0;
 			Color segmentColor = null;
-			if (graphPanel.initialPaint) {	
+			if (graphPanel.initialPaint) {
 				System.out.print("...");
 			}	
+
 			for (PlotData data: graphs) {
 				int i = 0;
-				//logger.debug("Drawing PlotData " + i + ", " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
-				//System.out.println("Drawing PlotData " + data.getLabel() + ": max " + data.getMaxValue() + ", min " + data.getMinValue() + ", mean " + data.getMeanValue());
-				
+
 				// strokes for previous pixel
 				List<Stroke> yprev = new ArrayList<Stroke>();
 				for (PlotDataPoint[] points: data.getPixels()) {
