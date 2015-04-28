@@ -83,7 +83,7 @@ public class XMAXGraphPanel extends GraphPanel {
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		// lg.debug("XMAXGraphPanel.mouseReleased");
+		// lg.debug("XMAXGraphPanel.mouseReleased"); 
 		setSelectionX(Long.MAX_VALUE, Long.MIN_VALUE);
 		setSelectionY(Double.NaN, Double.NaN);
 		super.mouseReleased(e);

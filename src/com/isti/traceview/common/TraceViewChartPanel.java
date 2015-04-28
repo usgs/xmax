@@ -1124,7 +1124,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		//System.out.println(new Date() + " paintComponent entered");
 		if (this.chart == null) {
 			return;
 		}
@@ -1167,10 +1166,8 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 
 		// are we using the chart buffer?
 		if (this.useBuffer) {
-			//System.out.println(new Date() + " we use buffer");
 			// do we need to resize the buffer?
 			if ((this.chartBuffer == null) || (this.chartBufferWidth != available.getWidth()) || (this.chartBufferHeight != available.getHeight())) {
-				//System.out.println(new Date() + " we need resize buffer");
 				this.chartBufferWidth = (int) available.getWidth();
 				this.chartBufferHeight = (int) available.getHeight();
 				this.chartBuffer = new BufferedImage(this.chartBufferWidth, this.chartBufferHeight, BufferedImage.TYPE_INT_RGB);
@@ -1184,21 +1181,16 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 
 			// do we need to redraw the buffer?
 			if (this.refreshBuffer) {
-				//System.out.println(new Date() + " we need redraw buffer");
 				Rectangle2D bufferArea = new Rectangle2D.Double(0, 0, this.chartBufferWidth, this.chartBufferHeight);
-				//System.out.println(new Date() + " bufferArea ready");
 				Graphics2D bufferG2 = (Graphics2D) this.chartBuffer.getGraphics();
-				//System.out.println(new Date() + " bufferG2 ready");
 				if (scale) {
 					AffineTransform saved = bufferG2.getTransform();
 					AffineTransform st = AffineTransform.getScaleInstance(this.scaleX, this.scaleY);
 					bufferG2.transform(st);
 					this.chart.draw(bufferG2, chartArea, this.anchor, this.info);
 					bufferG2.setTransform(saved);
-					//System.out.println(new Date() + " Scaled, buffer ready");
 				} else {
 					this.chart.draw(bufferG2, bufferArea, this.anchor, this.info);
-					//System.out.println(new Date() + " Non-scaled, buffer ready");
 				}
 
 				this.refreshBuffer = false;
@@ -1206,13 +1198,11 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 
 			// zap the buffer onto the panel...
 			g2.drawImage(this.chartBuffer, insets.left, insets.top, this);
-			//System.out.println(new Date() + " buffer drawed");
 
 		}
 
 		// or redrawing the chart every time...
 		else {
-			//System.out.println(new Date() + " we does not use buffer");
 			AffineTransform saved = g2.getTransform();
 			g2.translate(insets.left, insets.top);
 			if (scale) {
@@ -1221,18 +1211,15 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			}
 			this.chart.draw(g2, chartArea, this.anchor, this.info);
 			g2.setTransform(saved);
-			//System.out.println(new Date() + " chart drawed");
 		}
 
 		// Redraw the zoom rectangle (if present)
 		drawZoomRectangle(g2);
 
 		g2.dispose();
-		//System.out.println(new Date() + " zoom rectangle drawed");
 		this.anchor = null;
 		this.verticalTraceLine = null;
 		this.horizontalTraceLine = null;
-		//System.out.println(new Date() + " paintComponent ended");
 	}
 
 	/**
