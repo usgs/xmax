@@ -35,7 +35,6 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 	public void run() {
 		try {
 			super.run();
-			logger.debug("Selection command:" + ti.toString());
 			graphPanel.setTimeRange(ti);
 		} catch (Exception e) {
 			logger.error("Exception:", e);
@@ -46,6 +45,7 @@ public class SelectTimeCommand extends AbstractUndoableCommand {
 		try {
 			super.undo();
 			if (previousRange.getStartTime().getTime() != Long.MAX_VALUE || previousRange.getEndTime().getTime() != Long.MIN_VALUE) {
+				//logger.info("== undo(): Previous range: " + previousRange.toString() + "\n");	
 				graphPanel.setTimeRange(previousRange);
 			}
 		} catch (UndoException e) {

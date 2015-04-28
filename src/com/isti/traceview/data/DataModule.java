@@ -849,11 +849,7 @@ public class DataModule extends Observable {
 											+ "\\." + location + "\\."
 											+ channel + "$")) {
 						String absPath = dir[i].getAbsolutePath();
-						// if (!whereToAdd.contains(absPath)) {
 						whereToAdd.add(absPath);
-						// ! System.out.println("Response file added: " +
-						// dir[i].getAbsolutePath());
-						// }
 					}
 				}
 			}

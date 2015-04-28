@@ -15,9 +15,10 @@ import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.MouseInputListener;
 
+import com.isti.traceview.ExecuteCommand;
 import com.isti.traceview.ICommand;
 import com.isti.traceview.IUndoableCommand;
-import com.isti.traceview.CommandExecutor;
+import com.isti.traceview.CommandHandler;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.commands.OverlayCommand;
@@ -200,7 +201,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	private JMenuItem aboutMenuItem = null;
 
-	private boolean executorBusy = false;
 	private ActionMap actionMap = null;
 	
 	static {
@@ -325,7 +325,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			actionMap.put(action.getValue(Action.NAME), action);
 		}
 		initialize();
-		CommandExecutor.getInstance().addObserver(this);
+		CommandHandler.getInstance().addObserver(this);	
 		addMouseListener(new MouseListener(){
 			public void mouseClicked(MouseEvent e) {
 			}
@@ -549,7 +549,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	public void update(Observable o, Object arg) {
 		logger.debug("updating frame due to request from " + o.getClass().getName());
 		setWaitCursor(false);
-		executorBusy = false;
 	}
 
 	/**
@@ -568,16 +567,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * Sets time range
 	 */
 	public void setTimeRange(TimeInterval ti) {
-		executorBusy = true;
-		CommandExecutor.getInstance().execute(new SelectTimeCommand(graphPanel, ti));
-		// We should to wait while command will be executed for
-		while (executorBusy) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e1) {
-				logger.error("InterruptedException:", e1);
-			}
-		}
+		// Create SelectTimeCommand runnable obj	
+		SelectTimeCommand timeTask = new SelectTimeCommand(graphPanel, ti);
+
+		// Create ExecuteCommand obj for executing runnable
+		ExecuteCommand executor = new ExecuteCommand(timeTask);
+		executor.initialize();
+		executor.start();
+		executor.shutdown();
 	}
 
 	/**
@@ -1435,9 +1432,17 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
-			SaveAllDataCommand saveCommand = new SaveAllDataCommand();
-			CommandExecutor.getInstance().execute(saveCommand);
+			// Create Runnable SaveAllDataCommand obj	
+			SaveAllDataCommand saveAllTask = new SaveAllDataCommand();
+		
+			// Create ExecuteCommand obj for executing Runnable
+			ExecuteCommand executor = new ExecuteCommand(saveAllTask);
+			executor.initialize();
+			executor.start();
+			executor.shutdown();
+
 			statusBar.setMessage("");
+			setWaitCursor(false);	
 		}
 	}
 
@@ -1531,7 +1536,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			try {
 				setWaitCursor(true);
-				CommandExecutor.getInstance().execute(new OverlayCommand(graphPanel));
+				// Create Runnable OverlayCommand obj	
+				OverlayCommand overlayTask = new OverlayCommand(graphPanel);
+
+				// Create ExecuteCommand obj for executing Runnable
+				ExecuteCommand executor = new ExecuteCommand(overlayTask);
+				executor.initialize();
+				executor.start();
+				executor.shutdown();
 				overlayMenuCheckBox.setState(graphPanel.getOverlayState());
 			} finally {
 				setWaitCursor(false);
@@ -1555,7 +1567,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			try {
 				setWaitCursor(true);
-				CommandExecutor.getInstance().execute(new SelectCommand(graphPanel));
+				// Create SelectCommand obj	
+				SelectCommand selectTask = new SelectCommand(graphPanel);	
+
+				// Create executor obj for Runnable
+				ExecuteCommand executor = new ExecuteCommand(selectTask);
+				executor.initialize();
+				executor.start();
+				executor.shutdown();
+
 				selectMenuCheckBox.setState(graphPanel.getSelectState());
 			} finally {
 				setWaitCursor(false);
@@ -1579,11 +1599,20 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale auto")) {
 				setWaitCursor(true);
-				CommandExecutor.getInstance().execute(new SetScaleModeCommand(graphPanel, new ScaleModeAuto()));
+				// Create Runnable SetScaleModeCommand obj	
+				SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeAuto());	
+				
+				// Create ExecuteCommand obj for executing Runnable
+				ExecuteCommand executor = new ExecuteCommand(scaleTask);
+				executor.initialize();
+				executor.start();
+				executor.shutdown();
+
 				scaleModeAutoMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
 				offsetMenuCheckBox.setState(false);
 			}
+			setWaitCursor(false);	
 			statusBar.setMessage("");
 		}
 	}
@@ -1603,11 +1632,20 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale com")) {
 				setWaitCursor(true);
-				CommandExecutor.getInstance().execute(new SetScaleModeCommand(graphPanel, new ScaleModeCom()));
+				// Create SetScaleModeCommand runnable obj	
+				SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeCom());
+
+				// Create executor obj for Runnable
+				ExecuteCommand executor = new ExecuteCommand(scaleTask);
+				executor.initialize();
+				executor.start();
+				executor.shutdown();
+
 				scaleModeComMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
 				offsetMenuCheckBox.setState(false);
 			}
+			setWaitCursor(false);	
 			statusBar.setMessage("");
 		}
 	}
@@ -1627,11 +1665,20 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale Xhair")) {
 				setWaitCursor(true);
-				CommandExecutor.getInstance().execute(new SetScaleModeCommand(graphPanel, new ScaleModeXhair()));
+				// Create SetScaleModeCommand obj	
+				SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeXhair());	
+
+				// Create ExecuteCommand obj for executing Runnable
+				ExecuteCommand executor = new ExecuteCommand(scaleTask);
+				executor.initialize();
+				executor.start();
+				executor.shutdown();
+				
 				scaleModeXHairMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
 				offsetMenuCheckBox.setState(false);
 			}
+			setWaitCursor(false);	
 			statusBar.setMessage("");
 		}
 	}
@@ -1860,7 +1907,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			LinkedList<ICommand> history = CommandExecutor.getInstance().getCommandHistory();
+			LinkedList<ICommand> history = CommandHandler.getInstance().getCommandHistory();
 			ICommand command = history.getLast();
 			if (command instanceof IUndoableCommand) {
 				IUndoableCommand undCommand = (IUndoableCommand) command;
@@ -2069,7 +2116,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					graphPanel.setRotation(null);
 					rotateMenuCheckBox.setState(false);
 				} else {
-					CommandExecutor.getInstance().execute(new RotateCommand(graphPanel, new Rotation(XMAX.getFrame())));
+					// Create Runnable RotateCommand obj	
+					RotateCommand rotateTask = new RotateCommand(graphPanel, new Rotation(XMAX.getFrame()));
+
+					// Create ExecuteCommand obj for executing Runnable
+					ExecuteCommand executor = new ExecuteCommand(rotateTask);
+					executor.initialize();
+					executor.start();
+					executor.shutdown();
 					rotateMenuCheckBox.setState(graphPanel.getRotation() != null);
 				}
 			} finally {
@@ -2541,7 +2595,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			TimeInterval ti = LimXDialog.showDialog(XMAXframe.getInstance(), graphPanel.getTimeRange());
 			if (ti != null) {
 				setWaitCursor(true);
-				CommandExecutor.getInstance().execute(new SelectTimeCommand(graphPanel, ti));
+				// Create Runnable SelectTimeCommand obj
+				SelectTimeCommand timeTask = new SelectTimeCommand(graphPanel, ti);
+
+				// Create ExecuteCommand obj for executing Runnable
+				ExecuteCommand executor = new ExecuteCommand(timeTask);
+				executor.initialize();
+				executor.start();
+				executor.shutdown();
+				setWaitCursor(false);	
 			} else {
 				getGraphPanel().forceRepaint();
 			}
@@ -2565,11 +2627,27 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			LimYDialog dialog = new LimYDialog(XMAXframe.getInstance(), new Double(graphPanel.getManualValueMin()).intValue(), new Double(graphPanel.getManualValueMax()).intValue());
 			if (dialog.min != Integer.MAX_VALUE && dialog.max != Integer.MIN_VALUE) {
 				if (!(graphPanel.getScaleMode() instanceof ScaleModeXhair)) {
-					CommandExecutor.getInstance().execute(new SetScaleModeCommand(graphPanel, new ScaleModeXhair()));
+					// Create Runnable SetScaleModeCommand obj
+					SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeXhair());
+
+					// Create ExecuteCommand obj for executing Runnable
+					ExecuteCommand executor1 = new ExecuteCommand(scaleTask);
+					executor1.initialize();
+					executor1.start();
+					executor1.shutdown();
+					
 					scaleModeXHairMenuRadioBt.setSelected(true);
 				}
 				setWaitCursor(true);
-				CommandExecutor.getInstance().execute(new SelectValueCommand(graphPanel, dialog.min, dialog.max));
+				// Create SelectValueCommand obj
+				SelectValueCommand valueTask = new SelectValueCommand(graphPanel, dialog.min, dialog.max);
+
+				// Create ExecuteCommand obj for Runnable
+				ExecuteCommand executor2 = new ExecuteCommand(valueTask);
+				executor2.initialize();
+				executor2.start();
+				executor2.shutdown();
+				setWaitCursor(false);	
 			} else {
 				getGraphPanel().forceRepaint();
 			}

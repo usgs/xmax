@@ -318,7 +318,8 @@ public class TimeInterval {
 		long start = Math.min(ti1.getStart(), ti2.getStart());
 		long end = Math.max(ti1.getEnd(), ti2.getEnd());
 		if (end > start) {
-			return new TimeInterval(new Date(start), new Date(end));
+			TimeInterval TI = new TimeInterval(new Date(start), new Date(end));
+			return TI;
 		} else {
 			return null;
 		}
