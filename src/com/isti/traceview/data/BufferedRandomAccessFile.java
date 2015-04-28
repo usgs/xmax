@@ -285,7 +285,6 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 		// use only if minLength is set (by N3iosp)
 		if (!readonly && (minLength != 0) && (minLength != file.length())) {
 			file.setLength(minLength);
-			// System.out.println("TRUNCATE!!! minlength="+minLength);
 		}
 
 		// Close the underlying file object.
@@ -423,13 +422,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 			file.seek(bufferStart);
 			file.write(buffer, 0, dataSize);
 
-			// System.out.println("--flush at "+bufferStart+" dataSize= "+dataSize+ " filePosition=
-			// "+filePosition);
 			bufferModified = false;
 		}
 		// debug
 		// FileChannel fc = file.getChannel();
-		// System.out.println("flush size = "+fc.size());
 	}
 
 	/**
@@ -577,7 +573,6 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 			System.out.println(" read_ " + location + " = " + len + " bytes at " + pos + "; block = " + (pos / buffer.length));
 
 		if (extendMode && (n < len)) {
-			// System.out.println(" read_ = "+len+" at "+pos+"; got = "+n);
 			n = len;
 		}
 		return n;
@@ -780,14 +775,11 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 
 				dataSize = (int) (dataEnd - bufferStart);
 				filePosition += copyLength;
-
-				// /System.out.println("--copy to buffer "+copyLength+" "+len);
 			}
 
 			// If there is any data remaining, move to the new position and copy to
 			// the new buffer.
 			if (copyLength < len) {
-				// System.out.println("--need more "+copyLength+" "+len+" space= "+spaceInBuffer);
 				seek(filePosition); // triggers a flush
 				System.arraycopy(b, off + copyLength, buffer,
 
@@ -813,7 +805,6 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 			file.seek(filePosition); // moved per Steve Cerruti; Jan 14, 2005
 			file.write(b, off, len);
 
-			// System.out.println("--write at "+filePosition+" "+len);
 			filePosition += len;
 		}
 	}
