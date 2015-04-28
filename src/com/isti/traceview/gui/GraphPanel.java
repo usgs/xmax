@@ -17,7 +17,6 @@ import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
-//import com.isti.traceview.CommandExecutor;
 import com.isti.traceview.CommandHandler;
 import com.isti.traceview.ITimeRangeAdapter;
 import com.isti.traceview.TraceView;
@@ -149,16 +148,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * Flag if we need to force repaint data, in spite of mouseRepaint value.
 	 */
 	private boolean forceRepaint = false;
-	
-	/**
-	 * Flag if we need to set the new time range when zooming
-	 */
-	private static boolean isTimeRangeSet = false;
-
-	/**
-	 * Flag if we enter SelectTimeCommand runnable class
-	 */
-	private static boolean isSelectTimeCommand = false;
 
 	/**
 	 * Flag if we need to initialize painting (unchanged data loads once)
@@ -381,9 +370,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	public void setTimeRange(TimeInterval ti) {
 		//logger.debug("timerange: " + timeRange);
-		if (isSelectTimeCommand) {		
-			System.out.println("GraphPanel.setTimeRange(): " + ti);
-		}	
 		this.timeRange = ti;
 		if (timeRangeAdapter != null && TraceView.getFrame() != null) {
 			timeRangeAdapter.setTimeRange(ti);
@@ -393,12 +379,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		southPanel.getInfoPanel().update(ti);
 		observable.setChanged();
 		observable.notifyObservers(ti);
-		if (isTimeRangeSet) {	
-			System.out.println("GraphPanel.getIsTimeRangeSet = " + getIsTimeRangeSet());	
-			System.out.println("GraphPanel.setTimeRange() --> forceRepaint()");
-		}	
-		forceRepaint();	// why is this force repainting?
-				// might be overwriting new TI
+		forceRepaint();	
 	}
 
 	/**
@@ -452,10 +433,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *            right edge position
 	 */
 	public void setSelectionX(long begin, long end) {
-		/*	
-		System.out.println("GraphPanel.setSelectionX[ " + begin + 
-				", " + end + " ]");
-		*/	
 		selectedAreaXbegin = begin;
 		selectedAreaXend = end;
 	}
@@ -469,10 +446,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *            bottom edge position
 	 */
 	public void setSelectionY(double begin, double end) {
-		/*	
-		System.out.println("GraphPanel.setSelectionY[ " + begin + 
-				", " + end + " ]");
-		*/	
 		selectedAreaYbegin = begin;
 		selectedAreaYend = end;
 	}
@@ -503,44 +476,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	public void removeTimeRangeAdapter() {
 		timeRangeAdapter = null;
-	}
-
-	/**
-	 * Getter of the property <tt>isTimeRangeSet</tt>
-	 *
-	 * @return Boolean for setTimeRange (for mouseRelease zooming) 
-	 */
-	public boolean getIsTimeRangeSet() {
-		return isTimeRangeSet;	
-	}
-
-	/**
-	 * Setter of the property <tt>isTimeRangeSet</tt>
-	 *
-	 * @param timeRangeSet
-	 * 		Boolean for setting range time, for zooming
-	 */
-	public void setIsTimeRangeSet(boolean timeRangeSet) {
-		isTimeRangeSet = timeRangeSet;	
-	}
-	
-	/**
-	 * Getter of the property <tt>isSelectTimeCommand</tt>
-	 * 
-	 * @return Boolean for SelectTimeCommand (for time range runnable)
-	 */
-	public boolean getIsSelectTimeCommand() {
-		return isSelectTimeCommand;
-	}
-	
-	/**
-	 * Setter of the property <tt>isSelectTimeCommand</tt>
-	 * 
-	 * @param selectTimeCommand
-	 * 		Boolean for setting SelectTimeCommand
-	 */
-	public void setIsSelectTimeCommand(boolean selectTimeCommand) {
-		isSelectTimeCommand = selectTimeCommand;
 	}
 
 	/**
@@ -676,7 +611,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		synchronized (TraceView.getDataModule().getAllChannels()) {
 			if (channels != null) {
 				clearChannelShowSet();
-				//CommandExecutor.getInstance().clearCommandHistory(); // or do channels load as a command?
 				CommandHandler.getInstance().clearCommandHistory();
 				
 				// This is the main method for all station channels for one
@@ -755,7 +689,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					observable.setChanged();
 					observable.notifyObservers("ROT OFF");
 				}
-				//repaint();	// why repaint when adding channels to Graph?
+				repaint();	// why repaint when adding channels to Graph?
 			}
 			observable.setChanged();
 			observable.notifyObservers(channels);
@@ -776,7 +710,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					setTimeRange(TimeInterval.getAggregate(timeRange, cv.getLoadedTimeRange()));
 				}
 			}
-			//repaint();	// why repaint when adding channels to set?
+			repaint();	// why repaint when adding channels to set?
 			observable.setChanged();
 			observable.notifyObservers(channels);
 		}
@@ -1357,20 +1291,12 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				// need to create a boolean for mouseDragging (i.e. zooming)
 				// mouse clicked, pressed, released, dragged
 				if (initialPaint || forceRepaint) {
-					/*	
-					if (initialPaint) {}	// production code	
-					if (initialPaint || mouseDragged) {	
+					if (initialPaint) {
 						System.out.print("Pixelizing channel data...");
 					}
-					*/	
-					int count = 0;	
-					System.out.format("== ForceRepaint(): components.size = [ %d ]\n\n", 
-							drawAreaPanel.getComponents().length);
 						
 					for (Component component: drawAreaPanel.getComponents()) {
 						ChannelView view = (ChannelView) component;
-						System.out.println("Channel Index = [ " + count + 
-							" ]");
 
 						if (view.getHeight() == 0 || view.getWidth() == 0) {
 							// Ugly hack to avoid lack of screen redraw sometimes
@@ -1380,30 +1306,22 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 								comp.doLayout();
 							}
 						}
-						/*	
-						if (initialPaint) {}	// production code	
-						if (initialPaint || mouseDragged) {	
+						if (initialPaint) {
 							System.out.print("...");
 						}
-						*/	
-						view.updateData();
-						count++;	
+						view.updateData();	
 					}
-					//if (initialPaint) {}	// production	
-					if (initialPaint || mouseDragged) {	
+					if (initialPaint) {
 						System.out.print("\n");
 					}
 				}
-				//if (intialPaint) {}	// production	
-				if (initialPaint || mouseDragged) {
-					//System.out.print("Drawing channel data...");	//production
-					System.out.print("Drawing channel data...\n");	
+				if (initialPaint) {
+					System.out.print("Drawing channel data...");
 				}
 				super.paint(g);	// calls ChannelView.paint(Graphics g)
 				long endl = System.nanoTime() - startl;
 				double end = endl * Math.pow(10, -9);
-				//if (initialPaint) {}	// production	
-				if (initialPaint || mouseDragged) {	
+				if (initialPaint) {
 					System.out.println("\nPixelizing/painting duration = " + end + " sec");
 				}
 
@@ -1423,13 +1341,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaXend = selectedAreaXend;
 				previousSelectedAreaYbegin = selectedAreaYbegin;
 				previousSelectedAreaYend = selectedAreaYend;
-				//if (initialPaint) {}	// production	
-				if (initialPaint || mouseDragged) {	
+				if (initialPaint) {
 					System.out.print("\n");	// skip to next line for next repaint() readout
 				}
 				initialPaint = false;
 				mouseDragged = false;	
-				isTimeRangeSet = false;
 				forceRepaint = false;
 			} else {	// Regular MouseMovements in and between ChannelView and GraphPanel panels
 				g.setXORMode(selectionColor);
@@ -1464,7 +1380,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaYend = selectedAreaYend;
 				forceRepaint = false;
 				mouseRepaint = false;
-				isTimeRangeSet = false;
 				cvMouseMoved = false;	
 			}
 			paintNow = false;
@@ -1673,16 +1588,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		if (mouseSelectionEnabled) {
 			button = MouseEvent.NOBUTTON;
 			if (mouseDragged) {	// forceRepaint() when zooming
-				System.out.println("GraphPanel.mouseReleased(" + e.getX() + 
-					", " + e.getY() + "): isTimeRangeSet = " + 
-					isTimeRangeSet);
-				//mouseDragged = false;	
-				//if (isTimeRangeSet) {
-					mouseRepaint = false;	
-					System.out.println("GraphPanel.mouseReleased(" + e.getX() + 
-						", " + e.getY() + ") --> forceRepaint()\n");	
-					forceRepaint();	// forceRepaint=true, repaint()
-				//}
+				mouseRepaint = false;	
+				forceRepaint();	// forceRepaint=true, repaint()
 			} else {	// mouse clicked => erase cursor
 				forceRepaint = false;	
 				mouseRepaint = false;	
@@ -1806,12 +1713,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
             //final long FOUR_WEEKS = 28L*86400000;
             //final long EIGHT_WEEKS= 56L*86400000;
            
-            boolean isSelectTimeCommand = getIsSelectTimeCommand();
-            if (isSelectTimeCommand) {	
-            	setIsTimeRangeSet(true);
-            	System.out.println("AxisPanel.setTimeRange(): " + ti);
-            	setIsSelectTimeCommand(false);
-            }
 			boolean needwait = false;
 			if (axis.getMinimumDate().getTime() == 0 && axis.getMaximumDate().getTime() == 1) {
 				needwait = true;

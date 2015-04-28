@@ -3,7 +3,6 @@ package com.isti.traceview;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -37,16 +36,11 @@ public class CommandHandler {
 	 * Intializer for Runnable class
 	 */
 	public void beforeExecute(Runnable r) {
-		System.out.println("CommandHandler.beforeExecute():");
-
-		System.out.println("CommandHandler: Runnable = " + r);
 		if (r instanceof IUndoableCommand) {
 			IUndoableCommand uc = (IUndoableCommand) r;
 			if (uc.canUndo()) {
-				System.out.println("	history.add[ " + uc.toString() + " ]");
 				history.add(uc);
 			}
-			System.out.println();	
 		}
 	}
 
@@ -54,9 +48,6 @@ public class CommandHandler {
 	 * Alert observers after execution
 	 */
 	public void afterExecute() {
-		System.out.println("CommandHandler.afterExecute():");
-		System.out.println("	observable.setChanged()");
-		System.out.println("	notifyObservers()\n");
 		observable.setChanged();
 		notifyObservers();
 	}
@@ -75,20 +66,7 @@ public class CommandHandler {
 	 */
 	public static CommandHandler getInstance() {
 		if (instance == null) {
-			System.out.println("CommandHandler.getInstance: instance = NULL --> CommandHandler(CONSTRUCTOR)\n");
 			instance = new CommandHandler();
-		} else {
-			System.out.println("CommandExecutor.getInstance: instance = " + 
-				instance);
-			System.out.println("CommandExecutor.getInstance: history.size() = " + 
-				history.size());
-			if (history.size() >= 1) {
-				Iterator<ICommand> iter = history.listIterator();
-				System.out.println("CommandExecutor.getInstance: history:");
-				while (iter.hasNext())
-					System.out.println("	" + iter.next());
-			}
-			System.out.println();
 		}
 		return instance;
 	}

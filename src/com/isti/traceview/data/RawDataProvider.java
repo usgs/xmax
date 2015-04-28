@@ -100,10 +100,8 @@ public class RawDataProvider extends Channel {
 			int sampleCount = segment.getSampleCount();	
 			if (!segment.getIsLoaded()) {
 				logger.debug("== Load Segment:" + segment.toString());
-				System.out.println(Thread.currentThread().getName()+" Start. Loading segment["+index+"]: " + segment.toString() + ", SampleCount = " + sampleCount); 
 				segment.load();
 				segment.setIsLoaded(true);
-				System.out.println(Thread.currentThread().getName()+" End. Segment["+index+"]: " + segment.toString() + ", SampleCount = " + sampleCount);
 			} else {
 				logger.debug("== Segment is ALREADY loaded:" + segment.toString());
                 //System.out.format("== RawDataProvider.loadData(): Segment is Already Loaded:%s\n", seg.toString() );
@@ -436,7 +434,6 @@ public class RawDataProvider extends Channel {
 	 */
 	@SuppressWarnings("unchecked")
 	public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter) throws IOException {
-		System.out.println("== Segment dumpMseed ENTER");
 		for (Segment segment: getRawData(ti)) {
 			int[] data = segment.getData(ti).data;
 			if (filter != null) {
