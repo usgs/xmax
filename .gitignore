@@ -6,3 +6,5 @@ logs/
 **/**/classes
 src/META-INF/MANIFEST.MF
 src/META-INF/
+/bin/
+doc/
