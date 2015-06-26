@@ -170,4 +170,5 @@
 	<jar destfile="${project.archive}" manifest="${manifest.file}" basedir="${build.root}">
 	</jar>
     </target>
+	<import file="./javadoc.xml"/>
 </project>
