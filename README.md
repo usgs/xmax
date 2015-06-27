@@ -70,6 +70,7 @@ xmax
     ant compile			-> compile java src/ code to build/ directory
     ant libraries		-> add lib/ and plugins/ to build/ directory
     ant jar				-> create distribution xmax.jar (default target)
+    ant javadoc			-> create javadoc web code
 ```
 
 ###Usage
