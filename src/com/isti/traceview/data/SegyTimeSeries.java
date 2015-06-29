@@ -300,7 +300,8 @@ public class SegyTimeSeries { /* Offset Description */
 	}
 
 	/**
-	 * reads the header from the given stream.
+	 * Reads the header from the given stream.
+	 * @param dis the BufferedRandomAccessFile to skip over the header of.
 	 */
 	protected void skipHeader(BufferedRandomAccessFile dis) throws IOException {
 		// skip forware 240 bytes.
