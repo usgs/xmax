@@ -284,7 +284,9 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @param out
 	 *            stream to serialize this object
 	 * @see Serializable
-	 * @throws IOException
+	 * @throws IOException from ObjectInputStream.defaultReadObject()
+	 * 
+	 * @deprecated This method does not appear to be used by anything.
 	 */
 	private void writeObject(ObjectOutputStream out) throws IOException {
         //logger.debug("== ENTER: Serializing " + toString());
@@ -298,7 +300,10 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @param in
 	 *            stream to deserialize object
 	 * @see Serializable
-	 * @throws IOException
+	 * @throws IOException from ObjectInputStream.defaultReadObject()
+	 * @throws ClassNotFoundException from ObjectInputStream.defaultReadObject()
+	 * 
+	 * @deprecated This method does not appear to be used by anything.
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();

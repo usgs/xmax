@@ -149,7 +149,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	/**
 	 * Sets mouse adapter defines mouse action inside this ChannelView
 	 * 
-	 * @param ma
+	 * @param ma the new mouse adapter
 	 */
 	public void setMouseAdapter(IMouseAdapter ma) {
 		mouseAdapter = ma;
@@ -220,7 +220,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	/**
 	 * Sets graph panel contains this ChannelView
 	 * 
-	 * @param gp
+	 * @param gp The new graph panel
 	 */
 	public void setGraphPanel(GraphPanel gp) {
 		this.graphPanel = gp;

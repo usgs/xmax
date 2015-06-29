@@ -20,7 +20,6 @@
 /**
 *
 * @author     D. Ketchum mar 2000
-* @version
 */
 package gov.usgs.anss.util;
 

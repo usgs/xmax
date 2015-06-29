@@ -80,7 +80,7 @@ public class Configuration extends Observable {
 	public enum ChannelSortType {
 		/**
 		 * Trace name is what you see on a plot, i.e network/station/location/channel. See
-		 * {@link Channel.NameComparator} for details
+		 * {@link com.isti.traceview.data.NameComparator} for details
 		 */
 		TRACENAME,
 
@@ -90,19 +90,19 @@ public class Configuration extends Observable {
 		NETWORK_STATION_SAMPLERATE,
 
 		/**
-		 * Really Channel - network - station - location order See {@link Channel.ChannelComparator}
+		 * Really Channel - network - station - location order See {@link com.isti.traceview.data.ChannelComparator}
 		 * for details
 		 */
 		CHANNEL,
 
 		/**
 		 * Channel type is last character of channel name. Channel type - channel - network -
-		 * station order. See {@link Channel.ChannelTypeComparator} for details
+		 * station order. See {@link com.isti.traceview.data.ChannelTypeComparator} for details
 		 */
 		CHANNEL_TYPE,
 
 		/**
-		 * Sorting by channel's events See {@link Channel.EventComparator} for details
+		 * Sorting by channel's events See {@link com.isti.traceview.data.EventComparator} for details
 		 */
 		EVENT
 	}

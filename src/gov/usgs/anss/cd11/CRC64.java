@@ -60,7 +60,7 @@ public class CRC64 {
 	 *            The byte array to compute a CRC for
 	 * @param len
 	 *            The length of the array in bytes.
-	 * @return
+	 * @return the cyclic redundancy check after computation.
 	 */
 	public static long compute(byte[] b, int len) {
 		if (tvec == null)

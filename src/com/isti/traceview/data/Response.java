@@ -34,10 +34,10 @@ public class Response {
 
 	/**
 	 * 
-	 * @param network
-	 * @param station
-	 * @param location
-	 * @param channel
+	 * @param network network code
+	 * @param station station code
+	 * @param location location code
+	 * @param channel channel code
 	 * @param content String with content of evalresp response file
 	 * @param fileName name of file from which response was loaded
 	 */
@@ -83,16 +83,25 @@ public class Response {
 	
 	/**
 	 * Generate response as complex spectra
-	 * @param date Time stamp to search response
-	 * @param minFreqValue minimum requested frequency
-	 * @param maxFreqValue maximum requested frequency
-	 * @param len length of generated response array
+	 * 
+	 * @param date
+	 *            Time stamp to search response
+	 * @param minFreqValue
+	 *            minimum requested frequency
+	 * @param maxFreqValue
+	 *            maximum requested frequency
+	 * @param len
+	 *            length of generated response array
 	 * @return response as array of complex numbers
 	 * @throws TraceViewException
+	 *             if thrown in
+	 *             {@link com.isti.traceview.processing.RunEvalResp#generateResponse(double, double, int, Date, Reader)}
 	 */
-	public Cmplx[] getResp(Date date, double minFreqValue, double maxFreqValue, int len) throws TraceViewException {
+	public Cmplx[] getResp(Date date, double minFreqValue, double maxFreqValue,
+			int len) throws TraceViewException {
 		RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
-		return evalResp.generateResponse(minFreqValue, maxFreqValue, len, date, new StringReader(getContent()));
+		return evalResp.generateResponse(minFreqValue, maxFreqValue, len, date,
+				new StringReader(getContent()));
 	}
 
 	public double[] getRespAmp(Date date, double minFreqValue, double maxFreqValue, int len) throws TraceViewException {

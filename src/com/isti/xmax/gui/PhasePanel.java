@@ -255,7 +255,7 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 		/**
 		 * Selects the specified array of objects from the list.
 		 * 
-		 * @param anObject[]
+		 * @param objects
 		 *            the array if objects to select
 		 * @param shouldScroll
 		 *            {@code true} if the list should scroll to display the selected object, if one
