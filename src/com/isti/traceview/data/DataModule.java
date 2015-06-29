@@ -592,8 +592,10 @@ public class DataModule extends Observable {
 	}
 
 	/**
-	 * @param ws
+	 * @param ws an unused parameter probably a window state?
 	 * @return flag if we have previous window (if no, this one is the first)
+	 * 
+	 * @deprecated This method appears to not be used by anything.
 	 */
 	public boolean hasPreviousChannelSet(int ws) {
 		return markerPosition > 1;

@@ -383,10 +383,6 @@ public class IstiUtilsMath {
 	 * 
 	 * @param trace
 	 *            the trace array.
-	 * @param numSamples
-	 *            the number of samples.
-	 * @param sampRate
-	 *            the sample rate.
 	 * @param verboseDebug
 	 *            true for verbose debug messages
 	 * @return the noise spectra.
@@ -429,8 +425,6 @@ public class IstiUtilsMath {
 	 * 
 	 * @param indata
 	 *            the input data, count of points must be power of 2
-	 * @param n
-	 *            the size of the data.
 	 * @return the FFT output.
 	 */
 
@@ -438,7 +432,7 @@ public class IstiUtilsMath {
 		int n = indata.length;
 		DoubleFFT_1D fft = new DoubleFFT_1D(n);
 		fft.realForward(indata);
-		Cmplx[] ret = null;
+		Cmplx[] ret = null;	
 		int l = 0;
 		if(n%2==0){
 			l = n/2;

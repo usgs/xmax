@@ -15,7 +15,6 @@ public interface IOffsetState {
 	
 	/**
 	 * increase count of steps. Resulting segments offset will be shift*step.
-	 * @return
 	 */
 	public void increaseStep();
 

@@ -265,7 +265,9 @@ public class RawDataProvider extends Channel {
 	 * Load data into this data provider from data sources
 	 * 
 	 * NOTE: Removed multithreading due to hardware constraints
-	 * @param ti
+	 * TODO: Remove old multithreading code and clean this method.
+	 * @param ti The TimeInterval to load
+	 *
 	 */
 	public void loadData(TimeInterval ti) {
 /*        // Setup pool of workers to load data segments for current channel
@@ -330,13 +332,22 @@ public class RawDataProvider extends Channel {
 	}
 
 	/**
+	 * This method appears to restrict the segment to ending before the passed
+	 * Date and starting after the passed Date. Further inspection is needed to
+	 * determine if this is a bug.
+	 * 
 	 * @param date
-	 * @return data source contains data on this time
+	 *            the Date to get data
+	 * @return data source contains data on this timel
+	 * 
+	 * @deprecated This method appears to not be used by anything.
 	 */
 	public ISource getSource(Date date) {
 		ISource ret = null;
-		for (SegmentCache sc: rawData) {
-			if ((sc.getSegment().getEndTime().getTime() <= date.getTime()) && (sc.getSegment().getStartTime().getTime() >= date.getTime())) {
+		for (SegmentCache sc : rawData) {
+			if ((sc.getSegment().getEndTime().getTime() <= date.getTime())
+					&& (sc.getSegment().getStartTime().getTime() >= date
+							.getTime())) {
 				return sc.getSegment().getDataSource();
 			}
 		}
@@ -346,7 +357,7 @@ public class RawDataProvider extends Channel {
 	/**
 	 * Sets data stream to serialize this provider
 	 * 
-	 * @param dataStream
+	 * @param dataStream The serialized file set
 	 */
 	public void setDataStream(Object dataStream) {
         logger.debug("== ENTER");
@@ -365,7 +376,7 @@ public class RawDataProvider extends Channel {
 					this.serialFile = (String) dataStream;
                     logger.debug("dataStream == instanceof String --> set serialFile=" + serialFile);
 				}
-                // MTH: This is a little redundant sicne readObject() already wraps the serialFile in a 
+                // MTH: This is a little redundant since readObject() already wraps the serialFile in a 
                 //      BufferedRandomAccessFile before using it to call setDataStream(raf) ...
 				BufferedRandomAccessFile raf = new BufferedRandomAccessFile(serialFile, "rw");
 				raf.order(BufferedRandomAccessFile.BIG_ENDIAN);
@@ -430,7 +441,7 @@ public class RawDataProvider extends Channel {
 	 *            stream to dump
 	 * @param ti
 	 *            content's time interval
-	 * @throws IOException
+	 * @throws IOException if there are problems writing the miniseed dump
 	 */
 	@SuppressWarnings("unchecked")
 	public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter) throws IOException {
@@ -478,7 +489,7 @@ public class RawDataProvider extends Channel {
 	 *            writer to dump
 	 * @param ti
 	 *            content's time interval
-	 * @throws IOException
+	 * @throws IOException if there are problems writing the ascii dump
 	 */
 	public void dumpASCII(FileWriter fw, TimeInterval ti, IFilter filter) throws IOException {
 		int i = 1;
@@ -507,7 +518,7 @@ public class RawDataProvider extends Channel {
 	 *            writer to dump
 	 * @param ti
 	 *            content's time interval
-	 * @throws IOException
+	 * @throws IOException if there are problems writing the XML dump
 	 */
 	public void dumpXML(FileWriter fw, TimeInterval ti, IFilter filter) throws IOException {
 		@SuppressWarnings("unused")	
@@ -543,11 +554,11 @@ public class RawDataProvider extends Channel {
 	/**
 	 * Dumps content of this provider in SAC format
 	 * 
-	 * @param fw
+	 * @param ds
 	 *            writer to dump
 	 * @param ti
 	 *            content's time interval
-	 * @throws IOException
+	 * @throws IOException if there are problems writing the sac dump
 	 */
 	public void dumpSacAscii(DataOutputStream ds, TimeInterval ti, IFilter filter) throws IOException, TraceViewException {
 		List<Segment> segments = getRawData(ti);
@@ -636,7 +647,9 @@ public class RawDataProvider extends Channel {
 	/**
 	 * Get name of file to serialize this RawDataProvider in the temporary storage
 	 * 
-	 * @return
+	 * @return the file name with ".SER" appended
+	 * 
+	 * @deprecated This method appears to no be used by anything.
 	 */
 	public String getSerialFileName() {
 		return getName() + ".SER";
@@ -648,7 +661,9 @@ public class RawDataProvider extends Channel {
 	 * @param out
 	 *            stream to serialize this object
 	 * @see Serializable
-	 * @throws IOException
+	 * @throws IOException if thrown in {@link java.io.ObjectOutputStream#defaultWriteObject()}
+	 * 
+	 * @deprecated This method appears to no be used by anything.
 	 */
 	private void writeObject(ObjectOutputStream out) throws IOException {
         logger.debug("== ENTER");
@@ -663,7 +678,10 @@ public class RawDataProvider extends Channel {
 	 * @param in
 	 *            stream to deserialize object
 	 * @see Serializable
-	 * @throws IOException
+	 * @throws IOException if thrown in {@link java.io.ObjectInputStream#defaultReadObject()}
+	 * @throws ClassNotFoundException if thrown in {@link java.io.ObjectInputStream#defaultReadObject()}
+	 * 
+	 * @deprecated This method appears to no be used by anything.
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		logger.debug("== Deserializing RawDataProvider" + toString());
@@ -699,9 +717,9 @@ public class RawDataProvider extends Channel {
 		/**
 		 * Setter for raw data
 		 * 
-		 * @param segment
+		 * @param segment The new initial data
 		 */
-		@SuppressWarnings("unused")	
+		@SuppressWarnings("unused")	//Why is this here?
 		public void setData(Segment segment) {
 			initialData = segment;
 			filterCache.clear();
@@ -720,7 +738,7 @@ public class RawDataProvider extends Channel {
 		/**
 		 * Getter for segment with raw, unprocessed data
 		 * 
-		 * @return
+		 * @return the initial data
 		 */
 		public Segment getSegment() {
 			return initialData;

@@ -365,7 +365,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	/**
 	 * Time range setter
 	 * 
-	 * @param timeRange
+	 * @param ti
 	 *            time range to set. Graph panel redraws to show this time range.
 	 */
 	public void setTimeRange(TimeInterval ti) {

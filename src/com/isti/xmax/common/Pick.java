@@ -153,7 +153,7 @@ public class Pick extends AbstractEvent implements IEvent {
 
 	/**
 	 * @return name of picks database file for current session
-	 * @throws IOException
+	 * @throws IOException if there is poblems creating a new file
 	 */
 	public File getSessionFile() throws IOException {
 		String fName = sessionLabel.replace(",", "_").replace(":", "");
@@ -290,7 +290,7 @@ public class Pick extends AbstractEvent implements IEvent {
 	/**
 	 * Loads all picks from xml database
 	 * 
-	 * @throws XMAXException
+	 * @throws XMAXException if the Pick directory is not a directory
 	 */
 	public static void loadPicks() throws XMAXException {
 		File[] dir;

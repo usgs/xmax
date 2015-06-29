@@ -44,7 +44,7 @@ public interface ISource extends Serializable {
 	/**
 	 * Parse this data source, i.e scans it, determine which traces placed inside, filling metadata
 	 * how we can find desired trace information using direct access method, see
-	 * {@link ISource#load(long, int)}
+	 * {@link ISource#load(Segment)}
 	 * 
 	 * @param dataModule
 	 *            data module to store metadata
@@ -60,11 +60,14 @@ public interface ISource extends Serializable {
 	/**
 	 * Load trace data from this data source
 	 * 
-	 * @param offset
+	 * These params are inaccurate, but potentially useful
+	 * param offset
 	 *            offset where we starts
-	 * @param sampleCount
+	 * param sampleCount
 	 *            how many points we want to load
-	 * @return array of integers contains the data
+	 * return array of integers contains the data
+	 * 
+	 * @param segment the segment to load offset and samplecounts are most likely used.
 	 */
 	public void load(Segment segment);
 	

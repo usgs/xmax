@@ -139,9 +139,11 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @param filter -
 	 *            filter to apply
 	 * @return generated plot data to draw
-	 * @throws TraceViewException
+	 * @throws TraceViewException if thrown in {@link com.isti.traceview.processing.Rotation#rotate(PlotDataProvider, TimeInterval, int, IFilter, IColorModeState)}
 	 */
-	public PlotData getPlotData(TimeInterval ti, int pointCount, Rotation rotation, IFilter filter, IColorModeState colorMode) throws TraceViewException {
+	public PlotData getPlotData(TimeInterval ti, int pointCount,
+			Rotation rotation, IFilter filter, IColorModeState colorMode)
+			throws TraceViewException {
 		if (rotation == null) {
 			return getPlotData(ti, pointCount, filter, colorMode);
 		} else {
@@ -154,14 +156,14 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * 
 	 * @param ti
 	 *            Requested time interval
-	 * @param pointCount -
+	 * @param pointCount
 	 *            requested count of points
-	 * @param filter -
+	 * @param filter
 	 *            filter to apply
 	 * @return generated plot data to draw
-	 * @throws TraceViewException
 	 */
-	private PlotData getPlotData(TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode) {
+	private PlotData getPlotData(TimeInterval ti, int pointCount,
+			IFilter filter, IColorModeState colorMode) {
 		logger.debug(this + "; " + ti + "(" + ti.getStart() + "-" + ti.getEnd() + ")" + "; pointCount " + pointCount);
 
 		// This list used when we cannot use pointsCache due to too small zoom, calculated every
@@ -527,7 +529,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	/**
 	 * Get set of events which have given start time
 	 * 
-	 * @param time
+	 * @param time the Date to find events near (not Time, bug?)
 	 * @return set of events
 	 */
 	public SortedSet<IEvent> getEvents(Date time) {
@@ -537,7 +539,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	/**
 	 * set of events which lies near given time
 	 * 
-	 * @param time
+	 * @param time the Date to find events near (not Time, bug?)
 	 * @param precision
 	 *            time range to find, in milliseconds
 	 * @return set of events
@@ -583,7 +585,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	/**
 	 * Adds event set to plot data provider
 	 * 
-	 * @param evt
+	 * @param evt the events to add
 	 */
 	public void addEvents(Set<IEvent> evt) {
 		logger.debug("Adding " + evt.size() + " events to plot data provider" + this);
