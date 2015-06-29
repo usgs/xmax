@@ -371,7 +371,7 @@ public class CD11Frame {
    * @param in The InputStream to read from
    * @param par A parent which might get some log I/O
    * @return The number of bytes in the body (payload) of this frame (no headers or trilers), or minus the length if the CRC is bad
-   * @throws java.io.IOException
+   * @throws java.io.IOException if the frame does not parse to a valid frame
    */
 
   public int readFrame(InputStream in, EdgeThread par) throws IOException {
@@ -502,7 +502,7 @@ public class CD11Frame {
    * @param type Not used, it is always TCP
    * @param ip The IP address of this node (the requestor)
    * @param port The port of the requestor
-   * @throws java.net.UnknownHostException
+   * @throws java.net.UnknownHostException if the ip doesn't resolve to an IP address (this might be a bug)
    */
   public void loadConnectionRequest(String station, String type, String ip, int port) throws UnknownHostException {
     // Set the Frame heaer
@@ -533,9 +533,8 @@ public class CD11Frame {
   /** load this output frame with the information for a connection request
    * 
    * @param station the SSSSSCCCLL station name
-    * @throws java.net.UnknownHostException
    */
-  public void loadOptionRequest(String station) throws UnknownHostException {
+  public void loadOptionRequest(String station) {
     // Set the Frame heaer
     outType = TYPE_OPTION_REQUEST;
     // Set the Body of a connection request
