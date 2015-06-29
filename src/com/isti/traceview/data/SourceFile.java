@@ -108,17 +108,15 @@ public abstract class SourceFile implements ISource {
 	
 	/** 
 	 * Class to call data file type task
-	 * 
-	 * @param inputFile
-	 * 		input File to process
-	 * 
-	 * @return ISource data file type
 	 */
 	private static class FileType implements Callable<ISource> {
 		private File file;
 		
 		/**
 		 * Constructor: sets input file
+		 * 
+		 * @param inputFile
+		 *            input File to process
 		 */
 		private FileType(File inputFile) {
 			this.file = inputFile;
@@ -187,9 +185,8 @@ public abstract class SourceFile implements ISource {
 	 * @param files
 	 *            list of files to test
 	 * @return List of data sources
-	 * @throws TraceViewException
 	 */
-	public static List<ISource> getDataFiles(List<File> files) throws TraceViewException {
+	public static List<ISource> getDataFiles(List<File> files){
 		
 		// Setup pool of workers to set data types for each file (using loop)
 		// Submits FileType() tasks to multi-threaded executor
