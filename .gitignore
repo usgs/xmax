@@ -1,10 +1,16 @@
-xmax.jar
-lib/backup/
+#Build files
 build/
-logs/
 *.class
 **/**/classes
-src/META-INF/MANIFEST.MF
+lib/backup/
+logs/
 src/META-INF/
-/bin/
+xmax.jar
+
+#Javadoc build files
 doc/
+
+#Eclipse files
+/bin/
+.classpath
+.project
