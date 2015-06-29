@@ -530,7 +530,7 @@ public class Segment implements Externalizable, Cloneable {
 	/**
 	 * Sets data stream to serialize this segment
 	 * 
-	 * @param dataStream
+	 * @param dataStream the new dataStream
 	 */
 	public void setDataStream(BufferedRandomAccessFile dataStream) {
 		this.dataStream = dataStream;
@@ -546,7 +546,8 @@ public class Segment implements Externalizable, Cloneable {
 	 * @param in
 	 *            stream to deserialize object
 	 * @see Serializable
-	 * @throws IOException
+	 * @throws IOException if thrown while reading ObjectInpu
+	 * @throws ClassNotFoundException if thrown while reading the dataSource object
 	 */
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         logger.debug("== ENTER");
@@ -577,7 +578,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * @param out
 	 *            stream to serialize this object
 	 * @see Serializable
-	 * @throws IOException
+	 * @throws IOException if there are problems writing the serialized file
 	 */
 	public void writeExternal(ObjectOutput out) throws IOException {
     	logger.debug("==  Output the Segment to serial stream:");
@@ -612,7 +613,7 @@ public class Segment implements Externalizable, Cloneable {
 	/**
 	 * Sets gap tolerance to detect gaps between segments. 1.0 is a gap of 2*sample rate
 	 * 
-	 * @param tolerance
+	 * @param tolerance the new gapTolerance
 	 */
 	public static void setGapTolerance(double tolerance) {
 		gapTolerance = tolerance;
@@ -621,9 +622,9 @@ public class Segment implements Externalizable, Cloneable {
 	/**
 	 * detect is there is data break (gap or overlay) between two time points
 	 * 
-	 * @param firstTime
+	 * @param firstEndTime
 	 *            first time point
-	 * @param secondTime
+	 * @param secondStartTime
 	 *            second time point
 	 * @param sampleRate
 	 *            sample rate

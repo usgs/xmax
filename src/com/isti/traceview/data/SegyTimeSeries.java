@@ -139,12 +139,11 @@ public class SegyTimeSeries { /* Offset Description */
 	int min; /* 236 Minimum value in Counts */
 	/* end of segy trace header */
 
+	/**TODO: This member needs documentation and a better name*/
 	public int[] y;
 
 	/**
 	 * Constructor declaration
-	 * 
-	 * @see
 	 */
 	public SegyTimeSeries() {
 		logger.debug("ENTER");
@@ -154,8 +153,9 @@ public class SegyTimeSeries { /* Offset Description */
 	/**
 	 * Method declaration
 	 * 
-	 * @return
-	 * @see
+	 * @return the y member
+	 * 
+	 * @deprecated This is not called by anything
 	 */
 	public int[] getDataArray() {
 		return y;
@@ -164,6 +164,8 @@ public class SegyTimeSeries { /* Offset Description */
 	/**
 	 * returns a vector with the time of the first data point. min and max values, and the data
 	 * array as an int array
+	 * 
+	 * @deprecated This method is not called by anything
 	 */
 	public int[] getDataArray(TimeInterval ti) throws TraceViewException {
 		int retAR[];
@@ -529,10 +531,7 @@ public class SegyTimeSeries { /* Offset Description */
 	}
 
 	/**
-	 * Method declaration
-	 * 
-	 * @return
-	 * @see
+	 * @return a TimeInterval based on start and tot_time
 	 */
 	public TimeInterval getTimeRange() {
 		if (year < 100) {
@@ -553,10 +552,8 @@ public class SegyTimeSeries { /* Offset Description */
 	}
 
 	/**
-	 * Method declaration
-	 * 
-	 * @return
-	 * @see
+	 * @return number of samples either sampleLength or num_samps depending on
+	 *         sampleLength's value
 	 */
 	public int getNumSamples() {
 		int samples;
@@ -622,10 +619,7 @@ public class SegyTimeSeries { /* Offset Description */
 	}
 
 	/**
-	 * Method declaration
-	 * 
-	 * @return
-	 * @see
+	 * @return the network code?
 	 */
 	public String getNetwork() {
 		if (!setOInfo) {
@@ -639,10 +633,7 @@ public class SegyTimeSeries { /* Offset Description */
 	}
 
 	/**
-	 * Method declaration
-	 * 
-	 * @return
-	 * @see
+	 * @return the station code?
 	 */
 	public String getStation() {
 		if (!setOInfo) {
@@ -653,10 +644,7 @@ public class SegyTimeSeries { /* Offset Description */
 	}
 
 	/**
-	 * Method declaration
-	 * 
-	 * @return
-	 * @see
+	 * @return the channel code
 	 */
 	public String getChannel() {
 		if (!setOInfo) {

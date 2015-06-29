@@ -151,8 +151,8 @@ public class Rotation {
 	}
 
 	/**
-	 * Rotate pixelized data
-	 * If we have overlap on the trace we take only first segment.
+	 * Rotate pixelized data If we have overlap on the trace we take only first
+	 * segment.
 	 * 
 	 * @param channel
 	 *            plot data provider to rotate
@@ -164,11 +164,15 @@ public class Rotation {
 	 *            filter to apply before rotation
 	 * @return pixelized rotated data
 	 * @throws TraceViewException
+	 *             if a variety of issue occurs in called methods, this method
+	 *             throws if the channel type can not be determined.
 	 */
-	public PlotData rotate(PlotDataProvider channel, TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode) throws TraceViewException {
+	public PlotData rotate(PlotDataProvider channel, TimeInterval ti,
+			int pointCount, IFilter filter, IColorModeState colorMode)
+			throws TraceViewException {
 		PlotData[] tripletPlotData = new PlotData[3];
 		char channelType = channel.getType();
-		PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter, colorMode);
+	PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter, colorMode);
 		PlotData ret = new PlotData(channel.getName(), channel.getColor());
 		if (channelType == 'E' || channelType == '2') {
 			tripletPlotData[0] = toProcess;
@@ -327,8 +331,11 @@ public class Rotation {
 	 *            processed time range
 	 * @return rotated raw data
 	 * @throws TraceViewException
+	 *             if thrown in
+	 *             {@link com.isti.traceview.processing.Rotation#getChannelsTriplet(PlotDataProvider, TimeInterval)}
 	 */
-	public List<Segment> rotate(PlotDataProvider channel, TimeInterval ti) throws TraceViewException {
+	public List<Segment> rotate(PlotDataProvider channel, TimeInterval ti)
+			throws TraceViewException {
 		PlotDataProvider[] triplet = getChannelsTriplet(channel, ti);
 		char channelType = channel.getType();
 		List<Segment> ret = new ArrayList<Segment>();
@@ -395,8 +402,12 @@ public class Rotation {
 	 *            time interval to process
 	 * @return array of 3 traces for 3 coordinates
 	 * @throws TraceViewException
+	 *             if channel is missing data or if thrown by
+	 *             {@link com.isti.traceview.processing.Rotation#getComplementaryChannel(PlotDataProvider, char)}
 	 */
-	public static PlotDataProvider[] getChannelsTriplet(PlotDataProvider channel, TimeInterval ti) throws TraceViewException {
+	public static PlotDataProvider[] getChannelsTriplet(
+			PlotDataProvider channel, TimeInterval ti)
+			throws TraceViewException {
 		PlotDataProvider[] chs = new PlotDataProvider[3];
 		char channelType = channel.getType();
 		if (channelType == 'E' || channelType == '2') {

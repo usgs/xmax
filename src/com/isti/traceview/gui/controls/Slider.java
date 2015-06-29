@@ -93,8 +93,8 @@ public class Slider extends JPanel implements Observer {
 
 	/**
 	 * Gets date corresponding position on scroll bar
-	 * @param x
-	 * @return
+	 * @param x the scroll bar position
+	 * @return the corresponding date
 	 */
 	private Date getDate(int x) {
 		return new Date(range.getStart() + range.getDuration() * x / slider.getWidth());
