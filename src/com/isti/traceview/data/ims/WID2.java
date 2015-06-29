@@ -68,7 +68,7 @@ public class WID2 extends Block {
 
 	/**
 	 * Sample rate in Hz
-	 * @return
+	 * @return the sampleRate
 	 */
 	public double getSampleRate() {
 		return sampleRate;

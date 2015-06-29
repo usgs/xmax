@@ -40,7 +40,7 @@ public class Wildcard {
 	 * @param mask
 	 *            wildcard expression to find file
 	 * @return list of found files
-	 * @throws TraceViewException
+	 * @throws TraceViewException if the mask is not parseable
 	 */
 	public List<File> getFilesByMask(String mask) throws TraceViewException {
 		lst.clear();
@@ -85,14 +85,8 @@ public class Wildcard {
 	/**
 	 * Recursive searching
 	 * 
-	 * @param String
-	 *            partPath - currently exploring point of path
-	 * @param String[]
-	 *            path - full path divided by path separators into an array
-	 * @param int
-	 *            i - current depth
-	 * @param List
-	 *            <File> lst - list to store found files
+	 * @param partPath - currently exploring point of path
+	 * @param i - current depth
 	 */
 
 	private void explore(String partPath, int i) {

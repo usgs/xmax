@@ -6,7 +6,7 @@ import com.isti.xmax.gui.PhasePanel;
 import com.isti.xmax.gui.XMAXframe;
 
 /**
- * Actions performed after time range settings in {@link XMAXGraphPanel}
+ * Actions performed after time range settings in {@link com.isti.xmax.gui.XMAXGraphPanel}
  * 
  * @author Max Kokoulin
  */

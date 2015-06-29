@@ -326,15 +326,15 @@ public class TimeInterval {
 	}
 
 	/**
-	 * Constructs time from integer values
+	 * Constructs GregorianCalendar from integer values
 	 * 
-	 * @param year
-	 * @param jday
-	 * @param hour_of_day
-	 * @param minute
-	 * @param second
-	 * @param millisecond
-	 * @return time in Java standard form
+	 * @param year the year
+	 * @param jday the julian day
+	 * @param hour_of_day the hour
+	 * @param minute the minute
+	 * @param second the second
+	 * @param millisecond the millisecond
+	 * @return time in GregorianCalendar form
 	 */
 	public static long getTime(int year, int jday, int hour_of_day, int minute, int second, int millisecond) {
 		GregorianCalendar cal = new GregorianCalendar(TraceView.timeZone);
