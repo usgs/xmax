@@ -65,17 +65,21 @@ import java.util.Collections;
 
 public class BufferedRandomAccessFile implements DataInput, DataOutput {
 
-	/** _more_ */
+	/**  _more_. */
 
 	static public final int BIG_ENDIAN = 0;
 
-	/** _more_ */
+	/**  _more_. */
 
 	static public final int LITTLE_ENDIAN = 1;
 
 	// debug leaks - keep track of open files
 
-	/** Debugging, do not use. */
+	/**
+	 *  Debugging, do not use.
+	 *
+	 * @param b the new debug leaks
+	 */
 
 	static public void setDebugLeaks(boolean b) {
 
@@ -83,7 +87,11 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 
 	}
 
-	/** Debugging, do not use. */
+	/**
+	 *  Debugging, do not use.
+	 *
+	 * @param b the new debug access
+	 */
 
 	static public void setDebugAccess(boolean b) {
 
@@ -91,13 +99,14 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 
 	}
 
-	/** _more_ */
+	/**  _more_. */
 
 	static protected boolean debugLeaks = false;
 
+	/** The debug access. */
 	static protected boolean debugAccess = false;
 
-	/** _more_ */
+	/**  _more_. */
 
 	static public List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
 
@@ -105,7 +114,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 
 	protected static final int defaultBufferSize = 8092; // LOOK time this
 	
-	/** _more_ */
+	/**  _more_. */
 
 	protected String location;
 
@@ -160,21 +169,20 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 
 	boolean bufferModified = false;
 
-	/** make sure file is this long when closed */
+	/**  make sure file is this long when closed. */
 
 	private long minLength = 0;
 
-	/** stupid extendMode for truncated, yet valid files - old code allowed NOFILL to do this */
+	/**  stupid extendMode for truncated, yet valid files - old code allowed NOFILL to do this. */
 
 	boolean extendMode = false;
 
 	// for HTTPRandomAccessFile
 
 	/**
-	 * _more_
-	 * 
-	 * @param bufferSize
-	 *            _more_
+	 * _more_.
+	 *
+	 * @param bufferSize            _more_
 	 */
 
 	protected BufferedRandomAccessFile(int bufferSize) {
@@ -190,7 +198,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 *            location of the file
 	 * @param mode
 	 *            same as for java.io.RandomAccessFile
-	 * @throws IOException
+	 * @throws IOException if there is an issue opening the file
 	 */
 
 	public BufferedRandomAccessFile(String location, String mode) throws IOException {
@@ -207,7 +215,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 *            same as for java.io.RandomAccessFile
 	 * @param bufferSize
 	 *            size of buffer to use.
-	 * @throws IOException
+	 * @throws IOException if there is an issue opening the file
 	 */
 
 	public BufferedRandomAccessFile(String location, String mode, int bufferSize)
@@ -234,10 +242,9 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param bufferSize
-	 *            _more_
+	 * _more_.
+	 *
+	 * @param bufferSize            _more_
 	 */
 
 	private void init(int bufferSize) {
@@ -395,6 +402,11 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 		this.bigEndian = (endian == BIG_ENDIAN);
 	}
 
+	/**
+	 * Checks if is be.
+	 *
+	 * @return true, if is be
+	 */
 	public boolean isBE() {
 		return bigEndian;
 	}
@@ -550,19 +562,14 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * read directly, without going through the buffer
-	 * 
-	 * @param pos
-	 *            _more_
-	 * @param b
-	 *            _more_
-	 * @param offset
-	 *            _more_
-	 * @param len
-	 *            _more_
+	 * read directly, without going through the buffer.
+	 *
+	 * @param pos            _more_
+	 * @param b            _more_
+	 * @param offset            _more_
+	 * @param len            _more_
 	 * @return _more_
-	 * @throws IOException
-	 *             _more_
+	 * @throws IOException             _more_
 	 */
 	protected int read_(long pos, byte[] b, int offset, int len)
 	throws IOException {
@@ -618,13 +625,9 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * Reads <code>b.length</code> bytes from this file into the byte array. This method reads
 	 * repeatedly from the file until all the bytes are read. This method blocks until all the bytes
 	 * are read, the end of the stream is detected, or an exception is thrown.
-	 * 
-	 * @param b
-	 *            the buffer into which the data is read.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading all the bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 *
+	 * @param b            the buffer into which the data is read.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 
 	public final void readFully(byte b[]) throws IOException {
@@ -635,17 +638,11 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * Reads exactly <code>len</code> bytes from this file into the byte array. This method reads
 	 * repeatedly from the file until all the bytes are read. This method blocks until all the bytes
 	 * are read, the end of the stream is detected, or an exception is thrown.
-	 * 
-	 * @param b
-	 *            the buffer into which the data is read.
-	 * @param off
-	 *            the start offset of the data.
-	 * @param len
-	 *            the number of bytes to read.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading all the bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 *
+	 * @param b            the buffer into which the data is read.
+	 * @param off            the start offset of the data.
+	 * @param len            the number of bytes to read.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 
 	public synchronized final void readFully(byte b[], int off, int len)
@@ -664,14 +661,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	/**
 	 * Skips exactly <code>n</code> bytes of input. This method blocks until all the bytes are
 	 * skipped, the end of the stream is detected, or an exception is thrown.
-	 * 
-	 * @param n
-	 *            the number of bytes to be skipped.
+	 *
+	 * @param n            the number of bytes to be skipped.
 	 * @return the number of bytes skipped, which is always <code>n</code>.
-	 * @exception EOFException
-	 *                if this file reaches the end before skipping all the bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 
 	public synchronized int skipBytes(int n) throws IOException {
@@ -848,12 +841,9 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * A value of <code>0</code> represents <code>false</code>. Any other value represents
 	 * <code>true</code>. This method blocks until the byte is read, the end of the stream is
 	 * detected, or an exception is thrown.
-	 * 
+	 *
 	 * @return the <code>boolean</code> value read.
-	 * @exception EOFException
-	 *                if this file has reached the end.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public final boolean readBoolean() throws IOException {
 		int ch = this.read();
@@ -869,20 +859,15 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * then the result is:
 	 * <ul>
 	 * <code>
-
 	 *     (byte)(b)
-
 	 * </code>
 	 * </ul>
 	 * <p>
 	 * This method blocks until the byte is read, the end of the stream is detected, or an exception
 	 * is thrown.
-	 * 
+	 *
 	 * @return the next byte of this file as a signed 8-bit <code>byte</code>.
-	 * @exception EOFException
-	 *                if this file has reached the end.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public final byte readByte() throws IOException {
 		int ch = this.read();
@@ -899,12 +884,9 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <p>
 	 * This method blocks until the byte is read, the end of the stream is detected, or an exception
 	 * is thrown.
-	 * 
+	 *
 	 * @return the next byte of this file, interpreted as an unsigned 8-bit number.
-	 * @exception EOFException
-	 *                if this file has reached the end.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public final int readUnsignedByte() throws IOException {
 		int ch = this.read();
@@ -922,20 +904,15 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * equal to:
 	 * <ul>
 	 * <code>
-
 	 *     (short)((b1 &lt;&lt; 8) | b2)
-
 	 * </code>
 	 * </ul>
 	 * <p>
 	 * This method blocks until the two bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
+	 *
 	 * @return the next two bytes of this file, interpreted as a signed 16-bit number.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading two bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public synchronized final short readShort() throws IOException {
 		int ch1 = this.read();
@@ -952,16 +929,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 	public final void readShort(short[] pa, int start, int n)
 	throws IOException {
@@ -976,20 +949,15 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <code>0&nbsp;&lt;=&nbsp;b1, b2&nbsp;&lt;=&nbsp;255</code>, then the result is equal to:
 	 * <ul>
 	 * <code>
-
 	 *     (b1 &lt;&lt; 8) | b2
-
 	 * </code>
 	 * </ul>
 	 * <p>
 	 * This method blocks until the two bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
+	 *
 	 * @return the next two bytes of this file, interpreted as an unsigned 16-bit integer.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading two bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public synchronized final int readUnsignedShort() throws IOException {
 		int ch1 = this.read();
@@ -1012,20 +980,15 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * to:
 	 * <ul>
 	 * <code>
-
 	 *     (char)((b1 &lt;&lt; 8) | b2)
-
 	 * </code>
 	 * </ul>
 	 * <p>
 	 * This method blocks until the two bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
+	 *
 	 * @return the next two bytes of this file as a Unicode character.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading two bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public synchronized final char readChar() throws IOException {
 		int ch1 = this.read();
@@ -1049,20 +1012,15 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * then the result is equal to:
 	 * <ul>
 	 * <code>
-
 	 *     (b1 &lt;&lt; 24) | (b2 &lt;&lt; 16) + (b3 &lt;&lt; 8) + b4
-
 	 * </code>
 	 * </ul>
 	 * <p>
 	 * This method blocks until the four bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
+	 *
 	 * @return the next four bytes of this file, interpreted as an <code>int</code>.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading four bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public synchronized final int readInt() throws IOException {
 		int ch1 = this.read();
@@ -1087,7 +1045,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * @param pos
 	 *            read a byte at this position
 	 * @return The int that was read
-	 * @throws IOException
+	 * @throws IOException if the end of file was reached
 	 */
 	public final int readIntUnbuffered(long pos) throws IOException {
 		byte[] bb = new byte[4];
@@ -1116,25 +1074,17 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * equal to:
 	 * <ul>
 	 * <code>
-
 	 *     (b1 &lt;&lt; 16) | (b2 &lt;&lt; 8) + (b3 &lt;&lt; 0)
-
 	 * </code>
 	 * </ul>
 	 * <p>
 	 * This method blocks until the three bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @exception EOFException
-	 *                if this file reaches the end before reading four bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @exception IOException                if an I/O error occurs.
 	 */
 
 	public final void readInt(int[] pa, int start, int n) throws IOException {
@@ -1150,9 +1100,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <code>b8,</code> where:
 	 * <ul>
 	 * <code>
-
 	 *     0 &lt;= b1, b2, b3, b4, b5, b6, b7, b8 &lt;=255,
-
 	 * </code>
 	 * </ul>
 	 * <p>
@@ -1176,12 +1124,9 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <p>
 	 * This method blocks until the eight bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
+	 *
 	 * @return the next eight bytes of this file, interpreted as a <code>long</code>.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading eight bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public synchronized final long readLong() throws IOException {
 		if (bigEndian) {
@@ -1204,16 +1149,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 
 	public synchronized final void readLong(long[] pa, int start, int n)
@@ -1231,30 +1172,23 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <p>
 	 * This method blocks until the four bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
+	 *
 	 * @return the next four bytes of this file, interpreted as a <code>float</code>.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading four bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
 	 * @see java.io.RandomAccessFile#readInt()
 	 * @see java.lang.Float#intBitsToFloat(int)
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public final float readFloat() throws IOException {
 		return Float.intBitsToFloat(readInt());
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 
 	public synchronized final void readFloat(float[] pa, int start, int n)
@@ -1272,30 +1206,23 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <p>
 	 * This method blocks until the eight bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
+	 *
 	 * @return the next eight bytes of this file, interpreted as a <code>double</code>.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading eight bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
 	 * @see java.io.RandomAccessFile#readLong()
 	 * @see java.lang.Double#longBitsToDouble(long)
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public final double readDouble() throws IOException {
 		return Double.longBitsToDouble(readLong());
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 
 	public synchronized final void readDouble(double[] pa, int start, int n)
@@ -1347,15 +1274,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <p>
 	 * This method blocks until all the bytes are read, the end of the stream is detected, or an
 	 * exception is thrown.
-	 * 
+	 *
 	 * @return a Unicode string.
-	 * @exception EOFException
-	 *                if this file reaches the end before reading all the bytes.
-	 * @exception IOException
-	 *                if an I/O error occurs.
-	 * @exception UTFDataFormatException
-	 *                if the bytes do not represent valid UTF-8 encoding of a Unicode string.
 	 * @see java.io.RandomAccessFile#readUnsignedShort()
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public final String readUTF() throws IOException {
 		return DataInputStream.readUTF(this);
@@ -1368,6 +1290,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 *            number of bytes to read
 	 * @return String wrapping the bytes.
 	 * @throws IOException
+	 *             if this file reaches the end before reading all the bytes or
+	 *             a general I/0 error occurs
 	 */
 	public String readString(int nbytes) throws IOException {
 		byte[] data = new byte[nbytes];
@@ -1397,16 +1321,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 	public synchronized final void writeBoolean(boolean[] pa, int start, int n)
 	throws IOException {
@@ -1441,16 +1361,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 
 	public synchronized final void writeShort(short[] pa, int start, int n)
@@ -1475,16 +1391,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 
 	public synchronized final void writeChar(char[] pa, int start, int n)
@@ -1511,16 +1423,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 
 	public synchronized final void writeInt(int[] pa, int start, int n)
@@ -1551,16 +1459,12 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 
 	public synchronized final void writeLong(long[] pa, int start, int n)
@@ -1574,28 +1478,22 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * Converts the float argument to an <code>int</code> using the <code>floatToIntBits</code>
 	 * method in class <code>Float</code>, and then writes that <code>int</code> value to the
 	 * file as a 4-byte quantity, high byte first.
-	 * 
-	 * @param v
-	 *            a <code>float</code> value to be written.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 *
+	 * @param v            a <code>float</code> value to be written.
 	 * @see java.lang.Float#floatToIntBits(float)
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public final void writeFloat(float v) throws IOException {
 		writeInt(Float.floatToIntBits(v));
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 	public synchronized final void writeFloat(float[] pa, int start, int n)
 	throws IOException {
@@ -1608,28 +1506,22 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * Converts the double argument to a <code>long</code> using the <code>doubleToLongBits</code>
 	 * method in class <code>Double</code>, and then writes that <code>long</code> value to the
 	 * file as an 8-byte quantity, high byte first.
-	 * 
-	 * @param v
-	 *            a <code>double</code> value to be written.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 *
+	 * @param v            a <code>double</code> value to be written.
 	 * @see java.lang.Double#doubleToLongBits(double)
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public final void writeDouble(double v) throws IOException {
 		writeLong(Double.doubleToLongBits(v));
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @param pa
-	 *            _more_
-	 * @param start
-	 *            _more_
-	 * @param n
-	 *            _more_
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @param pa            _more_
+	 * @param start            _more_
+	 * @param n            _more_
+	 * @throws IOException             _more_
 	 */
 
 	public synchronized final void writeDouble(double[] pa, int start, int n)
@@ -1679,12 +1571,10 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	/**
 	 * Writes a string to the file as a sequence of characters. Each character is written to the
 	 * data output stream as if by the <code>writeChar</code> method.
-	 * 
-	 * @param s
-	 *            a <code>String</code> value to be written.
-	 * @exception IOException
-	 *                if an I/O error occurs.
+	 *
+	 * @param s            a <code>String</code> value to be written.
 	 * @see java.io.RandomAccessFile#writeChar(int)
+	 * @exception IOException                if an I/O error occurs.
 	 */
 	public synchronized final void writeChars(String s) throws IOException {
 		int len = s.length();
@@ -1763,7 +1653,8 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * 
 	 * @param cached
 	 *            in the cache or not.
-	 * @see ucar.unidata.io.FileCache
+	 * @see "https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html"
+	 *  ucar.unidata.io.FileCache
 	 */
 	public void setCached(boolean cached) {
 		this.cached = cached;
@@ -1773,17 +1664,17 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * Find whether this fie is in the cache.
 	 * 
 	 * @return true if in the cache.
-	 * @see ucar.unidata.io.FileCache
+	 * @see "https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html"
+	 *  ucar.unidata.io.FileCache
 	 */
 	public boolean isCached() {
 		return cached;
 	}
 
 	/**
-	 * _more_
-	 * 
-	 * @throws IOException
-	 *             _more_
+	 * _more_.
+	 *
+	 * @throws IOException             _more_
 	 */
 	public void synch() throws IOException {
 	}

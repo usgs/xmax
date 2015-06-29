@@ -173,6 +173,11 @@ public class FilterBP implements IFilter {
 	 * remove mean from a buffer
 	 * 
 	 * **NOTE: This will be done with the mean button fix
+	 * 
+	 * @param buf array to be demeaned
+	 * @param n the size of the array to be demeaned
+	 * 
+	 * @return the sum of the array
 	 */
 	private double demean(double buf[], int n) {
 		double sum = 0.0;
