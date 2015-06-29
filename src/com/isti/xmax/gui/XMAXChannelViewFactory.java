@@ -7,7 +7,7 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.IChannelViewFactory;
 
 /**
- * Factory for customized {@link com.isti.traceview.ChannelView}s
+ * Factory for customized {@link com.isti.traceview.gui.ChannelView}s
  * 
  * @author Max Kokoulin
  */

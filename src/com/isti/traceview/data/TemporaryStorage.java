@@ -55,7 +55,7 @@ public class TemporaryStorage {
 	}
 
 	/**
-	 * @return
+	 * @return a Set of strings listing full paths to temp files
 	 */
 	public Set<String> getAllTempFiles() {
 		Set<String> ret = new HashSet<String>();

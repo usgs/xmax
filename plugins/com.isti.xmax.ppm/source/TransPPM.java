@@ -69,7 +69,7 @@ public class TransPPM implements ITransformation {
 	 * @param ti
 	 *            Time interval to define processed range
 	 * @return jFreeChart dataset of trace data in polar coordinates
-	 * @throws XMAXException
+	 * @throws XMAXException if sample rates differ, gaps in the data, or no data for a channel
 	 */
 	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti) throws XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();

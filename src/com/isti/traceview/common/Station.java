@@ -312,7 +312,8 @@ public class Station implements Comparable<Object>, Serializable {
 	 * @param out
 	 *            stream to serialize this object
 	 * @see Serializable
-	 * @throws IOException
+	 * @throws IOException if thrown when writing the ObjectOutputStream to file.
+	 * @deprecated this method is not called by anything
 	 */
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
@@ -324,7 +325,8 @@ public class Station implements Comparable<Object>, Serializable {
 	 * @param in
 	 *            stream to deserialize object
 	 * @see Serializable
-	 * @throws IOException
+	 * @throws IOException if thrown when reading the ObjectOutputStream.
+	 * @deprecated this method is not called by anything
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();

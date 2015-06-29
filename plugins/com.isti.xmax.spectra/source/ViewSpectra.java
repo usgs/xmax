@@ -225,9 +225,10 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 	}
 
 	/**
-	 * @param series
-	 * @param arg
-	 * @return
+	 * TODO: This method is too vague. Not sure what it does. Analysis and refactoring required.
+	 * @param series the XYZSeries
+	 * @param arg a double
+	 * @return either a Double.NaN or a computed value.
 	 */
 
 	private double getValue(XYSeries series, double arg) {
@@ -242,7 +243,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 	}
 
 	/**
-	 * @param series
+	 * @param ser the series
 	 * @return Series mean
 	 */
 

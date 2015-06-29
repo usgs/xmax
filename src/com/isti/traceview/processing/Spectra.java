@@ -50,12 +50,10 @@ public class Spectra {
 	 *            array of frequencies used to build spectra
 	 * @param resp
 	 *            complex response
-	 * @param sampleRate
-	 *            sample rate of trace
 	 * @param sampFreq
-	 *            frequency interval (see {@link Response#FreqParameters})
-	 * @param name
-	 *            trace name
+	 *            frequency interval (see {@link com.isti.traceview.data.Response.FreqParameters})
+	 * @param channel
+	 *            the channel information
 	 * @param err
 	 *            this string contains errors during building spectra and response.
 	 */

@@ -198,7 +198,7 @@ import org.jfree.chart.plot.Zoomable;
 import org.jfree.ui.ExtensionFileFilter;
 
 /**
- * This code was copied from JFreeChart {@link ChartPanel} class.
+ * This code was copied from JFreeChart ChartPanel class.
  * It was fixed ChartPanel's bug with lack of double buffering and problems during working
  * under X window. 
  * So as fixed method paintComponent() uses private calls, copy-paste method of fixing was the only one.

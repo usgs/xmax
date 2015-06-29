@@ -3005,6 +3005,16 @@ public class Util extends Object {
 		return l;
 	}
 
+	
+	/**
+	 * This member is only used in
+	 * {@link #socketReadFully(InputStream, byte[], int, int)}. Just tossing it
+	 * into the package space is innapropriate.
+	 * 
+	 * TODO: Analysis and merging into its method is required.
+	 */
+	static long countErr = 0;
+	
 	/**
 	 * read fully the number of bytes, or throw exception. Suitable for sockets
 	 * since the read method uses a lot of CPU if you just call it. This checks
@@ -3022,9 +3032,9 @@ public class Util extends Object {
 	 *         read if EOF came before all bytes were read
 	 * @throws IOException
 	 *             if one is thrown by the InputStream
+	 *             
+	 * @deprecated This method is not called by anything
 	 */
-	static long countErr = 0;
-
 	public static int socketReadFully(InputStream in, byte[] buf, int off,
 			int len) throws IOException {
 		int nchar = 0;

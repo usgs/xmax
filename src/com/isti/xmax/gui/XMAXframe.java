@@ -1324,7 +1324,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	/**
 	 * Main method for XMAXFrame (sets visibility)
-	 * @param args
+	 * @param args unused arg string array
 	 */
 	public static void main(String[] args) {
 		//GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
