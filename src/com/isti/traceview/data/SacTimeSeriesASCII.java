@@ -271,8 +271,6 @@ public class SacTimeSeriesASCII extends SacTimeSeries {
 	 * in as much as possible, with the notable exception of event information and station location
 	 * and channel orientation.
 	 * 
-	 * @param seis
-	 *            the <code>LocalSeismogramImpl</code> with the data
 	 * @return a <code>SacTimeSeries</code> with data and headers filled
 	 */
 

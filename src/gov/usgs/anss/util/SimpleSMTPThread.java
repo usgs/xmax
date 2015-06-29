@@ -388,7 +388,7 @@ public class SimpleSMTPThread extends Thread {
 		/**
 		 * Construct a listener on the SMTP socket
 		 * 
-		 * @param bb
+		 * @param b
 		 *            is the input side of the socket
 		 * @param e
 		 *            The session log to append received lines to

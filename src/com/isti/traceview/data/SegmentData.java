@@ -73,15 +73,9 @@ public class SegmentData {
 	/**
 	 * Computes linear interpolated value for any time on data array.
 	 * 
-	 * @param data
-	 *            array of data to interpolate
-	 * @param dataTI
-	 *            time range for this data
-	 * @param sampleRate
-	 *            data sample rate
 	 * @param time
 	 *            time argument to get interpolated value
-	 * @return
+	 * @return the linear interpolated value
 	 */
 	public double interpolateValue(double time) {
 		// lg.debug("interpolateValue: dataLength " + data.length + ", startTime " + dataTI.getStartTime() + ", time " + time);
