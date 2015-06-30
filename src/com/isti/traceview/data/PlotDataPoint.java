@@ -24,15 +24,11 @@ public class PlotDataPoint implements Serializable {
 
 	/**
 	 * High value in representing section
-	 * 
-	 * @uml.property name="top"
 	 */
 	private double top = Double.NEGATIVE_INFINITY;
 
 	/**
 	 * Low value on representing section
-	 * 
-	 * @uml.property name="bottom"
 	 */
 	private double bottom = Double.POSITIVE_INFINITY;
 
@@ -56,9 +52,6 @@ public class PlotDataPoint implements Serializable {
 
 	/**
 	 * Event assosiated, if exist. Null if event absent.
-	 * 
-	 * @uml.property name="events"
-	 * @uml.associationEnd inverse="plotDataPoint:com.isti.xmax.common.IEvent"
 	 */
 	private Set<EventWrapper> events = null;
 
@@ -77,7 +70,6 @@ public class PlotDataPoint implements Serializable {
 	 * Getter of the property <tt>bottom</tt>
 	 * 
 	 * @return minimum value in representing section
-	 * @uml.property name="bottom"
 	 */
 	public double getBottom() {
 		return bottom;
@@ -87,7 +79,6 @@ public class PlotDataPoint implements Serializable {
 	 * Getter of the property <tt>top</tt>
 	 * 
 	 * @return maximum value in representing section
-	 * @uml.property name="top"
 	 */
 	public double getTop() {
 		return top;
@@ -104,7 +95,6 @@ public class PlotDataPoint implements Serializable {
 	 * Getter of the property <tt>segmentNumber</tt>
 	 * 
 	 * @return number of segment to which this range belongs.
-	 * @uml.property name="segmentNumber"
 	 */
 	public int getSegmentNumber() {
 		return segmentNumber;
@@ -114,7 +104,6 @@ public class PlotDataPoint implements Serializable {
 	 * Getter of the property <tt>rawDataProviderNumber</tt>
 	 * 
 	 * @return number of raw data provider to which this range belongs.
-	 * @uml.property name="rawDataProviderNumber"
 	 */
 	public int getRawDataProviderNumber() {
 		return rawDataProviderNumber;
@@ -124,7 +113,6 @@ public class PlotDataPoint implements Serializable {
 	 * Getter of the property <tt>continueAreaNumber</tt>
 	 * 
 	 * @return number of continue data area to which this range belongs.
-	 * @uml.property name="continueAreaNumber"
 	 */
 	public int getContinueAreaNumber() {
 		return continueAreaNumber;
@@ -134,7 +122,6 @@ public class PlotDataPoint implements Serializable {
 	 * Getter of the property <tt>events</tt>
 	 * 
 	 * @return Returns list of events found inside this time range.
-	 * @uml.property name="events"
 	 */
 	public Set<EventWrapper> getEvents() {
 		if (events == null) {

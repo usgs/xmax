@@ -64,27 +64,18 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	/**
 	 * The channel name.
-	 * 
-	 * @uml.property name="channelName"
 	 */
 	private String channelName;
 
-	/**
-	 * @uml.property name="station"
-	 */
 	private Station station = null;
 
 	/**
 	 * The location name.
-	 * 
-	 * @uml.property name="locationName"
 	 */
 	private String locationName = null;
 
 	/**
 	 * The network name.
-	 * 
-	 * @uml.property name="networkName"
 	 */
 	private String networkName = null;
 
@@ -167,7 +158,6 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * Getter of the property <tt>station</tt>
 	 * 
 	 * @return Returns the station.
-	 * @uml.property name="station"
 	 */
 	public Station getStation() {
 		return station;
@@ -178,7 +168,6 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * 
 	 * @param station
 	 *            The station to set.
-	 * @uml.property name="station"
 	 */
 	public void setStation(Station station) {
 		this.station = station;
@@ -212,7 +201,6 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * Getter of the property <tt>response</tt>
 	 * 
 	 * @return Returns the channel response.
-	 * @uml.property name="response"
 	 */
 	public Response getResponse() throws TraceViewException {
 		Response resp = TraceView.getDataModule().getResponse(getNetworkName(), getStation().getName(), getLocationName(), getChannelName());

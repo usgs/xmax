@@ -60,9 +60,6 @@ public class Pick extends AbstractEvent implements IEvent {
 		P, S, PS, SP
 	}
 
-	/**
-	 * @uml.property name="pickType"
-	 */
 	private PickType pickType;
 
 	/**
@@ -133,7 +130,6 @@ public class Pick extends AbstractEvent implements IEvent {
 	 * 
 	 * @param pickType
 	 *            type of pick
-	 * @uml.property name="pickType"
 	 */
 	public void setPickType(PickType pickType) {
 		this.pickType = pickType;

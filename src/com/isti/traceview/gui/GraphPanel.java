@@ -88,29 +88,22 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * Maximum Y scale value for manual scale mode
-	 * 
-	 * @uml.property name="manualValueMax"
 	 */
 	//private int manualValueMax = Integer.MIN_VALUE;
 
 	/**
 	 * Minimum Y scale value for manual scale mode
-	 * 
-	 * @uml.property name="manualValueMin"
 	 */
 	//private int manualValueMin = Integer.MAX_VALUE;
 
 	/**
 	 * List of graphs
-	 * 
-	 * @uml.property name="channelShowSet"
 	 */
 	private List<ChannelView> channelShowSet = null; // @jve:decl-index=0:
 	private List<ChannelView> selectedChannelShowSet = null;
 
 	/**
-	 * @uml.property name="unitsShowCount" Amount of units to show simultaneously in this graph
-	 *               panel
+	 * Amount of units to show simultaneously in this graph panel
 	 */
 	private int unitsShowCount;
 
@@ -213,29 +206,14 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	private boolean shouldManageTimeRange = true;
 
-	/**
-	 * @uml.property name="scaleMode"
-	 */
 	private IScaleModeState scaleMode = null; // @jve:decl-index=0:
 
-	/**
-	 * @uml.property name="colorMode"
-	 */
 	private IColorModeState colorMode = null; // @jve:decl-index=0:
 
-	/**
-	 * @uml.property name="meanState"
-	 */
 	private IMeanState meanState; // @jve:decl-index=0:
 
-	/**
-	 * @uml.property name="meanState"
-	 */
 	private IOffsetState offsetState; // @jve:decl-index=0:
 
-	/**
-	 * @uml.property name="phaseState"
-	 */
 	private boolean phaseState = false;
 	private boolean pickState = false;
 	private boolean overlay = false;

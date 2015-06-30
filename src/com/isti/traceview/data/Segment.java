@@ -29,34 +29,21 @@ public class Segment implements Externalizable, Cloneable {
 	 */
 	private static double gapTolerance = 1.0;
 
-	/**
-	 * @uml.property name="data" readOnly="true"
-	 */
 	private int[] data = null;
 
 	private int currentPos = 0;
 
-	/**
-	 * @uml.property name="startTime"
-	 */
 	private long startTime;
 
-	/**
-	 * @uml.property name="sampleRate"
-	 */
 	private double sampleRate;
 
 	/**
 	 * Quantity of data values in the segment
-	 * 
-	 * @uml.property name="sampleCount"
 	 */
 	private int sampleCount;
 
 	/**
 	 * Starting position of this segment in the data source
-	 * 
-	 * @uml.property name="startOffset"
 	 */
 	private long startOffset;
 
@@ -69,15 +56,11 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Maximal data value in segment
-	 * 
-	 * @uml.property name="maxValue"
 	 */
 	private int maxValue;
 
 	/**
 	 * Minimal data value in segment
-	 * 
-	 * @uml.property name="minValue"
 	 */
 	private int minValue;
 
@@ -147,7 +130,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * Getter of the property <tt>startTime</tt>
 	 * 
 	 * @return segment data start time
-	 * @uml.property name="startTime"
 	 */
 	public Date getStartTime() {
 		return new Date(startTime);
@@ -410,7 +392,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * Getter of the property <tt>sampleRate</tt>
 	 * 
 	 * @return Returns the sample rate.
-	 * @uml.property name="sampleRate"
 	 */
 	public double getSampleRate() {
 		return sampleRate;
@@ -420,7 +401,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * Getter of the property <tt>startOffset</tt>
 	 * 
 	 * @return Starting position of this segment in the data source
-	 * @uml.property name="startOffset"
 	 */
 	public long getStartOffset() {
 		return startOffset;
@@ -437,7 +417,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * Getter of the property <tt>sampleCount</tt>
 	 * 
 	 * @return the count of samples in the segment data
-	 * @uml.property name="sampleCount"
 	 */
 	public int getSampleCount() {
 		return sampleCount;
@@ -458,7 +437,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * Getter of the property <tt>maxValue</tt>
 	 * 
 	 * @return maximum raw data value in the segment
-	 * @uml.property name="maxValue"
 	 */
 	public int getMaxValue() {
 		return maxValue;
@@ -469,7 +447,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * 
 	 * @param maxValue
 	 *            The maxValue to set.
-	 * @uml.property name="maxValue"
 	 */
 	public void setMaxValue(int maxValue) {
 		if (maxValue > this.maxValue) {
@@ -481,7 +458,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * Getter of the property <tt>minValue</tt>
 	 * 
 	 * @return minimum raw data value in the segment
-	 * @uml.property name="minValue"
 	 */
 	public int getMinValue() {
 		return minValue;
@@ -492,7 +468,6 @@ public class Segment implements Externalizable, Cloneable {
 	 * 
 	 * @param minValue
 	 *            The minValue to set.
-	 * @uml.property name="minValue"
 	 */
 	public void setMinValue(int minValue) {
 		if (minValue < this.minValue) {
