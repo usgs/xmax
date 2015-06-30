@@ -28,26 +28,19 @@ public abstract class AbstractEvent implements IEvent {
 
 	public abstract String getType();
 
-	/**
-	 * @uml.property name="startTime"
-	 */
+
 	private Date startTime;
 
-	/**
-	 * @uml.property name="duration"
-	 */
+
 	private long duration = 0;
 
-	/**
-	 * @uml.property name="parameters"
-	 */
+
 	private Map<String, Object> parameters = null;
 
 	/**
 	 * Getter of the property <tt>duration</tt>
 	 * 
 	 * @return Returns the duration.
-	 * @uml.property name="duration"
 	 */
 	public long getDuration() {
 		return duration;
@@ -58,7 +51,6 @@ public abstract class AbstractEvent implements IEvent {
 	 * 
 	 * @param duration
 	 *            The duration to set.
-	 * @uml.property name="duration"
 	 */
 	public void setDuration(long duration) {
 		this.duration = duration;
@@ -84,7 +76,6 @@ public abstract class AbstractEvent implements IEvent {
 	 * Getter of the property <tt>startTime</tt>
 	 * 
 	 * @return Returns the startTime.
-	 * @uml.property name="startTime"
 	 */
 	public Date getStartTime() {
 		return startTime;
@@ -95,7 +86,6 @@ public abstract class AbstractEvent implements IEvent {
 	 * 
 	 * @param startTime
 	 *            The startTime to set.
-	 * @uml.property name="startTime"
 	 */
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;

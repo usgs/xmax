@@ -14,8 +14,6 @@ public class PlotData implements Comparable<Object> {
 
 	/**
 	 * List of arrays of data points. PlotDataPoint[] contains one data points of several overlayed segments.
-	 * 
-	 * @uml.property name="plotDataPoints" multiplicity="(0 -1)" dimension="1"
 	 */
 	private List<PlotDataPoint[]> pixels;
 
@@ -47,7 +45,6 @@ public class PlotData implements Comparable<Object> {
 	 * Getter of the property <tt>points</tt>
 	 * 
 	 * @return Returns list of points.
-	 * @uml.property name="points"
 	 */
 	public List<PlotDataPoint[]> getPixels() {
 		return pixels;

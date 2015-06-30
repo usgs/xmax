@@ -71,9 +71,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public static final int defaultInfoPanelWidth = 80;
 	protected static int currentSelectionNumber = 0;
 
-	/**
-	 * @uml.property name="plotDataProviders" multiplicity="(0 -1)" dimension="1"
-	 */
 	private List<String> channelNames = new ArrayList<String>();
 	private List<PlotDataProvider> plotDataProviders = null; // @jve:decl-index=0:
 	List<PlotData> graphs = null;
@@ -273,7 +270,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	 * Getter of the property <tt>channelNames</tt>
 	 * 
 	 * @return the list of channelNames drawn in this ChannelView
-	 * @uml.property name="channelNames"
 	 */
 	public List<String> getChannelNames() {
 		return channelNames;
@@ -283,7 +279,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	 * Getter of the property <tt>plotDataProviders</tt>
 	 * 
 	 * @return the list of PlotDataProviders drawn in this ChannelView.
-	 * @uml.property name="plotDataProviders"
 	 */
 	public List<PlotDataProvider> getPlotDataProviders() {
 		return plotDataProviders;
@@ -301,7 +296,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	 * 
 	 * @param channels
 	 *            List of plotDataProviders to draw inside this ChannelView.
-	 * @uml.property name="plotDataProviders"
 	 */
 	public void setPlotDataProviders(List<PlotDataProvider> channels) {
 		if (plotDataProviders != null) {

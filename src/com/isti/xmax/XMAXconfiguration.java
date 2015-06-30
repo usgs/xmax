@@ -49,34 +49,23 @@ public class XMAXconfiguration extends Configuration {
 
 	/**
 	 * Full pathname for quality control data file
-	 * 
-	 * @uml.property name="qCdataFileName"
 	 */
 	private String qCdataFileName = "";
 
 	/**
 	 * Location of xml picks database
-	 * 
-	 * @uml.property name="PickPath"
 	 */
 	private String pickPath = "";
 
 	/**
 	 * Wildcarded mask for earthquakes definition files
-	 * 
-	 * @uml.property name="earthquakeFileMask"
 	 */
 	private String earthquakeFileMask;
 
-	/**
-	 * @uml.property name="outputPath"
-	 */
 	private String outputPath;
 
 	/**
 	 * Time interval to load channels, correspond -b and -e command line options.
-	 * 
-	 * @uml.property name="ti"
 	 */
 	private TimeInterval ti;
 

@@ -51,9 +51,6 @@ public abstract class SourceFile implements ISource {
 	private static final long serialVersionUID = 1L;	
 	private static final Logger logger = Logger.getLogger(SourceFile.class);
 
-	/**
-	 * @uml.property name="file"
-	 */
 	private File file;
 	
 	private boolean parsed = false;
@@ -75,7 +72,6 @@ public abstract class SourceFile implements ISource {
 	 * Getter of the property <tt>file</tt>
 	 * 
 	 * @return Returns the file.
-	 * @uml.property name="file"
 	 */
 	protected File getFile() {
 		return file;

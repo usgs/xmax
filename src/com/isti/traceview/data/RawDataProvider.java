@@ -51,11 +51,6 @@ public class RawDataProvider extends Channel {
 
 	private static final Logger logger = Logger.getLogger(RawDataProvider.class);
 
-	/**
-	 * @uml.property name="rawData"
-	 * @uml.associationEnd multiplicity="(0 -1)" ordering="true"
-	 * @uml.association name="channel has rawData"
-	 */
 	protected List<SegmentCache> rawData;
 
 	private boolean loadingStarted = false;
@@ -117,7 +112,6 @@ public class RawDataProvider extends Channel {
 	 * Getter of the property <tt>rawData</tt>
 	 * 
 	 * @return Returns all raw data this provider contains.
-	 * @uml.property name="rawData"
 	 */
 	public List<Segment> getRawData() {
 		List<Segment> ret = new ArrayList<Segment>();
@@ -147,7 +141,6 @@ public class RawDataProvider extends Channel {
 
 	/**
 	 * @return Returns the raw data this provider contains for the time window.
-	 * @uml.property name="rawData"
 	 */
 	public List<Segment> getRawData(TimeInterval ti) {
 		List<Segment> ret = Collections.synchronizedList(new ArrayList<Segment>());

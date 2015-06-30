@@ -17,46 +17,23 @@ import com.isti.traceview.data.Channel;
  */
 public class Station implements Comparable<Object>, Serializable {
 	private static final long serialVersionUID = 1L;
-	/**
-	 * @uml.property name="name"
-	 */
+
 	private String name = "";
 
-	/**
-	 * @uml.property name="network"
-	 */
 	private String network = "";
 
-	/**
-	 * @uml.property name="longName"
-	 */
 	private transient String longName = "";
 
-	/**
-	 * @uml.property name="latitude"
-	 */
 	private transient double latitude = 0;
 
-	/**
-	 * @uml.property name="longitude"
-	 */
 	private transient double longitude = 0;
 
-	/**
-	 * @uml.property name="elevation"
-	 */
 	private transient double elevation = 0;
 
-	/**
-	 * @uml.property name="depth"
-	 */
 	private transient double depth = 0;
 
 	//private transient TimeInterval presence = null;
 
-	/**
-	 * @uml.property name="channels"
-	 */
 	private transient Set<Channel> channels = null;
 
 	/**
@@ -106,7 +83,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * Getter of the property <tt>name</tt>
 	 * 
 	 * @return Returns the name.
-	 * @uml.property name="name"
 	 */
 	public String getName() {
 		return name;
@@ -117,7 +93,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * 
 	 * @param name
 	 *            The name to set.
-	 * @uml.property name="name"
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -127,7 +102,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * Getter of the property <tt>network</tt>
 	 * 
 	 * @return Returns the network.
-	 * @uml.property name="network"
 	 */
 	public String getNetwork() {
 		return network;
@@ -138,7 +112,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * 
 	 * @param network
 	 *            The network to set.
-	 * @uml.property name="network"
 	 */
 	public void setNetwork(String network) {
 		this.network = network;
@@ -148,7 +121,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * Getter of the property <tt>longName</tt>
 	 * 
 	 * @return Returns the longName.
-	 * @uml.property name="longName"
 	 */
 	public String getLongName() {
 		return longName;
@@ -159,7 +131,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * 
 	 * @param longName
 	 *            The longName to set.
-	 * @uml.property name="longName"
 	 */
 	public void setLongName(String longName) {
 		this.longName = longName;
@@ -169,7 +140,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * Getter of the property <tt>channels</tt>
 	 * 
 	 * @return Returns the channels.
-	 * @uml.property name="channels"
 	 */
 	public Set<Channel> getChannels() {
 		return channels;
@@ -184,7 +154,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * 
 	 * @param latitude
 	 *            The latitude to set.
-	 * @uml.property name="latitude"
 	 */
 	public void setLatitude(double latitude) {
 		this.latitude = latitude;
@@ -194,7 +163,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * Getter of the property <tt>latitude</tt>
 	 * 
 	 * @return Returns the latitude.
-	 * @uml.property name="latitude"
 	 */
 	public double getLatitude() {
 		return latitude;
@@ -204,7 +172,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * Getter of the property <tt>longitude</tt>
 	 * 
 	 * @return Returns the longitude.
-	 * @uml.property name="longitude"
 	 */
 	public double getLongitude() {
 		return longitude;
@@ -215,7 +182,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * 
 	 * @param longitude
 	 *            The longitude to set.
-	 * @uml.property name="longitude"
 	 */
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
@@ -225,7 +191,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * Getter of the property <tt>elevation</tt>
 	 * 
 	 * @return Returns the elevation.
-	 * @uml.property name="elevation"
 	 */
 	public double getElevation() {
 		return elevation;
@@ -236,7 +201,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * 
 	 * @param elevation
 	 *            The elevation to set.
-	 * @uml.property name="elevation"
 	 */
 	public void setElevation(double elevation) {
 		this.elevation = elevation;
@@ -246,7 +210,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * Getter of the property <tt>depth</tt>
 	 * 
 	 * @return Returns the depth.
-	 * @uml.property name="depth"
 	 */
 	public double getDepth() {
 		return depth;
@@ -257,7 +220,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 * 
 	 * @param depth
 	 *            The depth to set.
-	 * @uml.property name="depth"
 	 */
 	public void setDepth(double depth) {
 		this.depth = depth;

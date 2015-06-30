@@ -114,29 +114,20 @@ public class Configuration extends Observable {
 
 	/**
 	 * Wildcarded mask of datafiles to search on startup
-	 * 
-	 * @uml.property name="dataPath"
 	 */
 	private String dataPath = "";
 
-	/**
-	 * @uml.property name="panelCountUnit"
-	 */
 	private PanelCountUnit panelCountUnit;
 
 	/**
 	 * Quantity of visible units on the screen, see {@link PanelCountUnit}. Correspond -f command
 	 * line option.
-	 * 
-	 * @uml.property name="unitsInFrame"
 	 */
 	private int unitsInFrame;
 
 	/**
 	 * Order to sort traces to show, see <code>ChannelSortType<code> for options list.
 	 * Correspond -o command line option.
-	 * 
-	 * @uml.property name="panelOrder
 	 */
 	private ChannelSortType panelOrder;
 
@@ -148,15 +139,11 @@ public class Configuration extends Observable {
 
 	/**
 	 * Location of temporary data storage
-	 * 
-	 * @uml.property name="dataTempPath"
 	 */
 	private String dataTempPath = "";
 
 	/**
 	 * Full pathname for stations definition file
-	 * 
-	 * @uml.property name="stationInfoFileName"
 	 */
 	private String stationInfoFileName = "";
 
@@ -167,8 +154,6 @@ public class Configuration extends Observable {
 
 	/**
 	 * Location of responses storage.
-	 * 
-	 * @uml.property name="responsePath"
 	 */
 	private String responsePath;
 
@@ -218,7 +203,6 @@ public class Configuration extends Observable {
 	 * Getter of the property <tt>dataPath</tt>
 	 * 
 	 * @return wildcarded mask of datafiles to search on startup.
-	 * @uml.property name="dataPath"
 	 */
 	public String getDataPath() {
         // MTH: The line below will take xmax -d '../xs0/seed/..' and turn it into path="./Users/mth/mth/../xs0/seed/.." !
@@ -233,7 +217,6 @@ public class Configuration extends Observable {
 	 * 
 	 * @param dataPath
 	 *            The dataPath to set.
-	 * @uml.property name="dataPath"
 	 */
 	public void setDataPath(String dataPath) {
 		logger.debug("== dataPath: " + dataPath);
@@ -244,7 +227,6 @@ public class Configuration extends Observable {
 	 * Getter of the property <tt>dataTempPath</tt>
 	 * 
 	 * @return location of temporary data storage.
-	 * @uml.property name="dataTempPath"
 	 */
 	public String getDataTempPath() {
 		return dataTempPath.replace("." + File.separator, getConfigFileDir());
@@ -274,7 +256,6 @@ public class Configuration extends Observable {
 	 * Getter of the property <tt>allowMultiplexedData</tt>
 	 * 
 	 * @return flag if we expect several channels in raw data provider.
-	 * @uml.property name="allowMultiplexedData"
 	 */
 	public boolean isAllowMultiplexedData() {
 		return allowMultiplexedData;
@@ -284,7 +265,6 @@ public class Configuration extends Observable {
 	 * Getter of the property <tt>stationInfoFileName</tt>
 	 * 
 	 * @return full pathname for stations definition file.
-	 * @uml.property name="stationInfoFileName"
 	 */
 	public String getStationInfoFileName() {
 		return stationInfoFileName.replace("." + File.separator, getConfigFileDir());
@@ -295,7 +275,6 @@ public class Configuration extends Observable {
 	 * 
 	 * @param stationInfoFileName
 	 *            The stationInfoFileName to set.
-	 * @uml.property name="stationInfoFileName"
 	 */
 	public void setStationInfoFileName(String stationInfoFileName) {
 		this.stationInfoFileName = stationInfoFileName;
@@ -306,7 +285,6 @@ public class Configuration extends Observable {
 	 * 
 	 * @return quantity of visible units on the screen, see {@link PanelCountUnit}. Correspond -f
 	 *         command line option.
-	 * @uml.property name="unitsInFrame"
 	 */
 	public int getUnitsInFrame() {
 		return unitsInFrame;
@@ -317,7 +295,6 @@ public class Configuration extends Observable {
 	 * 
 	 * @param unitsInFrame
 	 *            The unitsInFrame to set.
-	 * @uml.property name="unitsInFrame"
 	 */
 	public void setUnitsInFrame(int unitsInFrame) {
 		this.unitsInFrame = unitsInFrame;
@@ -328,7 +305,6 @@ public class Configuration extends Observable {
 	 * 
 	 * @return current panel count unit,
 	 * @see PanelCountUnit to reference.
-	 * @uml.property name="panelCountUnit"
 	 */
 	public PanelCountUnit getPanelCountUnit() {
 		return panelCountUnit;
@@ -339,7 +315,6 @@ public class Configuration extends Observable {
 	 * 
 	 * @param panelCountUnit
 	 *            The panelCountUnit to set.
-	 * @uml.property name="panelCountUnit"
 	 */
 	public void setPanelCountUnit(PanelCountUnit panelCountUnit) {
 		this.panelCountUnit = panelCountUnit;
@@ -377,7 +352,6 @@ public class Configuration extends Observable {
 	 * Getter of the property <tt>panelOrder</tt>
 	 * 
 	 * @return order to sort traces to show, see <code>ChannelSortType<code> for options list.
-	 * @uml.property name="panelOrder"
 	 */
 	public ChannelSortType getPanelOrder() {
 		return panelOrder;
@@ -388,7 +362,6 @@ public class Configuration extends Observable {
 	 * 
 	 * @param po
 	 *            The panelOrder to set.
-	 * @uml.property name="panelOrder"
 	 */
 	public void setPanelOrder(ChannelSortType po) throws TraceViewException {
 		if (panelCountUnit == PanelCountUnit.STATION && !((po == ChannelSortType.TRACENAME) || (po == ChannelSortType.NETWORK_STATION_SAMPLERATE))) {
@@ -469,7 +442,6 @@ public class Configuration extends Observable {
 	 * Getter of the property <tt>responsePath</tt>
 	 * 
 	 * @return location of responses storage.
-	 * @uml.property name="responsePath"
 	 */
 	public String getResponsePath() {
 		return responsePath.replace("." + File.separator, getConfigFileDir());
@@ -480,7 +452,6 @@ public class Configuration extends Observable {
 	 * 
 	 * @param responsePath
 	 *            The ResponsePath to set.
-	 * @uml.property name="earthquakeDirectory"
 	 */
 	public void setResponsePath(String responsePath) {
 		this.responsePath = responsePath;

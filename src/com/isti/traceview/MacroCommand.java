@@ -17,9 +17,6 @@ import java.util.ArrayList;
 
 public class MacroCommand extends AbstractUndoableCommand implements IUndoableCommand, Comparable<Object> {
 
-	/**
-	 * @uml.property name="commands"
-	 */
 	private ArrayList<IUndoableCommand> commands = new ArrayList<IUndoableCommand>();
 
 	public void undo() {

@@ -11,22 +11,16 @@ import java.util.Date;
 public abstract class AbstractCommand implements ICommand, Comparable<Object> {
 	/**
 	 * Priority of command
-	 * 
-	 * @uml.property name="priority"
 	 */
 	private int priority;
 
 	/**
 	 * Time of execution start
-	 * 
-	 * @uml.property name="startTime"
 	 */
 	private Date startTime = null;
 
 	/**
 	 * Creation time of command
-	 * 
-	 * @uml.property name="creationTime"
 	 */
 	private Date creationTime = null;
 

@@ -61,11 +61,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 
 	/**
 	 * Set of events attached to this data provider
-	 * 
-	 * @uml.property name="Events"
-	 * @uml.associationEnd multiplicity="(0 -1)"
-	 *                     inverse="plotDataProvider:com.isti.xmax.common.IEvent"
-	 * @uml.association name="has events"
 	 */
 	protected transient SortedSet<IEvent> events;
 
@@ -520,7 +515,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * Getter of the property <tt>Events</tt>
 	 * 
 	 * @return set of all events
-	 * @uml.property name="Events"
 	 */
 	public SortedSet<IEvent> getEvents() {
 		return events;
