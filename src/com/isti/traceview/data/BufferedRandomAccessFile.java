@@ -1653,8 +1653,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * 
 	 * @param cached
 	 *            in the cache or not.
-	 * @see "https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html"
-	 *  ucar.unidata.io.FileCache
+	 * @see <a href="https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html"i>ucar.unidata.io.FileCache</a>
 	 */
 	public void setCached(boolean cached) {
 		this.cached = cached;
@@ -1664,8 +1663,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * Find whether this fie is in the cache.
 	 * 
 	 * @return true if in the cache.
-	 * @see "https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html"
-	 *  ucar.unidata.io.FileCache
+	 * @see <a href="https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html"i>ucar.unidata.io.FileCache</a>
 	 */
 	public boolean isCached() {
 		return cached;
