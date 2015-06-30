@@ -410,7 +410,7 @@ public class SimpleSMTPThread extends Thread {
 		 * look for a string in the last line received. Used by the SMTP sender
 		 * to insure good SMTP responses to output come back (case insensitive)
 		 * 
-		 * @aparm str to look for.
+		 * @param str to look for.
 		 * @return true if string is found on last line
 		 */
 		public boolean chkFor(String str) {

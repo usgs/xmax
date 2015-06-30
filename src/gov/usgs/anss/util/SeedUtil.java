@@ -189,7 +189,7 @@ public class SeedUtil {
 	}
 
 	/**
-	 * sanitize year using the rule of 60, two digit ears >=60 = 1900+yr years
+	 * Sanitize year using the rule of 60, two digit ears {@literal >=60} = 1900+yr years
 	 * less than 60 are 2000+yr. If its 4 digits already, just return it.
 	 * 
 	 * @param yr
