@@ -82,7 +82,7 @@ public class Configuration extends Observable {
 		/**
 		 * Trace name is what you see on a plot, i.e
 		 * network/station/location/channel. See
-		 * {@link com.isti.traceview.data.Channel.NameComparator} for details
+		 * {@link com.isti.traceview.data.NameComparator} for details
 		 */
 		TRACENAME,
 
