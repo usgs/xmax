@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  *    d[i,j]) = data[i*rowspan+j]
  * </PRE>
  * 
- * where rowspan >= ncols+2.
+ * {@literal where rowspan >= ncols+2.}
  * <P>
  * <B>WARNING!</B> Note that rowspan must be greater than the number of columns,
  * and the next 2 values, as well as the data itself, are <b>overwritten</b> in

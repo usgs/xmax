@@ -14,9 +14,9 @@ public interface IScaleModeState {
 	 * Should be called before other methods using
 	 * 
 	 * @param graphs
-	 *            List<PlotData> for current ChannelView
+	 *            List {@link PlotData} for current ChannelView
 	 * @param allViews
-	 *            List<ChannelView> All views for graph panel
+	 *            List {@link ChannelView} All views for graph panel
 	 * @param timeRange
 	 *            TimeInterval set in graph panel
 	 * @param meanState

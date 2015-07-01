@@ -534,7 +534,7 @@ class ChannelTypeComparator implements Comparator<Object> {
 
 /**
  * Comparator by network - station - sample rate - location code - channel type
- * return: 0=>Equal, 1=>(Obj1 > Obj2), -1=>(Obj1 < Obj2)
+ * return: {@literal 0=>Equal, 1=>(Obj1 > Obj2), -1=>(Obj1 < Obj2)}
  */
 class NetworkStationSamplerateComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {

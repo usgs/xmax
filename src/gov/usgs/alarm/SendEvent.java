@@ -59,7 +59,7 @@ public class SendEvent {
 	 * @param ip
 	 *            The IP address to use for events , if null do not change
 	 * @param port
-	 *            The port to use (if <= 0, do not change)
+	 *            {@literal The port to use (if <= 0, do not change)}
 	 */
 	public static void setEventHandler(String ip, int port) {
 		Util.prta("Bef setEventHandler ip=" + eventHandlerIP + "/"
