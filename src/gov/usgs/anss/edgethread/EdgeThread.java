@@ -43,7 +43,7 @@ import gov.usgs.anss.util.*;
  * 1) Each Subclass of this must have a constructor(String line, String tg)
  * where line is parsed for command line arguments, and then call super(line,tg)
  * 1st thing. This sets up the command elements for the EdgeThread (sets the
- * tag, opens log files after > or >>). Don't forget to strip the > or >>
+ * tag, opens log files after {@literal > or >>). Don't forget to strip the > or >>}
  * section if your code will gag on it.
  * <p>
  * 2) Each subclass should set running=true when its run method is started and
@@ -206,11 +206,11 @@ abstract public class EdgeThread extends Thread {
 
 	/**
 	 * process the initialization for the EdgeThread. Set the tag and open the
-	 * log file if the command line has ">" or ">>" on it.
+	 * log file if the command line has {@literal ">" or ">>"} on it.
 	 * 
 	 * @param line
-	 *            The command line parameters (parse for > or >> to set log
-	 *            name)
+	 *            The command line parameters
+	 *            {@literal (parse for > or >> to set log name)}
 	 * @param tg
 	 *            The unique tag which will appear on any lines header for
 	 *            EdgeMom.prt()

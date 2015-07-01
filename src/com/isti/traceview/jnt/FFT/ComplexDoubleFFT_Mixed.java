@@ -14,13 +14,13 @@ import org.apache.log4j.Logger;
  * See {@link ComplexDoubleFFT ComplexDoubleFFT} for details of data layout.
  * 
  * @author Bruce R. Miller bruce.miller@nist.gov
- * @author Contribution of the National Institute of Standards and Technology,
- * @author not subject to copyright.
- * @author Derived from GSL (Gnu Scientific Library)
- * @author GSL's FFT Code by Brian Gough bjg@vvv.lanl.gov
- * @author Since GSL is released under
- * @author <H HREF="http://www.gnu.org/copyleft/gpl.html">GPL</A>,
- * @author this package must also be.
+ *  Contribution of the National Institute of Standards and Technology,
+ *  not subject to copyright.
+ *  Derived from GSL (Gnu Scientific Library)
+ *  GSL's FFT Code by Brian Gough bjg@vvv.lanl.gov
+ *  Since GSL is released under
+ *  <a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>,
+ *  this package must also be.
  */
 public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 	private static final Logger logger = Logger.getLogger(ComplexDoubleFFT.class);

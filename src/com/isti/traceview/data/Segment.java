@@ -208,7 +208,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
      * MTH: Currently not using this since serialized data is being
-     *      read in dumpData() --> InitCache --> Segment.getData()
+     *      {@literal read in dumpData() --> InitCache --> Segment.getData()}
      *
 	 * Load the int[] data from a .DATA file into this Segment data[]
      *      Needed so that -T will work with existing serialized data
@@ -239,7 +239,7 @@ public class Segment implements Externalizable, Cloneable {
 	/**
 	 * Reads all data from loaded segment
 	 * 
-	 * NOTE: Will add ArrayList<Integer> dataList constructor for SegmentData (for future use)
+	 * NOTE: Will add {@code ArrayList<Integer>} dataList constructor for SegmentData (for future use)
 	 */
 	public SegmentData getData() {
 		if (dataStream == null) {

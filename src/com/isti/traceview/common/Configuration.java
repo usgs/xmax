@@ -74,13 +74,15 @@ public class Configuration extends Observable {
 	}
 
 	/**
-	 * Enumeration for channel sort type. Note that not all combinations of show units and sorting
-	 * options are permitted. For example, we can't show stations and have a list sorted by channels
+	 * Enumeration for channel sort type. Note that not all combinations of show
+	 * units and sorting options are permitted. For example, we can't show
+	 * stations and have a list sorted by channels
 	 */
 	public enum ChannelSortType {
 		/**
-		 * Trace name is what you see on a plot, i.e network/station/location/channel. See
-		 * {@link com.isti.traceview.data.NameComparator} for details
+		 * Trace name is what you see on a plot, i.e
+		 * network/station/location/channel. See
+		 * {@link com.isti.traceview.data.Channel.NameComparator} for details
 		 */
 		TRACENAME,
 
@@ -90,19 +92,21 @@ public class Configuration extends Observable {
 		NETWORK_STATION_SAMPLERATE,
 
 		/**
-		 * Really Channel - network - station - location order See {@link com.isti.traceview.data.ChannelComparator}
-		 * for details
+		 * Really Channel - network - station - location order See
+		 * {@link com.isti.traceview.data.ChannelComparator} for details
 		 */
 		CHANNEL,
 
 		/**
-		 * Channel type is last character of channel name. Channel type - channel - network -
-		 * station order. See {@link com.isti.traceview.data.ChannelTypeComparator} for details
+		 * Channel type is last character of channel name. Channel type -
+		 * channel - network - station order.
+		 * @see com.isti.traceview.data.ChannelTypeComparator
 		 */
 		CHANNEL_TYPE,
 
 		/**
-		 * Sorting by channel's events See {@link com.isti.traceview.data.EventComparator} for details
+		 * Sorting by channel's events See
+		 * {@link com.isti.traceview.data.EventComparator} for details
 		 */
 		EVENT
 	}
@@ -126,7 +130,7 @@ public class Configuration extends Observable {
 	private int unitsInFrame;
 
 	/**
-	 * Order to sort traces to show, see <code>ChannelSortType<code> for options list.
+	 * Order to sort traces to show, see {@link ChannelSortType} for options list.
 	 * Correspond -o command line option.
 	 */
 	private ChannelSortType panelOrder;
@@ -349,9 +353,9 @@ public class Configuration extends Observable {
 	}
 
 	/**
-	 * Getter of the property <tt>panelOrder</tt>
+	 * Getter of the property panelOrder
 	 * 
-	 * @return order to sort traces to show, see <code>ChannelSortType<code> for options list.
+	 * @return order to sort traces to show, see {@link ChannelSortType} for options list.
 	 */
 	public ChannelSortType getPanelOrder() {
 		return panelOrder;

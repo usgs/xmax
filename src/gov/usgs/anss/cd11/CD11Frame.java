@@ -478,7 +478,7 @@ public class CD11Frame {
    * an internal scratch channel subframe so beware saving the result in a handle and  calling
    * this routine again.
    * 
-   * @param n which frame to get starting with 0 and < DataNChan 
+   * @param n {@literal which frame to get starting with 0 and < DataNChan }
    * @return The decoded channel subframe or null if n is out-of-range
    */
   public ChannelSubframe getChannel(int n) {
@@ -667,7 +667,7 @@ public class CD11Frame {
    * @param data The samples
    * @param auth If not zero, authentication is use
    * @param transformation normally 1 for canadian compression applied before signature
-   * @param sensType 0=seismic, 1=hydracoustic, 2=infrasonic, 3=weather, >3 other
+   * @param sensType {@literal 0=seismic, 1=hydracoustic, 2=infrasonic, 3=weather, >3 other}
    */
   public void addChannel(String ssssscccll, GregorianCalendar start, int nsamp, double rate,
       int [] data, boolean auth, int transformation, int sensType ) {

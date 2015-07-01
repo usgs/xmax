@@ -858,9 +858,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * byte read is <code>b</code>, where <code>0&nbsp;&lt;=&nbsp;b&nbsp;&lt;=&nbsp;255</code>,
 	 * then the result is:
 	 * <ul>
-	 * <code>
-	 *     (byte)(b)
-	 * </code>
+	 * {@code (byte)(b)}
 	 * </ul>
 	 * <p>
 	 * This method blocks until the byte is read, the end of the stream is detected, or an exception
@@ -903,9 +901,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * values is between <code>0</code> and <code>255</code>, inclusive, then the result is
 	 * equal to:
 	 * <ul>
-	 * <code>
-	 *     (short)((b1 &lt;&lt; 8) | b2)
-	 * </code>
+	 * {@code (short)((b1 &lt;&lt; 8) | b2)}
 	 * </ul>
 	 * <p>
 	 * This method blocks until the two bytes are read, the end of the stream is detected, or an
@@ -948,9 +944,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * the bytes read, in order, are <code>b1</code> and <code>b2</code>, where
 	 * <code>0&nbsp;&lt;=&nbsp;b1, b2&nbsp;&lt;=&nbsp;255</code>, then the result is equal to:
 	 * <ul>
-	 * <code>
-	 *     (b1 &lt;&lt; 8) | b2
-	 * </code>
+	 * {@code (b1 &lt;&lt; 8) | b2}
 	 * </ul>
 	 * <p>
 	 * This method blocks until the two bytes are read, the end of the stream is detected, or an
@@ -979,9 +973,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <code>0&nbsp;&lt;=&nbsp;b1,&nbsp;b2&nbsp;&lt;=&nbsp;255</code>, then the result is equal
 	 * to:
 	 * <ul>
-	 * <code>
-	 *     (char)((b1 &lt;&lt; 8) | b2)
-	 * </code>
+	 * {@code (char)((b1 &lt;&lt; 8) | b2)}
 	 * </ul>
 	 * <p>
 	 * This method blocks until the two bytes are read, the end of the stream is detected, or an
@@ -1011,9 +1003,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <code>b4</code>, where <code>0&nbsp;&lt;=&nbsp;b1, b2, b3, b4&nbsp;&lt;=&nbsp;255</code>,
 	 * then the result is equal to:
 	 * <ul>
-	 * <code>
-	 *     (b1 &lt;&lt; 24) | (b2 &lt;&lt; 16) + (b3 &lt;&lt; 8) + b4
-	 * </code>
+	 * {@code (b1 &lt;&lt; 24) | (b2 &lt;&lt; 16) + (b3 &lt;&lt; 8) + b4}
 	 * </ul>
 	 * <p>
 	 * This method blocks until the four bytes are read, the end of the stream is detected, or an
@@ -1073,9 +1063,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * where <code>0&nbsp;&lt;=&nbsp;b1, b2, b3&nbsp;&lt;=&nbsp;255</code>, then the result is
 	 * equal to:
 	 * <ul>
-	 * <code>
-	 *     (b1 &lt;&lt; 16) | (b2 &lt;&lt; 8) + (b3 &lt;&lt; 0)
-	 * </code>
+	 * {@code (b1 &lt;&lt; 16) | (b2 &lt;&lt; 8) + (b3 &lt;&lt; 0)}
 	 * </ul>
 	 * <p>
 	 * This method blocks until the three bytes are read, the end of the stream is detected, or an
@@ -1099,9 +1087,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * <code>b4</code>, <code>b5</code>, <code>b6</code>, <code>b7</code>, and
 	 * <code>b8,</code> where:
 	 * <ul>
-	 * <code>
-	 *     0 &lt;= b1, b2, b3, b4, b5, b6, b7, b8 &lt;=255,
-	 * </code>
+	 * {@code 0 &lt;= b1, b2, b3, b4, b5, b6, b7, b8 &lt;=255,}
 	 * </ul>
 	 * <p>
 	 * then the result is equal to:
@@ -1653,7 +1639,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * 
 	 * @param cached
 	 *            in the cache or not.
-	 * @see <a href="https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html"i>ucar.unidata.io.FileCache</a>
+	 * @see <a href="https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html">ucar.unidata.io.FileCache</a>
 	 */
 	public void setCached(boolean cached) {
 		this.cached = cached;
@@ -1663,7 +1649,7 @@ public class BufferedRandomAccessFile implements DataInput, DataOutput {
 	 * Find whether this fie is in the cache.
 	 * 
 	 * @return true if in the cache.
-	 * @see <a href="https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html"i>ucar.unidata.io.FileCache</a>
+	 * @see <a href="https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/ucar/unidata/io/RandomAccessFile.html">ucar.unidata.io.FileCache</a>
 	 */
 	public boolean isCached() {
 		return cached;

@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
   *</PRE>
   * It turns out that there are still n `independent' values, so the transformation
   * can still be carried out in-place.
-  * <A name="transformlayout">For RealDoubleFFT_Radix2, the correspondence is as follows:
-  * <table>
+  * <a name="transformlayout"></a>For RealDoubleFFT_Radix2, the correspondence is as follows:
+  * <table summary="">
   *<tr><th>Logical</th><td></td><th>Physical</th></tr>
   *<tr><td>Re(D[0])</td><td>=</td><td>data[0]</td></tr>
   *<tr><td>Im(D[0])</td><td>=</td><td>0</td></tr>
@@ -35,13 +35,13 @@ import org.apache.log4j.Logger;
   *</table>
   *
   * @author Bruce R. Miller bruce.miller@nist.gov
-  * @author Contribution of the National Institute of Standards and Technology,
-  * @author not subject to copyright.
-  * @author Derived from GSL (Gnu Scientific Library)
-  * @author GSL's FFT Code by Brian Gough bjg@vvv.lanl.gov
-  * @author Since GSL is released under 
-  * @author <H HREF="http://www.gnu.org/copyleft/gpl.html">GPL</A>,
-  * @author this package must also be.
+  *  Contribution of the National Institute of Standards and Technology,
+  *  not subject to copyright.
+  *  Derived from GSL (Gnu Scientific Library)
+  *  GSL's FFT Code by Brian Gough bjg@vvv.lanl.gov
+  *  Since GSL is released under 
+  *  <a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>,
+  *  this package must also be.
   */
 
 public class RealDoubleFFT_Radix2 extends RealDoubleFFT {
@@ -62,7 +62,7 @@ public class RealDoubleFFT_Radix2 extends RealDoubleFFT {
 
 	/**
 	 * Compute the Fast Fourier Transform of data leaving the result in data.
-	 * See {@link <A HREF="#transformlayout"> Radix2 Transform Layout</A>} for
+	 * See <a href="#transformlayout"> Radix2 Transform Layout</a> for
 	 * description of the resulting data layout.
 	 */
 	public void transform(double data[], int i0, int stride) {

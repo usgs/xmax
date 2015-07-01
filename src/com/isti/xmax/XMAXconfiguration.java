@@ -174,7 +174,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Getter of the property <tt>OutputPath</tt>, see also <OutputPath> tag in config.xml
+	 * Getter of the property OutputPath, see also {@code <OutputPath>} tag in config.xml
 	 * 
 	 * @return Returns the directory to store generated files.
 	 */
@@ -183,7 +183,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Setter of the property <tt>outputPath</tt>, see also <OutputPath> tag in config.xml
+	 * Setter of the property outputPath, see also {@code <OutputPath>} tag in config.xml
 	 * 
 	 * @param outputPath
 	 *            directory to store generated files.
@@ -193,7 +193,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Getter of the property <tt>Time interval</tt>
+	 * Getter of the property Time interval
 	 * 
 	 * @return time interval to set after initialization and for filtering of source data during
 	 *         parsing.
@@ -255,7 +255,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Getter of the property <tt>qCdataFileName</tt>, see also <QCDataFile> tag in config.xml and
+	 * Getter of the property qCdataFileName, see also {@code <QCDataFile>} tag in config.xml and
 	 * -q command line option.
 	 * 
 	 * @return quality control data file name.
@@ -265,7 +265,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Setter of the property <tt>qCdataFileName</tt>, see also <QCDataFile> tag in config.xml and
+	 * Setter of the property qCdataFileName, see also {@code <QCDataFile>} tag in config.xml and
 	 * -q command line option.
 	 * 
 	 * @param qCdataFileName
@@ -276,7 +276,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Getter of the property <tt>pickPath</tt>, see also <PickPath> tag in config.xml and -p
+	 * Getter of the property pickPath, see also {@code <PickPath>} tag in config.xml and -p
 	 * command line option.
 	 * 
 	 * @return directory name to store picks database.
@@ -286,7 +286,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Setter of the property <tt>pickPath</tt>, see also <PickPath> tag in config.xml and -p
+	 * Setter of the property pickPath, see also {@code <PickPath>} tag in config.xml and -p
 	 * command line option.
 	 * 
 	 * @param pickPath
@@ -297,7 +297,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Getter of the property <tt>earthquakeFileMask</tt>, see also <EventFileMask> tag in
+	 * Getter of the property earthquakeFileMask, see also {@code <EventFileMask>} tag in
 	 * config.xml and -k command line option.
 	 * 
 	 * @return wildcarded mask to search earthquake description files.
@@ -307,7 +307,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * Getter of the property <tt>earthquakeFileMask</tt>, see also <EventFileMask> tag in
+	 * Getter of the property earthquakeFileMask, see also {@code <EventFileMask>} tag in
 	 * config.xml and -k command line option.
 	 * 
 	 * @param earthquakeFileMask
@@ -318,7 +318,7 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	/**
-	 * @return last selected in the file chooser directory, see also <ExportDir> tag in config.xml
+	 * @return last selected in the file chooser directory, see also {@code <ExportDir>} tag in config.xml
 	 */
 	public String getUserDir(String type) {
 		return userDirectories.get(type);
@@ -326,7 +326,7 @@ public class XMAXconfiguration extends Configuration {
 
 	/**
 	 * @param dir
-	 *            last selected in the file chooser directory, see also <ExportDir> tag in
+	 *            last selected in the file chooser directory, see also {@code <ExportDir>} tag in
 	 *            config.xml
 	 */
 	public void setUserDir(String type, String dir) {
