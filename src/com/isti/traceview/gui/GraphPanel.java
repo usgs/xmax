@@ -66,13 +66,22 @@ import java.awt.print.Printable;
  */
 public class GraphPanel extends JPanel implements Printable, MouseInputListener, Observer {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/** The Constant logger. */
 	private static final Logger logger = Logger.getLogger(GraphPanel.class); // @jve:decl-index=0:
 
+	/** The Constant selectionColor. */
 	private static final Color selectionColor = Color.YELLOW;
+	
+	/** The axis font. */
 	private static Font axisFont = null; // @jve:decl-index=0:
+	
+	/** The hidden cursor. */
 	private static Cursor hiddenCursor = null;
+	
+	/** The cross cursor. */
 	private static Cursor crossCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
 	static {
@@ -81,35 +90,25 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		hiddenCursor = Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), "HIDDEN_CURSOR");
 	}
 
-	/**
-	 * Time interval including currently loaded in GraphPanel channels set
-	 */
+	/** Time interval including currently loaded in GraphPanel channels set. */
 	private TimeInterval timeRange = new TimeInterval();
 
-	/**
-	 * Maximum Y scale value for manual scale mode
-	 */
-	//private int manualValueMax = Integer.MIN_VALUE;
-
-	/**
-	 * Minimum Y scale value for manual scale mode
-	 */
-	//private int manualValueMin = Integer.MAX_VALUE;
-
-	/**
-	 * List of graphs
-	 */
+	/** List of graphs */
 	private List<ChannelView> channelShowSet = null; // @jve:decl-index=0:
+	
+	/** The selected channel show set. */
 	private List<ChannelView> selectedChannelShowSet = null;
 
-	/**
-	 * Amount of units to show simultaneously in this graph panel
-	 */
+	/** Amount of units to show simultaneously in this graph panel. */
 	private int unitsShowCount;
 
+	/** The draw area panel. */
 	private DrawAreaPanel drawAreaPanel = null;
+	
+	/** The south panel. */
 	private SouthPanel southPanel = null;
 
+	/** The mouse selection enabled. */
 	private boolean mouseSelectionEnabled = true;
 
 	/**
@@ -132,9 +131,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	protected int previousMouseY = -1;
 	
-	/**
-	 * Flag if we need to repaint mouse cross cursor
-	 */
+	/** Flag if we need to repaint mouse cross cursor. */
 	private boolean mouseRepaint = false;
 
 	/**
@@ -142,29 +139,19 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	private boolean forceRepaint = false;
 
-	/**
-	 * Flag if we need to initialize painting (unchanged data loads once)
-	 */
+	/** Flag if we need to initialize painting (unchanged data loads once). */
 	protected boolean initialPaint = false;
 
-	/**
-	 * Flag for ChannelView mouse movements (draw crosshair)
-	 */
+	/** Flag for ChannelView mouse movements (draw crosshair). */
 	protected boolean cvMouseMoved = false;	
 
-	/**
-	 * Flag when exiting ChannelView panel (erase prev crosshair) 
-	 */
+	/** Flag when exiting ChannelView panel (erase prev crosshair). */
 	private boolean cvMouseExited = false;
 
-	/**
-	 * Flag when we drag mouse for zooming in ChannelView panels
-	 */
+	/** Flag when we drag mouse for zooming in ChannelView panels. */
 	protected boolean mouseDragged = false;
 
-	/**
-	 * Flag if we need to paint now (occurs with repaint())
-	 */
+	/** Flag if we need to paint now (occurs with repaint()). */
 	private boolean paintNow = false;
 
 	/**
@@ -177,19 +164,31 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	protected int mousePressY;
 
-	/**
-	 * Mouse button which was pressed
-	 */
+	/** Mouse button which was pressed. */
 	protected int button = MouseEvent.NOBUTTON;
 
+	/** The selected area xbegin. */
 	private long selectedAreaXbegin = Long.MAX_VALUE;
+	
+	/** The selected area xend. */
 	private long selectedAreaXend = Long.MIN_VALUE;
+	
+	/** The selected area ybegin. */
 	private double selectedAreaYbegin = Double.NaN;
+	
+	/** The selected area yend. */
 	private double selectedAreaYend = Double.NaN;
 
+	/** The previous selected area xbegin. */
 	private long previousSelectedAreaXbegin = Long.MAX_VALUE;
+	
+	/** The previous selected area xend. */
 	private long previousSelectedAreaXend = Long.MIN_VALUE;
+	
+	/** The previous selected area ybegin. */
 	private double previousSelectedAreaYbegin = Double.NaN;
+	
+	/** The previous selected area yend. */
 	private double previousSelectedAreaYend = Double.NaN;
 
 	/**
@@ -197,57 +196,79 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	private int mouseClickX = -1;
 
+	/** The observable. */
 	private GraphPanelObservable observable = null;
 
+	/** The show big cursor. */
 	private boolean showBigCursor = false;
 
-	/**
-	 * Flag if graphPanel should manage its TimeInterval itself or use given time interval
-	 */
+	/** Flag if graphPanel should manage its TimeInterval itself or use given time interval. */
 	private boolean shouldManageTimeRange = true;
 
+	/** The scale mode. */
 	private IScaleModeState scaleMode = null; // @jve:decl-index=0:
 
+	/** The color mode. */
 	private IColorModeState colorMode = null; // @jve:decl-index=0:
 
+	/** The mean state. */
 	private IMeanState meanState; // @jve:decl-index=0:
 
+	/** The offset state. */
 	private IOffsetState offsetState; // @jve:decl-index=0:
 
+	/** The phase state. */
 	private boolean phaseState = false;
+	
+	/** The pick state. */
 	private boolean pickState = false;
+	
+	/** The overlay. */
 	private boolean overlay = false;
+	
+	/** The select. */
 	private boolean select = false;
+	
+	/** The filter. */
 	private IFilter filter = null;
+	
+	/** The rotation. */
 	private Rotation rotation = null;
 
-	/**
-	 * Visible earthquakes to draw on the graphs
-	 */
+	/** Visible earthquakes to draw on the graphs. */
 	private Set<IEvent> selectedEarthquakes = null; // @jve:decl-index=0:
 	
-	/**
-	 * Visible phases to draw on the graphs
-	 */
+	/** Visible phases to draw on the graphs. */
 
 	private Set<String> selectedPhases = null; // @jve:decl-index=0:
+	
+	/** The mouse adapter. */
 	private IMouseAdapter mouseAdapter = null;
+	
+	/** The time range adapter. */
 	private ITimeRangeAdapter timeRangeAdapter = null;
+	
+	/** The channel view factory. */
 	protected IChannelViewFactory channelViewFactory = new DefaultChannelViewFactory();
+	
+	/** The mark position image. */
 	private Image markPositionImage = null;
 	
-	/**
-	 * if we need show block header as tooltip
-	 */
+	/** if we need show block header as tooltip. */
 	private boolean isShowBlockHeader = false;
 
 	/**
-	 * Default constructor
+	 * Default constructor.
 	 */
 	public GraphPanel() {
 		this(true);
 	}
 	
+	/**
+	 * Instantiates a new graph panel.
+	 *
+	 * @param showTimePanel the show time panel
+	 */
 	public GraphPanel(boolean showTimePanel) {
 		super();
 		initialize(showTimePanel);
@@ -265,7 +286,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * This method initializes graph panel
+	 * This method initializes graph panel.
+	 *
+	 * @param showTimePanel the show time panel
 	 */
 	private void initialize(boolean showTimePanel) {
 		if (axisFont == null) {
@@ -332,8 +355,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of time range
-	 * 
+	 * Getter of time range.
+	 *
 	 * @return currently time range
 	 */
 	public TimeInterval getTimeRange() {
@@ -341,10 +364,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Time range setter
-	 * 
-	 * @param ti
-	 *            time range to set. Graph panel redraws to show this time range.
+	 * Time range setter.
+	 *
+	 * @param ti            time range to set. Graph panel redraws to show this time range.
 	 */
 	public void setTimeRange(TimeInterval ti) {
 		//logger.debug("timerange: " + timeRange);
@@ -383,8 +405,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * If true, graph panel selects blue area while mouse dragging and calls time range or value
-	 * range changing after mouse releasing
-	 * 
+	 * range changing after mouse releasing.
+	 *
 	 * @return Flag if mouse selection enabled
 	 */
 	public boolean isMouseSelectionEnabled() {
@@ -393,22 +415,19 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * If true, graph panel selects blue area while mouse dragging and calls time range or value
-	 * range changing after mouse releasing
-	 * 
-	 * @param mouseSelectionEnabled
-	 *            Flag if mouse selection enabled
+	 * range changing after mouse releasing.
+	 *
+	 * @param mouseSelectionEnabled            Flag if mouse selection enabled
 	 */
 	public void setMouseSelectionEnabled(boolean mouseSelectionEnabled) {
 		this.mouseSelectionEnabled = mouseSelectionEnabled;
 	}
 
 	/**
-	 * Sets X coordinates of selected rectangle
-	 * 
-	 * @param begin
-	 *            left edge position
-	 * @param end
-	 *            right edge position
+	 * Sets X coordinates of selected rectangle.
+	 *
+	 * @param begin            left edge position
+	 * @param end            right edge position
 	 */
 	public void setSelectionX(long begin, long end) {
 		selectedAreaXbegin = begin;
@@ -416,12 +435,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Sets Y coordinates of selected rectangle
-	 * 
-	 * @param begin
-	 *            top edge position
-	 * @param end
-	 *            bottom edge position
+	 * Sets Y coordinates of selected rectangle.
+	 *
+	 * @param begin            top edge position
+	 * @param end            bottom edge position
 	 */
 	public void setSelectionY(double begin, double end) {
 		selectedAreaYbegin = begin;
@@ -429,36 +446,40 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Sets mouse adapter which defines behavior after mouse operations
+	 * Sets mouse adapter which defines behavior after mouse operations.
+	 *
+	 * @param ma the new mouse adapter
 	 */
 	public void setMouseAdapter(IMouseAdapter ma) {
 		mouseAdapter = ma;
 	}
 
 	/**
-	 * Removes mouse adapter which defines behavior after mouse operations
+	 * Removes mouse adapter which defines behavior after mouse operations.
 	 */
 	public void removeMouseAdapter() {
 		mouseAdapter = null;
 	}
 
 	/**
-	 * Sets time range adapter which defines behavior after setting time range
+	 * Sets time range adapter which defines behavior after setting time range.
+	 *
+	 * @param tr the new time range adapter
 	 */
 	public void setTimeRangeAdapter(ITimeRangeAdapter tr) {
 		timeRangeAdapter = tr;
 	}
 
 	/**
-	 * Removes time range adapter which defines behavior after setting time range
+	 * Removes time range adapter which defines behavior after setting time range.
 	 */
 	public void removeTimeRangeAdapter() {
 		timeRangeAdapter = null;
 	}
 
 	/**
-	 * Getter of the property <tt>manualValueMin</tt>
-	 * 
+	 * Getter of the property <tt>manualValueMin</tt>.
+	 *
 	 * @return Minimum of value axis range, it used in XHair scaling mode
 	 */
 	public double getManualValueMin() {
@@ -466,10 +487,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>manualValueMin</tt>
-	 * 
-	 * @param manualValueMin
-	 *            Minimum of value axis range, it used in XHair scaling mode
+	 * Setter of the property <tt>manualValueMin</tt>.
+	 *
+	 * @param manualValueMin            Minimum of value axis range, it used in XHair scaling mode
 	 */
 	public void setManualValueMin(double manualValueMin) {
 		ScaleModeAbstract.setManualValueMin(manualValueMin);
@@ -477,8 +497,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of the property <tt>manualValueMax</tt>
-	 * 
+	 * Getter of the property <tt>manualValueMax</tt>.
+	 *
 	 * @return Maximum of value axis range, it used in XHair scaling mode
 	 */
 	public double getManualValueMax() {
@@ -486,20 +506,29 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>manualValueMax</tt>
-	 * 
-	 * @param manualValueMax
-	 *            Maximum of value axis range, it used in XHair scaling mode
+	 * Setter of the property <tt>manualValueMax</tt>.
+	 *
+	 * @param manualValueMax            Maximum of value axis range, it used in XHair scaling mode
 	 */
 	public void setManualValueMax(double manualValueMax) {
 		ScaleModeAbstract.setManualValueMax(manualValueMax);
 		forceRepaint();
 	}
 	
+	/**
+	 * Gets the show block header.
+	 *
+	 * @return the show block header
+	 */
 	public boolean getShowBlockHeader(){
 		return isShowBlockHeader;
 	}
 	
+	/**
+	 * Sets the show block header.
+	 *
+	 * @param isShowBlockHeader the new show block header
+	 */
 	public void setShowBlockHeader(boolean isShowBlockHeader){
 		this.isShowBlockHeader = isShowBlockHeader;
 		if(!isShowBlockHeader){
@@ -508,6 +537,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the channel set.
+	 *
 	 * @return Returns List of currently loaded channels.
 	 */
 	public List<PlotDataProvider> getChannelSet() {
@@ -532,7 +563,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * Returns list of views for current page with influence of selection commands, like select or
-	 * overlay
+	 * overlay.
+	 *
+	 * @return the current channel show set
 	 */
 	public List<ChannelView> getCurrentChannelShowSet() {
 		List<ChannelView> ret = new ArrayList<ChannelView>();
@@ -544,6 +577,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the selected channel show set.
+	 *
 	 * @return Returns List of selected graphs Here we mean graph selected if it was selected on the
 	 *         initial screen, without selected or overlayed mode.
 	 */
@@ -553,6 +588,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the current selected channel show set.
+	 *
 	 * @return Returns List of selected graphs based on screen selection. Differ from
 	 *         getSelectedChannelShowSet() while mode selected or overlay enabled.
 	 */
@@ -568,6 +605,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the current selected channels.
+	 *
 	 * @return Returns List of selected channels, based on screen selection
 	 */
 	public List<PlotDataProvider> getCurrentSelectedChannels() {
@@ -580,10 +619,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * Setter of the property <tt>channelShowSet</tt> each channel in it's own graph or group by
-	 * location in each graph
-	 * 
-	 * @param channels
-	 *            list of traces
+	 * location in each graph.
+	 *
+	 * @param channels            list of traces
 	 */
 	public void setChannelShowSet(List<PlotDataProvider> channels) {
 		synchronized (TraceView.getDataModule().getAllChannels()) {
@@ -675,7 +713,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Add one graph with list of channels inside it
+	 * Add one graph with list of channels inside it.
+	 *
+	 * @param channels the channels
 	 */
 	public void addChannelShowSet(List<PlotDataProvider> channels) {
 		if (channels != null) {
@@ -695,7 +735,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Clears loaded set of traces
+	 * Clears loaded set of traces.
 	 */
 	public void clearChannelShowSet() {
 		for (ChannelView cv: channelShowSet) {
@@ -711,8 +751,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of the property <tt>unitsShowCount</tt>
-	 * 
+	 * Getter of the property <tt>unitsShowCount</tt>.
+	 *
 	 * @return Count of display units used to determine which subset of loaded traced should be
 	 *         shown
 	 */
@@ -721,10 +761,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>unitsShowCount</tt>
-	 * 
-	 * @param unitsShowCount
-	 *            Count of display units used to determine which subset of loaded traced should be
+	 * Setter of the property <tt>unitsShowCount</tt>.
+	 *
+	 * @param unitsShowCount            Count of display units used to determine which subset of loaded traced should be
 	 *            shown
 	 */
 	public void setUnitsShowCount(int unitsShowCount) {
@@ -732,6 +771,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the show big cursor.
+	 *
 	 * @return Flag if panel should use full-size cross hairs cursor
 	 */
 	public boolean getShowBigCursor() {
@@ -739,8 +780,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * @param showBigCursor
-	 *            Flag if panel should use full-size cross hairs cursor
+	 * Sets the show big cursor.
+	 *
+	 * @param showBigCursor            Flag if panel should use full-size cross hairs cursor
 	 */
 	public void setShowBigCursor(boolean showBigCursor) {
 		this.showBigCursor = showBigCursor;
@@ -758,8 +800,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * @param status
-	 *            if panel should use wait cursor, used during long operations
+	 * Sets the wait cursor.
+	 *
+	 * @param status            if panel should use wait cursor, used during long operations
 	 */
 	public void setWaitCursor(boolean status) {
 		synchronized (channelShowSet) {
@@ -783,8 +826,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of the property <tt>scaleMode</tt>
-	 * 
+	 * Getter of the property <tt>scaleMode</tt>.
+	 *
 	 * @return current scaling mode
 	 */
 	public IScaleModeState getScaleMode() {
@@ -792,10 +835,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>scaleMode</tt>
-	 * 
-	 * @param scaleMode
-	 *            scaling mode which panel should use
+	 * Setter of the property <tt>scaleMode</tt>.
+	 *
+	 * @param scaleMode            scaling mode which panel should use
 	 */
 	public void setScaleMode(IScaleModeState scaleMode) {
 		this.scaleMode = scaleMode;
@@ -808,8 +850,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of the property <tt>colorMode</tt>
-	 * 
+	 * Getter of the property <tt>colorMode</tt>.
+	 *
 	 * @return current color mode
 	 */
 	public IColorModeState getColorMode() {
@@ -817,10 +859,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>colorMode</tt>
-	 * 
-	 * @param colorMode
-	 *            color mode which panel should use
+	 * Setter of the property <tt>colorMode</tt>.
+	 *
+	 * @param colorMode            color mode which panel should use
 	 */
 	public void setColorMode(IColorModeState colorMode) {
 		this.colorMode = colorMode;
@@ -830,8 +871,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of the property <tt>meanState</tt>
-	 * 
+	 * Getter of the property <tt>meanState</tt>.
+	 *
 	 * @return current meaning mode
 	 */
 	public IMeanState getMeanState() {
@@ -839,10 +880,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>meanState</tt>
-	 * 
-	 * @param meanState
-	 *            meaning mode which panel should use
+	 * Setter of the property <tt>meanState</tt>.
+	 *
+	 * @param meanState            meaning mode which panel should use
 	 */
 	public void setMeanState(IMeanState meanState) {
 		this.meanState = meanState;
@@ -855,8 +895,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of the property <tt>offsetState</tt>
-	 * 
+	 * Getter of the property <tt>offsetState</tt>.
+	 *
 	 * @return current offset mode.
 	 */
 	public IOffsetState getOffsetState() {
@@ -864,10 +904,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>offsetState</tt>
-	 * 
-	 * @param offsetState
-	 *            offset mode which panel should use
+	 * Setter of the property <tt>offsetState</tt>.
+	 *
+	 * @param offsetState            offset mode which panel should use
 	 */
 	public void setOffsetState(IOffsetState offsetState) {
 		this.offsetState = offsetState;
@@ -877,8 +916,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of the property <tt>phaseState</tt>
-	 * 
+	 * Getter of the property <tt>phaseState</tt>.
+	 *
 	 * @return current phase mode.
 	 */
 	public boolean getPhaseState() {
@@ -886,10 +925,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>phaseState</tt>
-	 * 
-	 * @param phaseState
-	 *            phase mode which panel should use
+	 * Setter of the property <tt>phaseState</tt>.
+	 *
+	 * @param phaseState            phase mode which panel should use
 	 */
 	public void setPhaseState(boolean phaseState) {
 		this.phaseState = phaseState;
@@ -897,8 +935,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Getter of the property <tt>pickState</tt>
-	 * 
+	 * Getter of the property <tt>pickState</tt>.
+	 *
 	 * @return current pick mode.
 	 */
 	public boolean getPickState() {
@@ -906,10 +944,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Setter of the property <tt>pickState</tt>
-	 * 
-	 * @param pickState
-	 *            pick mode which panel should use
+	 * Setter of the property <tt>pickState</tt>.
+	 *
+	 * @param pickState            pick mode which panel should use
 	 */
 	public void setPickState(boolean pickState) {
 		this.pickState = pickState;
@@ -955,6 +992,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the filter.
+	 *
 	 * @return current filter, null if filter is not present
 	 */
 	public IFilter getFilter() {
@@ -1017,6 +1056,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the rotation.
+	 *
 	 * @return current rotation, null if rotation is not present
 	 */
 	public Rotation getRotation() {
@@ -1024,7 +1065,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 	
 	/**
-	 * 
+	 * Gets the max data length.
+	 *
 	 * @return Maximum length of visible data among all visible channels
 	 */
 	public int getMaxDataLength(){
@@ -1039,6 +1081,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the mark position image.
+	 *
 	 * @return Image currently used to render position marker
 	 */
 	public Image getMarkPositionImage() {
@@ -1046,16 +1090,17 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * @param image
-	 *            image to render position marker
+	 * Sets the mark position image.
+	 *
+	 * @param image            image to render position marker
 	 */
 	public void setMarkPositionImage(Image image) {
 		markPositionImage = image;
 	}
 
 	/**
-	 * This method initializes drawAreaPanel
-	 * 
+	 * This method initializes drawAreaPanel.
+	 *
 	 * @return javax.swing.JPanel
 	 */
 	private DrawAreaPanel getDrawAreaPanel() {
@@ -1066,8 +1111,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * This method initializes southPanel
-	 * 
+	 * This method initializes southPanel.
+	 *
+	 * @param showTimePanel the show time panel
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getSouthPanel(boolean showTimePanel) {
@@ -1079,10 +1125,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Adds ChannelView to this panel
-	 * 
-	 * @param comp
-	 *            ChannelView to add
+	 * Adds ChannelView to this panel.
+	 *
+	 * @param comp            ChannelView to add
 	 * @return added Component
 	 */
 	public Component addGraph(ChannelView comp) {
@@ -1099,6 +1144,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the overlay state.
+	 *
 	 * @return current overlay mode. If overlay mode turned on, all traces loaded in graph panel
 	 *         will be shown in one shared ChannelView
 	 */
@@ -1147,6 +1194,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the select state.
+	 *
 	 * @return current selection mode. If selection mode turned on, will be shown only ChannelViews
 	 *         with selected selection checkboxes.
 	 */
@@ -1193,22 +1242,33 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		forceRepaint();	// needed for new paint() method
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.Container#remove(int)
+	 */
 	public void remove(int index) {
 		drawAreaPanel.remove(index);
 		channelShowSet.remove(index);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.Container#remove(java.awt.Component)
+	 */
 	public void remove(Component comp) {
 		drawAreaPanel.remove(comp);
 		channelShowSet.remove(comp);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.Container#removeAll()
+	 */
 	public void removeAll() {
 		drawAreaPanel.removeAll();
 		channelShowSet.clear();
 	}
 
 	/**
+	 * Gets the axis font.
+	 *
 	 * @return font to draw axis
 	 */
 	public static Font getAxisFont() {
@@ -1216,6 +1276,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the selected earthquakes.
+	 *
 	 * @return earthquakes to draw on the graphs
 	 */
 	public Set<IEvent> getSelectedEarthquakes() {
@@ -1223,6 +1285,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the selected phases.
+	 *
 	 * @return set of phases names to draw on the graphs
 	 */
 	public Set<String> getSelectedPhases() {
@@ -1244,14 +1308,27 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		repaint();	// potential bug with redrawing quake/phase on graph
 	}
 
+	/**
+	 * Adds the observer.
+	 *
+	 * @param o the o
+	 */
 	public void addObserver(Observer o) {
 		observable.addObserver(o);
 	}
 
+	/**
+	 * Delete observer.
+	 *
+	 * @param o the o
+	 */
 	public void deleteObserver(Observer o) {
 		observable.deleteObserver(o);
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
+	 */
 	public void paint(Graphics g) {
 		if(!paintNow){
 			paintNow = true;
@@ -1363,6 +1440,16 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	/**
+	 * Paint selection.
+	 *
+	 * @param g the g
+	 * @param Xbegin the xbegin
+	 * @param Xend the xend
+	 * @param Ybegin the ybegin
+	 * @param Yend the yend
+	 * @param message the message
+	 */
 	private void paintSelection(Graphics g, long Xbegin, long Xend, double Ybegin, double Yend, String message) {
 		int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
 		if (Xbegin != Long.MAX_VALUE && Xend != Long.MIN_VALUE && mouseSelectionEnabled) {
@@ -1393,6 +1480,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the last clicked time.
+	 *
 	 * @return time of last click (in internal Java format)
 	 */
 	public long getLastClickedTime() {
@@ -1404,6 +1493,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
+	 * Gets the selection time.
+	 *
 	 * @return time of first selection point while dragging (in internal Java format)
 	 */
 	public long getSelectionTime() {
@@ -1415,10 +1506,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Computes trace time value
-	 * 
-	 * @param x
-	 *            screen panel coordinate
+	 * Computes trace time value.
+	 *
+	 * @param x            screen panel coordinate
 	 * @return time value in internal Java format
 	 */
 	public long getTime(int x) {
@@ -1429,10 +1519,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Computes screen panel coordinate
-	 * 
-	 * @param date
-	 *            trace time value in internal Java format
+	 * Computes screen panel coordinate.
+	 *
+	 * @param date            trace time value in internal Java format
 	 * @return screen panel coordinate
 	 */
 	public int getXposition(long date) {
@@ -1445,6 +1534,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * Methods from MouseInputListener interface to handle mouse events.
+	 *
+	 * @param e the e
 	 */
 
 	public void mouseMoved(MouseEvent e) {
@@ -1461,6 +1552,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
+	 */
 	public void mouseDragged(MouseEvent e) {
 		// need a check in paint(Graphics) for mouse
 		// clicking and dragging for zooming (forceRepaint?)
@@ -1472,6 +1566,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	// What are the orders for Button 1,2,3
+	/* (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+	 */
 	// Left/Middle/Right?
 	public void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON3) {
@@ -1492,7 +1589,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Enter routines for XMAXframe/ChannelView/GraphPanel
+	 * Enter routines for XMAXframe/ChannelView/GraphPanel.
+	 *
+	 * @param e the e
 	 */
 
 	// XMAXFrame mouse entering (for later use)
@@ -1507,11 +1606,22 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	/**
+	 * Cv mouse entered.
+	 *
+	 * @param e the e
+	 */
 	// Method for ChannelView mouse entering
 	public void cvMouseEntered(MouseEvent e) {
 		cvMouseExited = false;
 	}
 
+	/**
+	 * Method is called when the mouse enters the chart area. 
+	 * 
+	 * @param e the event
+	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+	 */
 	// Method for GraphPanel mouse entering
 	public void mouseEntered(MouseEvent e) {
 		if (cvMouseExited) {
@@ -1525,24 +1635,46 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Exit routines for XMAXframe/ChannelView/GraphPanel
+	 * Exit routines for XMAXframe/ChannelView/GraphPanel.
+	 *
+	 * @param e the e
 	 */
 
 	// Method for XMAXframe mouse exiting (later use)
 	public void xframeMouseExited(MouseEvent e) {
 	}
 	
+	/**
+	 * Cv mouse exited.
+	 *
+	 * @param e the e
+	 */
 	// Method for ChannelView mouse exiting
 	public void cvMouseExited(MouseEvent e) {	
 		cvMouseExited = true;	
+		mouseX = -1;
+		mouseY = -1;
+		repaint(); 	
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+	 */
 	// Method for GraphPanel mouse exiting (later use)
 	public void mouseExited(MouseEvent e) {
 		if (mouseX != -1 || mouseY != -1) {
+			mouseX = -1;
+			mouseY = -1;
+			repaint(); 	
 		}
 	}
 
+	/** 
+	 * Mouse clicked.
+	 * 
+	 * @param e the event
+	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+	 */
 	public void mousePressed(MouseEvent e) {
 		mousePressX = e.getX();
 		mousePressY = e.getY();
@@ -1560,6 +1692,12 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	/**
+	 * Mouse released.
+	 *
+	 * @param e the event
+	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+	 */
 	public void mouseReleased(MouseEvent e) {
 		if (mouseSelectionEnabled) {
 			button = MouseEvent.NOBUTTON;
@@ -1579,6 +1717,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	// From Printable interface
 	// **NOTE: This method is not working correctly. 
+	/* (non-Javadoc)
+	 * @see java.awt.print.Printable#print(java.awt.Graphics, java.awt.print.PageFormat, int)
+	 */
 	//		   Default printer is not assigned
 	public int print(Graphics pg, PageFormat pf, int pageNum) {
 		if (pageNum > 0) {
@@ -1592,8 +1733,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * @param time
-	 *            to start nearest segment searching
+	 * Gets the nearest segment begin.
+	 *
+	 * @param time            to start nearest segment searching
 	 * @return Time of nearest segment's begin(among all loaded traces) after given time
 	 */
 	public Date getNearestSegmentBegin(Date time) {
@@ -1615,8 +1757,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * @param time
-	 *            to start nearest segment searching
+	 * Gets the nearest segment end.
+	 *
+	 * @param time            to start nearest segment searching
 	 * @return Time of nearest segment's end(among all loaded traces) before given time
 	 */
 	public Date getNearestSegmentEnd(Date time) {
@@ -1637,6 +1780,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see javax.swing.JComponent#setBackground(java.awt.Color)
+	 */
 	public void setBackground(Color color){
 		super.setBackground(color);
 		if(southPanel != null){
@@ -1645,13 +1791,19 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Time-axis panel used by GraphPanel
+	 * Time-axis panel used by GraphPanel.
 	 */
 	class AxisPanel extends JPanel {	
 
+		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
+		
+		/** The axis. */
 		private DateAxis axis = null;
 		
+		/**
+		 * Instantiates a new axis panel.
+		 */
 		public AxisPanel() {
 			super();
 			// BorderLayout: Ignores the width dimension for NORTH/SOUTH components
@@ -1667,8 +1819,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 
 		/**
-		 * @param df
-		 *            date format to use in axis
+		 * Sets the date format.
+		 *
+		 * @param df            date format to use in axis
 		 * @see TimeInterval
 		 */
 		@SuppressWarnings("unused")	
@@ -1679,8 +1832,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 
 		/**
-		 * @param ti
-		 *            time interval of axis
+		 * Sets the time range.
+		 *
+		 * @param ti            time interval of axis
 		 */
 		public void setTimeRange(TimeInterval ti) {
             final long ONE_DAY    = 1L*86400000;
@@ -1796,6 +1950,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			repaint();
 		}
 
+		/* (non-Javadoc)
+		 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+		 */
 		public void paintComponent(Graphics g) {
 			//lg.debug("AxisPanel paintComponent");
 			super.paintComponent(g);
@@ -1824,15 +1981,28 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * Bottom panel with general timing information - start time, shown duration, end time, used in
-	 * GraphPanel
+	 * GraphPanel.
 	 */
 	class TimeInfoPanel extends JPanel {
+		
+		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
+		
+		/** The start. */
 		private JLabel start = null;
+		
+		/** The duration. */
 		private JLabel duration = null;
+		
+		/** The end. */
 		private JLabel end = null;
+		
+		/** The grid layout. */
 		GridLayout gridLayout = null;
 
+		/**
+		 * Instantiates a new time info panel.
+		 */
 		public TimeInfoPanel() {
 			super();
 			setFont(getAxisFont());
@@ -1848,6 +2018,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			add(end);
 		}
 
+		/**
+		 * Update.
+		 *
+		 * @param ti the ti
+		 */
 		public void update(TimeInterval ti) {
 			logger.debug("updating, ti = " + ti);
 			if (ti != null) {
@@ -1858,11 +2033,25 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	/**
+	 * The Class SouthPanel.
+	 */
 	class SouthPanel extends JPanel {
+		
+		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
+		
+		/** The axis panel. */
 		private AxisPanel axisPanel;
+		
+		/** The info panel. */
 		private TimeInfoPanel infoPanel;
 
+		/**
+		 * Instantiates a new south panel.
+		 *
+		 * @param showTimePanel the show time panel
+		 */
 		public SouthPanel(boolean showTimePanel) {
 			super();
 			GridLayout gridLayout = new GridLayout();
@@ -1881,14 +2070,27 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			}
 		}
 
+		/**
+		 * Gets the axis panel.
+		 *
+		 * @return the axis panel
+		 */
 		public AxisPanel getAxisPanel() {
 			return axisPanel;
 		}
 
+		/**
+		 * Gets the info panel.
+		 *
+		 * @return the info panel
+		 */
 		public TimeInfoPanel getInfoPanel() {
 			return infoPanel;
 		}
 		
+		/* (non-Javadoc)
+		 * @see javax.swing.JComponent#setBackground(java.awt.Color)
+		 */
 		public void setBackground(Color color){
 			super.setBackground(color);
 			if(axisPanel!=null){
@@ -1902,9 +2104,17 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	/**
+	 * The Class DrawAreaPanel.
+	 */
 	class DrawAreaPanel extends JPanel {
+		
+		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
 
+		/**
+		 * Instantiates a new draw area panel.
+		 */
 		public DrawAreaPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout();
@@ -1913,12 +2123,18 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			setLayout(gridLayout);
 		}
 
+		/* (non-Javadoc)
+		 * @see javax.swing.JComponent#paint(java.awt.Graphics)
+		 */
 		public void paint(Graphics g) {
 			//logger.debug("paint() Height: " + getHeight() + ", width: " + getWidth() + ", " + getComponents().length + " ChannelViews");
 			super.paint(g);
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
 	public void update(Observable observable, Object obj) {
 		logger.debug(this + ": update request from " + observable);
 		if (obj instanceof IScaleModeState) {
@@ -1932,7 +2148,14 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	/**
+	 * The Class GraphPanelObservable.
+	 */
 	public class GraphPanelObservable extends Observable {
+		
+		/* (non-Javadoc)
+		 * @see java.util.Observable#setChanged()
+		 */
 		public void setChanged() {
 			super.setChanged();
 		}
