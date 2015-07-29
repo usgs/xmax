@@ -164,7 +164,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 						fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_" + seriesName.replace("/", "_");
 						stream = new BufferedOutputStream(new FileOutputStream(fileName, false));
 						for (int j = 0; j < dataset.getItemCount(i); j++) {
-							stream.write((psnFormat1.format(Math.pow(10.0, dataset.getXValue(i, j))) + "  "
+							stream.write((psnFormat1.format(dataset.getXValue(i, j)) + "  "
 									+ psnFormat2.format(dataset.getYValue(i, j)) + "\n").getBytes());
 						}
 					} catch (IOException e1) {
