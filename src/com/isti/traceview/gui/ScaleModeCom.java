@@ -20,11 +20,13 @@ public class ScaleModeCom extends ScaleModeAbstract implements IScaleModeState {
 		double minValue = Double.POSITIVE_INFINITY;
 		for (ChannelView view: allViews) {
 			for (PlotData data: view.getPlotData()) {
-				if (maxValue < data.getMaxValue() || maxValue == Double.NEGATIVE_INFINITY) {
-					maxValue = data.getMaxValue();
+				double meanMaxValue = meanState.getValue(data.getMaxValue(), data.getMeanValue());
+				double meanMinValue = meanState.getValue(data.getMinValue(), data.getMeanValue());
+				if (maxValue < meanMaxValue || maxValue == Double.NEGATIVE_INFINITY) {
+					maxValue = meanMaxValue;
 				}
-				if (minValue > data.getMinValue() || minValue == Double.POSITIVE_INFINITY) {
-					minValue = data.getMinValue();
+				if (minValue > meanMinValue || minValue == Double.POSITIVE_INFINITY) {
+					minValue = meanMinValue;
 				}
 			}
 		}
