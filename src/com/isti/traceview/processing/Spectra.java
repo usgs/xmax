@@ -1,9 +1,12 @@
 package com.isti.traceview.processing;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.Date;
@@ -181,8 +184,9 @@ public class Spectra {
 	 */
 	public double[] getPSD(int inputUnits) {
 		try {	
+			
 			Cmplx[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);
-		
+			
 			//log("Deconvolved", deconvolved);
 			double[] psd = new double[deconvolved.length];
 			for (int i = 0; i < deconvolved.length; i++) {
@@ -227,12 +231,80 @@ public class Spectra {
 	 */
 	public XYSeries getPSDSeries(int inputUnits) {
 		XYSeries series = new XYSeries(getName());
-		double[] out = getPSD(inputUnits);
-		for (int i = 1; i < spectra.length; i++) {
-			double x = 1.0 / frequenciesArray[i];
-			double y = 10.0 * Math.log10(out[i]);
-			series.add(x, y);
+		double[] out = getPSD(inputUnits); //removes response
+		
+		try{
+			// if file doesnt exists, then create it
+			File file = new File("/Users/nfalco/frequenciesArray.txt");
+			if(file.createNewFile())
+			{
+				System.out.println("FILE CREATED");
+			}
+			else
+			{
+				System.out.println("COULDN'T CREATE FILE");
+			}
+			
+
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			for(int i = 0; i < frequenciesArray.length; i++)
+			{
+				bw.write(frequenciesArray[i] + "\n");
+			}
+			bw.close();
+
+			System.out.println("Done");
+
 		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("spectra.length = " + frequenciesArray.length); 
+		System.out.println("frequenciesArray.length = " + frequenciesArray.length); 
+		System.out.println("out.length = " + out.length); 
+		for (int i = 1; i < frequenciesArray.length - 1; i++) {
+			double x = 1.0 / frequenciesArray[i]; // put x in terms of period 
+			double y;
+			if(out[i] != 0)
+			{
+				y = 10.0 * Math.log10(out[i]); // put PSD in dB units
+				series.add(x, y);	
+			}
+		}
+		
+		try{
+			// if file doesnt exists, then create it
+			File file = new File("/Users/nfalco/psd.txt");
+			if(file.createNewFile())
+			{
+				System.out.println("FILE CREATED");
+			}
+			else
+			{
+				System.out.println("COULDN'T CREATE FILE");
+			}
+			
+
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			for(int i = 0; i < spectra.length; i++)
+			{
+				//if(out[i] != 0)
+				//{
+				bw.write("(1.0 / " + frequenciesArray[i] + " ) = " + (1.0 / frequenciesArray[i]) + "\t\t" + "(10.0 * Math.log10(" + out[i] + ")) = " + (10.0 * Math.log10(out[i])) + "\n");
+				//}
+			}
+			bw.close();
+
+			System.out.println("Done");
+
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		return series;
 	}
 

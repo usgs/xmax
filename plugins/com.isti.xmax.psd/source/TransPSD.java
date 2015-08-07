@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang.ArrayUtils;
 
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
@@ -20,6 +21,12 @@ import com.isti.traceview.processing.Spectra;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.io.*;
+import com.isti.jevalresp.RespUtils;
+
+import com.isti.traceview.data.Response;
+
 /**
  * Power spectra density transformation. Prepares data for presentation in {@link ViewPSD}
  * 
@@ -28,7 +35,7 @@ import com.isti.xmax.gui.XMAXframe;
 public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
 	private static final boolean verboseDebug = false;
-	public int maxDataLength = 65536;
+	public int maxDataLength = 131072;
 	private int effectiveLength = 0;
 
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration, JFrame parentFrame) {
@@ -98,11 +105,16 @@ public class TransPSD implements ITransformation {
 			}
 			int ds;
 			if (intData.length > maxDataLength) {
-				ds = getPower2Length(maxDataLength);				
+				ds = getPower2Length(maxDataLength);		
+				int[] tempIntData = new int[ds];
+				for(int i = 0; i < maxDataLength; i++)
+					tempIntData[i] = intData[i];
+				intData = tempIntData; 
 				((XMAXframe) parentFrame).getStatusBar().setMessage(
 						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
 			} else {
 				ds = getPower2Length(intData.length);
+				System.out.println("ds = " + ds); 
 			}
 			if(ds>effectiveLength){
 				effectiveLength = ds;
@@ -121,38 +133,169 @@ public class TransPSD implements ITransformation {
 			 * cancelled"); } }
 			 */
 			logger.debug("data size = " + ds);
-			int[] data = new int[ds];
-			for (int i = 0; i < ds; i++) {
-				data[i] = intData[i];
+			int dsDataSegment = new Double(Math.round(intData.length/4.0)).intValue(); // length of each segment for 13 segments 75% overlap
+			int[] data = new int[dsDataSegment]; //array containing data values in the time domain
+			//find power of 2 greater than data segment
+			int power2value = new Double(Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment))))))).intValue(); 
+			Cmplx[] noise_spectra = new Cmplx[power2value]; //array containing a running total of the ffts of each segment
+			Cmplx[] finalNoiseSpectraData = new Cmplx[(power2value/2) + 1]; 
+			
+			for(int i = 0; i < finalNoiseSpectraData.length; i++)
+			{
+				finalNoiseSpectraData[i] = new Cmplx(0,0);
 			}
-			if (filter != null) {
-				data = new FilterFacade(filter, channel).filter(data);
-			}
+			
+			//loop indexes
+			int dsDataSegmentLimit = dsDataSegment; // keeps track of where a segment ends in the data array
+			int cnt = 0; //keeps track where in the intData array the index is
+			int segIndex = 0; //keeps track of where the index is within an individual segment
+			
+			while(cnt < intData.length) {
+				
+				if(cnt < dsDataSegmentLimit)
+				{
+					data[segIndex] = intData[cnt];
+					cnt++;
+				    segIndex++;	
+				}
+				else
+				{
 
-			Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(), ti.getStartTime(), channel,
-					verboseDebug);
-			if (spectra.getResp() != null) {
+					//zero pad data to the nearest power of 2
+					int[] zerosArray = new int[power2value - data.length];
+					for(int i = 0; i < zerosArray.length; i++)
+						zerosArray[i] = 0;
+					data = IstiUtilsMath.padArray(data, zerosArray); 
+					
+					if (filter != null) 
+					{
+						data = new FilterFacade(filter, channel).filter(data);
+					}	
+					
+					// Make a copy of data to make it an array of doubles
+					double[] dataCopy = new double[data.length];
+					for (int i = 0; i < data.length; i++)
+						dataCopy[i] = data[i];
+					
+					// Norm the data: remove mean
+					dataCopy = IstiUtilsMath.normData(dataCopy);
+
+					// Apply Hanning window
+					dataCopy = IstiUtilsMath.windowHanning(dataCopy);
+					
+					
+					//Calculate fft of current segment 
+					noise_spectra = IstiUtilsMath.processFft(dataCopy);
+					
+					for(int i = 0; i < noise_spectra.length; i++) 
+					{
+						finalNoiseSpectraData[i] = Cmplx.add(finalNoiseSpectraData[i], noise_spectra[i]); 
+					}
+					
+					//move cursors
+				    segIndex = 0; 
+					if(cnt + dsDataSegment > intData.length) // correction for last segment
+					{
+						cnt = intData.length - dsDataSegment; 
+						dsDataSegmentLimit = intData.length; 
+					}
+					else
+					{
+						cnt = cnt - ( (dsDataSegment * 3) / 4 ); // move window backwards 75%
+						dsDataSegmentLimit = dsDataSegmentLimit + (dsDataSegment / 4); // increase new dsDataSegmentLimit by 25%
+					}			
+				}
+				
+			}
+			
+			//average each bin
+			for(int i = 0; i < finalNoiseSpectraData.length; i++)
+			{
+				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], 13.0); 
+			}
+			
+			try{
+				// if file doesnt exists, then create it
+				File file = new File("/Users/nfalco/psdinput.txt");
+				if(file.createNewFile())
+				{
+					System.out.println("FILE CREATED");
+				}
+				else
+				{
+					System.out.println("COULDN'T CREATE FILE");
+				}
+				
+
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+				BufferedWriter bw = new BufferedWriter(fw);
+				for(int i = 0; i < finalNoiseSpectraData.length; i++)
+				{
+					bw.write(finalNoiseSpectraData[i] + "\n");
+				}
+				bw.close();
+
+				System.out.println("Done");
+
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+			final Response.FreqParameters fp = Response.getFreqParameters(dsDataSegment, 1000.0/channel.getSampleRate());
+			final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
+			
+			
+			System.out.println("sample rate =  " + channel.getSampleRate());
+			System.out.println("1000/sample rate = " + 1000/channel.getSampleRate()); 
+			System.out.println("fp.startFreq = " + fp.startFreq);
+			System.out.println("fp.endFreq = " + fp.endFreq);
+			System.out.println("fp.numFreq = " + fp.numFreq);
+			
+			Cmplx[] resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq, Math.min(finalNoiseSpectraData.length, fp.numFreq));
+			//for(int i = 0; i < resp.length; i++)
+			//{
+			//	resp[i] = new Cmplx(1,0); 
+			//}
+			System.out.println("dsDataSegment = " + dsDataSegment);
+			System.out.println("intData.length = " + intData.length);
+			System.out.println("finalNoiseSpectraData.length= " + finalNoiseSpectraData.length);
+			System.out.println("frequenciesArray.length = " + frequenciesArray.length);
+			System.out.println("resp.length = " + resp.length);
+			
+			Spectra spectra = new Spectra(ti.getStartTime(), finalNoiseSpectraData, frequenciesArray, resp, fp.sampFreq, channel, "");
+			//Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(), ti.getStartTime(), channel,
+			//		verboseDebug);
+			if (spectra.getResp() != null) 
+			{
 				dataset.add(spectra);
-			} else {
-				if (respNotFound.length() > 0) {
+			} 
+			else 
+			{
+				if (respNotFound.length() > 0) 
+				{
 					respNotFound = respNotFound + ", ";
 				}
 				respNotFound = respNotFound + channel.getName();
 				li.remove();
 			}
-		}
-		if (input.size() == 0) {
-			throw new XMAXException("Can not find responses");
-		} else {
-			if (respNotFound.length() > 0) {
-				JOptionPane.showMessageDialog(parentFrame, "Can not find responses for channels: " + respNotFound, "Warning",
-						JOptionPane.WARNING_MESSAGE);
+			
+			
+			if (input.size() == 0) {
+				throw new XMAXException("Can not find responses");
+			} else {
+				if (respNotFound.length() > 0) {
+					JOptionPane.showMessageDialog(parentFrame, "Can not find responses for channels: " + respNotFound, "Warning",
+							JOptionPane.WARNING_MESSAGE);
+				}
 			}
-		}
+			}
+		
 		return dataset;
 	}
 	
 	protected static int getPower2Length(int length){
-		return new Double(Math.pow(2, new Double(IstiUtilsMath.log2(length)).intValue())).intValue();		
+		return new Double(Math.pow(2, new Double(Math.ceil(IstiUtilsMath.log2(length))))).intValue();		
 	}
 }
