@@ -35,7 +35,7 @@ import com.isti.traceview.data.Response;
 public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
 	private static final boolean verboseDebug = false;
-	public int maxDataLength = 131072;
+	public int maxDataLength = 262144;
 	private int effectiveLength = 0;
 
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration, JFrame parentFrame) {
@@ -253,11 +253,7 @@ public class TransPSD implements ITransformation {
 			System.out.println("fp.endFreq = " + fp.endFreq);
 			System.out.println("fp.numFreq = " + fp.numFreq);
 			
-			Cmplx[] resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq, Math.min(finalNoiseSpectraData.length, fp.numFreq));
-			//for(int i = 0; i < resp.length; i++)
-			//{
-			//	resp[i] = new Cmplx(1,0); 
-			//}
+			Cmplx[] resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq, Math.max(finalNoiseSpectraData.length, fp.numFreq));
 			System.out.println("dsDataSegment = " + dsDataSegment);
 			System.out.println("intData.length = " + intData.length);
 			System.out.println("finalNoiseSpectraData.length= " + finalNoiseSpectraData.length);
