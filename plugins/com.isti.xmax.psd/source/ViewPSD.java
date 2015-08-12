@@ -324,7 +324,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 			}
 		}
 		ret = IstiUtilsMath.varismooth(ret);
-		// Adding head of noise models, between 0.1 s and psd graph beginnig
+		// Adding head of noise models, between 0.1 s and psd graph beginning
 		int i = 2;
 		double period = 0.0;
 		while ((period = 1 / (i * freqArr[freqArr.length - 1])) > 0.1) {

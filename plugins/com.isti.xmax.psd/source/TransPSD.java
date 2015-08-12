@@ -134,11 +134,14 @@ public class TransPSD implements ITransformation {
 			 */
 			logger.debug("data size = " + ds);
 			int dsDataSegment = new Double(Math.round(intData.length/4.0)).intValue(); // length of each segment for 13 segments 75% overlap
-			int[] data = new int[dsDataSegment]; //array containing data values in the time domain
+			int smallDataSegmentLimit = new Double(Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1))))).intValue(); 
+			
+			int[] data = new int[smallDataSegmentLimit]; //array containing data values in the time domain
 			//find power of 2 greater than data segment
 			int power2value = new Double(Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment))))))).intValue(); 
-			Cmplx[] noise_spectra = new Cmplx[power2value]; //array containing a running total of the ffts of each segment
-			Cmplx[] finalNoiseSpectraData = new Cmplx[(power2value/2) + 1]; 
+			
+			Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; //array containing a running total of the ffts of each segment
+			Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit/2) + 1]; 
 			
 			for(int i = 0; i < finalNoiseSpectraData.length; i++)
 			{
@@ -147,9 +150,13 @@ public class TransPSD implements ITransformation {
 			
 			//loop indexes
 			int dsDataSegmentLimit = dsDataSegment; // keeps track of where a segment ends in the data array
+			
+			System.out.println("dsDataSegmentLimit = " + dsDataSegmentLimit);
+			System.out.println("smallDataSegmentLimit = " + smallDataSegmentLimit); 
+			
 			int cnt = 0; //keeps track where in the intData array the index is
 			int segIndex = 0; //keeps track of where the index is within an individual segment
-			
+			/*
 			while(cnt < intData.length) {
 				
 				if(cnt < dsDataSegmentLimit)
@@ -206,6 +213,67 @@ public class TransPSD implements ITransformation {
 					}			
 				}
 				
+			}*/
+			
+			while(cnt < intData.length) {
+				
+				if(cnt < dsDataSegmentLimit)
+				{
+					if(segIndex < smallDataSegmentLimit)
+						data[segIndex] = intData[cnt];
+					//else
+					//	data[segIndex] = 0; 
+					cnt++;
+				    segIndex++;	
+				}
+				else
+				{
+
+					//zero pad data to the nearest power of 2
+					//int[] zerosArray = new int[power2value - data.length];
+					//for(int i = 0; i < zerosArray.length; i++)
+					//	zerosArray[i] = 0;
+					//data = IstiUtilsMath.padArray(data, zerosArray); 
+					
+					if (filter != null) 
+					{
+						data = new FilterFacade(filter, channel).filter(data);
+					}	
+					
+					// Make a copy of data to make it an array of doubles
+					double[] dataCopy = new double[data.length];
+					for (int i = 0; i < data.length; i++)
+						dataCopy[i] = data[i];
+					
+					// Norm the data: remove mean
+					dataCopy = IstiUtilsMath.normData(dataCopy);
+
+					// Apply Hanning window
+					dataCopy = IstiUtilsMath.windowHanning(dataCopy);
+					
+					
+					//Calculate fft of current segment 
+					noise_spectra = IstiUtilsMath.processFft(dataCopy);
+					
+					for(int i = 0; i < noise_spectra.length; i++) 
+					{
+						finalNoiseSpectraData[i] = Cmplx.add(finalNoiseSpectraData[i], noise_spectra[i]); 
+					}
+					
+					//move cursors
+				    segIndex = 0; 
+					if(cnt + dsDataSegment > intData.length) // correction for last segment
+					{
+						cnt = intData.length - dsDataSegment; 
+						dsDataSegmentLimit = intData.length; 
+					}
+					else
+					{
+						cnt = cnt - ( (dsDataSegment * 3) / 4 ); // move window backwards 75%
+						dsDataSegmentLimit = dsDataSegmentLimit + (dsDataSegment / 4); // increase new dsDataSegmentLimit by 25%
+					}			
+				}
+				
 			}
 			
 			//average each bin
@@ -214,36 +282,8 @@ public class TransPSD implements ITransformation {
 				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], 13.0); 
 			}
 			
-			try{
-				// if file doesnt exists, then create it
-				File file = new File("/Users/nfalco/psdinput.txt");
-				if(file.createNewFile())
-				{
-					System.out.println("FILE CREATED");
-				}
-				else
-				{
-					System.out.println("COULDN'T CREATE FILE");
-				}
-				
-
-				FileWriter fw = new FileWriter(file.getAbsoluteFile());
-				BufferedWriter bw = new BufferedWriter(fw);
-				for(int i = 0; i < finalNoiseSpectraData.length; i++)
-				{
-					bw.write(finalNoiseSpectraData[i] + "\n");
-				}
-				bw.close();
-
-				System.out.println("Done");
-
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
 			
-			
-			final Response.FreqParameters fp = Response.getFreqParameters(dsDataSegment, 1000.0/channel.getSampleRate());
+			final Response.FreqParameters fp = Response.getFreqParameters(smallDataSegmentLimit, 1000.0/channel.getSampleRate());
 			final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
 			
 			
@@ -253,16 +293,19 @@ public class TransPSD implements ITransformation {
 			System.out.println("fp.endFreq = " + fp.endFreq);
 			System.out.println("fp.numFreq = " + fp.numFreq);
 			
-			Cmplx[] resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq, Math.max(finalNoiseSpectraData.length, fp.numFreq));
-			System.out.println("dsDataSegment = " + dsDataSegment);
-			System.out.println("intData.length = " + intData.length);
-			System.out.println("finalNoiseSpectraData.length= " + finalNoiseSpectraData.length);
-			System.out.println("frequenciesArray.length = " + frequenciesArray.length);
-			System.out.println("resp.length = " + resp.length);
+			Cmplx[] resp = null;
+			try {
+				resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq, Math.max(finalNoiseSpectraData.length, fp.numFreq));
 			
+			} catch (Exception e) {
+				
+				//respNotFound = channel.getName(); 
+				//errString = "Can't get response for channel " + channel.getName() + ": ";
+				///logger.error(errString, e);	
+			}
+
 			Spectra spectra = new Spectra(ti.getStartTime(), finalNoiseSpectraData, frequenciesArray, resp, fp.sampFreq, channel, "");
-			//Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(), ti.getStartTime(), channel,
-			//		verboseDebug);
+
 			if (spectra.getResp() != null) 
 			{
 				dataset.add(spectra);
@@ -277,16 +320,16 @@ public class TransPSD implements ITransformation {
 				li.remove();
 			}
 			
-			
-			if (input.size() == 0) {
-				throw new XMAXException("Can not find responses");
-			} else {
-				if (respNotFound.length() > 0) {
-					JOptionPane.showMessageDialog(parentFrame, "Can not find responses for channels: " + respNotFound, "Warning",
-							JOptionPane.WARNING_MESSAGE);
-				}
+		}
+		
+		if (input.size() == 0) {
+			throw new XMAXException("Can not find responses");
+		} else {
+			if (respNotFound.length() > 0) {
+				JOptionPane.showMessageDialog(parentFrame, "Can not find responses for channels: " + respNotFound, "Warning",
+						JOptionPane.WARNING_MESSAGE);
 			}
-			}
+		}
 		
 		return dataset;
 	}
@@ -294,4 +337,5 @@ public class TransPSD implements ITransformation {
 	protected static int getPower2Length(int length){
 		return new Double(Math.pow(2, new Double(Math.ceil(IstiUtilsMath.log2(length))))).intValue();		
 	}
+
 }

@@ -188,7 +188,7 @@ public class Spectra {
 			double[] psd = new double[deconvolved.length];
 			for (int i = 0; i < deconvolved.length; i++) {
 				psd[i] = (deconvolved[i].r * deconvolved[i].r + deconvolved[i].i * deconvolved[i].i) / (getSampleRate() / 2.0 * getSampleRate() / 2.0) * 2.0
-						/ (1000/(getSampleRate()));
+						/ ((1000/getSampleRate()) / 2);
 			}
 		
 			switch (inputUnits) {
