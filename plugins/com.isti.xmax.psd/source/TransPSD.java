@@ -112,7 +112,6 @@ public class TransPSD implements ITransformation {
 						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
 			} else {
 				ds = intData.length;
-				maxDataLength = 0; 
 			}
 			if(ds>effectiveLength){
 				effectiveLength = ds;
