@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang.ArrayUtils;
 
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
@@ -22,7 +21,6 @@ import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import java.io.*;
 import com.isti.jevalresp.RespUtils;
 
 import com.isti.traceview.data.Response;
@@ -35,7 +33,7 @@ import com.isti.traceview.data.Response;
 public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
 	private static final boolean verboseDebug = false;
-	public int maxDataLength = 262144;
+	public int maxDataLength = 524288;
 	private int effectiveLength = 0;
 
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration, JFrame parentFrame) {
@@ -113,8 +111,8 @@ public class TransPSD implements ITransformation {
 				((XMAXframe) parentFrame).getStatusBar().setMessage(
 						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
 			} else {
-				ds = getPower2Length(intData.length);
-				System.out.println("ds = " + ds); 
+				ds = intData.length;
+				maxDataLength = 0; 
 			}
 			if(ds>effectiveLength){
 				effectiveLength = ds;
@@ -133,16 +131,18 @@ public class TransPSD implements ITransformation {
 			 * cancelled"); } }
 			 */
 			logger.debug("data size = " + ds);
+			
+			/*
+			 * Here we compute the power spectral density of the selected data using the Welch method with 13 windows 75% overlap. The actual PSD is calculated in the getPSD function within Spectra.java. 
+			*/
 			int dsDataSegment = new Double(Math.round(intData.length/4.0)).intValue(); // length of each segment for 13 segments 75% overlap
-			int smallDataSegmentLimit = new Double(Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1))))).intValue(); 
+			int smallDataSegmentLimit = new Double(Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1))))).intValue(); //set smallDataSegment limit to be one power of 2 less than the dsDataSegment length
 			
 			int[] data = new int[smallDataSegmentLimit]; //array containing data values in the time domain
-			//find power of 2 greater than data segment
-			int power2value = new Double(Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment))))))).intValue(); 
+			Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; //array containing the fft of the current segment
+			Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit/2) + 1]; //array containing the cumulative sum of the each segments fft. 
 			
-			Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; //array containing a running total of the ffts of each segment
-			Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit/2) + 1]; 
-			
+			//initialize the finalNoiseSpectraData array to all zeros since we will be taking a cumulative sum of the data. 
 			for(int i = 0; i < finalNoiseSpectraData.length; i++)
 			{
 				finalNoiseSpectraData[i] = new Cmplx(0,0);
@@ -150,91 +150,21 @@ public class TransPSD implements ITransformation {
 			
 			//loop indexes
 			int dsDataSegmentLimit = dsDataSegment; // keeps track of where a segment ends in the data array
-			
-			System.out.println("dsDataSegmentLimit = " + dsDataSegmentLimit);
-			System.out.println("smallDataSegmentLimit = " + smallDataSegmentLimit); 
-			
 			int cnt = 0; //keeps track where in the intData array the index is
 			int segIndex = 0; //keeps track of where the index is within an individual segment
-			/*
-			while(cnt < intData.length) {
-				
-				if(cnt < dsDataSegmentLimit)
-				{
-					data[segIndex] = intData[cnt];
-					cnt++;
-				    segIndex++;	
-				}
-				else
-				{
-
-					//zero pad data to the nearest power of 2
-					int[] zerosArray = new int[power2value - data.length];
-					for(int i = 0; i < zerosArray.length; i++)
-						zerosArray[i] = 0;
-					data = IstiUtilsMath.padArray(data, zerosArray); 
-					
-					if (filter != null) 
-					{
-						data = new FilterFacade(filter, channel).filter(data);
-					}	
-					
-					// Make a copy of data to make it an array of doubles
-					double[] dataCopy = new double[data.length];
-					for (int i = 0; i < data.length; i++)
-						dataCopy[i] = data[i];
-					
-					// Norm the data: remove mean
-					dataCopy = IstiUtilsMath.normData(dataCopy);
-
-					// Apply Hanning window
-					dataCopy = IstiUtilsMath.windowHanning(dataCopy);
-					
-					
-					//Calculate fft of current segment 
-					noise_spectra = IstiUtilsMath.processFft(dataCopy);
-					
-					for(int i = 0; i < noise_spectra.length; i++) 
-					{
-						finalNoiseSpectraData[i] = Cmplx.add(finalNoiseSpectraData[i], noise_spectra[i]); 
-					}
-					
-					//move cursors
-				    segIndex = 0; 
-					if(cnt + dsDataSegment > intData.length) // correction for last segment
-					{
-						cnt = intData.length - dsDataSegment; 
-						dsDataSegmentLimit = intData.length; 
-					}
-					else
-					{
-						cnt = cnt - ( (dsDataSegment * 3) / 4 ); // move window backwards 75%
-						dsDataSegmentLimit = dsDataSegmentLimit + (dsDataSegment / 4); // increase new dsDataSegmentLimit by 25%
-					}			
-				}
-				
-			}*/
 			
+			//Perform windowing and compute the FFT of each segment. The finalNoiseSpectraData array contains the sum of the FFTs for all segments.  
 			while(cnt < intData.length) {
 				
 				if(cnt < dsDataSegmentLimit)
 				{
 					if(segIndex < smallDataSegmentLimit)
 						data[segIndex] = intData[cnt];
-					//else
-					//	data[segIndex] = 0; 
 					cnt++;
 				    segIndex++;	
 				}
 				else
 				{
-
-					//zero pad data to the nearest power of 2
-					//int[] zerosArray = new int[power2value - data.length];
-					//for(int i = 0; i < zerosArray.length; i++)
-					//	zerosArray[i] = 0;
-					//data = IstiUtilsMath.padArray(data, zerosArray); 
-					
 					if (filter != null) 
 					{
 						data = new FilterFacade(filter, channel).filter(data);
@@ -252,9 +182,10 @@ public class TransPSD implements ITransformation {
 					dataCopy = IstiUtilsMath.windowHanning(dataCopy);
 					
 					
-					//Calculate fft of current segment 
+					//Calculate FFT of the current segment 
 					noise_spectra = IstiUtilsMath.processFft(dataCopy);
 					
+					//Compute a running total of the FFTs for all segments
 					for(int i = 0; i < noise_spectra.length; i++) 
 					{
 						finalNoiseSpectraData[i] = Cmplx.add(finalNoiseSpectraData[i], noise_spectra[i]); 
@@ -262,46 +193,38 @@ public class TransPSD implements ITransformation {
 					
 					//move cursors
 				    segIndex = 0; 
-					if(cnt + dsDataSegment > intData.length) // correction for last segment
+					if(cnt + smallDataSegmentLimit > intData.length) // correction for last segment
 					{
-						cnt = intData.length - dsDataSegment; 
+						cnt = intData.length - smallDataSegmentLimit; 
 						dsDataSegmentLimit = intData.length; 
 					}
 					else
 					{
 						cnt = cnt - ( (dsDataSegment * 3) / 4 ); // move window backwards 75%
 						dsDataSegmentLimit = dsDataSegmentLimit + (dsDataSegment / 4); // increase new dsDataSegmentLimit by 25%
-					}			
+					}	
+					
 				}
-				
+
 			}
 			
-			//average each bin
+			//average each bin by dividing by the number of segments
 			for(int i = 0; i < finalNoiseSpectraData.length; i++)
 			{
 				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], 13.0); 
 			}
 			
-			
-			final Response.FreqParameters fp = Response.getFreqParameters(smallDataSegmentLimit, 1000.0/channel.getSampleRate());
+			// Note that channel.getSampleRate() really returns the sampling interval. (e.g. For a sample frequency of 40Hz you have 1000.0/channel.getSampleRate() = 1000.0/25 = 40Hz)
+			final Response.FreqParameters fp = Response.getFreqParameters(smallDataSegmentLimit, 1000.0/channel.getSampleRate()); 
 			final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
 			
-			
-			System.out.println("sample rate =  " + channel.getSampleRate());
-			System.out.println("1000/sample rate = " + 1000/channel.getSampleRate()); 
-			System.out.println("fp.startFreq = " + fp.startFreq);
-			System.out.println("fp.endFreq = " + fp.endFreq);
-			System.out.println("fp.numFreq = " + fp.numFreq);
-			
+
 			Cmplx[] resp = null;
 			try {
 				resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq, Math.max(finalNoiseSpectraData.length, fp.numFreq));
 			
 			} catch (Exception e) {
 				
-				//respNotFound = channel.getName(); 
-				//errString = "Can't get response for channel " + channel.getName() + ": ";
-				///logger.error(errString, e);	
 			}
 
 			Spectra spectra = new Spectra(ti.getStartTime(), finalNoiseSpectraData, frequenciesArray, resp, fp.sampFreq, channel, "");
