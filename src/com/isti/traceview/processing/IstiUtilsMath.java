@@ -281,33 +281,6 @@ public class IstiUtilsMath {
 	public static final Cmplx[] complexDeconvolution(Cmplx[] f, Cmplx[] g) {
 		if (f.length != g.length)
 			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
-		try{
-			// if file doesnt exists, then create it
-			File file = new File("/Users/nfalco/resp.txt");
-			if(file.createNewFile())
-			{
-				System.out.println("FILE CREATED");
-			}
-			else
-			{
-				System.out.println("COULDN'T CREATE FILE");
-			}
-			
-
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			for(int i = 0; i < g.length; i++)
-			{
-				bw.write(Math.sqrt(Cmplx.mul(g[i], g[i].conjg()).real()) + "\n");
-			}
-			bw.close();
-
-			System.out.println("Done");
-
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
 		
 		Cmplx[] ret = new Cmplx[f.length];
 		for (int i = 0; i < f.length; i++)

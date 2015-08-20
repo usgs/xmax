@@ -151,14 +151,10 @@ public class Response {
 	*/
 	public static FreqParameters getFreqParameters(int numSamples, double sampRate) {
 		final double endFreq = sampRate / 2.0;
-		System.out.println("endFreq = " + endFreq); 
 		final int numFreq = (int) (numSamples / 2.0 + 1.0 + 0.5); // 0.5 for double to int conversion
-		System.out.println("numFreq = " + numFreq); 
 		final double startFreq = endFreq/numFreq;
-		System.out.println("startFreq = " + startFreq); 
 		//(double)
 		final double sampFreq = (endFreq - startFreq) / (numFreq - 1.0);
-		System.out.println("sampFreq = " + sampFreq); 
 		return new FreqParameters(startFreq, endFreq, sampFreq, numFreq);
 	}
 	
