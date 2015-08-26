@@ -181,13 +181,13 @@ public class Spectra {
 	 */
 	public double[] getPSD(int inputUnits) {
 		try {	
-			Cmplx[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);
-		
-			//log("Deconvolved", deconvolved);
+			
+			Cmplx[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);//Removes the response by dividing it out
+				
 			double[] psd = new double[deconvolved.length];
+			//Computing the PSD
 			for (int i = 0; i < deconvolved.length; i++) {
-				psd[i] = (deconvolved[i].r * deconvolved[i].r + deconvolved[i].i * deconvolved[i].i) / (getSampleRate() / 2.0 * getSampleRate() / 2.0) * 2.0
-						* sampFreq;
+				psd[i] = (deconvolved[i].r * deconvolved[i].r + deconvolved[i].i * deconvolved[i].i) * (channel.getSampleRate() / (double)deconvolved.length) * (1.0/0.875) / 13.0; 
 			}
 		
 			switch (inputUnits) {
@@ -227,12 +227,18 @@ public class Spectra {
 	 */
 	public XYSeries getPSDSeries(int inputUnits) {
 		XYSeries series = new XYSeries(getName());
-		double[] out = getPSD(inputUnits);
-		for (int i = 1; i < spectra.length; i++) {
-			double x = 1.0 / frequenciesArray[i];
-			double y = 10.0 * Math.log10(out[i]);
-			series.add(x, y);
+		double[] out = getPSD(inputUnits); //removes response
+		
+		for (int i = 1; i < frequenciesArray.length - 1; i++) {
+			double x = 1.0 / frequenciesArray[i]; // put x in terms of period 
+			double y;
+			if(out[i] != 0)
+			{
+				y = 10.0 * Math.log10(out[i]); // put PSD in dB units
+				series.add(x, y);	
+			}
 		}
+		
 		return series;
 	}
 

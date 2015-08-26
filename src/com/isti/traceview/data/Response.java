@@ -100,6 +100,7 @@ public class Response {
 	public Cmplx[] getResp(Date date, double minFreqValue, double maxFreqValue,
 			int len) throws TraceViewException {
 		RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
+		
 		return evalResp.generateResponse(minFreqValue, maxFreqValue, len, date,
 				new StringReader(getContent()));
 	}
