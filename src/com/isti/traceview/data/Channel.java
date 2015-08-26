@@ -284,7 +284,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	/**
 	 * Special deserialization handler
-	 * 
+	 * -
 	 * @param in
 	 *            stream to deserialize object
 	 * @see Serializable

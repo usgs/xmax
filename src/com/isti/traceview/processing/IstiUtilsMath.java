@@ -1,5 +1,9 @@
 package com.isti.traceview.processing;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -277,6 +281,7 @@ public class IstiUtilsMath {
 	public static final Cmplx[] complexDeconvolution(Cmplx[] f, Cmplx[] g) {
 		if (f.length != g.length)
 			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
+		
 		Cmplx[] ret = new Cmplx[f.length];
 		for (int i = 0; i < f.length; i++)
 			ret[i] = Cmplx.div(f[i], g[i]);
@@ -619,4 +624,5 @@ public class IstiUtilsMath {
 		}
 		return ret;
 	}
+
 }
