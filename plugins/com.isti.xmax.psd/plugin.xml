@@ -12,6 +12,6 @@
 		<parameter id="class" value="TransPSD"/>
 		<parameter id="name" value="TransPSD"/> 
 		<parameter id="description" value="Shows power spectra density for selected channels"/>
-		<parameter id="max_data_length" value="524288"/>   
+		<parameter id="max_data_length" value="1048576"/>   
 	</extension> 
 </plugin> 
