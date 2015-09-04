@@ -230,7 +230,11 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								// Time Fissures conversion	
 								lsi = FissuresConvert.toFissures(dr);	// set LocalSeismogramImpl
 							}
-							intData = lsi.get_as_longs();	// testing for memory leaks using array[]
+							//intData = lsi.get_as_longs();	// testing for memory leaks using array[]
+							double[] tempData = new double[drSampleCount];
+							tempData = lsi.get_as_doubles();
+							for(int i = 0; i < intData.length; i++)
+								intData[i] = (int) tempData[i];
 						} catch (FissuresException fe) {
 							StringBuilder message = new StringBuilder();
 							message.append(String.format("File " + getFile().getName() + ": Can't decompress data of block " + dr.getHeader().getSequenceNum() + ", setting block data to 0: "));
