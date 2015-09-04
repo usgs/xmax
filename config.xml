@@ -35,7 +35,7 @@
 			<!-- Station files/paths -->
 			<EventFileMask>resources/*.ndk</EventFileMask>
 			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
-			<ResponsePath>/dcc/metadata/responses</ResponsePath>
+			<ResponsePath>./resources/Responses/</ResponsePath>
 			<AllowMultiplexedData>true</AllowMultiplexedData>
 
 			<!-- Picks directory. Recovers by -p option -->
@@ -89,10 +89,10 @@
 		<ExportDir/>
 		<Frame>
 			<State>NORMAL</State>
-			<PosY>174</PosY>
-			<PosX>111</PosX>
-			<Width>1317</Width>
-			<Heigth>1006</Heigth>
+			<PosY>153</PosY>
+			<PosX>331</PosX>
+			<Width>1559</Width>
+			<Heigth>895</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>
