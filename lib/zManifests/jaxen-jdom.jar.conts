@@ -1,9 +1,0 @@
-     0 Fri Sep 03 00:12:30 EDT 2004 META-INF/
-   100 Fri Sep 03 00:12:28 EDT 2004 META-INF/MANIFEST.MF
-     0 Fri Sep 03 00:12:28 EDT 2004 org/
-     0 Fri Sep 03 00:12:30 EDT 2004 org/jaxen/
-     0 Fri Sep 03 00:12:30 EDT 2004 org/jaxen/jdom/
-   668 Fri Sep 03 00:12:30 EDT 2004 org/jaxen/jdom/DocumentNavigator$Singleton.class
-  7736 Fri Sep 03 00:12:30 EDT 2004 org/jaxen/jdom/DocumentNavigator.class
-   553 Fri Sep 03 00:12:30 EDT 2004 org/jaxen/jdom/JDOMXPath.class
-  1376 Fri Sep 03 00:12:30 EDT 2004 org/jaxen/jdom/XPathNamespace.class

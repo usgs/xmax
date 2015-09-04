@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.6.5
-Created-By: Robert Casey
-Main-Class: edu.iris.Fissures.seed.app.Jseedr
-Class-Path: jar/isti_shape.jar jar/oscache-2.1-mod2.jar jar/commons-lo
- gging.jar
-
