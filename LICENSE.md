@@ -20,8 +20,8 @@ License
     source can be retrieved from publicly available servers via
     dependencies set in build.gradle.
 ######seedCodec                                      
-	Source: 		xmax/lib/seedCodec-1.0.11.jar                                                                        
-    Author:         Phillip Crotwell - University of South Carolina 
+	Source: 		xmax/lib/seedCodec-1.0.11.jar
+    Author:         Phillip Crotwell - University of South Carolina
     License:        GNU GENERAL PUBLIC LICENSE Version 2, June 1991
     Website:        http://www.seis.sc.edu/seedCodec.html
 ######TauP
