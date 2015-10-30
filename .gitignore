@@ -1,3 +1,6 @@
+#Standard files
+*.swp
+
 #Build files
 build/
 *.class
@@ -6,6 +9,7 @@ lib/backup/
 logs/
 src/META_INF/
 xmax.jar
+.gradle
 
 #Javadoc build files
 doc/

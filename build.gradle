@@ -1,0 +1,23 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "com.isti.xmax.XMAX"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.jfree', name: 'jfreechart', version: '1.0.+'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
+    compile group: 'commons-configuration', name: 'commons-configuration', version: '1.7'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.5'
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+    compile group: 'commons-collections', name: 'commons-collections', version: '3.2.1'
+    compile group: 'commons-logging', name: 'commons-logging', version: '1.1.1'
+    compile group: 'org.jdom', name: 'jdom', version: '1.1'
+    compile group: 'edu.emory.mathcs', name: 'JTransforms', version: '2.4'
+
+
+compile files('./lib/log4j-1.2.16.jar', './lib/fissuresIDL-1.0.jar', './lib/fissuresUtil-1.0.19.jar', './lib/seisFile-1.5.2.jar', './lib/TauP-1.1.7.jar', './lib/seedCodec-1.0.11.jar', './lib/JEvalResp.jar', './lib/BareBonesBrowserLaunch.jar', './lib/ekit-1.4.jar', './lib/jpf.jar', './lib/jpf-tools.jar', './lib/JavaSeed.jar')
+}
