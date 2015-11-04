@@ -15,7 +15,6 @@ import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
 
-import com.centerkey.utils.BareBonesBrowserLaunch;
 import com.isti.xmax.XMAX;
 
 import java.awt.Insets;
@@ -23,6 +22,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
+
 import javax.swing.JButton;
 import java.awt.Cursor;
 import javax.swing.JScrollPane;
@@ -213,7 +214,7 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 	private JTextArea getUsedLibsTA() {
 		if (usedLibsTA == null) {
 			usedLibsTA = new JTextArea();
-			usedLibsTA.setText("JFreeChart\nJava Plugin Framework\nLog4j\nTauP\nBareBones BrowserLaunch\nApache commons");
+			usedLibsTA.setText("JFreeChart\nJava Plugin Framework\nLog4j\nTauP\nApache commons");
 			usedLibsTA.setBackground(this.getBackground());
 			usedLibsTA.setEditable(false);
 			usedLibsTA.setCaretPosition(0);
@@ -222,7 +223,8 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 	}
 
 	public static void showDialog(JFrame frame) {
-		JOptionPane optionPane = new JOptionPane(new AboutDialog(), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION);
+		JOptionPane optionPane = new JOptionPane(new AboutDialog(), JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.CLOSED_OPTION);
 		JDialog dialog = optionPane.createDialog(frame, "About");
 		dialog.setVisible(true);
 		dialog.dispose();
@@ -237,17 +239,25 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 
 	// Method from ActionListener interface
 
-	public void actionPerformed(ActionEvent e) {
-		BareBonesBrowserLaunch.openURL("http://java.sun.com/javase/downloads/index.jsp");
+	public void actionPerformed(ActionEvent event) {
+		try {
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://java.sun.com/javase/downloads/index.jsp"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Methods from MouseListener interface
 
-	public void mouseClicked(MouseEvent e) {
-		if (e.getSource().equals(istiL)) {
-			BareBonesBrowserLaunch.openURL("http://www.isti.com");
-		} else if (e.getSource().equals(usgsL)) {
-			BareBonesBrowserLaunch.openURL("http://www.usgs.gov");
+	public void mouseClicked(MouseEvent event) {
+		try {
+			if (event.getSource().equals(istiL)) {
+				java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://www.isti.com"));
+			} else if (event.getSource().equals(usgsL)) {
+				java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://www.usgs.gov"));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

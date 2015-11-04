@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'eclipse'
 apply plugin: 'application'
 
 mainClassName = "com.isti.xmax.XMAX"
@@ -22,7 +23,7 @@ dependencies {
     compile group: 'net.sf.jpf', name: 'jpf', version: '1.5'
 
 
-    compile files('./lib/fissuresIDL-1.0.jar', './lib/fissuresUtil-1.0.19.jar', './lib/seisFile-1.5.2.jar', './lib/TauP-1.1.7.jar', './lib/seedCodec-1.0.11.jar', './lib/JEvalResp.jar', './lib/BareBonesBrowserLaunch.jar', './lib/ekit-1.4.jar', './lib/JrdseedVer0.10.1.jar')
+    compile files('./lib/fissuresIDL-1.0.jar', './lib/fissuresUtil-1.0.19.jar', './lib/seisFile-1.5.2.jar', './lib/TauP-1.1.7.jar', './lib/seedCodec-1.0.11.jar', './lib/JEvalResp.jar', './lib/ekit-1.4.jar', './lib/JrdseedVer0.10.1.jar')
 }
 
 jar {
@@ -41,5 +42,18 @@ jar {
                    'Implementation-Version': version,
                    'Main-Class': mainClassName
     }
+}
+
+/*Turn off doclint since it is far too strict and breaks the javadoc everytime*/
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
+
+javadoc {
+    options.memberLevel = JavadocMemberLevel.PRIVATE
 }
 
