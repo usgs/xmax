@@ -7,6 +7,9 @@ version = '1.1.1'
 
 repositories {
     mavenCentral()
+    maven {
+        url "http://www.seis.sc.edu/software/maven2"
+    }
 }
 
 dependencies {
@@ -22,8 +25,15 @@ dependencies {
     compile group: 'log4j', name: 'log4j', version: '1.2.16'
     compile group: 'net.sf.jpf', name: 'jpf', version: '1.5'
 
+//seis.sc.edu maven dependencies
+    compile group: 'edu.sc.seis', name: 'seisFile', version: '1.6.5'
+//    compile group: 'edu.sc.seis', name: 'fissuresIDL', version: '1.0'
+//    compile group: 'edu.sc.seis', name: 'fissuresUtil', version: '1.1.5'
+//    compile group: 'edu.sc.seis', name: 'TauP', version: '2.1.2'
+    compile group: 'edu.sc.seis', name: 'seedCodec', version: '1.0.11'
+//    compile group: 'com.isti', name: 'jevalresp', version: '1.57'
 
-    compile files('./lib/fissuresIDL-1.0.jar', './lib/fissuresUtil-1.0.19.jar', './lib/seisFile-1.5.2.jar', './lib/TauP-1.1.7.jar', './lib/seedCodec-1.0.11.jar', './lib/JEvalResp.jar', './lib/ekit-1.4.jar', './lib/JavaSeed.jar')
+    compile files('./lib/fissuresIDL-1.0.jar', './lib/fissuresUtil-1.0.19.jar', './lib/TauP-1.1.7.jar', './lib/JEvalResp.jar', './lib/ekit-1.4.jar', './lib/JavaSeed.jar')
 }
 
 jar {
