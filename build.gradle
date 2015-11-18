@@ -5,6 +5,9 @@ apply plugin: 'application'
 mainClassName = "com.isti.xmax.XMAX"
 version = '1.1.1'
 
+sourceCompatibility = '1.8'
+sourceCompatibility = '1.8'
+
 repositories {
     mavenCentral()
     maven {
@@ -33,7 +36,7 @@ dependencies {
     compile group: 'edu.sc.seis', name: 'seedCodec', version: '1.0.11'
 //    compile group: 'com.isti', name: 'jevalresp', version: '1.57'
 
-    compile files('./lib/fissuresIDL-1.0.jar', './lib/fissuresUtil-1.0.19.jar', './lib/TauP-1.1.7.jar', './lib/JEvalResp.jar', './lib/ekit-1.4.jar', './lib/JavaSeed.jar')
+    compile files('./lib/fissuresIDL-1.0.jar', './lib/fissuresUtil-1.0.19.jar', './lib/TauP-1.1.7.jar', './lib/JEvalResp.jar', './lib/ekit-1.4.jar', './lib/JavaSeed.jar', './lib/isti_shape.jar')
 }
 
 jar {
