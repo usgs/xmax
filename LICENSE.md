@@ -57,9 +57,6 @@ License
 ######Commons Logging
 	License:		Apache License,	Version 2.0
 	Website:		https://commons.apache.org/proper/commons-logging/
-######JPF
-	License:		LGPL 2.1
-	Website:		http://jpf.sourceforge.net/
 ######jtransforms
 	Author:			Piotr Wendykier
 	License:		The BSD 2-Clause License
@@ -70,3 +67,7 @@ License
 ######JDOM
 	License:		Apache-style open source license, with the acknowledgment clause removed
 	Website:		http://www.jdom.org/index.html
+###### Reflections
+	License:		WTFPL v2.0 
+	Website:	    https://github.com/ronmamo/reflections
+
