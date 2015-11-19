@@ -67,10 +67,6 @@ public class Spectra {
 		this.err = err;
 	}
 
-	private double getSampleRate(){
-		return 1000.0/channel.getSampleRate();
-	}
-	
 	/**
 	 * Get complex spectra
 	 */

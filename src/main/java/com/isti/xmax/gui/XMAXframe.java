@@ -801,7 +801,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			filterMenu.setMnemonic(KeyEvent.VK_F);
 			filterBG = new ButtonGroup();
 			for (Class<? extends IFilter> curClass : XMAX.getFilters()) {
-				IFilter filter;
 				try {
 					JRadioButtonMenuItem filterItem = new JRadioButtonMenuItem();
 					filterItem.setText((String)curClass.getField("NAME").get(null));

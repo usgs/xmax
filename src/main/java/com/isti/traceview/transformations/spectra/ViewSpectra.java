@@ -143,11 +143,6 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 			} else {
 
 			}
-		} else {
-			if (e.getSource() instanceof JCheckBox) {
-				// checkbox for channel's selection
-				JCheckBox cb = (JCheckBox) e.getSource();
-			}
 		}
 		plot.setDataset(filterData(data));
 	}

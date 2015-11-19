@@ -34,7 +34,6 @@ import com.isti.traceview.data.Response;
  */
 public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
-	private static final boolean verboseDebug = false;
 	public int maxDataLength = 1048576;
 	private int effectiveLength = 0;
 
