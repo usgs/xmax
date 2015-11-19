@@ -2,77 +2,11 @@ package com.isti.xmax.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.MouseInputListener;
-
-import com.isti.traceview.ExecuteCommand;
-import com.isti.traceview.ICommand;
-import com.isti.traceview.IUndoableCommand;
-import com.isti.traceview.CommandHandler;
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.UndoException;
-import com.isti.traceview.commands.OverlayCommand;
-import com.isti.traceview.commands.RotateCommand;
-import com.isti.traceview.commands.SaveAllDataCommand;
-import com.isti.traceview.commands.SelectCommand;
-import com.isti.traceview.commands.SelectTimeCommand;
-import com.isti.traceview.commands.SelectValueCommand;
-import com.isti.traceview.commands.SetScaleModeCommand;
-import com.isti.xmax.XMAX;
-import com.isti.xmax.XMAXconfiguration;
-import com.isti.xmax.common.Pick;
-import com.isti.xmax.data.XMAXDataModule;
-import com.isti.xmax.gui.XMAXGraphPanel;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.gui.ChannelView;
-import com.isti.traceview.gui.ColorModeBW;
-import com.isti.traceview.gui.ColorModeByGap;
-import com.isti.traceview.gui.ColorModeBySegment;
-import com.isti.traceview.gui.FileChooser;
-import com.isti.traceview.gui.GraphUtil;
-import com.isti.traceview.gui.MeanModeDisabled;
-import com.isti.traceview.gui.MeanModeEnabled;
-import com.isti.traceview.gui.OffsetModeDisabled;
-import com.isti.traceview.gui.OffsetModeEnabled;
-import com.isti.traceview.gui.ScaleModeAuto;
-import com.isti.traceview.gui.ScaleModeCom;
-import com.isti.traceview.gui.ScaleModeXhair;
-import com.isti.traceview.processing.IFilter;
-import com.isti.traceview.processing.ITransformation;
-import com.isti.traceview.processing.Rotation;
-
 import java.awt.GridLayout;
-
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JFileChooser;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-import javax.swing.MenuElement;
-import javax.swing.ToolTipManager;
-
-import org.apache.log4j.Logger;
-import org.java.plugin.registry.Extension;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -96,11 +30,75 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
+import javax.swing.MenuElement;
+import javax.swing.ToolTipManager;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.MouseInputListener;
+
+import org.apache.log4j.Logger;
+
+import com.isti.traceview.CommandHandler;
+import com.isti.traceview.ExecuteCommand;
+import com.isti.traceview.ICommand;
+import com.isti.traceview.IUndoableCommand;
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.UndoException;
+import com.isti.traceview.commands.OverlayCommand;
+import com.isti.traceview.commands.RotateCommand;
+import com.isti.traceview.commands.SaveAllDataCommand;
+import com.isti.traceview.commands.SelectCommand;
+import com.isti.traceview.commands.SelectTimeCommand;
+import com.isti.traceview.commands.SelectValueCommand;
+import com.isti.traceview.commands.SetScaleModeCommand;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.gui.ChannelView;
+import com.isti.traceview.gui.ColorModeBW;
+import com.isti.traceview.gui.ColorModeByGap;
+import com.isti.traceview.gui.ColorModeBySegment;
+import com.isti.traceview.gui.FileChooser;
+import com.isti.traceview.gui.GraphUtil;
+import com.isti.traceview.gui.MeanModeDisabled;
+import com.isti.traceview.gui.MeanModeEnabled;
+import com.isti.traceview.gui.OffsetModeDisabled;
+import com.isti.traceview.gui.OffsetModeEnabled;
+import com.isti.traceview.gui.ScaleModeAuto;
+import com.isti.traceview.gui.ScaleModeCom;
+import com.isti.traceview.gui.ScaleModeXhair;
+import com.isti.traceview.processing.Rotation;
+import com.isti.traceview.transformations.ITransformation;
+import com.isti.traceview.transformations.correlation.TransCorrelation;
+import com.isti.traceview.transformations.ppm.TransPPM;
+import com.isti.traceview.transformations.psd.TransPSD;
+import com.isti.traceview.transformations.response.TransResp;
+import com.isti.traceview.transformations.spectra.TransSpectra;
+import com.isti.xmax.XMAX;
+import com.isti.xmax.XMAXconfiguration;
+import com.isti.xmax.common.Pick;
+import com.isti.xmax.data.XMAXDataModule;
 
 /**
  * <p>
@@ -320,9 +318,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		actionMap.put(action.getValue(Action.NAME), action);
 
 		// adding actions for filter plugins
-		for (Extension ext: XMAX.getFilters()) {
-			action = new FilterAction(ext.getId(), ext.getParameter("description").valueAsString());
-			actionMap.put(action.getValue(Action.NAME), action);
+		for (Class<? extends IFilter> curClass : XMAX.getFilters()) {
+			try {
+				action = new FilterAction((String)curClass.getField("NAME").get(null), (String)curClass.getField("NAME").get(null));
+				actionMap.put(action.getValue(Action.NAME), action);
+			} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e1) {
+				logger.error("Filter Initializing failed");
+			}
 		}
 		initialize();
 		CommandHandler.getInstance().addObserver(this);	
@@ -798,14 +800,20 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			filterMenu.setText("Filters");
 			filterMenu.setMnemonic(KeyEvent.VK_F);
 			filterBG = new ButtonGroup();
-			for (Extension ext: XMAX.getFilters()) {
-				JRadioButtonMenuItem filterItem = new JRadioButtonMenuItem();
-				filterItem.setText(ext.getId());
-				filterItem.setSelected(false);
-				filterItem.setAction(actionMap.get(ext.getId()));
-				filterItem.addMouseListener(this);
-				filterBG.add(filterItem);
-				filterMenu.add(filterItem);
+			for (Class<? extends IFilter> curClass : XMAX.getFilters()) {
+				IFilter filter;
+				try {
+					JRadioButtonMenuItem filterItem = new JRadioButtonMenuItem();
+					filterItem.setText((String)curClass.getField("NAME").get(null));
+					filterItem.setSelected(false);
+					filterItem.setAction(actionMap.get((String)curClass.getField("NAME").get(null)));
+					filterItem.addMouseListener(this);
+					filterBG.add(filterItem);
+					filterMenu.add(filterItem);
+				} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+					logger.error("Filter failed to initialize");
+				}
+
 			}
 		}
 		return filterMenu;
@@ -821,11 +829,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			transformationMenu = new JMenu();
 			transformationMenu.setMnemonic(KeyEvent.VK_T);
 			transformationMenu.setText("Transformations");
-			for (Extension ext: XMAX.getTransformations()) {
-				JMenuItem transformationItem = new JMenuItem();
-				transformationItem.setText(ext.getId());
-				transformationItem.addActionListener(this);
-				transformationMenu.add(transformationItem);
+			for (Class<? extends ITransformation> curClass : XMAX.getTransformations()) {
+				try {
+					JMenuItem transformationItem = new JMenuItem();
+					transformationItem.setText((String)curClass.getField("NAME").get(null));
+					transformationItem.addActionListener(this);
+					transformationMenu.add(transformationItem);
+				} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+					logger.error("Transformation failed to initialize");
+				}
 			}
 		}
 		return transformationMenu;
@@ -1320,17 +1332,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	public PhasePanel getPhasePanel() {
 		return phasePanel;
-	}
-
-	/**
-	 * Main method for XMAXFrame (sets visibility)
-	 * @param args unused arg string array
-	 */
-	public static void main(String[] args) {
-		//GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		//GraphicsDevice[] devices = graphicsEnvironment.getScreenDevices();
-		XMAXframe frame = XMAXframe.getInstance();
-		frame.setVisible(true);
 	}
 
 	/**
@@ -1938,7 +1939,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				ITransformation resp = XMAX.getTransformation("Particle Motion");
+				ITransformation resp = new TransPPM();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView: selectedViews) {
@@ -1972,12 +1973,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
-			} catch (ClassNotFoundException e1) {
-				logger.error("Can't compute PPM: ", e1);
-			} catch (InstantiationException e1) {
-				logger.error("Can't compute PPM: ", e1);
-			} catch (IllegalAccessException e1) {
-				logger.error("Can't compute PPM: ", e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2000,7 +1995,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				ITransformation resp = XMAX.getTransformation("Power Spectra Density");
+				ITransformation resp = new TransPSD();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				if (selectedViews.size() == 0) {
@@ -2011,12 +2006,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance().getConfigurationAt("Configuration.Plugins.PSD");
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf, getInstance());
-			} catch (ClassNotFoundException e1) {
-				logger.error("Can't compute PSD: ", e1);
-			} catch (InstantiationException e1) {
-				logger.error("Can't compute PSD: ", e1);
-			} catch (IllegalAccessException e1) {
-				logger.error("Can't compute PSD: ", e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2039,7 +2028,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				ITransformation resp = XMAX.getTransformation("Spectra");
+				ITransformation resp = new TransSpectra();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				if (selectedViews.size() == 0) {
@@ -2049,12 +2038,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
-			} catch (ClassNotFoundException e1) {
-				logger.error("Can't compute Spectra: ", e1);
-			} catch (InstantiationException e1) {
-				logger.error("Can't compute Spectra: ", e1);
-			} catch (IllegalAccessException e1) {
-				logger.error("Can't compute Spectra: ", e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2077,19 +2060,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				ITransformation resp = XMAX.getTransformation("Correlation");
+				ITransformation resp = new TransCorrelation();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView: selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
-			} catch (ClassNotFoundException e1) {
-				logger.error("Can't compute Correlation: ", e1);
-			} catch (InstantiationException e1) {
-				logger.error("Can't compute Correlation: ", e1);
-			} catch (IllegalAccessException e1) {
-				logger.error("Can't compute Correlation: ", e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2148,19 +2125,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				ITransformation resp = XMAX.getTransformation("Response");
+				ITransformation resp = new TransResp();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView: selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), null, null, getInstance());
-			} catch (ClassNotFoundException e1) {
-				logger.error("Can't compute responses: ", e1);
-			} catch (InstantiationException e1) {
-				logger.error("Can't compute responses: ", e1);
-			} catch (IllegalAccessException e1) {
-				logger.error("Can't compute responses: ", e1);
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2528,7 +2499,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			try {
 				pluginId = getValue(Action.NAME).toString();
 				IFilter currentFilter = graphPanel.getFilter();
-				if ((currentFilter != null) && currentFilter.getName().equals(pluginId)) {
+				if ((currentFilter != null) && Objects.equals(currentFilter.getName(), pluginId)) {
 					graphPanel.setFilter(null);
 					setFilterMenuItem(null);
 					filterBG.clearSelection();

@@ -20,8 +20,8 @@ import org.apache.log4j.Logger;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
-import com.isti.traceview.processing.IFilter;
 
 import edu.iris.Fissures.Time;
 import edu.iris.Fissures.IfNetwork.ChannelId;

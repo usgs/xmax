@@ -5,7 +5,7 @@
 
     <!-- GLOBAL PROPERTIES --> 
     <property name="base.dir"	      location="."/> 
-    <property name="src.dir"          location="src"/>
+    <property name="src.dir"          location="src/main/java"/>
     <property name="lib.dir"          location="lib"/>
     <property name="plugins.dir"      location="plugins"/> 
     <property name="resources.dir"    location="resources"/>
@@ -16,12 +16,6 @@
     <property name="build.root"       location="build"/>
     <property name="project.main"     value="com.isti.xmax.XMAX"/>
     <property name="project.archive"  value="xmax.jar"/>
-    
-    <property name="manifest.dir"     value="${src.dir}/META_INF"/> 
-    <property name="manifest.file"    value="${manifest.dir}/MANIFEST.MF"/>
-    <property name="manifest.version" value="1.0"/>
-    <property name="imp.version"      value="1.0"/><!-- implementation -->
-    <property name="imp.vendor"       value="Instrumental Software Technologies"/>
     
     <!-- BUILD CLASSPATH (Java Plugins) --> 
     <path id="classpath">
@@ -81,63 +75,6 @@
 	<mkdir dir="${logs.dir}"/> 
     </target>
     
-    <!-- RUN -->
-    <target name="run" description="Run java com.isti.xmax.XMAX from build/ dir">
-        <property name="myclasspath" refid="run.classpath"/>
-        <echo message="Classpath = ${myclasspath}"/>
-        <echo message="project.main = ${project.main}"/>
-        <java classname="${project.main}" classpathref="run.classpath" fork="true">
-            <!--jvmarg value="-Xms64m"/-->
-            <jvmarg value="-Xms512m"/> 
-	    <jvmarg value="-Xmx512m"/>
-        </java>
-    </target>
-
-    <!-- CREATE-MANIFEST -->
-    <target name="create-manifest" description="Create MANIFEST.MF for xmax.jar archive">
-        <tstamp/><!-- needed for TODAY -->
-	<echo message="Creating new ${manifest.file}"/>
-	<manifest file="${manifest.file}">
-	    <!--section name="${ant.project.name}"-->
-	    <attribute name="Built-By" value="${user.name}"/>
-	    <attribute name="Built-Date" value="${TODAY}"/>
-	    <attribute name="Implementation-Version" value="${imp.version}"/>
-	    <attribute name="Implementation-Vendor" value='"${imp.vendor}"'/>
-	    <attribute name="Main-Class" value="${project.main}"/>
-	    <attribute name="Class-Path" value="${jar.classpath}"/>
-	    <!--</section-->
-	</manifest>
-    </target>
-    
-    <!-- COMPILE -->
-    <!-- target="1.7" in '<javac></javac>' --> 
-    <target name="compile" depends="init,create-manifest" description="Compile the source [depends=init]">
-        <property name="myclasspath" refid="compile.classpath"/>
-	<javac verbose="false" 
-	       srcdir="${src.dir}" 
-	       destdir="${build.root}" 
-	       listfiles="true" 
-	       encoding="utf-8" 
-	       debug="true" 
-	       includeantruntime="false">
-            <classpath refid="compile.classpath"/>
-            <compilerarg value="-Xlint"/>
-        </javac>
-        <copy todir="${build.root}">
-	    <fileset dir="${base.dir}">
-	        <include name="log4j.properties"/>
-	    </fileset>
-	    <fileset dir="${src.dir}">
-	        <include name="META-INF/**"/>
-	    </fileset>
-	</copy>
-   	<copy todir="${build.root}/com/isti/traceview/gui">
-	    <fileset dir="${src.dir}/com/isti/traceview/gui">
-	        <include name="defaultMarkPosition.gif"/>
-	    </fileset>
-   	</copy> 
-    </target>
-
     <!-- BUILD-PLUGINS -->
     <target name="build-plugins" description="Compile plugin source [depends=compile]">
         <ant dir="plugins/com.isti.xmax.filter.lowpass" target="build" />
@@ -163,12 +100,4 @@
 	</copy>
     </target>
 
-    <!-- JAR -->
-    <target name="jar" depends="compile,build-plugins" description="generate the distribution">
-	<!--echo message="Deleting and creating ${manifest.file}"/-->
-	<tstamp/><!-- needed for TODAY --> 
-	<jar destfile="${project.archive}" manifest="${manifest.file}" basedir="${build.root}">
-	</jar>
-    </target>
-	<import file="./javadoc.xml"/>
 </project>

@@ -34,6 +34,7 @@ import com.isti.traceview.data.PlotData;
 import com.isti.traceview.data.PlotDataPoint;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
+import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.IColorModeState;
 
 /**

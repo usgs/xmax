@@ -1,19 +1,11 @@
 package com.isti.xmax;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -21,19 +13,16 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-
-import org.java.plugin.ObjectFactory;
-import org.java.plugin.PluginManager;
-import org.java.plugin.PluginManager.PluginLocation;
-import org.java.plugin.registry.Extension;
-import org.java.plugin.registry.ExtensionPoint;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
+import org.reflections.Reflections;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.ColorModeBySegment;
-import com.isti.traceview.processing.IFilter;
-import com.isti.traceview.processing.ITransformation;
-import com.isti.xmax.XMAXException;
+import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.data.XMAXDataModule;
 import com.isti.xmax.gui.XMAXframe;
 
@@ -53,9 +42,8 @@ public class XMAX extends TraceView {
 	 */
 	private static CommandLine cmd;
 	private static Options options;
-	private static PluginManager pluginManager;
-	private static List<Extension> filters = new ArrayList<Extension>();
-	private static List<Extension> transformations = new ArrayList<Extension>();
+	private static Set<Class<? extends IFilter>> filters;
+	private static Set<Class<? extends ITransformation>> transformations;
 	
 	public XMAX() {
 		super();
@@ -173,33 +161,11 @@ public class XMAX extends TraceView {
 					setDataModule(XMAXDataModule.getInstance());
 					getDataModule().dumpData(new ColorModeBySegment());
 				} else {
-					// Ordinary initialization
-					// switch off logging to suppress unneeded messages
-					Level level = Logger.getRootLogger().getLevel();
-					Logger.getRootLogger().setLevel(Level.OFF);
-					// Collecting plug-in locations.
-					PluginLocation[] pluginLocations = collectPluginLocations();
+					// Find all classes that implement IFilter and ITransformation.
+					Reflections reflect = new Reflections("com.isti");
+					filters = reflect.getSubTypesOf(IFilter.class);
+					transformations = reflect.getSubTypesOf(ITransformation.class);
 					
-					// Creating plug-in manager instance.
-					pluginManager = ObjectFactory.newInstance().createManager();
-					// Publishing discovered plug-ins.
-					pluginManager.publishPlugins(pluginLocations);
-
-					// Find our extension point.
-					ExtensionPoint filterExtPoint = pluginManager.getRegistry().getExtensionPoint("com.isti.xmax.core", "Filter");
-					ExtensionPoint transformExtPoint = pluginManager.getRegistry().getExtensionPoint("com.isti.xmax.core", "Transformation");
-					// Collect all extensions that was connected by JPF to our extension
-					// point. Iterate over extensions making text processing.
-					for (Extension ext: filterExtPoint.getConnectedExtensions()) {
-						filters.add(ext);
-					}
-					for (Extension ext: transformExtPoint.getConnectedExtensions()) {
-						transformations.add(ext);
-					}
-					
-					//restoring logging level
-					System.out.format("Logger LEVEL == [%s]\n", level.toString());	
-					Logger.getRootLogger().setLevel(level);
 					setDataModule(XMAXDataModule.getInstance());
                     
 					getDataModule().loadData();
@@ -254,58 +220,51 @@ public class XMAX extends TraceView {
 	/**
 	 * Get all plugins-filters
 	 */
-	public static List<Extension> getFilters() {
+	public static Set<Class<? extends IFilter>> getFilters() {
 		return filters;
 	}
 
 	/**
 	 * Get plugin-filter by id
 	 */
-	public static IFilter getFilter(String id) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		for (Extension ext: filters) {
-			if (ext.getId().equals(id)) {
-				// Get plug-in class loader.
-				ClassLoader classLoader = pluginManager.getPluginClassLoader(ext.getDeclaringPluginDescriptor());
-				// Load Routine class.
-				Class<?> cls = classLoader.loadClass(ext.getParameter("class").valueAsString());
-				// Create Routine instance.
-				IFilter filter = (IFilter) cls.newInstance();
-				// Constructor cnst = cls.getConstructor(args);
-				// Object[] initargs = {id};
-				// IFilter filter = (IFilter) cnst.newInstance(initargs);
-				return filter;
+	public static IFilter getFilter(String id)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		for (Class<? extends IFilter> curClass : filters) {
+
+			try {
+				if (Objects.equals(curClass.getField("NAME").get(null), id)) {
+					IFilter filter = (IFilter) curClass.newInstance();
+					return filter;
+				}
+			} catch (NoSuchFieldException | SecurityException e) {
+				// Field doesn't exist, move to next
 			}
 		}
 		return null;
 	}
 
 	/**
-	 * Get all plugins-transformations
+	 * Get all transformations
 	 */
-	public static List<Extension> getTransformations() {
+	public static Set<Class<? extends ITransformation>> getTransformations() {
 		return transformations;
 	}
 
 	/**
-	 * Get plugin-transformation by id
+	 * Get transformation by id.
+	 * 
+	 * @return the matching ITransformation or null if none matches
 	 */
-	public static ITransformation getTransformation(String id) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		for (Extension ext: transformations) {
-			if (ext.getId().equals(id)) {
-				// Get plug-in class loader.
-				ClassLoader classLoader = pluginManager.getPluginClassLoader(ext.getDeclaringPluginDescriptor());
-				// Load Routine class.
-				Class<?> cls = classLoader.loadClass(ext.getParameter("class").valueAsString());
-				// Create Routine instance.
-				ITransformation transform = (ITransformation) cls.newInstance();
-				try {
-					int maxDataLength = ext.getParameter("max_data_length").valueAsNumber().intValue();
-					transform.setMaxDataLength(maxDataLength);
-				} catch (NullPointerException e) {
-					// do nothing
-					logger.error("NullPointerException:", e);	
+	public static ITransformation getTransformation(String id)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		for (Class<? extends ITransformation> curClass : transformations) {
+			try {
+				if (Objects.equals(curClass.getField("NAME").get(null), id)) {
+					ITransformation transform = (ITransformation) curClass.newInstance();
+					return transform;
 				}
-				return transform;
+			} catch (IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+				// Field has issues, move to next field
 			}
 		}
 		return null;
@@ -343,69 +302,6 @@ public class XMAX extends TraceView {
 		opt.addOption(new Option("l", "flt_location", true, "semicolon-separated wildcarded filter by location"));
 		opt.addOption(new Option("c", "flt_channel", true, "semicolon-separated wildcarded filter by channel"));
 		return opt;
-	}
-
-	private PluginLocation[] collectPluginLocations() throws MalformedURLException, XMAXException {
-		System.out.println("User directory: " + System.getProperty("user.dir").toString());
-		System.out.println("Operating System: " + System.getProperty("os.name").toString());
-		System.out.println("Java Runtime Version: " + System.getProperty("java.runtime.version").toString());
-		System.out.println("Java Classpath: " + System.getProperty("java.class.path").toString());	
-		//String[] classpath = System.getProperty("java.class.path").split(";");
-		String[] classpath = System.getProperty("java.class.path").split(":");
-		String pluginDirName = null;
-		for (String st: classpath) {
-			if (st.contains("xmax.jar")) {
-				pluginDirName = st.substring(0, st.indexOf("xmax.jar"));
-				if (pluginDirName.length() == 0)
-					pluginDirName = "." + File.separator + "plugins";
-				else
-					pluginDirName = pluginDirName + "plugins";
-				System.out.println("Plugin Directory: " + pluginDirName);
-				break;
-			}
-		}
-		if (pluginDirName == null) {
-			pluginDirName = "./plugins";
-		}
-		File pluginDir = new File(pluginDirName);
-		File[] pluginFolders = pluginDir.listFiles(new FileFilter(){
-			public boolean accept(final File file) {
-				return file.isDirectory();
-			}
-		});
-		List<PluginLocation> result = new LinkedList<PluginLocation>();
-		for (int i = 0; i < pluginFolders.length; i++) {
-			PluginLocation pluginLocation = getPluginLocation(pluginFolders[i]);
-			if (pluginLocation != null) {
-				result.add(pluginLocation);
-			}
-		}
-		//(PluginLocation[])
-		return result.toArray(new PluginLocation[result.size()]);
-	}
-
-	private PluginLocation getPluginLocation(File aFolder) throws MalformedURLException {
-		if (!aFolder.isDirectory()) {
-			return null;
-		}
-		File manifestFile = new File(aFolder, "plugin.xml");
-		if (!manifestFile.isFile()) {
-			manifestFile = new File(aFolder, "plugin-fragment.xml");
-			if (!manifestFile.isFile()) {
-				return null;
-			}
-		}
-		final URL folderUrl = org.java.plugin.util.IoUtil.file2url(aFolder);
-		final URL manifestUrl = org.java.plugin.util.IoUtil.file2url(manifestFile);
-		return new PluginLocation(){
-			public URL getManifestLocation() {
-				return manifestUrl;
-			}
-
-			public URL getContextLocation() {
-				return folderUrl;
-			}
-		};
 	}
 
 	/**

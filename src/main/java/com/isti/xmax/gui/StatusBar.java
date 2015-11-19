@@ -12,12 +12,12 @@ import javax.swing.BoxLayout;
 
 import org.apache.log4j.Logger;
 
+import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.gui.IMeanState;
 import com.isti.traceview.gui.IOffsetState;
 import com.isti.traceview.gui.IScaleModeState;
 import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
-import com.isti.traceview.processing.IFilter;
 
 import java.awt.ComponentOrientation;
 import java.awt.Font;

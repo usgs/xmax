@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     compile group: 'org.jfree', name: 'jfreechart', version: '1.0.+'
+    compile group: 'org.jfree', name: 'jcommon', version: '1.0.+'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
     compile group: 'commons-configuration', name: 'commons-configuration', version: '1.7'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.5'
@@ -26,7 +27,8 @@ dependencies {
     compile group: 'org.jdom', name: 'jdom', version: '1.1'
     compile group: 'edu.emory.mathcs', name: 'JTransforms', version: '2.4'
     compile group: 'log4j', name: 'log4j', version: '1.2.16'
-    compile group: 'net.sf.jpf', name: 'jpf', version: '1.5'
+    compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
+    
 
 //seis.sc.edu maven dependencies
     compile group: 'edu.sc.seis', name: 'seisFile', version: '1.6.5'

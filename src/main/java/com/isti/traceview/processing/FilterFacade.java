@@ -6,6 +6,7 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
+import com.isti.traceview.filters.IFilter;
 
 /**
  * Facade to simplify filter operation
