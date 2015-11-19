@@ -8,8 +8,8 @@ import com.isti.traceview.processing.BPFilterException;
  * Band-pass Butterworth filter Algorithm is from Stearns, 1975
  * </p>
  * <p>
- * The digital filter has ns filter sections in the cascade. The k'th section has the transfer
- * function with the transfer function:
+ * The digital filter has ns filter sections in the cascade. The k'th section
+ * has the transfer function with the transfer function:
  * </p>
  * <p>
  * h(z) = (a(k)*(z**4-2*z**2+1))/(z**4+b(k)*z**3+c(k)*z**2+d(k)*z+e(k))
@@ -18,7 +18,8 @@ import com.isti.traceview.processing.BPFilterException;
  * Thus, if f(m) and g(m) are the input and output at time m*t, then
  * </p>
  * <p>
- * g(m) = a(k)*(f(m)-2*f(m-2)+f(m-4))-b(k)*g(m-1)-c(k)*g(m-2)-d(k)*g(m-3)-e(k)*g(m-4)
+ * g(m) =
+ * a(k)*(f(m)-2*f(m-2)+f(m-4))-b(k)*g(m-1)-c(k)*g(m-2)-d(k)*g(m-3)-e(k)*g(m-4)
  * </p>
  */
 
@@ -26,7 +27,7 @@ public class FilterBP implements IFilter {
 
 	public static final String DESCRIPTION = "Apply Band Pass filter for selected channels";
 	public static final String NAME = "BP";
-	
+
 	int order = 0;
 	double cutLowFrequency = Double.NaN;
 	double cutHighFrequency = Double.NaN;
@@ -39,24 +40,24 @@ public class FilterBP implements IFilter {
 	double[] e;
 
 	/**
-	 * 20 pairs of frequency and power gain. graf(1,k) and graf(2,k) for k = 1 thru 20
+	 * 20 pairs of frequency and power gain. graf(1,k) and graf(2,k) for k = 1
+	 * thru 20
 	 */
 	double[][] graf = new double[2][20];
-	
+
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return Reconvolution.NAME;
 	}
 
-	public int getMaxDataLength(){
+	public int getMaxDataLength() {
 		return Integer.MAX_VALUE;
 	}
-	
+
 	/**
 	 * @param order
-	 *            int number of sections (each section = 4 poles: 2 low freq poles and 2 hi freq
-	 *            poles)
+	 *            int number of sections (each section = 4 poles: 2 low freq
+	 *            poles and 2 hi freq poles)
 	 * @param cutLowFrequency
 	 *            double cutoff (3-db) frequency in Hz
 	 * @param cutHighFrequency
@@ -89,7 +90,8 @@ public class FilterBP implements IFilter {
 	synchronized public void init(RawDataProvider channel) {
 		double sampleRate = channel.getSampleRate() / 1000.0;
 		double w1 = Math.sin(cutLowFrequency * Math.PI * sampleRate) / Math.cos(cutLowFrequency * Math.PI * sampleRate);
-		double w2 = Math.sin(cutHighFrequency * Math.PI * sampleRate) / Math.cos(cutHighFrequency * Math.PI * sampleRate);
+		double w2 = Math.sin(cutHighFrequency * Math.PI * sampleRate)
+				/ Math.cos(cutHighFrequency * Math.PI * sampleRate);
 		double wc = w2 - w1;
 		double q = wc * wc + 2.0 * w1 * w2;
 		double s = w1 * w1 * w2 * w2;
@@ -132,15 +134,13 @@ public class FilterBP implements IFilter {
 	/**
 	 * Performs band-pass Butterworth filtering of a time series.
 	 * 
-	 * @param data =
-	 *            data array
-	 * @param length =
-	 *            number of samples to filter
+	 * @param data
+	 *            = data array
+	 * @param length
+	 *            = number of samples to filter
 	 * @return filtered data array
 	 */
-	synchronized public double[] filter(double[] data, int length) 
-	throws BPFilterException	
-	{
+	synchronized public double[] filter(double[] data, int length) throws BPFilterException {
 		if (data.length > length)
 			throw new BPFilterException("Requested filtering length exceeds provided array length");
 		int mean = new Double(demean(data, length)).intValue();
@@ -166,7 +166,7 @@ public class FilterBP implements IFilter {
 				f[j][3] = f[j][4];
 			}
 			data[i] = f[order][4] + mean;
-			//data[i] = f[order][4];
+			// data[i] = f[order][4];
 		}
 		return data;
 	}
@@ -180,8 +180,10 @@ public class FilterBP implements IFilter {
 	 * 
 	 * **NOTE: This will be done with the mean button fix
 	 * 
-	 * @param buf array to be demeaned
-	 * @param n the size of the array to be demeaned
+	 * @param buf
+	 *            array to be demeaned
+	 * @param n
+	 *            the size of the array to be demeaned
 	 * 
 	 * @return the sum of the array
 	 */
@@ -191,8 +193,8 @@ public class FilterBP implements IFilter {
 			sum = sum + buf[i];
 		}
 		sum = sum / n;
-		
-		//This removes mean from original data
+
+		// This removes mean from original data
 		for (int i = 0; i < n; i++) {
 			buf[i] = buf[i] - sum;
 		}
@@ -214,7 +216,8 @@ public class FilterBP implements IFilter {
 	public boolean equals(Object o) {
 		if (o instanceof FilterBP) {
 			FilterBP arg = (FilterBP) o;
-			if ((order == arg.getOrder()) && (cutLowFrequency == arg.getCutLowFrequency()) && (cutHighFrequency == arg.getCutHighFrequency())) {
+			if ((order == arg.getOrder()) && (cutLowFrequency == arg.getCutLowFrequency())
+					&& (cutHighFrequency == arg.getCutHighFrequency())) {
 				return true;
 			}
 		}

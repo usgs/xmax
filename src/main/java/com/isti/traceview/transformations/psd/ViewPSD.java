@@ -68,7 +68,8 @@ import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.Spectra;
 
 /**
- * Dialog to view PSD results. Also performs deconvolution, convolution and smoothing.
+ * Dialog to view PSD results. Also performs deconvolution, convolution and
+ * smoothing.
  * 
  * @author Max Kokoulin
  */
@@ -94,14 +95,16 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 	private Configuration configuration = null;
 	private boolean showWaves = false;
 
-	public ViewPSD(Frame owner, List<Spectra> data, TimeInterval ti, Configuration configuration, List<PlotDataProvider> input) {
+	public ViewPSD(Frame owner, List<Spectra> data, TimeInterval ti, Configuration configuration,
+			List<PlotDataProvider> input) {
 		super(owner, "Power Spectra Density", true);
 		this.dataset = createDataset(data);
 		this.ti = ti;
 		this.data = data;
 		this.configuration = configuration;
 
-		Object[] options = { "Close", "Print", "Dump Freqs", "Export PSD", "Export SAC", "Export GRAPH", "Toggle waves" };
+		Object[] options = { "Close", "Print", "Dump Freqs", "Export PSD", "Export SAC", "Export GRAPH",
+				"Toggle waves" };
 		// Create the JOptionPane.
 		optionPane = new JOptionPane();
 		optionPane.setVisible(false);
@@ -116,11 +119,11 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter(){
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				/*
-				 * Instead of directly closing the window, we're going to change the JOptionPane's
-				 * value property.
+				 * Instead of directly closing the window, we're going to change
+				 * the JOptionPane's value property.
 				 */
 				optionPane.setValue("Close");
 			}
@@ -163,32 +166,35 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 					String fileName = null;
 					try {
 						String seriesName = (String) dataset.getSeriesKey(i);
-						fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_" + seriesName.replace("/", "_");
+						fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_"
+								+ seriesName.replace("/", "_");
 						stream = new BufferedOutputStream(new FileOutputStream(fileName, false));
 						for (int j = 0; j < dataset.getItemCount(i); j++) {
 							stream.write((psnFormat1.format(dataset.getXValue(i, j)) + "  "
 									+ psnFormat2.format(dataset.getYValue(i, j)) + "\n").getBytes());
 						}
 					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Can't write file " + fileName + "; " + e1, "Error",
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+								"Can't write file " + fileName + "; " + e1, "Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
 						try {
 							stream.close();
 						} catch (IOException e1) {
 							// do nothing
-							logger.error("Can't close buffered output stream");	
+							logger.error("Can't close buffered output stream");
 						}
 					}
 				}
-				JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data exported to PSD ascii", "Message", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data exported to PSD ascii", "Message",
+						JOptionPane.INFORMATION_MESSAGE);
 			} else if (value.equals("Export SAC")) {
 				for (int i = 0; i < dataset.getSeriesCount() - 2; i++) {
 					DataOutputStream ds = null;
 					String fileName = null;
 					try {
 						String seriesName = (String) dataset.getSeriesKey(i);
-						fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_" + seriesName.replace("/", "_") + ".SAC";
+						fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_"
+								+ seriesName.replace("/", "_") + ".SAC";
 						ds = new DataOutputStream(new FileOutputStream(new File(fileName)));
 						float ydata[] = new float[dataset.getItemCount(i)];
 						float xdata[] = new float[dataset.getItemCount(i)];
@@ -196,57 +202,63 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 							xdata[j] = new Double(dataset.getXValue(i, j)).floatValue();
 							ydata[j] = new Double(dataset.getYValue(i, j)).floatValue();
 						}
-						SacTimeSeriesASCII sacAscii = SacTimeSeriesASCII.getSAC(data.get(i).getChannel(), ti.getStartTime(), xdata, ydata);
+						SacTimeSeriesASCII sacAscii = SacTimeSeriesASCII.getSAC(data.get(i).getChannel(),
+								ti.getStartTime(), xdata, ydata);
 						sacAscii.writeHeader(ds);
 						sacAscii.writeData(ds);
 					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Can't write file " + fileName + "; " + e1, "Error",
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+								"Can't write file " + fileName + "; " + e1, "Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
 						try {
 							ds.close();
 						} catch (Exception e1) {
 							// do nothing
-							logger.error("Can't close data output stream");	
+							logger.error("Can't close data output stream");
 						}
 					}
 				}
-				JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data exported to SAC ascii", "Message", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data exported to SAC ascii", "Message",
+						JOptionPane.INFORMATION_MESSAGE);
 			} else if (value.equals("Dump Freqs")) {
 				BufferedOutputStream stream = null;
 				try {
-					File file = new File(XMAXconfiguration.getInstance().getOutputPath() + File.separator + huttFreqsFile);
+					File file = new File(
+							XMAXconfiguration.getInstance().getOutputPath() + File.separator + huttFreqsFile);
 					stream = new BufferedOutputStream(new FileOutputStream(file, true));
 					for (int i = 0; i < dataset.getSeriesCount() - 2; i++) {
 						String seriesName = (String) dataset.getSeriesKey(i);
 						stream.write((seriesName + ":").getBytes());
-						for (double huttPeriod: getHuttPeriods()) {
-							stream.write((" " + huttFormat.format(getValue(i, huttPeriod)) + " @   " + huttFormat.format(huttPeriod) + " s;")
-									.getBytes());
+						for (double huttPeriod : getHuttPeriods()) {
+							stream.write((" " + huttFormat.format(getValue(i, huttPeriod)) + " @   "
+									+ huttFormat.format(huttPeriod) + " s;").getBytes());
 						}
 						stream.write((" " + df.format(ti.getStartTime()) + "\n").getBytes());
 					}
 					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Dump frequencies file updated", "Message",
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (FileNotFoundException e1) {
-					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Can't find Dumo frequencies file", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Can't find Dumo frequencies file", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				} catch (IOException e2) {
-					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Can't write Dump frequencies: " + e2, "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Can't write Dump frequencies: " + e2,
+							"Error", JOptionPane.ERROR_MESSAGE);
 				} finally {
 					try {
 						stream.close();
 					} catch (IOException e1) {
 						// do nothing
-						logger.error("Can't close data stream");	
+						logger.error("Can't close data stream");
 					}
 				}
 			} else if (value.equals("Export GRAPH")) {
-				File exportFile = GraphUtil.saveGraphics((JPanel) optionPane.getMessage(), XMAX.getConfiguration().getUserDir("GRAPH"));
+				File exportFile = GraphUtil.saveGraphics((JPanel) optionPane.getMessage(),
+						XMAX.getConfiguration().getUserDir("GRAPH"));
 				if (exportFile != null) {
 					XMAX.getConfiguration().setUserDir("GRAPH", exportFile.getParent());
 				}
 			} else if (value.equals("Toggle waves")) {
-				if(showWaves){
+				if (showWaves) {
 					chartPanel.remove(chartPanel.getWavePanel());
 					showWaves = false;
 				} else {
@@ -262,7 +274,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 			}
 		}
 	}
-	
+
 	/**
 	 * get Hutt periods for PSD from plugin configuration, sec
 	 */
@@ -303,13 +315,14 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 
 	private XYSeriesCollection createDataset(List<Spectra> ds) {
 		XYSeriesCollection ret = new XYSeriesCollection();
-		for (Spectra spectra: ds) {
+		for (Spectra spectra : ds) {
 			ret.addSeries(spectra.getPSDSeries(OutputGenerator.VELOCITY_UNIT_CONV));
 		}
-        // MTH: later versions of XYCollection do NOT allow you to add more than 1 series with
-        //      a given key=name! --> name must be unique
-		//XYSeries lowNoiseModelSeries = new XYSeries("MODEL");
-		//XYSeries highNoiseModelSeries = new XYSeries("MODEL");
+		// MTH: later versions of XYCollection do NOT allow you to add more than
+		// 1 series with
+		// a given key=name! --> name must be unique
+		// XYSeries lowNoiseModelSeries = new XYSeries("MODEL");
+		// XYSeries highNoiseModelSeries = new XYSeries("MODEL");
 		XYSeries lowNoiseModelSeries = new XYSeries("NLNM");
 		XYSeries highNoiseModelSeries = new XYSeries("NHNM");
 
@@ -340,7 +353,8 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 			}
 			i++;
 		}
-		// Adding tail of noise models, besides psd graph ending, and 1000 s value
+		// Adding tail of noise models, besides psd graph ending, and 1000 s
+		// value
 		i = 2;
 		period = 0.0;
 		while ((period = i / (freqArr[1])) < 1000) {
@@ -368,11 +382,12 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 				true, // create legend?
 				true, // generate tooltips?
 				false // generate URLs?
-				);
+		);
 		chart.setBackgroundPaint(Color.white);
 		chart.addProgressListener(this);
-		TraceViewChartPanel cp = new TraceViewChartPanel(chart, true);		
-		TextTitle title = new TextTitle("Start time: " + TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+		TraceViewChartPanel cp = new TraceViewChartPanel(chart, true);
+		TextTitle title = new TextTitle("Start time: "
+				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 				+ ", Duration: " + ti.convert(), getFont());
 		chart.setTitle(title);
 		XYPlot plot = chart.getXYPlot();
@@ -404,15 +419,16 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 		}
 		if (chart != null) {
 			XYPlot plot = (XYPlot) chart.getPlot();
-			//XYDataset dataset = plot.getDataset();
-			//Comparable seriesKey = dataset.getSeriesKey(0);
+			// XYDataset dataset = plot.getDataset();
+			// Comparable seriesKey = dataset.getSeriesKey(0);
 			double xx = plot.getDomainCrosshairValue();
 			double yy = plot.getRangeCrosshairValue();
 			// update the screen...
 			if (xx != 0.0 && yy != 0.0) {
-				getCrosshairPositionL().setText("  Period: " + screenDataFormat.format(xx) + " s, PSD: " + screenDataFormat.format(yy));
+				getCrosshairPositionL().setText(
+						"  Period: " + screenDataFormat.format(xx) + " s, PSD: " + screenDataFormat.format(yy));
 			}
-			//lg.debug("X: " + xx + ", Y: " + yy);
+			// lg.debug("X: " + xx + ", Y: " + yy);
 		}
 	}
 
@@ -428,8 +444,9 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 		for (int i = 0; i < dataset.getItemCount(series); i++) {
 			if (arg < dataset.getXValue(series, i)) {
 				return dataset.getYValue(series, i - 1)
-						+ ((dataset.getYValue(series, i) - dataset.getYValue(series, i - 1)) * (arg - dataset.getXValue(series, i - 1)) / (dataset
-								.getXValue(series, i) - dataset.getXValue(series, i - 1)));
+						+ ((dataset.getYValue(series, i) - dataset.getYValue(series, i - 1))
+								* (arg - dataset.getXValue(series, i - 1))
+								/ (dataset.getXValue(series, i) - dataset.getXValue(series, i - 1)));
 			}
 		}
 		return Double.NaN;
@@ -454,9 +471,10 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 	}
 
 	public class PSDChannelViewFactory implements IChannelViewFactory {
-		public int getInfoAreaWidth(){
+		public int getInfoAreaWidth() {
 			return 0;
 		}
+
 		public ChannelView getChannelView(List<PlotDataProvider> channels) {
 			return new ChannelView(channels, getInfoAreaWidth(), false, Color.WHITE, Color.WHITE);
 		}
@@ -479,14 +497,14 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 			BoxLayout mLayout = new BoxLayout(this, javax.swing.BoxLayout.Y_AXIS);
 			setLayout(mLayout);
 			add(cp);
-			if(showWaves){
+			if (showWaves) {
 				add(getWavePanel());
 			}
 			add(getCrosshairPositionL());
 		}
-		
-		public JPanel getWavePanel(){
-			if(waveP==null){
+
+		public JPanel getWavePanel() {
+			if (waveP == null) {
 				waveP = new JPanel();
 				BoxLayout oLayout = new BoxLayout(waveP, javax.swing.BoxLayout.Y_AXIS);
 				waveP.setLayout(oLayout);
@@ -498,10 +516,10 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 				gp.setBackground(Color.WHITE);
 				gp.setChannelShowSet(input);
 				gp.setTimeRange(ti);
-				PSDItemRenderer ir =  (PSDItemRenderer)cp.getChart().getXYPlot().getRenderer();
-				for(int i=0; i<input.size(); i++){
+				PSDItemRenderer ir = (PSDItemRenderer) cp.getChart().getXYPlot().getRenderer();
+				for (int i = 0; i < input.size(); i++) {
 					PlotDataProvider channel = input.get(i);
-					channel.setColor((Color)ir.lookupSeriesPaint(i));
+					channel.setColor((Color) ir.lookupSeriesPaint(i));
 				}
 				waveP.add(gp);
 				waveP.setMaximumSize(new java.awt.Dimension(32767, 100));
@@ -515,7 +533,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 				return NO_SUCH_PAGE;
 			}
 			double factor;
-			if(showWaves){
+			if (showWaves) {
 				factor = new Double(cp.getHeight()) / (waveP.getHeight() + cp.getHeight());
 			} else {
 				factor = 1.0;
@@ -526,17 +544,20 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 			double w = pf.getImageableWidth();
 			double h = pf.getImageableHeight() * factor;
 			cp.getChart().draw(g2, new Rectangle2D.Double(x, y, w, h), null, null);
-			if(showWaves){
-				g2.translate(x, y+h);
-				g2.scale(w/waveP.getWidth(), (pf.getImageableHeight()*(1-factor))/waveP.getHeight());
+			if (showWaves) {
+				g2.translate(x, y + h);
+				g2.scale(w / waveP.getWidth(), (pf.getImageableHeight() * (1 - factor)) / waveP.getHeight());
 				waveP.paint(g2);
 			}
-//			double imageHeight = pf.getImageableHeight() * (1-factor);
-//			BufferedImage image = new BufferedImage(new Double(w).intValue(), new Double(imageHeight).intValue(), BufferedImage.TYPE_INT_RGB);
-//			Graphics2D g2image = image.createGraphics();
-//			g2image.scale(w / new Double(optionP.getWidth()), imageHeight / new Double(optionP.getHeight()));
-//			optionP.paint(g2image);
-//			g2.drawImage(image, new Double(x).intValue(),  new Double(y).intValue(), null, null);
+			// double imageHeight = pf.getImageableHeight() * (1-factor);
+			// BufferedImage image = new BufferedImage(new Double(w).intValue(),
+			// new Double(imageHeight).intValue(), BufferedImage.TYPE_INT_RGB);
+			// Graphics2D g2image = image.createGraphics();
+			// g2image.scale(w / new Double(optionP.getWidth()), imageHeight /
+			// new Double(optionP.getHeight()));
+			// optionP.paint(g2image);
+			// g2.drawImage(image, new Double(x).intValue(), new
+			// Double(y).intValue(), null, null);
 			return PAGE_EXISTS;
 		}
 	}

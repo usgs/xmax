@@ -44,11 +44,10 @@ public interface IFilter {
 	 *             the LP filter exception
 	 */
 	public double[] filter(double[] data, int length)
-			throws TraceViewException, BPFilterException, HPFilterException,
-			LPFilterException;
+			throws TraceViewException, BPFilterException, HPFilterException, LPFilterException;
 
 	public boolean needProcessing();
-	
+
 	/**
 	 * Can be used instead of referencing NAME when used as Generic.
 	 *

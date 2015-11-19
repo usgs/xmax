@@ -10,13 +10,15 @@ public class NoiseModel {
 	public final static int PER = 0;
 	public final static int A = 1;
 	public final static int B = 2;
-	protected final static double NHNM_DATA[][] = new double[][]{ { 0.1, -108.73, -17.23 }, { 0.22, -150.34, -80.50 }, { 0.32, -122.31, -23.87 },
-			{ 0.80, -116.85, 32.51 }, { 3.80, -108.48, 18.08 }, { 4.60, -74.66, -32.95 }, { 6.30, 0.66, -127.18 }, { 7.90, -93.37, -22.42 },
-			{ 15.40, 73.54, -162.98 }, { 20.00, -151.52, 10.01 }, { 354.80, -206.66, 31.63 }, { 10000, -206.66, 31.63 } };
-	protected final static double NLNM_DATA[][] = new double[][]{ { 0.1, -162.36, 5.64 }, { 0.17, -166.7, 0 }, { 0.4, -170, -8.3 },
-			{ 0.8, -166.4, 28.9 }, { 1.24, -168.6, 52.48 }, { 2.4, -159.98, 29.81 }, { 4.3, -141.1, 0 }, { 5, -71.36, -99.77 },
-			{ 6, -97.26, -66.49 }, { 10, -132.18, -31.57 }, { 12, -205.27, 36.16 }, { 15.6, -37.65, -104.33 }, { 21.9, -114.37, -47.1 },
-			{ 31.6, -160.58, -16.28 }, { 45, -187.5, 0 }, { 70, -216.47, 15.7 }, { 101, -185, 0 }, { 154, -168.34, -7.61 }, { 328, -217.43, 11.9 },
+	protected final static double NHNM_DATA[][] = new double[][] { { 0.1, -108.73, -17.23 }, { 0.22, -150.34, -80.50 },
+			{ 0.32, -122.31, -23.87 }, { 0.80, -116.85, 32.51 }, { 3.80, -108.48, 18.08 }, { 4.60, -74.66, -32.95 },
+			{ 6.30, 0.66, -127.18 }, { 7.90, -93.37, -22.42 }, { 15.40, 73.54, -162.98 }, { 20.00, -151.52, 10.01 },
+			{ 354.80, -206.66, 31.63 }, { 10000, -206.66, 31.63 } };
+	protected final static double NLNM_DATA[][] = new double[][] { { 0.1, -162.36, 5.64 }, { 0.17, -166.7, 0 },
+			{ 0.4, -170, -8.3 }, { 0.8, -166.4, 28.9 }, { 1.24, -168.6, 52.48 }, { 2.4, -159.98, 29.81 },
+			{ 4.3, -141.1, 0 }, { 5, -71.36, -99.77 }, { 6, -97.26, -66.49 }, { 10, -132.18, -31.57 },
+			{ 12, -205.27, 36.16 }, { 15.6, -37.65, -104.33 }, { 21.9, -114.37, -47.1 }, { 31.6, -160.58, -16.28 },
+			{ 45, -187.5, 0 }, { 70, -216.47, 15.7 }, { 101, -185, 0 }, { 154, -168.34, -7.61 }, { 328, -217.43, 11.9 },
 			{ 600, -258.28, 26.6 }, { 10000, -346.88, 48.75 }, { 100000, -346.88, 48.75 } };
 
 	/**
@@ -112,7 +114,8 @@ public class NoiseModel {
 	}
 
 	/**
-	 * evaluation of low noise model for a given period with ouput in Acceleration or Velocity
+	 * evaluation of low noise model for a given period with ouput in
+	 * Acceleration or Velocity
 	 * 
 	 * @param p
 	 *            peroid
@@ -125,8 +128,8 @@ public class NoiseModel {
 	}
 
 	/**
-	 * evaluation of low noise model for a given frequency or period output in Acceleration or
-	 * Velocity
+	 * evaluation of low noise model for a given frequency or period output in
+	 * Acceleration or Velocity
 	 * 
 	 * @param val
 	 *            value
@@ -153,7 +156,8 @@ public class NoiseModel {
 	}
 
 	/**
-	 * evaluation of high noise model for a given period with ouput in Acceleration or Velocity
+	 * evaluation of high noise model for a given period with ouput in
+	 * Acceleration or Velocity
 	 * 
 	 * @param p
 	 *            peroid
@@ -166,8 +170,8 @@ public class NoiseModel {
 	}
 
 	/**
-	 * evaluation of high noise model for a given peroid or frequency with ouput in Acceleration or
-	 * Velocity
+	 * evaluation of high noise model for a given peroid or frequency with ouput
+	 * in Acceleration or Velocity
 	 * 
 	 * @param val
 	 *            value
@@ -209,7 +213,8 @@ public class NoiseModel {
 	}
 
 	/**
-	 * create sample Acceleration or Velocity based on random value between NLNM and NHNM
+	 * create sample Acceleration or Velocity based on random value between NLNM
+	 * and NHNM
 	 * 
 	 * @param p
 	 *            peroid
@@ -224,7 +229,8 @@ public class NoiseModel {
 	}
 
 	/**
-	 * create sample Acceleration or Velocity based on random value between NLNM and NHNM
+	 * create sample Acceleration or Velocity based on random value between NLNM
+	 * and NHNM
 	 * 
 	 * @param val
 	 *            value

@@ -25,10 +25,10 @@ public class ViewResp extends JDialog implements PropertyChangeListener {
 
 	public ViewResp(Frame owner, XYDataset dataset) {
 		super(owner, "Response view", true);
-		Object[] options = {"Close", "Print"};
+		Object[] options = { "Close", "Print" };
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createChartPanel(dataset), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options,
-				options[0]);
+		optionPane = new JOptionPane(createChartPanel(dataset), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION,
+				null, options, options[0]);
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
@@ -36,7 +36,8 @@ public class ViewResp extends JDialog implements PropertyChangeListener {
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				/*
-				 * Instead of directly closing the window, we're going to change the JOptionPane's value property.
+				 * Instead of directly closing the window, we're going to change
+				 * the JOptionPane's value property.
 				 */
 				optionPane.setValue("Close");
 			}
@@ -58,8 +59,8 @@ public class ViewResp extends JDialog implements PropertyChangeListener {
 				setVisible(false);
 				dispose();
 			} else if (value.equals("Print")) {
-				TraceViewChartPanel cp = (TraceViewChartPanel)optionPane.getMessage();
-				cp.createChartPrintJob();			
+				TraceViewChartPanel cp = (TraceViewChartPanel) optionPane.getMessage();
+				cp.createChartPrintJob();
 			}
 		}
 	}
@@ -73,7 +74,7 @@ public class ViewResp extends JDialog implements PropertyChangeListener {
 				true, // create legend?
 				true, // generate tooltips?
 				false // generate URLs?
-				);
+		);
 		chart.setBackgroundPaint(Color.white);
 		XYPlot plot = (XYPlot) chart.getPlot();
 		plot.setBackgroundPaint(Color.lightGray);
@@ -84,11 +85,11 @@ public class ViewResp extends JDialog implements PropertyChangeListener {
 		return new TraceViewChartPanel(chart, true);
 	}
 
-//	public static void main(String[] args) {
-//		JFrame frame = new JFrame();
-//		frame.setVisible(true);
-//		ViewResp vr = new ViewResp(frame);
-//		vr.setVisible(true);
-//
-//	}
+	// public static void main(String[] args) {
+	// JFrame frame = new JFrame();
+	// frame.setVisible(true);
+	// ViewResp vr = new ViewResp(frame);
+	// vr.setVisible(true);
+	//
+	// }
 }

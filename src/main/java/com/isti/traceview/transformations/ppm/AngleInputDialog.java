@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class AngleInputDialog extends JDialog implements PropertyChangeListener {
-	
+
 	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane;
 	private JTextField textField;
@@ -26,7 +26,7 @@ public class AngleInputDialog extends JDialog implements PropertyChangeListener 
 		super(f, "Angle Input Dialog", true);
 		JPanel panel = new JPanel();
 		textField = new JTextField();
-		textField.setPreferredSize(new Dimension(70,22));
+		textField.setPreferredSize(new Dimension(70, 22));
 		textField.setText(new Double(value).toString());
 		panel.add(new JLabel("Enter angle:"));
 		panel.add(textField);
@@ -53,7 +53,8 @@ public class AngleInputDialog extends JDialog implements PropertyChangeListener 
 					setVisible(false);
 					dispose();
 				} catch (NumberFormatException e1) {
-					JOptionPane.showMessageDialog(this, "Enter double value", "Parsing error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "Enter double value", "Parsing error",
+							JOptionPane.ERROR_MESSAGE);
 					setVisible(true);
 				}
 			} else {

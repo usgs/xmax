@@ -29,8 +29,8 @@ import javax.swing.JComboBox;
 import javax.swing.border.EtchedBorder;
 
 /**
- * Filter with visual dialog in constructor do manually design it. Use HP, BP or LP filter to
- * process data, depends from entered values
+ * Filter with visual dialog in constructor do manually design it. Use HP, BP or
+ * LP filter to process data, depends from entered values
  * 
  * @author Max Kokoulin
  */
@@ -38,7 +38,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(FilterDYO.class);
-	
+
 	public static final String DESCRIPTION = "Creates DYO filter for selected channels and apply it";
 	public static final String NAME = "DYO";
 
@@ -69,17 +69,17 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		}
 		Object[] options = { "OK", "Close" };
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createDesignPanel(order, cutLowFrequency, cutHighFrequency), JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.CLOSED_OPTION, null, options, options[0]);
+		optionPane = new JOptionPane(createDesignPanel(order, cutLowFrequency, cutHighFrequency),
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options, options[0]);
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter(){
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				/*
-				 * Instead of directly closing the window, we're going to change the JOptionPane's
-				 * value property.
+				 * Instead of directly closing the window, we're going to change
+				 * the JOptionPane's value property.
 				 */
 				optionPane.setValue("Close");
 			}
@@ -88,8 +88,8 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		setLocationRelativeTo(super.getOwner());
 		setVisible(true);
 	}
-	
-	public int getMaxDataLength(){
+
+	public int getMaxDataLength() {
 		return filter.getMaxDataLength();
 	}
 
@@ -169,7 +169,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 				try {
 					cutHighFrequency = Double.parseDouble(highFrequencyTF.getText());
 				} catch (NumberFormatException e1) {
-					logger.warn("NumberFormatException (cutHighFrequency=NaN):", e1);	
+					logger.warn("NumberFormatException (cutHighFrequency=NaN):", e1);
 					cutHighFrequency = Double.NaN;
 				}
 				order = (Integer) orderCB.getSelectedItem();
@@ -179,8 +179,8 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 						setVisible(false);
 						needProcessing = true;
 					} else {
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Low frequency should be less then high one", "Error",
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+								"Low frequency should be less then high one", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				} else if (!Double.isNaN(cutLowFrequency)) {
 					filter = new FilterLP(order, cutLowFrequency);
@@ -192,8 +192,8 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 					needProcessing = true;
 				} else {
 					filter = null;
-					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Please enter either low or high frequencies", "Error",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+							"Please enter either low or high frequencies", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -247,8 +247,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 
 	// From interface IFilter
 
-	public double[] filter(double[] data, int length) 
-	{
+	public double[] filter(double[] data, int length) {
 		double[] fltdata = null;
 		try {
 			fltdata = filter.filter(data, length);
@@ -284,10 +283,9 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		else
 			return filter.equals(o);
 	}
-	
+
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return Reconvolution.NAME;
 	}
 }

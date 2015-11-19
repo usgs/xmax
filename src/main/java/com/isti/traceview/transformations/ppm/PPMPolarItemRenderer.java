@@ -15,27 +15,35 @@ import org.jfree.data.xy.XYDataset;
 public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 	private static final long serialVersionUID = 1L;
 	double rulerTheta = 0.0;
-	
-	public void setRulerAngle(double theta){
+
+	public void setRulerAngle(double theta) {
 		this.rulerTheta = theta;
 	}
-	
-	public double getRulerAngle(){
+
+	public double getRulerAngle() {
 		return rulerTheta;
 	}
-	
+
 	/**
-	 * Plots the data for a given series. Changes default closed polygon realisation to chain of sections First series is angle mark(2 values), other
-	 * is data Add begin mark to data series
+	 * Plots the data for a given series. Changes default closed polygon
+	 * realisation to chain of sections First series is angle mark(2 values),
+	 * other is data Add begin mark to data series
 	 * 
-	 * @param g2 the drawing surface.
-	 * @param dataArea the data area.
-	 * @param info collects plot rendering info.
-	 * @param plot the plot.
-	 * @param dataset the dataset.
-	 * @param seriesIndex the series index.
+	 * @param g2
+	 *            the drawing surface.
+	 * @param dataArea
+	 *            the data area.
+	 * @param info
+	 *            collects plot rendering info.
+	 * @param plot
+	 *            the plot.
+	 * @param dataset
+	 *            the dataset.
+	 * @param seriesIndex
+	 *            the series index.
 	 */
-	public void drawSeries(Graphics2D g2, Rectangle2D dataArea, PlotRenderingInfo info, PolarPlot plot, XYDataset dataset, int seriesIndex) {
+	public void drawSeries(Graphics2D g2, Rectangle2D dataArea, PlotRenderingInfo info, PolarPlot plot,
+			XYDataset dataset, int seriesIndex) {
 		GeneralPath gp = new GeneralPath();
 		int numPoints = dataset.getItemCount(seriesIndex);
 		Point begin = null;
@@ -43,7 +51,7 @@ public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 		for (int i = 0; i < numPoints; i++) {
 			double theta = dataset.getXValue(seriesIndex, i);
 			double radius = dataset.getYValue(seriesIndex, i);
-			if(radius > maxRadius){
+			if (radius > maxRadius) {
 				maxRadius = radius;
 			}
 			@SuppressWarnings("deprecation")
@@ -58,16 +66,16 @@ public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 		g2.setPaint(lookupSeriesPaint(seriesIndex));
 		g2.setStroke(lookupSeriesStroke(seriesIndex));
 		g2.draw(gp);
-		//Drawing starting mark
+		// Drawing starting mark
 		g2.setColor(Color.BLACK);
-		g2.drawOval(begin.x-2, begin.y-2, 4, 4);
-		//Drawing ruler
+		g2.drawOval(begin.x - 2, begin.y - 2, 4, 4);
+		// Drawing ruler
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(2));
-		@SuppressWarnings("deprecation")	
+		@SuppressWarnings("deprecation")
 		Point ruler1 = plot.translateValueThetaRadiusToJava2D(rulerTheta, maxRadius, dataArea);
-		@SuppressWarnings("deprecation")	
-		Point ruler2 = plot.translateValueThetaRadiusToJava2D(rulerTheta+180, maxRadius, dataArea);
-		g2.drawLine(ruler1.x, ruler1.y, ruler2.x, ruler2.y);	
+		@SuppressWarnings("deprecation")
+		Point ruler2 = plot.translateValueThetaRadiusToJava2D(rulerTheta + 180, maxRadius, dataArea);
+		g2.drawLine(ruler1.x, ruler1.y, ruler2.x, ruler2.y);
 	}
 }

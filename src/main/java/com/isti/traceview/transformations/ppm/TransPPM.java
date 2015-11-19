@@ -21,7 +21,8 @@ import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 
 /**
- * Particle motion transformation. Prepares data for presentation in {@link ViewPPM}
+ * Particle motion transformation. Prepares data for presentation in
+ * {@link ViewPPM}
  * 
  * @author Max Kokoulin
  */
@@ -29,34 +30,41 @@ public class TransPPM implements ITransformation {
 
 	public int maxDataLength = 8192;
 
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration, JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+			JFrame parentFrame) {
 		if ((input == null) || (input.size() != 2)) {
-			JOptionPane.showMessageDialog(parentFrame, "You should select two channels to view PPM", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(parentFrame, "You should select two channels to view PPM", "Error",
+					JOptionPane.ERROR_MESSAGE);
 		} else {
 			try {
 				/*
-				Whenever we use channels with N and E as a third symbol (like, BHN/NHE) N channel ALWAYS
-				denotes the north and E channel always denotes the East (regardless of the selection order).
-				Same for channels BH1 and BH2 : 1 is North; 2 is East. For all other channel pairs, 
-				they go in the selection order: first NS, second EW.
-				*/
+				 * Whenever we use channels with N and E as a third symbol
+				 * (like, BHN/NHE) N channel ALWAYS denotes the north and E
+				 * channel always denotes the East (regardless of the selection
+				 * order). Same for channels BH1 and BH2 : 1 is North; 2 is
+				 * East. For all other channel pairs, they go in the selection
+				 * order: first NS, second EW.
+				 */
 				List<PlotDataProvider> inputRepositioned = new ArrayList<PlotDataProvider>();
 				char type1 = input.get(0).getType();
 				char type2 = input.get(1).getType();
-				if(((type2=='N' || type2=='1') && type1 != 'N' && type1 != '1') || ((type1=='E' || type1=='2') && type2 !='E' && type2 != '2')){
+				if (((type2 == 'N' || type2 == '1') && type1 != 'N' && type1 != '1')
+						|| ((type1 == 'E' || type1 == '2') && type2 != 'E' && type2 != '2')) {
 					inputRepositioned.add(input.get(1));
 					inputRepositioned.add(input.get(0));
 				} else {
 					inputRepositioned.add(input.get(0));
 					inputRepositioned.add(input.get(1));
 				}
-				@SuppressWarnings("unused")	
-				ViewPPM vr = new ViewPPM(parentFrame, createDataset(inputRepositioned, filter, ti), ti, "N:" + inputRepositioned.get(0).getName() + "  E:" + inputRepositioned.get(1).getName(), filter);
+				@SuppressWarnings("unused")
+				ViewPPM vr = new ViewPPM(parentFrame, createDataset(inputRepositioned, filter, ti), ti,
+						"N:" + inputRepositioned.get(0).getName() + "  E:" + inputRepositioned.get(1).getName(),
+						filter);
 			} catch (XMAXException e) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		}
-		((XMAXframe)parentFrame).getGraphPanel().forceRepaint();
+		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
 
 	public void setMaxDataLength(int dataLength) {
@@ -71,9 +79,12 @@ public class TransPPM implements ITransformation {
 	 * @param ti
 	 *            Time interval to define processed range
 	 * @return jFreeChart dataset of trace data in polar coordinates
-	 * @throws XMAXException if sample rates differ, gaps in the data, or no data for a channel
+	 * @throws XMAXException
+	 *             if sample rates differ, gaps in the data, or no data for a
+	 *             channel
 	 */
-	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti) throws XMAXException {
+	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
+			throws XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		PlotDataProvider channel1 = input.get(0);
 		PlotDataProvider channel2 = input.get(1);
@@ -86,11 +97,13 @@ public class TransPPM implements ITransformation {
 		if (segments1.size() > 0) {
 			long segment_end_time = 0;
 			sampleRate = segments1.get(0).getSampleRate();
-			for (Segment segment: segments1) {
+			for (Segment segment : segments1) {
 				if (segment.getSampleRate() != sampleRate) {
-					throw new XMAXException("You have data with different sample rate for channel " + channel1.getName());
+					throw new XMAXException(
+							"You have data with different sample rate for channel " + channel1.getName());
 				}
-				if (segment_end_time != 0 && Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
+				if (segment_end_time != 0
+						&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
 					throw new XMAXException("You have gap in the data for channel " + channel1.getName());
 				}
 				segment_end_time = segment.getEndTime().getTime();
@@ -104,12 +117,13 @@ public class TransPPM implements ITransformation {
 		int[] intData2 = new int[0];
 		if (segments2.size() > 0) {
 			long segment_end_time = 0;
-			for (Segment segment: segments2) {
+			for (Segment segment : segments2) {
 				if (segment.getSampleRate() != sampleRate) {
-					throw new XMAXException("Channels " + channel1.getName() + " and " + channel2.getName() + " have different sample rates: "
-							+ sampleRate + " and " + segment.getSampleRate());
+					throw new XMAXException("Channels " + channel1.getName() + " and " + channel2.getName()
+							+ " have different sample rates: " + sampleRate + " and " + segment.getSampleRate());
 				}
-				if (segment_end_time != 0 && Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
+				if (segment_end_time != 0
+						&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
 					throw new XMAXException("You have gap in the data for channel " + channel2.getName());
 				}
 				segment_end_time = segment.getEndTime().getTime();

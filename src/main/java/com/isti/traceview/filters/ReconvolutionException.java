@@ -1,18 +1,14 @@
 package com.isti.traceview.filters;
 
 // Reconvolution Exception (replaces RuntimeException)
-public class ReconvolutionException
-extends Exception 
-{
+public class ReconvolutionException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public ReconvolutionException()
-	{
+	public ReconvolutionException() {
 		super();
 	}
 
-	public ReconvolutionException(String message) 
-	{
+	public ReconvolutionException(String message) {
 		super(message);
 	}
 }

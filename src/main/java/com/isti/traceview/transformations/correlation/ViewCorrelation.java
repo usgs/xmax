@@ -38,8 +38,8 @@ import com.isti.traceview.common.TraceViewChartPanel;
 import com.isti.traceview.processing.IstiUtilsMath;
 
 /**
- * Dialog to view correlation results. Also performs correlation itself and apply selected hanning
- * window
+ * Dialog to view correlation results. Also performs correlation itself and
+ * apply selected hanning window
  * 
  * @author Max Kokoulin
  */
@@ -48,7 +48,7 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(ViewCorrelation.class);
 	private static DecimalFormat dFormat = new DecimalFormat("###.###");
-	
+
 	List<double[]> data = null;
 	String seriesName = null;
 	double sampleRate = 0.0;
@@ -65,13 +65,15 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 	 * @param owner
 	 *            parent frame
 	 * @param data
-	 *            list of arrays - double raw data for selected traces and time ranges
+	 *            list of arrays - double raw data for selected traces and time
+	 *            ranges
 	 * @param channelNames
 	 *            list of trace names
 	 * @param sampleRate
 	 *            sample rate of all traces (should be same)
 	 */
-	public ViewCorrelation(Frame owner, List<double[]> data, List<String> channelNames, double sampleRate, TimeInterval ti) {
+	public ViewCorrelation(Frame owner, List<double[]> data, List<String> channelNames, double sampleRate,
+			TimeInterval ti) {
 		super(owner, "Correlation", true);
 		this.data = data;
 		Object[] options = { "Close", "Print" };
@@ -82,17 +84,17 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 		}
 		this.sampleRate = sampleRate;
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createChartPanel(filterData(data), ti), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options,
-				options[0]);
+		optionPane = new JOptionPane(createChartPanel(filterData(data), ti), JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.CLOSED_OPTION, null, options, options[0]);
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter(){
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				/*
-				 * Instead of directly closing the window, we're going to change the JOptionPane's
-				 * value property.
+				 * Instead of directly closing the window, we're going to change
+				 * the JOptionPane's value property.
 				 */
 				optionPane.setValue("Close");
 			}
@@ -126,12 +128,13 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 		JFreeChart chart = ChartFactory.createXYLineChart(null, // title
 				"Delay, seconds", "Correlation", dataset, // dataset
 				PlotOrientation.VERTICAL, // orientation
-				true,// legend
-				true,// tooltips
+				true, // legend
+				true, // tooltips
 				false// include URLs
-				);
+		);
 
-		TextTitle title = new TextTitle("Start time: " + TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+		TextTitle title = new TextTitle("Start time: "
+				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 				+ ", Duration: " + ti.convert(), ret.getFont());
 		chart.setTitle(title);
 		plot = (XYPlot) chart.getPlot();
@@ -150,7 +153,7 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 		this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		double[] correlation = null;
 		double[] dblData1 = applyWindow(ds.get(0), (String) getTaperCB().getSelectedItem());
-		try {	
+		try {
 			if (ds.size() == 1) {
 				correlation = IstiUtilsMath.correlate(dblData1, dblData1);
 			} else {

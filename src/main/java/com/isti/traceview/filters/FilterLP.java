@@ -20,8 +20,8 @@ public class FilterLP implements IFilter {
 	// 10 pairs of frequency and power gain
 	// (graf(1,k) and graf(2,k) for k=1 thru 10)
 	double[][] graf = new double[2][10];
-	
-	public int getMaxDataLength(){
+
+	public int getMaxDataLength() {
 		return Integer.MAX_VALUE;
 	}
 
@@ -47,11 +47,10 @@ public class FilterLP implements IFilter {
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return Reconvolution.NAME;
 	}
-	
+
 	/**
 	 * design routine
 	 * 
@@ -78,15 +77,13 @@ public class FilterLP implements IFilter {
 	/**
 	 * Performs low-pass Butterworth filtering of a time series.
 	 * 
-	 * @param data =
-	 *            data array
-	 * @param length =
-	 *            number of samples in data array
+	 * @param data
+	 *            = data array
+	 * @param length
+	 *            = number of samples in data array
 	 * @return filtered data array
 	 */
-	synchronized public double[] filter(double[] data, int length) 
-	throws LPFilterException	
-	{
+	synchronized public double[] filter(double[] data, int length) throws LPFilterException {
 		if (data.length > length)
 			throw new LPFilterException("Requested filtering length exceeds provided array length");
 		int mean = new Double(demean(data, length)).intValue();
@@ -110,7 +107,7 @@ public class FilterLP implements IFilter {
 				f[j][1] = f[j][2];
 			}
 			data[i] = f[order][2] + mean;
-			//data[i] = f[order][2];
+			// data[i] = f[order][2];
 		}
 		return data;
 	}
@@ -130,8 +127,8 @@ public class FilterLP implements IFilter {
 			sum = sum + buf[i];
 		}
 		sum = sum / n;
-		
-		//This removes mean from original data
+
+		// This removes mean from original data
 		for (int i = 0; i < n; i++) {
 			buf[i] = buf[i] - sum;
 		}

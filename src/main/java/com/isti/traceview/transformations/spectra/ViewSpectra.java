@@ -53,9 +53,9 @@ import com.isti.xmax.XMAX;
 public class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
-	//private static final Logger logger = Logger.getLogger(ViewSpectra.class);
-	
-	//private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
+	// private static final Logger logger = Logger.getLogger(ViewSpectra.class);
+
+	// private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
 	private JOptionPane optionPane;
 	private JCheckBox SmoothCB;
 	private JPanel selectionP;
@@ -75,17 +75,17 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 		this.ti = ti;
 		Object[] options = { "Close", "Print", "Export GRAPH" };
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createChartPanel(filterData(data)), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options,
-				options[0]);
+		optionPane = new JOptionPane(createChartPanel(filterData(data)), JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.CLOSED_OPTION, null, options, options[0]);
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter(){
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				/*
-				 * Instead of directly closing the window, we're going to change the JOptionPane's
-				 * value property.
+				 * Instead of directly closing the window, we're going to change
+				 * the JOptionPane's value property.
 				 */
 				optionPane.setValue("Close");
 			}
@@ -126,7 +126,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 
 		} else if (e.getSource().equals(getShowDiffCB())) {
 			if (getShowDiffCB().isSelected()) {
-				//Component[] ca = selectionP.getComponents();
+				// Component[] ca = selectionP.getComponents();
 				int countSelected = 0;
 				for (int i = 1; i < selectionP.getComponentCount(); i++) {
 					JCheckBox cb = (JCheckBox) selectionP.getComponent(i);
@@ -138,7 +138,8 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 
 				} else {
 					getShowDiffCB().setSelected(false);
-					JOptionPane.showMessageDialog(this, "You should select 2 channels to show difference", "Warning", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(this, "You should select 2 channels to show difference", "Warning",
+							JOptionPane.WARNING_MESSAGE);
 				}
 			} else {
 
@@ -159,9 +160,10 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 				true, // create legend?
 				true, // generate tooltips?
 				false // generate URLs?
-				);
+		);
 		chart.setBackgroundPaint(Color.white);
-		TextTitle title = new TextTitle("Start time: " + TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+		TextTitle title = new TextTitle("Start time: "
+				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 				+ ", Duration: " + ti.convert(), ret.getFont());
 		chart.setTitle(title);
 		plot = chart.getXYPlot();
@@ -186,8 +188,9 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 
 	private XYDataset filterData(List<Spectra> ds) {
 		XYSeriesCollection ret = new XYSeriesCollection();
-		for (Spectra spectra: ds) {
-			ret.addSeries(spectra.getSpectraSeries(getDeconvolveCB().isSelected(), getConvolveCB().getSelectedItem().toString()));
+		for (Spectra spectra : ds) {
+			ret.addSeries(spectra.getSpectraSeries(getDeconvolveCB().isSelected(),
+					getConvolveCB().getSelectedItem().toString()));
 		}
 
 		if (getSmoothCB().isSelected()) {
@@ -196,7 +199,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 
 		if (getShowDiffCB().isSelected()) {
 			XYSeries[] series = new XYSeries[2];
-			//Component[] ca = selectionP.getComponents();
+			// Component[] ca = selectionP.getComponents();
 			int seriesFound = 0;
 			int i = 1;
 			while (i < selectionP.getComponentCount() && seriesFound < 2) {
@@ -222,9 +225,13 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 	}
 
 	/**
-	 * TODO: This method is too vague. Not sure what it does. Analysis and refactoring required.
-	 * @param series the XYZSeries
-	 * @param arg a double
+	 * TODO: This method is too vague. Not sure what it does. Analysis and
+	 * refactoring required.
+	 * 
+	 * @param series
+	 *            the XYZSeries
+	 * @param arg
+	 *            a double
 	 * @return either a Double.NaN or a computed value.
 	 */
 
@@ -232,15 +239,17 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 		for (int i = 0; i < series.getItemCount(); i++) {
 			if (arg < series.getX(i).doubleValue()) {
 				return series.getY(i - 1).doubleValue()
-						+ ((series.getY(i).doubleValue() - series.getY(i - 1).doubleValue()) * (arg - series.getX(i - 1).doubleValue()) / (series
-								.getX(i).doubleValue() - series.getX(i - 1).doubleValue()));
+						+ ((series.getY(i).doubleValue() - series.getY(i - 1).doubleValue())
+								* (arg - series.getX(i - 1).doubleValue())
+								/ (series.getX(i).doubleValue() - series.getX(i - 1).doubleValue()));
 			}
 		}
 		return Double.NaN;
 	}
 
 	/**
-	 * @param ser the series
+	 * @param ser
+	 *            the series
 	 * @return Series mean
 	 */
 
@@ -295,7 +304,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 		if (convolveCB == null) {
 			List<String> options = new ArrayList<String>();
 			options.add("None");
-			for (Response resp: TraceView.getDataModule().getLoadedResponses()) {
+			for (Response resp : TraceView.getDataModule().getLoadedResponses()) {
 				options.add(resp.getLocalFileName());
 			}
 			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
@@ -335,7 +344,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 			selectionP.setLayout(selectionPLayout);
 			selectionP.setMaximumSize(new java.awt.Dimension(32767, 32));
 			selectionP.add(getShowDiffCB());
-			for (Spectra spectra: data) {
+			for (Spectra spectra : data) {
 				JCheckBox seriesCB = new JCheckBox(spectra.getName(), false);
 				seriesCB.addItemListener(this);
 				selectionP.add(seriesCB);

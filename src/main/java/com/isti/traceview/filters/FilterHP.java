@@ -8,10 +8,10 @@ import com.isti.traceview.processing.HPFilterException;
  */
 
 public class FilterHP implements IFilter {
-	
+
 	public static final String DESCRIPTION = "Apply High Pass filter for selected channels";
 	public static final String NAME = "HP";
-	
+
 	/**
 	 * number of filter sections (1 section = 2 poles)
 	 */
@@ -25,8 +25,8 @@ public class FilterHP implements IFilter {
 	// 10 pairs of frequency and power gain
 	// (graf(1,k) and graf(2,k) for k=1 thru 10)
 	double[][] graf = new double[2][10];
-	
-	public int getMaxDataLength(){
+
+	public int getMaxDataLength() {
 		return Integer.MAX_VALUE;
 	}
 
@@ -51,13 +51,11 @@ public class FilterHP implements IFilter {
 		this(2, 50);
 	}
 
-	
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return Reconvolution.NAME;
 	}
-	
+
 	/**
 	 * design routine
 	 * 
@@ -83,15 +81,13 @@ public class FilterHP implements IFilter {
 	/**
 	 * Performs high-pass Butterworth filtering of a time series.
 	 * 
-	 * @param data =
-	 *            data array
-	 * @param length =
-	 *            number of samples in data array
+	 * @param data
+	 *            = data array
+	 * @param length
+	 *            = number of samples in data array
 	 * @return filtered data array
 	 */
-	synchronized public double[] filter(double[] data, int length) 
-	throws HPFilterException
-	{
+	synchronized public double[] filter(double[] data, int length) throws HPFilterException {
 		if (data.length > length)
 			throw new HPFilterException("Requested filtering length exceeds provided array length");
 		int mean = new Double(demean(data, length)).intValue();
@@ -115,7 +111,7 @@ public class FilterHP implements IFilter {
 				f[j][1] = f[j][2];
 			}
 			data[i] = f[order][2] + mean;
-			//data[i] = f[order][2];
+			// data[i] = f[order][2];
 		}
 		return data;
 	}
@@ -135,8 +131,8 @@ public class FilterHP implements IFilter {
 			sum = sum + buf[i];
 		}
 		sum = sum / n;
-		
-		//This removes mean from original data
+
+		// This removes mean from original data
 		for (int i = 0; i < n; i++) {
 			buf[i] = buf[i] - sum;
 		}

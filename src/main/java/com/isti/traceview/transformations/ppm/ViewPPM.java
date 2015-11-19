@@ -23,7 +23,7 @@ import com.isti.traceview.common.TraceViewChartPanel;
 import com.isti.traceview.filters.IFilter;
 
 /**
- * Dialog to view PPM results. 
+ * Dialog to view PPM results.
  * 
  * @author Max Kokoulin
  */
@@ -36,9 +36,10 @@ public class ViewPPM extends JDialog implements PropertyChangeListener {
 
 	public ViewPPM(Frame owner, XYDataset dataset, TimeInterval ti, String annotation, IFilter filter) {
 		super(owner, "Particle Motion", true);
-		Object[] options = {"Close", "Print", "Enter Angle", "+1", "+5", "+30", "-1", "-5", "-30"};
+		Object[] options = { "Close", "Print", "Enter Angle", "+1", "+5", "+30", "-1", "-5", "-30" };
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createChartPanel(dataset, ti, annotation, filter), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options, options[0]);
+		optionPane = new JOptionPane(createChartPanel(dataset, ti, annotation, filter), JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.CLOSED_OPTION, null, options, options[0]);
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
@@ -46,7 +47,8 @@ public class ViewPPM extends JDialog implements PropertyChangeListener {
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				/*
-				 * Instead of directly closing the window, we're going to change the JOptionPane's value property.
+				 * Instead of directly closing the window, we're going to change
+				 * the JOptionPane's value property.
 				 */
 				optionPane.setValue("Close");
 			}
@@ -68,7 +70,7 @@ public class ViewPPM extends JDialog implements PropertyChangeListener {
 				setVisible(false);
 				dispose();
 			} else if (value.equals("Print")) {
-				cp.createChartPrintJob();			
+				cp.createChartPrintJob();
 			} else if (value.equals("Enter Angle")) {
 				double angle = getAngle();
 				if (angle != Double.POSITIVE_INFINITY) {
@@ -109,23 +111,24 @@ public class ViewPPM extends JDialog implements PropertyChangeListener {
 		double ret = ai.getAngle();
 		return ret;
 	}
-	
+
 	private static JPanel createChartPanel(XYDataset dataset, TimeInterval ti, String annotation, IFilter filter) {
 		JPanel ret = new JPanel();
 		BoxLayout retLayout = new BoxLayout(ret, javax.swing.BoxLayout.Y_AXIS);
 		ret.setLayout(retLayout);
-		JFreeChart chart = ChartFactory.createPolarChart(
-				null, // title
+		JFreeChart chart = ChartFactory.createPolarChart(null, // title
 				dataset, // dataset
-				false,// legend
-				true,// tooltips
+				false, // legend
+				true, // tooltips
 				false// include URLs
-				);
+		);
 		String filterName = "None";
-		if(filter != null){
+		if (filter != null) {
 			filterName = filter.getName();
 		}
-		TextTitle title = new TextTitle("Start time: " + TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)+ ", Duration: " + ti.convert() + ". Filter: " + filterName + ".", ret.getFont());
+		TextTitle title = new TextTitle("Start time: "
+				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+				+ ", Duration: " + ti.convert() + ". Filter: " + filterName + ".", ret.getFont());
 		chart.setTitle(title);
 		PolarPlot plot = (PolarPlot) chart.getPlot();
 		plot.setRenderer(renderer);

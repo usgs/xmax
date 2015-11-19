@@ -19,8 +19,8 @@ import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 
 /**
- * Correlation transformation. It only prepares data, correlation itself and hanning window applying
- * performs in {@link ViewCorrelation}
+ * Correlation transformation. It only prepares data, correlation itself and
+ * hanning window applying performs in {@link ViewCorrelation}
  * 
  * @author Max Kokoulin
  */
@@ -31,23 +31,26 @@ public class TransCorrelation implements ITransformation {
 	public int maxDataLength = 131072;
 	private double sampleRate = 0;
 
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration, JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+			JFrame parentFrame) {
 		if ((input == null) || (input.size() == 0) || (input.size() > 2)) {
-			JOptionPane.showMessageDialog(parentFrame, "You should select two channels to view correlation\nor one channel to view autocorrelation",
+			JOptionPane.showMessageDialog(parentFrame,
+					"You should select two channels to view correlation\nor one channel to view autocorrelation",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		} else {
 			try {
 				List<String> channelNames = new ArrayList<String>();
-				for (PlotDataProvider channel: input) {
+				for (PlotDataProvider channel : input) {
 					channelNames.add(channel.getName());
 				}
-				@SuppressWarnings("unused")	
-				ViewCorrelation vc = new ViewCorrelation(parentFrame, createData(input, filter, ti), channelNames, sampleRate, ti);
+				@SuppressWarnings("unused")
+				ViewCorrelation vc = new ViewCorrelation(parentFrame, createData(input, filter, ti), channelNames,
+						sampleRate, ti);
 			} catch (XMAXException e) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		}
-		((XMAXframe)parentFrame).getGraphPanel().forceRepaint();
+		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
 
 	public void setMaxDataLength(int dataLength) {
@@ -61,10 +64,14 @@ public class TransCorrelation implements ITransformation {
 	 *            Filter applied to traces before correlation
 	 * @param ti
 	 *            Time interval to define processed range
-	 * @return list of arrays - double raw data for selected traces and time ranges
-	 * @throws XMAXException if sample rates differ, gaps in the data, no data, or the data is too long.
+	 * @return list of arrays - double raw data for selected traces and time
+	 *         ranges
+	 * @throws XMAXException
+	 *             if sample rates differ, gaps in the data, no data, or the
+	 *             data is too long.
 	 */
-	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti) throws XMAXException {
+	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
+			throws XMAXException {
 		List<double[]> ret = new ArrayList<double[]>();
 		PlotDataProvider channel1 = input.get(0);
 		List<Segment> segments1 = channel1.getRawData(ti);
@@ -72,11 +79,13 @@ public class TransCorrelation implements ITransformation {
 		if (segments1.size() > 0) {
 			long segment_end_time = 0;
 			sampleRate = segments1.get(0).getSampleRate();
-			for (Segment segment: segments1) {
+			for (Segment segment : segments1) {
 				if (segment.getSampleRate() != sampleRate) {
-					throw new XMAXException("You have data with different sample rate for channel " + channel1.getName());
+					throw new XMAXException(
+							"You have data with different sample rate for channel " + channel1.getName());
 				}
-				if (segment_end_time != 0 && Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
+				if (segment_end_time != 0
+						&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
 					throw new XMAXException("You have gap in the data for channel " + channel1.getName());
 				}
 				segment_end_time = segment.getEndTime().getTime();
@@ -96,7 +105,8 @@ public class TransCorrelation implements ITransformation {
 			throw new XMAXException("Too long data");
 		}
 		/*
-		 * if(dblData1.length%2 == 1){ dblData1 = Arrays.copyOf(dblData1, dblData1.length-1); }
+		 * if(dblData1.length%2 == 1){ dblData1 = Arrays.copyOf(dblData1,
+		 * dblData1.length-1); }
 		 */
 		ret.add(dblData1);
 		if (input.size() == 2) {
@@ -105,12 +115,13 @@ public class TransCorrelation implements ITransformation {
 			int[] intData2 = new int[0];
 			if (segments2.size() > 0) {
 				long segment_end_time = 0;
-				for (Segment segment: segments2) {
+				for (Segment segment : segments2) {
 					if (segment.getSampleRate() != sampleRate) {
-						throw new XMAXException("Channels " + channel1.getName() + " and " + channel2.getName() + " have different sample rates: "
-								+ sampleRate + " and " + segment.getSampleRate());
+						throw new XMAXException("Channels " + channel1.getName() + " and " + channel2.getName()
+								+ " have different sample rates: " + sampleRate + " and " + segment.getSampleRate());
 					}
-					if (segment_end_time != 0 && Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
+					if (segment_end_time != 0
+							&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
 						throw new XMAXException("You have gap in the data for channel " + channel2.getName());
 					}
 					segment_end_time = segment.getEndTime().getTime();
@@ -129,7 +140,8 @@ public class TransCorrelation implements ITransformation {
 				throw new XMAXException("Too long data");
 			}
 			/*
-			 * if(dblData2.length%2 == 1){ dblData2 = Arrays.copyOf(dblData2, dblData2.length-1); }
+			 * if(dblData2.length%2 == 1){ dblData2 = Arrays.copyOf(dblData2,
+			 * dblData2.length-1); }
 			 */
 			ret.add(dblData2);
 		}
