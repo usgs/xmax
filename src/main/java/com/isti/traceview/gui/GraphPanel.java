@@ -306,13 +306,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		//  defaultMarkPosition.gif is now found with a change to build.xml 
 		URL url = null;
 		try {
-			URL baseUrl = GraphPanel.class.getResource(".");
-			if (baseUrl != null) {
-				url = new URL(baseUrl, "defaultMarkPosition.gif");
-			} else {
-				url = GraphPanel.class.getResource("defaultMarkPosition.gif");
-			}
-			//System.out.format("== MTH: file=%s path=%s\n", url.getFile(), url.getPath() );
+			url = GraphPanel.class.getResource("/defaultMarkPosition.gif");
 			logger.info(String.format("== MTH: file=%s\n", url.getFile()));	
 			markPositionImage = javax.imageio.ImageIO.read(url);
 			//} catch (MalformedURLException e) {
