@@ -222,6 +222,10 @@ public class Pick extends AbstractEvent implements IEvent {
 					System.gc();
 					System.runFinalization();
 				}
+				finally{
+					//Close the writer before trying to instatiate another in next loop iteration.
+					if(writer != null) writer.close();
+				}
 			}
 			outputter.output(doc, writer);
 			writer.close();
