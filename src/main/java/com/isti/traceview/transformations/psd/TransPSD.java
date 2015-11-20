@@ -319,7 +319,7 @@ public class TransPSD implements ITransformation {
 
 	@Override
 	public String getName() {
-		return "TransPSD";
+		return "Power spectra density";
 	}
 
 }

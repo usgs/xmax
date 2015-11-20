@@ -3184,7 +3184,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 		    else if (src == spectraButton) {
-		    	action = actionMap.get("Power Spectra");
+		    	action = actionMap.get("Spectra");
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    } 	
 		    else if (src == respButton){

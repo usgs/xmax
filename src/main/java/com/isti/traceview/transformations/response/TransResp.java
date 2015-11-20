@@ -76,6 +76,6 @@ public class TransResp implements ITransformation {
 
 	@Override
 	public String getName() {
-		return "ShowResponse";
+		return "Response";
 	}
 }
