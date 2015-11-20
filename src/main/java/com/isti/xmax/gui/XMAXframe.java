@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,8 +41,8 @@ import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -119,6 +121,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JPanel jContentPane = null;
 
 	private ButtonPanel buttonPanel = null;
+	private ScalingButtonPanel scalingButtonPanel = null;
+	private NavigationButtonPanel navigationButtonPanel = null; 
+	private FilterButtonPanel filterButtonPanel = null;
+	private AnalysisButtonPanel analysisButtonPanel = null;
 
 	private QCPanel qCPanel = null;
 	private PhasePanel phasePanel = null;
@@ -142,6 +148,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JMenuItem previousMenuItem = null;
 	private JMenu channelsMenu = null;
 	private JPanel southPanel = null;
+	private GridBagConstraints constraints;
 	private JCheckBoxMenuItem showBigCursorMenuCheckBox = null;
 	private JCheckBoxMenuItem showStatusBarMenuCheckBox = null;
 	private JCheckBoxMenuItem phaseMenuCheckBox = null;
@@ -423,7 +430,35 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			jContentPane.add(getButtonPanel(), BorderLayout.NORTH);
 		} else {
 			commandButtonBottomMenuRadioBt.setSelected(true);
-			southPanel.add(getButtonPanel(), 0);
+			JPanel navigationPanel = getNavigationButtonPanel();
+			navigationPanel.setBorder(BorderFactory.createEmptyBorder());
+			JPanel scalingPanel = getScalingButtonPanel();
+			scalingPanel.setBorder(BorderFactory.createTitledBorder("Scaling"));
+			JPanel analysisPanel = getAnalysisButtonPanel();
+			analysisPanel.setBorder(BorderFactory.createTitledBorder("Analysis"));
+			JPanel filterPanel = getFilterButtonPanel();
+			filterPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
+			constraints.gridwidth = 1;
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			constraints.weightx = 0;
+			southPanel.add(navigationPanel, constraints);
+			constraints.gridwidth = 1;
+			constraints.gridx = 1;
+			constraints.gridy = 0;
+			constraints.weightx = 0.3;
+			southPanel.add(analysisPanel, constraints);
+			constraints.gridwidth = 1;
+			constraints.gridx = 2;
+			constraints.gridy = 0;
+			constraints.weightx = 0.3;
+			southPanel.add(scalingPanel, constraints);
+			constraints.gridwidth = 1;
+			constraints.gridx = 3;
+			constraints.gridy = 0;
+			constraints.weightx = 0.3;
+			southPanel.add(filterPanel, constraints);
+			
 		}
 
 		graphPanel.setShowBigCursor(XMAX.getConfiguration().getShowBigCursor());
@@ -595,7 +630,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new BorderLayout());
-			jContentPane.add(getSoughtPanel(), BorderLayout.SOUTH);
+			jContentPane.add(getSouthPanel(), BorderLayout.SOUTH);
 			jContentPane.add(getGraphPanel(), BorderLayout.CENTER);
 		}
 		return jContentPane;
@@ -623,6 +658,54 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			buttonPanel = new ButtonPanel();
 		}
 		return buttonPanel;
+	}
+	
+	/**
+	 * This method initializes the ScalingButtonPanel
+	 * 
+	 * @return ScalingButtonPanel
+	 */
+	private ScalingButtonPanel getScalingButtonPanel() {
+		if (scalingButtonPanel == null) {
+			scalingButtonPanel = new ScalingButtonPanel();
+		}
+		return scalingButtonPanel;
+	}
+	
+	/**
+	 * This method initializes the NavigationButtonPanel
+	 * 
+	 * @return NavigationButtonPanel
+	 */
+	private NavigationButtonPanel getNavigationButtonPanel() {
+		if(navigationButtonPanel == null) {
+			navigationButtonPanel = new NavigationButtonPanel();
+		}
+		return navigationButtonPanel;
+	}
+	
+	/**
+	 * This method initializes the FilterButtonPanel
+	 * 
+	 * @return FilterButtonPanel
+	 */
+	private FilterButtonPanel getFilterButtonPanel() {
+		if (filterButtonPanel == null) {
+			filterButtonPanel = new FilterButtonPanel();
+		}
+		return filterButtonPanel;
+	}
+	
+	/**
+	 * This method initializes the AnalysisButtonPanel
+	 * 
+	 * @return AnalysisButtonPanel
+	 */
+	private AnalysisButtonPanel getAnalysisButtonPanel() {
+		if (analysisButtonPanel == null) {
+			analysisButtonPanel = new AnalysisButtonPanel();
+		}
+		return analysisButtonPanel;
 	}
 
 	/**
@@ -1188,11 +1271,17 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getSoughtPanel() {
+	private JPanel getSouthPanel() {
 		if (southPanel == null) {
 			southPanel = new JPanel();
-			southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
-			southPanel.add(getStatusBar(), null);
+			constraints = new GridBagConstraints();
+			GridBagLayout gridbagLayout = new GridBagLayout();
+			southPanel.setLayout(gridbagLayout);
+			constraints.gridx = 0; 
+			constraints.gridy = 1;
+			constraints.gridwidth = 4; 
+			constraints.fill = GridBagConstraints.HORIZONTAL;
+			southPanel.add(getStatusBar(), constraints);
 		}
 		return southPanel;
 	}
@@ -1994,7 +2083,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
+
 				ITransformation resp = new TransPSD();
+
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				if (selectedViews.size() == 0) {
@@ -2814,11 +2905,307 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	/**
 	 * Command buttons top/bottom panel
 	 */
+	
+	class NavigationButtonPanel extends JPanel implements ActionListener {
+		private static final long serialVersionUID = 1L;
+		private JButton backButton = null;
+		private JButton nextButton = null;
+		private JButton undoButton = null;
+		
+		public NavigationButtonPanel() {
+			super();
+			GridLayout gridLayout = new GridLayout(3, 1);
+			setLayout(gridLayout);
+			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+			// Add buttons
+			add(getNextButton(), null);
+			add(getBackButton(), null);
+			add(getUndoButton(), null);
+		}
+		
+		private JButton getNextButton() {
+			if (nextButton == null) {
+				nextButton = new JButton("\u2192");
+				nextButton.addActionListener(this);
+			}
+			return nextButton;
+		}
+		
+		private JButton getBackButton() {
+			if (backButton == null) {
+				backButton = new JButton("\u2190");
+				backButton.addActionListener(this);
+			}
+			return backButton;
+		}
+		
+		private JButton getUndoButton() {
+			if (undoButton == null) {
+				undoButton = new JButton("Undo");
+				undoButton.addActionListener(this);
+			}
+			return undoButton;
+		}
+		
+		public void actionPerformed(ActionEvent evt) {
+		    Object src = evt.getSource();
+		    Action action = null; 
+		    if (src == nextButton) {
+		    	action = actionMap.get("Next");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == backButton) {
+		    	action = actionMap.get("Previous");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    } 	
+		    else if (src == undoButton){
+		    	action = actionMap.get("Undo");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		}
+	}
+	
+	class ScalingButtonPanel extends JPanel implements ActionListener {
+		private static final long serialVersionUID = 1L;
+		private JButton commonScaleButton = null;
+		private JButton autoScaleButton = null;
+		private JButton xhairScaleButton = null;
+		private JButton xlimScaleButton = null; 
+		private JButton ylimScaleButton = null; 
+		
+		public ScalingButtonPanel() {
+			super();
+			GridLayout gridLayout = new GridLayout(3, 2);
+			setLayout(gridLayout);
+			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+			setPreferredSize(new Dimension(100, 100));
+			// Add buttons
+			add(getCommonScaleButton(), null);
+			add(getAutoScaleButton(), null);
+			add(getXHairScaleButton(), null);
+			add(getXLimScaleButton(), null);
+			add(getYLimScaleButton(), null);
+		}
+		
+		private JButton getCommonScaleButton() {
+			if (commonScaleButton == null) {
+				commonScaleButton = new JButton("Common Scale");
+				commonScaleButton.addActionListener(this);
+			}
+			return commonScaleButton;
+		}
+		
+		private JButton getAutoScaleButton() {
+			if (autoScaleButton == null) {
+				autoScaleButton = new JButton("Auto Scale");
+				autoScaleButton.addActionListener(this);
+			}
+			return autoScaleButton;
+		}
+		
+		private JButton getXHairScaleButton() {
+			if (xhairScaleButton == null) {
+				xhairScaleButton = new JButton("XHair Scale");
+				xhairScaleButton.addActionListener(this);
+			}
+			return xhairScaleButton;
+		}
+		
+		private JButton getXLimScaleButton() {
+			if (xlimScaleButton == null) {
+				xlimScaleButton = new JButton("X limits");
+				xlimScaleButton.addActionListener(this);
+			}
+			return xlimScaleButton;
+		}
+		
+		private JButton getYLimScaleButton() {
+			if (ylimScaleButton == null) {
+				ylimScaleButton = new JButton("Y limits");
+				ylimScaleButton.addActionListener(this);
+			}
+			return ylimScaleButton;
+		}
+		
+		public void actionPerformed(ActionEvent evt) {
+		    Object src = evt.getSource();
+		    Action action = null; 
+		    if (src == commonScaleButton) {
+		    	action = actionMap.get("Scale com");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == autoScaleButton) {
+		    	action = actionMap.get("Scale auto");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    } 	
+		    else if (src == xhairScaleButton){
+		    	action = actionMap.get("Scale Xhair");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == xlimScaleButton){
+		    	action = actionMap.get("X limits");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == ylimScaleButton){
+		    	action = actionMap.get("Y limits");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+	    }
+	}
+	
+	class FilterButtonPanel extends JPanel implements ActionListener {
+		private static final long serialVersionUID = 1L;
+		private JButton lowPassButton = null;
+		private JButton bandPassButton = null;
+		private JButton dyoFilterButton = null;
+		
+		public FilterButtonPanel() {
+			super();
+			GridLayout gridLayout = new GridLayout(3, 1);
+			setLayout(gridLayout);
+			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+			setPreferredSize(new Dimension(100, 100));
+			// Add buttons
+			add(getLowPassButton(), null);
+			add(getBandPassButton(), null);
+			add(getDYOFilterButton(), null);
+		}
+		
+		private JButton getLowPassButton() {
+			if (lowPassButton == null) {
+				lowPassButton = new JButton("Low Pass Filter");
+				lowPassButton.addActionListener(this);
+			}
+			return lowPassButton;
+		}
+		
+		private JButton getBandPassButton() {
+			if (bandPassButton == null) {
+				bandPassButton = new JButton("Band Pass Filter");
+				bandPassButton.addActionListener(this);
+			}
+			return bandPassButton;
+		}
+		
+		private JButton getDYOFilterButton() {
+			if (dyoFilterButton == null) {
+				dyoFilterButton = new JButton("DYO Filter");
+				dyoFilterButton.addActionListener(this);
+			}
+			return dyoFilterButton;
+		}
+		
+		public void actionPerformed(ActionEvent evt) {
+		    Object src = evt.getSource();
+		    Action action = null; 
+		    if (src == lowPassButton) {
+		    	action = actionMap.get("LP");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == bandPassButton) {
+		    	action = actionMap.get("BP");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    } 	
+		    else if (src == dyoFilterButton){
+		    	action = actionMap.get("DYO");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+	    }
+	}
+	
+	class AnalysisButtonPanel extends JPanel implements ActionListener {
+		private static final long serialVersionUID =1L;
+		private JButton PSDButton = null;
+		private JButton spectraButton = null;
+		private JButton respButton = null;
+		private JButton particlemotionButton = null;
+		private JButton rotationButton = null;
+		
+		public AnalysisButtonPanel() {
+			super();
+			GridLayout gridLayout = new GridLayout(3, 2);
+			setLayout(gridLayout);
+			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+			setPreferredSize(new Dimension(100, 100));
+			// Add buttons
+			add(getPSDButton(), null);
+			add(getSpectraButton(), null);
+			add(getRespButton(), null);
+			add(getParticleMotionButton(), null);
+			add(getRotationButton(), null);
+		}
+		
+		private JButton getPSDButton() {
+			if (PSDButton == null) {
+				PSDButton = new JButton("PSD");
+				PSDButton.addActionListener(this);
+			}
+			return PSDButton;
+		}
+		
+		private JButton getSpectraButton() {
+			if (spectraButton == null) {
+				spectraButton = new JButton("Spectra");
+				spectraButton.addActionListener(this);
+			}
+			return spectraButton;
+		}
+		
+		private JButton getRespButton() {
+			if (respButton == null) {
+				respButton = new JButton("Response");
+				respButton.addActionListener(this);
+			}
+			return respButton;
+		}
+		
+		private JButton getParticleMotionButton() {
+			if (particlemotionButton == null) {
+				particlemotionButton = new JButton("Particle Motion");
+				particlemotionButton.addActionListener(this);
+			}
+			return particlemotionButton;
+		}
+		
+		private JButton getRotationButton() {
+			if (rotationButton == null) {
+				rotationButton = new JButton("Rotation");
+				rotationButton.addActionListener(this);
+			}
+			return rotationButton;
+		}
+		
+		public void actionPerformed(ActionEvent evt) {
+		    Object src = evt.getSource();
+		    Action action = null; 
+		    if (src == PSDButton) {
+		    	System.out.println("COMPUTE PSD");
+		    	action = actionMap.get("Power spectra density");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == spectraButton) {
+		    	action = actionMap.get("Power Spectra");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    } 	
+		    else if (src == respButton){
+		    	action = actionMap.get("Response");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == particlemotionButton){
+		    	action = actionMap.get("Particle motion");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == rotationButton){
+		    	action = actionMap.get("Rotation");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+	    }
+	}
+	
 	class ButtonPanel extends JPanel {
 
 		private static final long serialVersionUID = 1L;
 		private CommandButton filterButton = null;
-		private CommandButton scaleButton = null;
 		private CommandButton selectButton = null;
 		private CommandButton winButton = null;
 		private CommandButton plotButton = null;
@@ -2840,7 +3227,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getPlotButton(), null);
 			add(getDumpButton(), null);
 			add(getExportButton(), null);
-			add(getScaleButton(), null);
 
 			add(getSelectButton(), null);
 			add(getProcessingButton(), null);
@@ -2852,6 +3238,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getFilterButton(), null);
 			add(getLimButton(), null);
 		}
+		
 
 		/**
 		 * This method initializes filterButton
@@ -2873,7 +3260,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		 * 
 		 * @return CommandButton
 		 */
-		private CommandButton getScaleButton() {
+		/*private CommandButton getScaleButton() {
 			if (scaleButton == null) {
 				scaleButton = new CommandButton("SCL");
 				scaleButton.setAction1(actionMap.get("Scale auto"));
@@ -2881,7 +3268,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				scaleButton.setAction3(actionMap.get("Scale Xhair"));
 			}
 			return scaleButton;
-		}
+		}*/
 
 		/**
 		 * This method initializes selectButton
