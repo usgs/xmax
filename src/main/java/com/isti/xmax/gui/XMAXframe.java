@@ -76,6 +76,9 @@ import com.isti.traceview.commands.SelectValueCommand;
 import com.isti.traceview.commands.SetScaleModeCommand;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.filters.FilterBP;
+import com.isti.traceview.filters.FilterDYO;
+import com.isti.traceview.filters.FilterLP;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.ChannelView;
 import com.isti.traceview.gui.ColorModeBW;
@@ -3083,15 +3086,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    Object src = evt.getSource();
 		    Action action = null; 
 		    if (src == lowPassButton) {
-		    	action = actionMap.get("LP");
+		    	action = actionMap.get(FilterLP.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 		    else if (src == bandPassButton) {
-		    	action = actionMap.get("BP");
+		    	action = actionMap.get(FilterBP.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    } 	
 		    else if (src == dyoFilterButton){
-		    	action = actionMap.get("DYO");
+		    	action = actionMap.get(FilterDYO.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 	    }
@@ -3232,9 +3235,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private CommandButton getFilterButton() {
 			if (filterButton == null) {
 				filterButton = new CommandButton("FLTR");
-				filterButton.setAction1(actionMap.get("LP"));
-				filterButton.setAction2(actionMap.get("BP"));
-				filterButton.setAction3(actionMap.get("DYO"));
+				filterButton.setAction1(actionMap.get(FilterLP.NAME));
+				filterButton.setAction2(actionMap.get(FilterBP.NAME));
+				filterButton.setAction3(actionMap.get(FilterDYO.NAME));
 			}
 			return filterButton;
 		}
