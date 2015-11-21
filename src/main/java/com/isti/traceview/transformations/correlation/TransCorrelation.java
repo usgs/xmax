@@ -27,6 +27,8 @@ import com.isti.xmax.gui.XMAXframe;
 public class TransCorrelation implements ITransformation {
 
 	private static final Logger logger = Logger.getLogger(TransCorrelation.class);
+	
+	public static final String NAME = "Correlation";
 
 	public int maxDataLength = 131072;
 	private double sampleRate = 0;
@@ -150,6 +152,6 @@ public class TransCorrelation implements ITransformation {
 
 	@Override
 	public String getName() {
-		return "TransCorrelation";
+		return TransCorrelation.NAME;
 	}
 }

@@ -28,6 +28,8 @@ import com.isti.xmax.gui.XMAXframe;
  */
 public class TransPPM implements ITransformation {
 
+	public static final String NAME = "Particle motion";
+
 	public int maxDataLength = 8192;
 
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
@@ -187,6 +189,6 @@ public class TransPPM implements ITransformation {
 
 	@Override
 	public String getName() {
-		return "TransPPM";
+		return TransPPM.NAME;
 	}
 }

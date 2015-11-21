@@ -559,25 +559,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	public void actionPerformed(ActionEvent e) {
 		JMenuItem source = (JMenuItem) (e.getSource());
-		try {
-			ITransformation resp = XMAX.getTransformation(source.getText());
-			List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
-			List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-			for (ChannelView channelView: selectedViews) {
-				selectedChannels.addAll(channelView.getPlotDataProviders());
-			}
-			org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance().getConfigurationAt("SessionData.Plugins." + source.getText());
-			resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf, getInstance());
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			logger.error("ClassNotFoundException:", e1);	
-		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
-			logger.error("InstantiationException:", e1);	
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			logger.error("IllegalAccessException:", e1);	
-		}
+	    	Action action = actionMap.get(source.getText());
+	    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+
 		statusBar.setMessage("");
 	}
 
@@ -2018,7 +2002,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public ParticleMotionAction() {
 			super();
-			putValue(Action.NAME, "Particle motion");
+			putValue(Action.NAME, TransPPM.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "PPM");
 			putValue(Action.LONG_DESCRIPTION, "Show Particle Motion window");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_M);
@@ -2074,7 +2058,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public PowerSpectraDensityAction() {
 			super();
-			putValue(Action.NAME, "Power spectra density");
+			putValue(Action.NAME, TransPSD.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "PSD");
 			putValue(Action.LONG_DESCRIPTION, "Show Power Spectra Density window");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
@@ -2109,7 +2093,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public SpectraAction() {
 			super();
-			putValue(Action.NAME, "Spectra");
+			putValue(Action.NAME, TransSpectra.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "SPECTRA");
 			putValue(Action.LONG_DESCRIPTION, "Show Spectra window");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
@@ -2141,7 +2125,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public CorrelationAction() {
 			super();
-			putValue(Action.NAME, "Correlation");
+			putValue(Action.NAME, TransCorrelation.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "CORR");
 			putValue(Action.LONG_DESCRIPTION, "Show 2 traces correlation");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
@@ -2206,7 +2190,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public ResponseAction() {
 			super();
-			putValue(Action.NAME, "Response");
+			putValue(Action.NAME, TransResp.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "RESP");
 			putValue(Action.LONG_DESCRIPTION, "Show Response window");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
