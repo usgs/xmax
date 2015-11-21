@@ -88,19 +88,11 @@
 <SessionData>
 		<ExportDir/>
 		<Frame>
-<<<<<<< dd48d6a25afd0fa75a16ce1daad126efe6952975
 			<State>NORMAL</State>
 			<PosY>71</PosY>
 			<PosX>236</PosX>
 			<Width>1559</Width>
 			<Heigth>895</Heigth>
-=======
-			<State>MAXIMIZED_BOTH</State>
-			<PosY>23</PosY>
-			<PosX>0</PosX>
-			<Width>2485</Width>
-			<Heigth>1417</Heigth>
->>>>>>> Redesigned GUI
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>

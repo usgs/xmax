@@ -35,6 +35,8 @@ import com.isti.traceview.data.Response;
  */
 public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
+	public static final String NAME = "Power spectra density";
+	
 	public int maxDataLength = 1048576;
 	private int effectiveLength = 0;
 
@@ -319,7 +321,7 @@ public class TransPSD implements ITransformation {
 
 	@Override
 	public String getName() {
-		return "Power spectra density";
+		return TransPSD.NAME;
 	}
 
 }

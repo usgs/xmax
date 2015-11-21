@@ -28,6 +28,8 @@ import com.isti.xmax.gui.XMAXframe;
 public class TransSpectra implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransSpectra.class);
 	private static final boolean verboseDebug = false;
+	public static final String NAME = "Spectra";
+	
 
 	public int maxDataLength = 32768;
 
@@ -139,6 +141,6 @@ public class TransSpectra implements ITransformation {
 
 	@Override
 	public String getName() {
-		return "Spectra";
+		return TransSpectra.NAME;
 	}
 }

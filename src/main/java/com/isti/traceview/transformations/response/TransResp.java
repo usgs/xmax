@@ -22,6 +22,7 @@ import com.isti.xmax.gui.XMAXframe;
 
 public class TransResp implements ITransformation {
 
+	public static final String NAME = "Response";
 	private static final double minFreqValue = 0.0001;
 	private static final int numberFreqs = 500;
 
@@ -76,6 +77,6 @@ public class TransResp implements ITransformation {
 
 	@Override
 	public String getName() {
-		return "Response";
+		return TransResp.NAME;
 	}
 }
