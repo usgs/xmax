@@ -129,6 +129,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private ScalingButtonPanel scalingButtonPanel = null;
 	private NavigationButtonPanel navigationButtonPanel = null; 
 	private FilterButtonPanel filterButtonPanel = null;
+	private SelectionButtonPanel selectionButtonPanel = null;
 	private AnalysisButtonPanel analysisButtonPanel = null;
 
 	private QCPanel qCPanel = null;
@@ -437,6 +438,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			commandButtonBottomMenuRadioBt.setSelected(true);
 			JPanel navigationPanel = getNavigationButtonPanel();
 			navigationPanel.setBorder(BorderFactory.createEmptyBorder());
+			JPanel selectPanel = getSelectionButtonPanel();
+			selectPanel.setBorder(BorderFactory.createTitledBorder("Select"));
 			JPanel scalingPanel = getScalingButtonPanel();
 			scalingPanel.setBorder(BorderFactory.createTitledBorder("Scaling"));
 			JPanel analysisPanel = getAnalysisButtonPanel();
@@ -451,17 +454,22 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			constraints.gridwidth = 1;
 			constraints.gridx = 1;
 			constraints.gridy = 0;
-			constraints.weightx = 0.3;
-			southPanel.add(analysisPanel, constraints);
+			constraints.weightx = 0.2;
+			southPanel.add(selectPanel, constraints);
 			constraints.gridwidth = 1;
 			constraints.gridx = 2;
 			constraints.gridy = 0;
-			constraints.weightx = 0.3;
-			southPanel.add(scalingPanel, constraints);
+			constraints.weightx = 0.2;
+			southPanel.add(analysisPanel, constraints);
 			constraints.gridwidth = 1;
 			constraints.gridx = 3;
 			constraints.gridy = 0;
-			constraints.weightx = 0.3;
+			constraints.weightx = 0.2;
+			southPanel.add(scalingPanel, constraints);
+			constraints.gridwidth = 1;
+			constraints.gridx = 4;
+			constraints.gridy = 0;
+			constraints.weightx = 0.2;
 			southPanel.add(filterPanel, constraints);
 			
 		}
@@ -683,6 +691,18 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			filterButtonPanel = new FilterButtonPanel();
 		}
 		return filterButtonPanel;
+	}
+	
+	/**
+	 * This method initializes the FilterButtonPanel
+	 * 
+	 * @return FilterButtonPanel
+	 */
+	private SelectionButtonPanel getSelectionButtonPanel() {
+		if (selectionButtonPanel == null) {
+			selectionButtonPanel = new SelectionButtonPanel();
+		}
+		return selectionButtonPanel;
 	}
 	
 	/**
@@ -1268,7 +1288,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			southPanel.setLayout(gridbagLayout);
 			constraints.gridx = 0; 
 			constraints.gridy = 1;
-			constraints.gridwidth = 4; 
+			constraints.gridwidth = 5; 
 			constraints.fill = GridBagConstraints.HORIZONTAL;
 			southPanel.add(getStatusBar(), constraints);
 		}
@@ -2954,6 +2974,80 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 	}
 	
+	class SelectionButtonPanel extends JPanel implements ActionListener {
+		private static final long serialVersionUID = 1L;
+		private JButton selectButton = null;
+		private JButton overlayButton = null;
+		private JButton demeanButton = null;
+		private JButton offsetButton = null;
+		
+		public SelectionButtonPanel() {
+			super();
+			GridLayout gridLayout = new GridLayout(3, 2);
+			setLayout(gridLayout);
+			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+			setPreferredSize(new Dimension(100, 100));
+			// Add buttons
+			add(getSelectButton(), null);
+			add(getOverlayButton(), null);
+			add(getDemeanButton(), null);
+			add(getOffsetButton(), null);
+		}
+		
+		private JButton getSelectButton() {
+			if (selectButton == null) {
+				selectButton = new JButton("Select Channel(s)");
+				selectButton.addActionListener(this);
+			}
+			return selectButton;
+		}
+		
+		private JButton getOverlayButton() {
+			if (overlayButton == null) {
+				overlayButton = new JButton("Overlay Channels");
+				overlayButton.addActionListener(this);
+			}
+			return overlayButton;
+		}
+		
+		private JButton getDemeanButton() {
+			if (demeanButton == null) {
+				demeanButton = new JButton("Demean");
+				demeanButton.addActionListener(this);
+			}
+			return demeanButton;
+		}
+		
+		private JButton getOffsetButton() {
+			if (offsetButton == null) {
+				offsetButton = new JButton("Offset");
+				offsetButton.addActionListener(this);
+			}
+			return offsetButton;
+		}
+		
+		public void actionPerformed(ActionEvent evt) {
+		    Object src = evt.getSource();
+		    Action action = null; 
+		    if (src == selectButton) {
+		    	action = actionMap.get("Select");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == overlayButton) {
+		    	action = actionMap.get("Overlay");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    } 	
+		    else if (src == demeanButton){
+		    	action = actionMap.get("Demean");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == offsetButton){
+		    	action = actionMap.get("Offset");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		}
+	}
+	
 	class ScalingButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
 		private JButton commonScaleButton = null;
@@ -3144,7 +3238,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					filterSelected = "";
 				}
 				else{
-					filterSelected = FilterHP.NAME;
+					filterSelected = FilterDYO.NAME;
 				}
 		    	action = actionMap.get(FilterDYO.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
