@@ -1735,8 +1735,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public ScaleModeXHairAction() {
 			super();
 			putValue(Action.NAME, "Scale Xhair");
-			putValue(Action.SHORT_DESCRIPTION, "Xhair");
-			putValue(Action.LONG_DESCRIPTION, "switch Scaling Mode to X hair");
+			putValue(Action.SHORT_DESCRIPTION, "Crosshair");
+			putValue(Action.LONG_DESCRIPTION, "Switch scaling mode to crosshair");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
 		}
 
@@ -2969,11 +2969,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			setPreferredSize(new Dimension(100, 100));
 			// Add buttons
-			add(getCommonScaleButton(), null);
 			add(getAutoScaleButton(), null);
-			add(getXHairScaleButton(), null);
 			add(getXLimScaleButton(), null);
+			add(getCommonScaleButton(), null);
 			add(getYLimScaleButton(), null);
+			add(getXHairScaleButton(), null);
+			
 		}
 		
 		private JButton getCommonScaleButton() {
@@ -2994,7 +2995,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		
 		private JButton getXHairScaleButton() {
 			if (xhairScaleButton == null) {
-				xhairScaleButton = new JButton("XHair Scale");
+				xhairScaleButton = new JButton("Crosshair Scale");
 				xhairScaleButton.addActionListener(this);
 			}
 			return xhairScaleButton;
