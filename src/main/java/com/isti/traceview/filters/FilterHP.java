@@ -53,7 +53,7 @@ public class FilterHP implements IFilter {
 
 	@Override
 	public String getName() {
-		return Reconvolution.NAME;
+		return FilterHP.NAME;
 	}
 
 	/**

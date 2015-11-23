@@ -47,7 +47,7 @@ public class FilterBP implements IFilter {
 
 	@Override
 	public String getName() {
-		return Reconvolution.NAME;
+		return NAME;
 	}
 
 	public int getMaxDataLength() {

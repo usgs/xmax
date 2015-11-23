@@ -48,7 +48,7 @@ public class FilterLP implements IFilter {
 
 	@Override
 	public String getName() {
-		return Reconvolution.NAME;
+		return FilterLP.NAME;
 	}
 
 	/**

@@ -286,6 +286,6 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 
 	@Override
 	public String getName() {
-		return Reconvolution.NAME;
+		return FilterDYO.NAME;
 	}
 }

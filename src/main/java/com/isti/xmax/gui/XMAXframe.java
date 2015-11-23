@@ -1,6 +1,7 @@
 package com.isti.xmax.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -53,6 +54,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
 import javax.swing.ToolTipManager;
@@ -78,6 +80,7 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.FilterBP;
 import com.isti.traceview.filters.FilterDYO;
+import com.isti.traceview.filters.FilterHP;
 import com.isti.traceview.filters.FilterLP;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.ChannelView;
@@ -104,7 +107,6 @@ import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.common.Pick;
 import com.isti.xmax.data.XMAXDataModule;
-
 /**
  * <p>
  * Main frame for XMAX: holds Swing GUI widgets and information about current application state.
@@ -3042,41 +3044,58 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	
 	class FilterButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
-		private JButton lowPassButton = null;
-		private JButton bandPassButton = null;
-		private JButton dyoFilterButton = null;
+		private ButtonGroup bg = null;
+		private JToggleButton lowPassButton = null;
+		private JToggleButton bandPassButton = null;
+		private JToggleButton highPassButton = null;
+		private JToggleButton dyoFilterButton = null;
+		private String filterSelected = "";
 		
 		public FilterButtonPanel() {
 			super();
-			GridLayout gridLayout = new GridLayout(3, 1);
+			GridLayout gridLayout = new GridLayout(3, 2);
 			setLayout(gridLayout);
 			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			setPreferredSize(new Dimension(100, 100));
+			bg = new ButtonGroup();
 			// Add buttons
+			bg.add(getLowPassButton());
+			bg.add(getBandPassButton());
+			bg.add(getHighPassButton());
+			bg.add(getDYOFilterButton());
 			add(getLowPassButton(), null);
 			add(getBandPassButton(), null);
+			add(getHighPassButton(),null);
 			add(getDYOFilterButton(), null);
 		}
 		
-		private JButton getLowPassButton() {
+		private JToggleButton getLowPassButton() {
 			if (lowPassButton == null) {
-				lowPassButton = new JButton("Low Pass Filter");
+				lowPassButton = new JToggleButton("Low Pass Filter");
 				lowPassButton.addActionListener(this);
 			}
 			return lowPassButton;
 		}
 		
-		private JButton getBandPassButton() {
+		private JToggleButton getBandPassButton() {
 			if (bandPassButton == null) {
-				bandPassButton = new JButton("Band Pass Filter");
+				bandPassButton = new JToggleButton("Band Pass Filter");
 				bandPassButton.addActionListener(this);
 			}
 			return bandPassButton;
 		}
 		
-		private JButton getDYOFilterButton() {
+		private JToggleButton getHighPassButton() {
+			if (highPassButton == null) {
+				highPassButton = new JToggleButton("High Pass Filter");
+				highPassButton.addActionListener(this);
+			}
+			return highPassButton;
+		}
+		
+		private JToggleButton getDYOFilterButton() {
 			if (dyoFilterButton == null) {
-				dyoFilterButton = new JButton("DYO Filter");
+				dyoFilterButton = new JToggleButton("DYO Filter");
 				dyoFilterButton.addActionListener(this);
 			}
 			return dyoFilterButton;
@@ -3086,14 +3105,46 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    Object src = evt.getSource();
 		    Action action = null; 
 		    if (src == lowPassButton) {
+				if(lowPassButton.isSelected() && filterSelected == FilterLP.NAME){
+					bg.clearSelection();
+					filterSelected = "";
+				}
+				else{
+					filterSelected = FilterLP.NAME;
+				}
 		    	action = actionMap.get(FilterLP.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 		    else if (src == bandPassButton) {
+				if(bandPassButton.isSelected() && filterSelected == FilterBP.NAME){
+					bg.clearSelection();
+					filterSelected = "";
+				}
+				else{
+					filterSelected = FilterBP.NAME;
+				}
 		    	action = actionMap.get(FilterBP.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    } 	
+		    else if (src == highPassButton) {
+				if(highPassButton.isSelected() && filterSelected == FilterHP.NAME){
+					bg.clearSelection();
+					filterSelected = "";
+				}
+				else{
+					filterSelected = FilterHP.NAME;
+				}
+		    	action = actionMap.get(FilterHP.NAME);
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    } 	
 		    else if (src == dyoFilterButton){
+				if(dyoFilterButton.isSelected() && filterSelected == FilterDYO.NAME){
+					bg.clearSelection();
+					filterSelected = "";
+				}
+				else{
+					filterSelected = FilterHP.NAME;
+				}
 		    	action = actionMap.get(FilterDYO.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
@@ -3167,19 +3218,19 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    Action action = null; 
 		    if (src == PSDButton) {
 		    	System.out.println("COMPUTE PSD");
-		    	action = actionMap.get("Power spectra density");
+		    	action = actionMap.get(TransPSD.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 		    else if (src == spectraButton) {
-		    	action = actionMap.get("Spectra");
+		    	action = actionMap.get(TransSpectra.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    } 	
 		    else if (src == respButton){
-		    	action = actionMap.get("Response");
+		    	action = actionMap.get(TransResp.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 		    else if (src == particlemotionButton){
-		    	action = actionMap.get("Particle motion");
+		    	action = actionMap.get(TransPPM.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 		    else if (src == rotationButton){
@@ -3203,6 +3254,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private CommandButton exportButton = null;
 		private CommandButton limButton = null;
 		private CommandButton processingButton = null;
+		private CommandButton scaleButton = null;
 
 		public ButtonPanel() {
 			super();
@@ -3247,7 +3299,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		 * 
 		 * @return CommandButton
 		 */
-		/*private CommandButton getScaleButton() {
+		private CommandButton getScaleButton() {
 			if (scaleButton == null) {
 				scaleButton = new CommandButton("SCL");
 				scaleButton.setAction1(actionMap.get("Scale auto"));
@@ -3255,7 +3307,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				scaleButton.setAction3(actionMap.get("Scale Xhair"));
 			}
 			return scaleButton;
-		}*/
+		}
 
 		/**
 		 * This method initializes selectButton
