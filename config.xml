@@ -66,7 +66,7 @@
 			3 - Channel type/channel/network/station;
 			4 - event 
 		-->
-		<PanelOrder>4</PanelOrder>
+		<PanelOrder>0</PanelOrder>
 
 		<!-- Panel count unit: 
 			0 - trace;
