@@ -2941,30 +2941,20 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 */
 	class NavigationButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
-		private JButton deselectAllButton = null;
 		private JButton backButton = null;
 		private JButton nextButton = null;
 		private JButton undoButton = null;
 		
 		public NavigationButtonPanel() {
 			super();
-			GridLayout gridLayout = new GridLayout(4, 0);
+			GridLayout gridLayout = new GridLayout(3, 0);
 			setLayout(gridLayout);
 			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			// Add buttons
 			add(getNextButton(), null);
 			add(getBackButton(), null);
-			add(getDeselectAllButton(), null);
 			add(getUndoButton(), null);
 			
-		}
-		
-		private JButton getDeselectAllButton(){
-			if(deselectAllButton == null){
-				deselectAllButton = new JButton("Deselect All");
-				deselectAllButton.addActionListener(this);
-			}
-			return deselectAllButton;
 		}
 		
 		private JButton getNextButton() {
@@ -3006,10 +2996,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    	action = actionMap.get("Undo");
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
-		    else if (src == deselectAllButton){
-		    	action = actionMap.get("Deselect All");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
 		}
 	}
 	
@@ -3020,6 +3006,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private static final long serialVersionUID = 1L;
 		private JButton selectButton = null;
 		private JButton overlayButton = null;
+		private JButton deselectAllButton = null;
 		private JButton demeanButton = null;
 		private JButton offsetButton = null;
 		
@@ -3032,6 +3019,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			// Add buttons
 			add(getSelectButton(), null);
 			add(getOverlayButton(), null);
+			add(getDeselectAllButton(), null);
 			add(getDemeanButton(), null);
 			add(getOffsetButton(), null);
 		}
@@ -3050,6 +3038,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				overlayButton.addActionListener(this);
 			}
 			return overlayButton;
+		}
+		
+		private JButton getDeselectAllButton(){
+			if(deselectAllButton == null){
+				deselectAllButton = new JButton("Deselect All");
+				deselectAllButton.addActionListener(this);
+			}
+			return deselectAllButton;
 		}
 		
 		private JButton getDemeanButton() {
@@ -3085,6 +3081,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    }
 		    else if (src == offsetButton){
 		    	action = actionMap.get("Offset");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == deselectAllButton){
+		    	action = actionMap.get("Deselect All");
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 		}
