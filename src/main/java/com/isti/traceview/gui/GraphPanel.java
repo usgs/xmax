@@ -597,6 +597,16 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		Collections.sort(ret);
 		return ret;
 	}
+	
+	/**
+	 * Unchecks all selected ChannelView's in the GraphPanel
+	 */
+	public void clearSelectedChannels() {
+		List<ChannelView> cvList = getCurrentChannelShowSet();
+		for(ChannelView cv : cvList){
+			cv.clearCheckBox(); 
+		}
+	}
 
 	/**
 	 * Gets the current selected channels.
@@ -610,7 +620,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 		return ret;
 	}
-
+	
 	/**
 	 * Setter of the property <tt>channelShowSet</tt> each channel in it's own graph or group by
 	 * location in each graph.

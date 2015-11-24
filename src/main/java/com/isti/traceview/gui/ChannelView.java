@@ -131,7 +131,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public ChannelView() {
 		this(new ArrayList<PlotDataProvider>(), defaultInfoPanelWidth, true, null, null);
 	}
-
+	
 	private void initialize(int infoPanelWidth, boolean isDrawSelectionCheckBox, Color graphAreaBgColor, Color infoAreaBgColor) {
 		ToolTipManager.sharedInstance().unregisterComponent(this);
 		axis = new NumberAxis();
@@ -141,6 +141,13 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		this.add(getInfoPanel(infoPanelWidth, isDrawSelectionCheckBox, infoAreaBgColor), BorderLayout.WEST);
 		this.add(getGraphAreaPanel(graphAreaBgColor), BorderLayout.CENTER);
 		markPositions = new ArrayList<MarkPosition>();
+	}
+	
+	/**
+	 * Unchecks the NonPrintableCheckbox in the ChannelView.
+	 */
+	public void clearCheckBox(){
+		this.infoPanel.selected.setSelected(false);
 	}
 
 	/**
@@ -492,6 +499,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		public boolean isSelected() {
 			return selected.isSelected();
 		}
+		
 
 		/**
 		 * This method initializes selected

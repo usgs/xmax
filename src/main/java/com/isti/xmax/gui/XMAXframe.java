@@ -77,6 +77,7 @@ import com.isti.traceview.commands.SelectTimeCommand;
 import com.isti.traceview.commands.SelectValueCommand;
 import com.isti.traceview.commands.SetScaleModeCommand;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.FilterBP;
 import com.isti.traceview.filters.FilterDYO;
@@ -252,6 +253,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		action = new OverlayAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new SelectChannelsAction();
+		actionMap.put(action.getValue(Action.NAME), action);		
+		action = new DeselectAllAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new ScaleModeAutoAction();
 		actionMap.put(action.getValue(Action.NAME), action);
@@ -285,6 +288,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new UndoAction();
 		actionMap.put(action.getValue(Action.NAME), action);
+
 		action = new ParticleMotionAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new PowerSpectraDensityAction();
@@ -1681,6 +1685,27 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 		}
 	}
+	
+	/*
+	 * Deselects all selected channels
+	 */
+	class DeselectAllAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
+		public DeselectAllAction() {
+			super();
+			putValue(Action.NAME, "Deselect All");
+			putValue(Action.SHORT_DESCRIPTION, "Deselect All");
+			putValue(Action.LONG_DESCRIPTION, "Deselects all currently selected channels.");
+			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_U);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			graphPanel.clearSelectedChannels();
+			selectMenuCheckBox.setState(false);
+		}
+	}
 
 	class ScaleModeAutoAction extends AbstractAction implements Action {
 
@@ -2020,7 +2045,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			statusBar.setMessage("");
 		}
 	}
-
+	
 	class ParticleMotionAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -2912,24 +2937,34 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	/**
-	 * Command buttons top/bottom panel
+	 * Navigation buttons for south panel
 	 */
-	
 	class NavigationButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
+		private JButton deselectAllButton = null;
 		private JButton backButton = null;
 		private JButton nextButton = null;
 		private JButton undoButton = null;
 		
 		public NavigationButtonPanel() {
 			super();
-			GridLayout gridLayout = new GridLayout(3, 1);
+			GridLayout gridLayout = new GridLayout(4, 0);
 			setLayout(gridLayout);
 			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			// Add buttons
 			add(getNextButton(), null);
 			add(getBackButton(), null);
+			add(getDeselectAllButton(), null);
 			add(getUndoButton(), null);
+			
+		}
+		
+		private JButton getDeselectAllButton(){
+			if(deselectAllButton == null){
+				deselectAllButton = new JButton("Deselect All");
+				deselectAllButton.addActionListener(this);
+			}
+			return deselectAllButton;
 		}
 		
 		private JButton getNextButton() {
@@ -2971,9 +3006,16 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    	action = actionMap.get("Undo");
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
+		    else if (src == deselectAllButton){
+		    	action = actionMap.get("Deselect All");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
 		}
 	}
 	
+	/**
+	 * Selection buttons for south panel
+	 */
 	class SelectionButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
 		private JButton selectButton = null;
@@ -3048,6 +3090,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 	}
 	
+	/**
+	 * Scaling buttons for south panel
+	 */
 	class ScalingButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
 		private JButton commonScaleButton = null;
@@ -3137,6 +3182,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	    }
 	}
 	
+	/**
+	 * Filter buttons for south panel
+	 */
 	class FilterButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
 		private ButtonGroup bg = null;
@@ -3246,6 +3294,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	    }
 	}
 	
+	/**
+	 * Analysis buttons for south panel
+	 */
 	class AnalysisButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID =1L;
 		private JButton PSDButton = null;
@@ -3312,7 +3363,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    Object src = evt.getSource();
 		    Action action = null; 
 		    if (src == PSDButton) {
-		    	System.out.println("COMPUTE PSD");
 		    	action = actionMap.get(TransPSD.NAME);
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
