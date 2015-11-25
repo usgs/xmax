@@ -24,6 +24,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -50,7 +51,7 @@ import com.isti.xmax.XMAX;
  * 
  * @author Max Kokoulin
  */
-public class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListener {
+class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
 	// private static final Logger logger = Logger.getLogger(ViewSpectra.class);
@@ -60,19 +61,19 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 	private JCheckBox SmoothCB;
 	private JPanel selectionP;
 	private JLabel convolveL;
-	private JPanel optionP;
+	private JPanel optionPanel;
 	private JComboBox<Object> convolveCB;
 	private JCheckBox deconvolveCB;
 	private JCheckBox showDiffCB;
-	List<Spectra> data = null;
-	XYPlot plot = null;
-	TimeInterval ti = null;
-	TraceViewChartPanel cp = null;
+	private List<Spectra> data = null;
+	private XYPlot plot = null;
+	private TimeInterval timeInterval = null;
+	private TraceViewChartPanel chartPanel = null;
 
-	public ViewSpectra(Frame owner, List<Spectra> data, TimeInterval ti) {
+	ViewSpectra(Frame owner, List<Spectra> data, TimeInterval timeInterval) {
 		super(owner, "Spectra", true);
 		this.data = data;
-		this.ti = ti;
+		this.timeInterval = timeInterval;
 		Object[] options = { "Close", "Print", "Export GRAPH" };
 		// Create the JOptionPane.
 		optionPane = new JOptionPane(createChartPanel(filterData(data)), JOptionPane.PLAIN_MESSAGE,
@@ -80,8 +81,9 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				/*
 				 * Instead of directly closing the window, we're going to change
@@ -95,6 +97,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 		setVisible(true);
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
 		if (isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
@@ -107,9 +110,9 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 				setVisible(false);
 				dispose();
 			} else if (value.equals("Print")) {
-				cp.createChartPrintJob();
+				chartPanel.createChartPrintJob();
 			} else if (value.equals("Export GRAPH")) {
-				File exportFile = GraphUtil.saveGraphics(cp, XMAX.getConfiguration().getUserDir("GRAPH"));
+				File exportFile = GraphUtil.saveGraphics(chartPanel, XMAX.getConfiguration().getUserDir("GRAPH"));
 				if (exportFile != null) {
 					XMAX.getConfiguration().setUserDir("GRAPH", exportFile.getParent());
 				}
@@ -118,6 +121,7 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 	}
 
 	/** Listens to the check box. */
+	@Override
 	public void itemStateChanged(ItemEvent e) {
 		if (e.getSource().equals(getSmoothCB())) {
 		} else if (e.getSource().equals(getDeconvolveCB())) {
@@ -163,8 +167,8 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 		);
 		chart.setBackgroundPaint(Color.white);
 		TextTitle title = new TextTitle("Start time: "
-				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-				+ ", Duration: " + ti.convert(), ret.getFont());
+				+ TimeInterval.formatDate(timeInterval.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+				+ ", Duration: " + timeInterval.convert(), ret.getFont());
 		chart.setTitle(title);
 		plot = chart.getXYPlot();
 		NumberAxis domainAxis = new LogarithmicAxis("Period, s");
@@ -177,8 +181,8 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 		plot.setRangeGridlinePaint(Color.white);
 		plot.setDomainCrosshairVisible(true);
 		plot.setRangeCrosshairVisible(true);
-		cp = new TraceViewChartPanel(chart, true);
-		ret.add(cp);
+		chartPanel = new TraceViewChartPanel(chart, true);
+		ret.add(chartPanel);
 		ret.add(getOptionP());
 		if (dataset.getSeriesCount() > 1) {
 			ret.add(getSelectionP());
@@ -318,15 +322,15 @@ public class ViewSpectra extends JDialog implements PropertyChangeListener, Item
 	}
 
 	private JPanel getOptionP() {
-		if (optionP == null) {
-			optionP = new JPanel();
-			optionP.setMaximumSize(new java.awt.Dimension(32767, 32));
-			optionP.add(getSmoothCB());
-			optionP.add(getDeconvolveCB());
-			optionP.add(getConvolveL());
-			optionP.add(getConvolveCB());
+		if (optionPanel == null) {
+			optionPanel = new JPanel();
+			optionPanel.setMaximumSize(new java.awt.Dimension(32767, 32));
+			optionPanel.add(getSmoothCB());
+			optionPanel.add(getDeconvolveCB());
+			optionPanel.add(getConvolveL());
+			optionPanel.add(getConvolveCB());
 		}
-		return optionP;
+		return optionPanel;
 	}
 
 	private JLabel getConvolveL() {
