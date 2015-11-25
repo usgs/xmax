@@ -29,9 +29,10 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
@@ -48,16 +49,11 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import org.apache.commons.configuration.Configuration;
-
 import com.isti.jevalresp.OutputGenerator;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.SacTimeSeriesASCII;
-import com.isti.xmax.XMAX;
-import com.isti.xmax.XMAXconfiguration;
-import com.isti.xmax.gui.XMAXframe;
 import com.isti.traceview.gui.ChannelView;
 import com.isti.traceview.gui.ColorModeFixed;
 import com.isti.traceview.gui.GraphPanel;
@@ -66,6 +62,9 @@ import com.isti.traceview.gui.IChannelViewFactory;
 import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.Spectra;
+import com.isti.xmax.XMAX;
+import com.isti.xmax.XMAXconfiguration;
+import com.isti.xmax.gui.XMAXframe;
 
 /**
  * Dialog to view PSD results. Also performs deconvolution, convolution and
@@ -73,7 +72,7 @@ import com.isti.traceview.processing.Spectra;
  * 
  * @author Max Kokoulin
  */
-public class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressListener {
+class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(ViewPSD.class);
@@ -95,7 +94,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 	private Configuration configuration = null;
 	private boolean showWaves = false;
 
-	public ViewPSD(Frame owner, List<Spectra> data, TimeInterval ti, Configuration configuration,
+	ViewPSD(Frame owner, List<Spectra> data, TimeInterval ti, Configuration configuration,
 			List<PlotDataProvider> input) {
 		super(owner, "Power Spectra Density", true);
 		this.dataset = createDataset(data);
@@ -118,8 +117,9 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				/*
 				 * Instead of directly closing the window, we're going to change
@@ -134,6 +134,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 		setVisible(true);
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
 		if (isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
@@ -413,6 +414,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 	 * @param event
 	 *            the event.
 	 */
+	@Override
 	public void chartProgress(ChartProgressEvent event) {
 		if (event.getType() != ChartProgressEvent.DRAWING_FINISHED) {
 			return;
@@ -462,6 +464,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 			setSeriesPaint(dataset.getSeriesCount() - 2, Color.BLACK);
 		}
 
+		@Override
 		public LegendItem getLegendItem(int datasetIndex, int series) {
 			if (series > dataset.getSeriesCount() - 3) {
 				return null;
@@ -470,28 +473,31 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 		}
 	}
 
-	public class PSDChannelViewFactory implements IChannelViewFactory {
+	private class PSDChannelViewFactory implements IChannelViewFactory {
+		@Override
 		public int getInfoAreaWidth() {
 			return 0;
 		}
 
+		@Override
 		public ChannelView getChannelView(List<PlotDataProvider> channels) {
 			return new ChannelView(channels, getInfoAreaWidth(), false, Color.WHITE, Color.WHITE);
 		}
 
+		@Override
 		public ChannelView getChannelView(PlotDataProvider channel) {
 			return new ChannelView(channel, getInfoAreaWidth(), false, Color.WHITE, Color.WHITE);
 		}
 	}
 
-	class MyOptionPane extends JPanel implements Printable {
+	private class MyOptionPane extends JPanel implements Printable {
 
 		private static final long serialVersionUID = 1L;
 		private TraceViewChartPanel cp = null;
 		private JPanel waveP = null;
 		private List<PlotDataProvider> input;
 
-		public MyOptionPane(TraceViewChartPanel cp, List<PlotDataProvider> input) {
+		private MyOptionPane(TraceViewChartPanel cp, List<PlotDataProvider> input) {
 			this.cp = cp;
 			this.input = input;
 			BoxLayout mLayout = new BoxLayout(this, javax.swing.BoxLayout.Y_AXIS);
@@ -528,6 +534,7 @@ public class ViewPSD extends JDialog implements PropertyChangeListener, ChartPro
 			return waveP;
 		}
 
+		@Override
 		public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
 			if (pageIndex != 0) {
 				return NO_SUCH_PAGE;

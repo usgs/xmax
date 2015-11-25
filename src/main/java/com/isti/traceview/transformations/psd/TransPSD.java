@@ -7,12 +7,14 @@ import java.util.ListIterator;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.configuration.Configuration;
+import org.apache.log4j.Logger;
 
+import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Response;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
@@ -23,9 +25,6 @@ import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import com.isti.jevalresp.RespUtils;
-
-import com.isti.traceview.data.Response;
 
 /**
  * Power spectra density transformation. Prepares data for presentation in
@@ -37,9 +36,10 @@ public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
 	public static final String NAME = "Power spectra density";
 	
-	public int maxDataLength = 1048576;
+	private int maxDataLength = 1048576;
 	private int effectiveLength = 0;
 
+	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
 			JFrame parentFrame) {
 		if (input.size() == 0) {
@@ -63,6 +63,7 @@ public class TransPSD implements ITransformation {
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
 
+	@Override
 	public void setMaxDataLength(int dataLength) {
 		this.maxDataLength = dataLength;
 	}
@@ -315,7 +316,7 @@ public class TransPSD implements ITransformation {
 		return dataset;
 	}
 
-	protected static int getPower2Length(int length) {
+	private static int getPower2Length(int length) {
 		return new Double(Math.pow(2, new Double(Math.ceil(IstiUtilsMath.log2(length))))).intValue();
 	}
 
