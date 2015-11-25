@@ -1,6 +1,5 @@
 package com.isti.traceview.transformations.psd;
 
-import com.isti.util.Math10;
 import com.isti.util.database.DatabaseUtil;
 
 /**
@@ -96,7 +95,7 @@ public class NoiseModel {
 			for (k = 0; k < lastIndex; k++)
 				if (p < data[k + 1][PER])
 					break;
-			nnm = data[k][A] + data[k][B] * Math10.log10(p);
+			nnm = data[k][A] + data[k][B] * Math.log10(p);
 		}
 
 		return nnm;

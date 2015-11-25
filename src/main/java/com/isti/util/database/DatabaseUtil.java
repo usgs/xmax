@@ -8,8 +8,9 @@
 
 package com.isti.util.database;
 
-import java.util.*;
-import com.isti.util.Math10;
+import java.util.Calendar;
+import java.util.Map;
+import java.util.Properties;
 
 public class DatabaseUtil
 {
@@ -82,7 +83,7 @@ public class DatabaseUtil
    */
   public static double convertToVel(double val, double p)
   {
-    return val + 20.0 * Math10.log10(p/(2.0 * Math.PI));
+    return val + 20.0 * Math.log10(p/(2.0 * Math.PI));
   }
 
   /**
