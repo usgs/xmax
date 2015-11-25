@@ -42,7 +42,8 @@ class NoiseModel {
 				// New model undefined
 				nnm = 0.0;
 			}
-		} else if (p > data[lastIndex][PERIOD]) // if value is greater than maximum
+		} else if (p > data[lastIndex][PERIOD]) // if value is greater than
+												// maximum
 		{
 			// New model undefined
 			nnm = 0.0;

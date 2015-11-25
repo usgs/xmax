@@ -9,6 +9,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -18,12 +19,12 @@ import org.jfree.data.xy.XYDataset;
 
 import com.isti.traceview.common.TraceViewChartPanel;
 
-public class ViewResp extends JDialog implements PropertyChangeListener {
+class ViewResp extends JDialog implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane;
 
-	public ViewResp(Frame owner, XYDataset dataset) {
+	ViewResp(Frame owner, XYDataset dataset) {
 		super(owner, "Response view", true);
 		Object[] options = { "Close", "Print" };
 		// Create the JOptionPane.
@@ -32,8 +33,9 @@ public class ViewResp extends JDialog implements PropertyChangeListener {
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				/*
 				 * Instead of directly closing the window, we're going to change
@@ -47,6 +49,7 @@ public class ViewResp extends JDialog implements PropertyChangeListener {
 		setVisible(true);
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
 		if (isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {

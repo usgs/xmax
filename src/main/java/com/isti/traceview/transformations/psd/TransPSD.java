@@ -35,7 +35,7 @@ import edu.sc.seis.fissuresUtil.freq.Cmplx;
 public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
 	public static final String NAME = "Power spectra density";
-	
+
 	private int maxDataLength = 1048576;
 	private int effectiveLength = 0;
 
