@@ -1,7 +1,5 @@
 package com.isti.traceview.transformations.psd;
 
-import com.isti.util.database.DatabaseUtil;
-
 /**
  * Noise model
  */
@@ -37,7 +35,7 @@ public class NoiseModel {
 	 *            true if period
 	 */
 	public static double getNhnmData(int index, boolean velocityFlag, boolean periodFlag) {
-		final double val = DatabaseUtil.convertToFrequency(NHNM_DATA[index][NoiseModel.PER], periodFlag);
+		final double val = convertToFrequency(NHNM_DATA[index][NoiseModel.PER], periodFlag);
 		return val;
 	}
 
@@ -58,7 +56,7 @@ public class NoiseModel {
 	 *            true if period
 	 */
 	public static double getNlnmData(int index, boolean velocityFlag, boolean periodFlag) {
-		final double val = DatabaseUtil.convertToFrequency(NLNM_DATA[index][NoiseModel.PER], periodFlag);
+		final double val = convertToFrequency(NLNM_DATA[index][NoiseModel.PER], periodFlag);
 		return val;
 	}
 
@@ -123,7 +121,7 @@ public class NoiseModel {
 	 * @return new low noise model value
 	 */
 	public static double fnlnm(double p, boolean velocityFlag) {
-		return DatabaseUtil.convertToVel(fnlnm(p), p, velocityFlag);
+		return convertToVel(fnlnm(p), p, velocityFlag);
 	}
 
 	/**
@@ -139,7 +137,7 @@ public class NoiseModel {
 	 * @return new low noise model value
 	 */
 	public static double fnlnm(double val, boolean velocityFlag, boolean periodFlag) {
-		final double p = DatabaseUtil.convertToFrequency(val, periodFlag);
+		final double p = convertToFrequency(val, periodFlag);
 		return fnlnm(p, velocityFlag);
 	}
 
@@ -165,7 +163,7 @@ public class NoiseModel {
 	 * @return new high noise model value
 	 */
 	public static double fnhnm(double p, boolean velocityFlag) {
-		return DatabaseUtil.convertToVel(fnhnm(p), p, velocityFlag);
+		return convertToVel(fnhnm(p), p, velocityFlag);
 	}
 
 	/**
@@ -181,7 +179,7 @@ public class NoiseModel {
 	 * @return new high noise model value
 	 */
 	public static double fnhnm(double val, boolean velocityFlag, boolean periodFlag) {
-		final double p = DatabaseUtil.convertToFrequency(val, periodFlag);
+		final double p = convertToFrequency(val, periodFlag);
 		return fnhnm(p, velocityFlag);
 	}
 
@@ -244,4 +242,62 @@ public class NoiseModel {
 		final double hnm = fnhnm(val, velocityFlag, periodFlag);
 		return createSample(lnm, hnm);
 	}
+	
+	  /**
+	   * Inverts the value.
+	   * @param d value
+	   * @return inverse of the value.
+	   */
+	  private static double invertValue(double d)
+	  {
+	    return d > 0.0?1.0/d:0.0;
+	  }
+
+	  /**
+	   * convert value to frequency if needed
+	   * @param val value
+	   * @param periodFlag true if period
+	   * @return frequency value
+	   */
+	  private static double convertToFrequency(double val, boolean periodFlag)
+	  {
+	    // if period no conversion needed
+	    if (!periodFlag)
+	    {
+	      // convert frequency to period
+	      val = invertValue(val);
+	    }
+	    return val;
+	  }
+	  
+	  /**
+	   * convert the noise value from Acceleration to Velocity
+	   * value (low or high) and period
+	   * @param val acceleration value
+	   * @param p period
+	   * @return velocity value
+	   */
+	  public static double convertToVel(double val, double p)
+	  {
+	    return val + 20.0 * Math.log10(p/(2.0 * Math.PI));
+	  }
+
+	  /**
+	   * convert the noise value from Acceleration to Velocity
+	   * value (low or high) and period if needed
+	   * @param val acceleration value
+	   * @param p period
+	   * @param velocityFlag true for velocity
+	   * @return velocity value
+	   */
+	  public static double convertToVel(double val, double p,
+	                                    boolean velocityFlag)
+	  {
+	    if (velocityFlag)
+	    {
+	      /// convert the noise value from Acceleration to Velocity
+	      val = convertToVel(val, p);
+	    }
+	    return val;
+	  }
 }
