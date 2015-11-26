@@ -1,6 +1,5 @@
 package com.isti.traceview.transformations.ppm;
 
-import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
