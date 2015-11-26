@@ -27,12 +27,13 @@ import com.isti.xmax.gui.XMAXframe;
 public class TransCorrelation implements ITransformation {
 
 	private static final Logger logger = Logger.getLogger(TransCorrelation.class);
-	
+
 	public static final String NAME = "Correlation";
 
-	public int maxDataLength = 131072;
+	private int maxDataLength = 131072;
 	private double sampleRate = 0;
 
+	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
 			JFrame parentFrame) {
 		if ((input == null) || (input.size() == 0) || (input.size() > 2)) {
@@ -55,6 +56,7 @@ public class TransCorrelation implements ITransformation {
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
 
+	@Override
 	public void setMaxDataLength(int dataLength) {
 		this.maxDataLength = dataLength;
 	}
