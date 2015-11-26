@@ -22,7 +22,7 @@ License
 ######JEvalResp
 	Source:			xmax/lib/JEvalResp.jar
 	Author:			Instrumental Software Technologies, Inc. (ISTI)
-	License:        Not explicitly stated, but infered GPL 2.0 (Bundled with FissuresIDL)
+	License:        Not explicitly stated, but inferred GPL 2.0 (Bundled with FissuresIDL)
 	Website:		http://www.isti.com/JEvalResp/
 ######seisFile
 	Source:			xmax/lib/seisFile-1.5.2.jar
