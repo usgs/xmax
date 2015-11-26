@@ -29,7 +29,6 @@ public class TransSpectra implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransSpectra.class);
 	private static final boolean verboseDebug = false;
 	public static final String NAME = "Spectra";
-	
 
 	private int maxDataLength = 32768;
 
@@ -42,7 +41,8 @@ public class TransSpectra implements ITransformation {
 		} else {
 			try {
 				@SuppressWarnings("unused")
-				ViewSpectra vs = new ViewSpectra(parentFrame, createData(input, filter, timeInterval, parentFrame), timeInterval);
+				ViewSpectra vs = new ViewSpectra(parentFrame, createData(input, filter, timeInterval, parentFrame),
+						timeInterval);
 			} catch (XMAXException e) {
 				if (!e.getMessage().equals("Operation cancelled")) {
 					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
@@ -71,8 +71,8 @@ public class TransSpectra implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval timeInterval, JFrame parentFrame)
-			throws XMAXException {
+	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval timeInterval,
+			JFrame parentFrame) throws XMAXException {
 		List<Spectra> dataset = new ArrayList<Spectra>();
 		for (PlotDataProvider channel : input) {
 			double sampleRate = 0;
@@ -103,7 +103,8 @@ public class TransSpectra implements ITransformation {
 				((XMAXframe) parentFrame).getStatusBar().setMessage(
 						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
 			} else {
-				dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(intData.length)).intValue())).intValue();
+				dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(intData.length)).intValue()))
+						.intValue();
 			}
 			/*
 			 * // this code shows pop-up if point count is exceeded int ds = new
@@ -131,8 +132,8 @@ public class TransSpectra implements ITransformation {
 				data = new FilterFacade(filter, channel).filter(data);
 			}
 			try {
-				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(), timeInterval.getStartTime(), channel,
-						verboseDebug);
+				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
+						timeInterval.getStartTime(), channel, verboseDebug);
 				dataset.add(spectra);
 			} catch (TraceViewException e) {
 				logger.error("TraceViewException:", e);
