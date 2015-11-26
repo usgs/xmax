@@ -26,6 +26,7 @@ public class TransResp implements ITransformation {
 	private static final double minFreqValue = 0.0001;
 	private static final int numberFreqs = 500;
 
+	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
 			JFrame parentFrame) {
 		if (input.size() == 0) {
@@ -44,6 +45,7 @@ public class TransResp implements ITransformation {
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
 
+	@Override
 	public void setMaxDataLength(int dataLength) {
 
 	}

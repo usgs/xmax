@@ -75,11 +75,11 @@ public class XMAXconfiguration extends Configuration {
 
 	private boolean showCommandButtonsTop = false;
 
-	int frameState = Frame.MAXIMIZED_BOTH;
+	private int frameState = Frame.MAXIMIZED_BOTH;
 
-	int[] framePos = new int[2];
+	private int[] framePos = new int[2];
 
-	int[] frameSize = new int[2];
+	private int[] frameSize = new int[2];
 
 	private String logFile = null;
 
@@ -202,7 +202,7 @@ public class XMAXconfiguration extends Configuration {
 		return ti;
 	}
 	
-	public void setColorModeState(String colorMode, boolean needsave) throws XMAXException{
+	private void setColorModeState(String colorMode, boolean needsave) throws XMAXException{
 		if(colorMode.toUpperCase().equals("SEGMENT")){
 			setColorModeState(new ColorModeBySegment());
 		} else if(colorMode.toUpperCase().equals("GAP")){

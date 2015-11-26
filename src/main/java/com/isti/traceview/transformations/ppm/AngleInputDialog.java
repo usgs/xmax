@@ -10,8 +10,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
-public class AngleInputDialog extends JDialog implements PropertyChangeListener {
+class AngleInputDialog extends JDialog implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane;
@@ -22,7 +23,7 @@ public class AngleInputDialog extends JDialog implements PropertyChangeListener 
 		return angle;
 	}
 
-	public AngleInputDialog(Dialog f, double value) {
+	AngleInputDialog(Dialog f, double value) {
 		super(f, "Angle Input Dialog", true);
 		JPanel panel = new JPanel();
 		textField = new JTextField();
@@ -32,13 +33,14 @@ public class AngleInputDialog extends JDialog implements PropertyChangeListener 
 		panel.add(textField);
 		optionPane = new JOptionPane(panel, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		setContentPane(optionPane);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		optionPane.addPropertyChangeListener(this);
 		pack();
 		setLocationRelativeTo(f);
 		setVisible(true);
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
 		if (isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {

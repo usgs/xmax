@@ -29,11 +29,11 @@ public class TransSpectra implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransSpectra.class);
 	private static final boolean verboseDebug = false;
 	public static final String NAME = "Spectra";
-	
 
-	public int maxDataLength = 32768;
+	private int maxDataLength = 32768;
 
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+	@Override
+	public void transform(List<PlotDataProvider> input, TimeInterval timeInterval, IFilter filter, Object configuration,
 			JFrame parentFrame) {
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "Spectra computation warning",
@@ -41,7 +41,8 @@ public class TransSpectra implements ITransformation {
 		} else {
 			try {
 				@SuppressWarnings("unused")
-				ViewSpectra vs = new ViewSpectra(parentFrame, createData(input, filter, ti, parentFrame), ti);
+				ViewSpectra vs = new ViewSpectra(parentFrame, createData(input, filter, timeInterval, parentFrame),
+						timeInterval);
 			} catch (XMAXException e) {
 				if (!e.getMessage().equals("Operation cancelled")) {
 					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
@@ -51,6 +52,7 @@ public class TransSpectra implements ITransformation {
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
 
+	@Override
 	public void setMaxDataLength(int dataLength) {
 		this.maxDataLength = dataLength;
 	}
@@ -60,7 +62,7 @@ public class TransSpectra implements ITransformation {
 	 *            List of traces to process
 	 * @param filter
 	 *            Filter applied to traces before processing spectra
-	 * @param ti
+	 * @param timeInterval
 	 *            Time interval to define processed range
 	 * @param parentFrame
 	 *            parent frame
@@ -69,12 +71,12 @@ public class TransSpectra implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame)
-			throws XMAXException {
+	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval timeInterval,
+			JFrame parentFrame) throws XMAXException {
 		List<Spectra> dataset = new ArrayList<Spectra>();
 		for (PlotDataProvider channel : input) {
 			double sampleRate = 0;
-			List<Segment> segments = channel.getRawData(ti);
+			List<Segment> segments = channel.getRawData(timeInterval);
 			int[] intData = new int[0];
 			if (segments.size() > 0) {
 				long segment_end_time = 0;
@@ -89,19 +91,20 @@ public class TransSpectra implements ITransformation {
 						throw new XMAXException("You have gap in the data for channel " + channel.getName());
 					}
 					segment_end_time = segment.getEndTime().getTime();
-					intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
+					intData = IstiUtilsMath.padArray(intData, segment.getData(timeInterval).data);
 				}
 
 			} else {
 				throw new XMAXException("You have no data for channel " + channel.getName());
 			}
-			int ds;
+			int dataSize;
 			if (intData.length > maxDataLength) {
-				ds = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(maxDataLength)).intValue())).intValue();
+				dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(maxDataLength)).intValue())).intValue();
 				((XMAXframe) parentFrame).getStatusBar().setMessage(
 						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
 			} else {
-				ds = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(intData.length)).intValue())).intValue();
+				dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(intData.length)).intValue()))
+						.intValue();
 			}
 			/*
 			 * // this code shows pop-up if point count is exceeded int ds = new
@@ -120,17 +123,17 @@ public class TransSpectra implements ITransformation {
 			 * ; } } else if (userAnswer == JOptionPane.CANCEL_OPTION) { throw
 			 * new XMAXException("Operation cancelled"); } }
 			 */
-			logger.debug("data size = " + ds);
-			int[] data = new int[ds];
-			for (int i = 0; i < ds; i++) {
+			logger.debug("data size = " + dataSize);
+			int[] data = new int[dataSize];
+			for (int i = 0; i < dataSize; i++) {
 				data[i] = intData[i];
 			}
 			if (filter != null) {
 				data = new FilterFacade(filter, channel).filter(data);
 			}
 			try {
-				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(), ti.getStartTime(), channel,
-						verboseDebug);
+				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
+						timeInterval.getStartTime(), channel, verboseDebug);
 				dataset.add(spectra);
 			} catch (TraceViewException e) {
 				logger.error("TraceViewException:", e);

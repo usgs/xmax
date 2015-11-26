@@ -12,9 +12,9 @@ import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.renderer.DefaultPolarItemRenderer;
 import org.jfree.data.xy.XYDataset;
 
-public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
+class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 	private static final long serialVersionUID = 1L;
-	double rulerTheta = 0.0;
+	private double rulerTheta = 0.0;
 
 	public void setRulerAngle(double theta) {
 		this.rulerTheta = theta;
@@ -42,6 +42,7 @@ public class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 	 * @param seriesIndex
 	 *            the series index.
 	 */
+	@Override
 	public void drawSeries(Graphics2D g2, Rectangle2D dataArea, PlotRenderingInfo info, PolarPlot plot,
 			XYDataset dataset, int seriesIndex) {
 		GeneralPath gp = new GeneralPath();

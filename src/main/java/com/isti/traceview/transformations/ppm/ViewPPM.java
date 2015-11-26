@@ -1,6 +1,5 @@
 package com.isti.traceview.transformations.ppm;
 
-import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -11,6 +10,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -27,14 +27,14 @@ import com.isti.traceview.filters.IFilter;
  * 
  * @author Max Kokoulin
  */
-public class ViewPPM extends JDialog implements PropertyChangeListener {
+class ViewPPM extends JDialog implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	private JOptionPane optionPane;
 	private static PPMPolarItemRenderer renderer = new PPMPolarItemRenderer();
 	private static TraceViewChartPanel cp = null;
 
-	public ViewPPM(Frame owner, XYDataset dataset, TimeInterval ti, String annotation, IFilter filter) {
+	ViewPPM(Frame owner, XYDataset dataset, TimeInterval ti, String annotation, IFilter filter) {
 		super(owner, "Particle Motion", true);
 		Object[] options = { "Close", "Print", "Enter Angle", "+1", "+5", "+30", "-1", "-5", "-30" };
 		// Create the JOptionPane.
@@ -43,8 +43,9 @@ public class ViewPPM extends JDialog implements PropertyChangeListener {
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				/*
 				 * Instead of directly closing the window, we're going to change
@@ -58,6 +59,7 @@ public class ViewPPM extends JDialog implements PropertyChangeListener {
 		setVisible(true);
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
 		if (isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
@@ -107,7 +109,7 @@ public class ViewPPM extends JDialog implements PropertyChangeListener {
 	}
 
 	private double getAngle() {
-		AngleInputDialog ai = new AngleInputDialog((Dialog) this, renderer.getRulerAngle());
+		AngleInputDialog ai = new AngleInputDialog(this, renderer.getRulerAngle());
 		double ret = ai.getAngle();
 		return ret;
 	}

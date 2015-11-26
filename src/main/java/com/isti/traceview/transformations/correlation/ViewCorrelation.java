@@ -21,6 +21,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
@@ -43,18 +44,18 @@ import com.isti.traceview.processing.IstiUtilsMath;
  * 
  * @author Max Kokoulin
  */
-public class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemListener {
+class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(ViewCorrelation.class);
 	private static DecimalFormat dFormat = new DecimalFormat("###.###");
 
-	List<double[]> data = null;
-	String seriesName = null;
-	double sampleRate = 0.0;
+	private List<double[]> data = null;
+	private String seriesName = null;
+	private double sampleRate = 0.0;
 	private JOptionPane optionPane;
-	XYPlot plot = null;
-	TraceViewChartPanel cp = null;
+	private XYPlot plot = null;
+	private TraceViewChartPanel chartPanel = null;
 	private JPanel optionP;
 	private JLabel ampMaxL;
 	private JLabel lagTimeL;
@@ -72,8 +73,8 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 	 * @param sampleRate
 	 *            sample rate of all traces (should be same)
 	 */
-	public ViewCorrelation(Frame owner, List<double[]> data, List<String> channelNames, double sampleRate,
-			TimeInterval ti) {
+	ViewCorrelation(Frame owner, List<double[]> data, List<String> channelNames, double sampleRate,
+			TimeInterval timeInterval) {
 		super(owner, "Correlation", true);
 		this.data = data;
 		Object[] options = { "Close", "Print" };
@@ -84,13 +85,14 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 		}
 		this.sampleRate = sampleRate;
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createChartPanel(filterData(data), ti), JOptionPane.PLAIN_MESSAGE,
+		optionPane = new JOptionPane(createChartPanel(filterData(data), timeInterval), JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.CLOSED_OPTION, null, options, options[0]);
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				/*
 				 * Instead of directly closing the window, we're going to change
@@ -104,6 +106,7 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 		setVisible(true);
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
 		if (isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
@@ -116,12 +119,12 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 				setVisible(false);
 				dispose();
 			} else if (value.equals("Print")) {
-				cp.createChartPrintJob();
+				chartPanel.createChartPrintJob();
 			}
 		}
 	}
 
-	private JPanel createChartPanel(XYDataset dataset, TimeInterval ti) {
+	private JPanel createChartPanel(XYDataset dataset, TimeInterval timeInterval) {
 		JPanel ret = new JPanel();
 		BoxLayout retLayout = new BoxLayout(ret, javax.swing.BoxLayout.Y_AXIS);
 		ret.setLayout(retLayout);
@@ -134,17 +137,18 @@ public class ViewCorrelation extends JDialog implements PropertyChangeListener, 
 		);
 
 		TextTitle title = new TextTitle("Start time: "
-				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-				+ ", Duration: " + ti.convert(), ret.getFont());
+				+ TimeInterval.formatDate(timeInterval.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+				+ ", Duration: " + timeInterval.convert(), ret.getFont());
 		chart.setTitle(title);
 		plot = (XYPlot) chart.getPlot();
-		cp = new TraceViewChartPanel(chart, true);
-		ret.add(cp);
+		chartPanel = new TraceViewChartPanel(chart, true);
+		ret.add(chartPanel);
 		ret.add(getOptionP());
 		return ret;
 	}
 
 	/** Listens to the check box. */
+	@Override
 	public void itemStateChanged(ItemEvent e) {
 		plot.setDataset(filterData(data));
 	}

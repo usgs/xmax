@@ -1,7 +1,6 @@
 package com.isti.xmax.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -77,7 +76,6 @@ import com.isti.traceview.commands.SelectTimeCommand;
 import com.isti.traceview.commands.SelectValueCommand;
 import com.isti.traceview.commands.SetScaleModeCommand;
 import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.FilterBP;
 import com.isti.traceview.filters.FilterDYO;
