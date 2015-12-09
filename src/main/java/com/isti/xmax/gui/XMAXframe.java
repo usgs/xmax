@@ -472,12 +472,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			constraints.gridx = 3;
 			constraints.gridy = 0;
 			constraints.weightx = 0.2;
-			southPanel.add(scalingPanel, constraints);
+			southPanel.add(filterPanel, constraints);
 			constraints.gridwidth = 1;
 			constraints.gridx = 4;
 			constraints.gridy = 0;
 			constraints.weightx = 0.2;
-			southPanel.add(filterPanel, constraints);
+			southPanel.add(scalingPanel, constraints);
 			
 		}
 
