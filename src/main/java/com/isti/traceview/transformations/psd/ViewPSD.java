@@ -377,7 +377,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressLi
 	private MyOptionPane createChartPanel(XYDataset dataset, List<PlotDataProvider> input) {
 		chart = ChartFactory.createXYLineChart(null, // title
 				"Period, s", // x-axis label
-				"Power spectra density", // y-axis label
+				"Power spectra density (DB relative to 1m/s\u00B2)", // y-axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, // orientation
 				true, // create legend?

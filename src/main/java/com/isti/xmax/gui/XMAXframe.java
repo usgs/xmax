@@ -446,7 +446,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			JPanel navigationPanel = getNavigationButtonPanel();
 			navigationPanel.setBorder(BorderFactory.createEmptyBorder());
 			JPanel selectPanel = getSelectionButtonPanel();
-			selectPanel.setBorder(BorderFactory.createTitledBorder("Select"));
+			selectPanel.setBorder(BorderFactory.createTitledBorder("Misc"));
 			JPanel scalingPanel = getScalingButtonPanel();
 			scalingPanel.setBorder(BorderFactory.createTitledBorder("Scaling"));
 			JPanel analysisPanel = getAnalysisButtonPanel();
@@ -1934,18 +1934,21 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			if(graphPanel.getColorMode() instanceof ColorModeBW){
-				graphPanel.setColorMode(new ColorModeBySegment());
-				bySegmentMenuRadioBt.setSelected(true);
-			}
-			else if(graphPanel.getColorMode() instanceof ColorModeBySegment){
 				graphPanel.setColorMode(new ColorModeByGap());
 				byGapMenuRadioBt.setSelected(true);
+				statusBar.setMessage("Color mode by gap");
 			}
-			else if(graphPanel.getColorMode() instanceof ColorModeByGap){
+			else if(graphPanel.getColorMode() instanceof ColorModeBySegment){
 				graphPanel.setColorMode(new ColorModeBW());
 				BWMenuRadioBt.setSelected(true);
+				statusBar.setMessage("Color mode black & white");
 			}
-			statusBar.setMessage("");
+			else if(graphPanel.getColorMode() instanceof ColorModeByGap){
+				graphPanel.setColorMode(new ColorModeBySegment());
+				bySegmentMenuRadioBt.setSelected(true);
+				statusBar.setMessage("Color mode by segment");
+			}
+			
 		}
 	}
 	
@@ -3075,6 +3078,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton deselectAllButton = null;
 		private JButton demeanButton = null;
 		private JButton offsetButton = null;
+		private JButton colormodeButton = null;
 		
 		public SelectionButtonPanel() {
 			super();
@@ -3088,6 +3092,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getDeselectAllButton(), null);
 			add(getDemeanButton(), null);
 			add(getOffsetButton(), null);
+			add(getColorModeButton(), null);
+		}
+		
+		private JButton getColorModeButton(){
+			if(colormodeButton == null){
+				colormodeButton = new JButton("Switch color mode");
+				colormodeButton.addActionListener(this);
+			}
+			return colormodeButton;
 		}
 		
 		private JButton getSelectButton() {
@@ -3151,6 +3164,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    }
 		    else if (src == deselectAllButton){
 		    	action = actionMap.get("Deselect All");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == colormodeButton){
+		    	action = actionMap.get("Color mode");
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 		}
