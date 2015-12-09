@@ -1835,7 +1835,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					executor.shutdown();
 				}
 			} finally {
-				statusBar.setMessage("");
+				if(graphPanel.getRemoveGain().removestate == true)
+					statusBar.setMessage("Removed Gain");
+				else
+					statusBar.setMessage("");
 				setWaitCursor(false);
 			}
 		}
@@ -3163,7 +3166,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton xhairScaleButton = null;
 		private JButton xlimScaleButton = null; 
 		private JButton ylimScaleButton = null; 
-		private JToggleButton removeGainButton = null; 
+		private JButton removeGainButton = null; 
 		
 		public ScalingButtonPanel() {
 			super();
@@ -3221,9 +3224,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			return ylimScaleButton;
 		}
 		
-		private JToggleButton getRemoveGainButton() {
+		private JButton getRemoveGainButton() {
 			if (removeGainButton == null) {
-				removeGainButton = new JToggleButton("Remove Gain");
+				removeGainButton = new JButton("Remove Gain");
 				removeGainButton.addActionListener(this);
 			}
 			return removeGainButton;
