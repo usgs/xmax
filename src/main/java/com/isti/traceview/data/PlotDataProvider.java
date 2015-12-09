@@ -29,6 +29,7 @@ import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.ColorModeBySource;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.processing.FilterFacade;
+import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.Rotation;
 
 /**
@@ -137,11 +138,14 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @throws TraceViewException if thrown in {@link com.isti.traceview.processing.Rotation#rotate(PlotDataProvider, TimeInterval, int, IFilter, IColorModeState)}
 	 */
 	public PlotData getPlotData(TimeInterval ti, int pointCount,
-			Rotation rotation, IFilter filter, IColorModeState colorMode)
+			Rotation rotation, IFilter filter, RemoveGain rg, IColorModeState colorMode)
 			throws TraceViewException {
-		if (rotation == null) {
+		if (rotation == null && rg == null) {
 			return getPlotData(ti, pointCount, filter, colorMode);
-		} else {
+		} else if (rg != null){
+			return rg.removegain(this, ti, pointCount, filter, colorMode);
+		}
+		else {
 			return rotation.rotate(this, ti, pointCount, filter, colorMode);
 		}
 	}
@@ -449,7 +453,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		logger.debug("pixelizing end " + this);
 		return pointSet;
 	}
-
 
 	/**
 	 * @param sps

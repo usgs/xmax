@@ -26,6 +26,7 @@ import com.isti.traceview.common.UniqueList;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.Rotation;
 
 import java.text.SimpleDateFormat;
@@ -234,6 +235,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	
 	/** The rotation. */
 	private Rotation rotation = null;
+	
+	/** The gain */
+	private RemoveGain gain = new RemoveGain(false);
 
 	/** Visible earthquakes to draw on the graphs. */
 	private Set<IEvent> selectedEarthquakes = null; // @jve:decl-index=0:
@@ -1066,6 +1070,30 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	public Rotation getRotation() {
 		return rotation;
+	}
+	
+	/**
+	 * Sets gain factor to scale data by.
+	 * 
+	 * @param gain
+	 *            gain to set
+	 */
+	public void setRemoveGainState(RemoveGain gain) {
+		
+			drawAreaPanel.removeAll();
+			for (ChannelView cv: channelShowSet) {
+				drawAreaPanel.add(cv);
+			}
+			select = false;
+			overlay = false;
+			this.gain = gain;
+			observable.setChanged();
+			observable.notifyObservers("REMOVE GAIN");
+			forceRepaint();	
+	}
+	
+	public RemoveGain getRemoveGain(){
+		return this.gain;
 	}
 	
 	/**

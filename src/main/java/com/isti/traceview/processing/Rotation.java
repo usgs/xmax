@@ -173,7 +173,7 @@ public class Rotation {
 			throws TraceViewException {
 		PlotData[] tripletPlotData = new PlotData[3];
 		char channelType = channel.getType();
-	PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter, colorMode);
+		PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter, null, colorMode);
 		PlotData ret = new PlotData(channel.getName(), channel.getColor());
 		if (channelType == 'E' || channelType == '2') {
 			tripletPlotData[0] = toProcess;
@@ -303,6 +303,13 @@ public class Rotation {
 						bottom = rotatedCubicle[j][index][0];
 					}
 				}
+				System.out.println("top = " + top);
+				System.out.println("bottom = " + bottom);
+				System.out.println("value = " + mean[index][0]);
+				System.out.println("segment num = " + toProcess.getPixels().get(i)[0].getSegmentNumber());
+				System.out.println("raw data provider num = " + toProcess.getPixels().get(i)[0].getRawDataProviderNumber());
+				System.out.println("Continue Area Number = " + toProcess.getPixels().get(i)[0].getContinueAreaNumber());
+				System.out.println("Events = " + toProcess.getPixels().get(i)[0].getEvents());
 				pdp = new PlotDataPoint(top, bottom, mean[index][0], toProcess.getPixels().get(i)[0].getSegmentNumber(), 
 																	 toProcess.getPixels().get(i)[0].getRawDataProviderNumber(), 
 																	 toProcess.getPixels().get(i)[0].getContinueAreaNumber(), 
@@ -485,7 +492,7 @@ public class Rotation {
 
 	private static PlotData getComplementaryPlotData(PlotDataProvider channel, char channelType, TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode)
 			throws TraceViewException {
-		return getComplementaryChannel(channel, channelType).getPlotData(ti, pointCount, null, filter, colorMode);
+		return getComplementaryChannel(channel, channelType).getPlotData(ti, pointCount, null, filter, null, colorMode);
 	}
 
 	/**

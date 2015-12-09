@@ -354,12 +354,12 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			// lg.debug("processing channel: " + channel);
 			PlotData data = null;
 			try {
-				data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getRotation(), graphPanel.getFilter(), graphPanel.getColorMode());
+				data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getRotation(), graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
 			} catch (TraceViewException e) {
 				graphPanel.setRotation(null);
 				JOptionPane.showMessageDialog(TraceView.getFrame(), e, "Rotation warning", JOptionPane.WARNING_MESSAGE);
 				try {
-					data = channel.getPlotData(graphPanel.getTimeRange(), width, null, graphPanel.getFilter(), graphPanel.getColorMode());
+					data = channel.getPlotData(graphPanel.getTimeRange(), width, null, graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
 				} catch (TraceViewException e1) {
 					// do nothing
 					logger.error("TraceViewException:", e1);	

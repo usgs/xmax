@@ -42,6 +42,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -69,6 +70,7 @@ import com.isti.traceview.IUndoableCommand;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.commands.OverlayCommand;
+import com.isti.traceview.commands.RemoveGainCommand;
 import com.isti.traceview.commands.RotateCommand;
 import com.isti.traceview.commands.SaveAllDataCommand;
 import com.isti.traceview.commands.SelectCommand;
@@ -95,6 +97,7 @@ import com.isti.traceview.gui.OffsetModeEnabled;
 import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.gui.ScaleModeCom;
 import com.isti.traceview.gui.ScaleModeXhair;
+import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.traceview.transformations.correlation.TransCorrelation;
@@ -259,6 +262,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		action = new ScaleModeComAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new ScaleModeXHairAction();
+		actionMap.put(action.getValue(Action.NAME), action);
+		action = new RemoveGainAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new ShowBigCursorAction();
 		actionMap.put(action.getValue(Action.NAME), action);
@@ -1803,6 +1808,38 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			statusBar.setMessage("");
 		}
 	}
+	
+	class RemoveGainAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
+		public RemoveGainAction() {
+			super();
+			putValue(Action.NAME, "Remove gain");
+			putValue(Action.SHORT_DESCRIPTION, "RG");
+			putValue(Action.LONG_DESCRIPTION, "Removes gain from a trace by division.");
+			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			setWaitCursor(true);
+			try {
+				if (e.getActionCommand().equals("Remove gain")) {
+					// Create Runnable RemoveGainCommand obj	
+					RemoveGainCommand removeGainTask = new RemoveGainCommand(graphPanel, new RemoveGain(!graphPanel.getRemoveGain().removestate));
+	
+					// Create ExecuteCommand obj for executing Runnable
+					ExecuteCommand executor = new ExecuteCommand(removeGainTask);
+					executor.initialize();
+					executor.start();
+					executor.shutdown();
+				}
+			} finally {
+				statusBar.setMessage("");
+				setWaitCursor(false);
+			}
+		}
+	}
 
 	class ShowBigCursorAction extends AbstractAction implements Action {
 
@@ -2624,6 +2661,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				if ((currentFilter != null) && Objects.equals(currentFilter.getName(), pluginId)) {
 					graphPanel.setFilter(null);
 					setFilterMenuItem(null);
+					setFilterButton(null);
 					filterBG.clearSelection();
 				} else {
 					IFilter filter = XMAX.getFilter(pluginId);
@@ -2631,6 +2669,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						graphPanel.setFilter(filter);
 						if(graphPanel.getFilter()!=null && graphPanel.getFilter().equals(filter)){
 							setFilterMenuItem(pluginId);
+							setFilterButton(pluginId);
 						}
 						if(graphPanel.getFilter()==null){
 							filterBG.clearSelection();
@@ -2638,6 +2677,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					} else {
 						graphPanel.setFilter(null);
 						setFilterMenuItem(null);
+						setFilterButton(null);
 						filterBG.clearSelection();
 						filter = null;
 					}
@@ -2669,6 +2709,31 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 				}
 			}
+		}
+		
+		/**
+		 * Selects the correct filter button group ToggleButton based on filters menu selection.
+		 * @param pluginId
+		 */
+		private void setFilterButton(String pluginId) {
+			for(int i = 0; i < getFilterButtonPanel().bg.getButtonCount(); i++){
+				if (pluginId == null) {
+					getFilterButtonPanel().bg.clearSelection();
+				}
+				else if(pluginId == "LP"){
+					getFilterButtonPanel().lowPassButton.setSelected(true);
+				}
+				else if(pluginId == "HP"){
+					getFilterButtonPanel().highPassButton.setSelected(true);
+				}
+				else if(pluginId == "BP"){
+					getFilterButtonPanel().bandPassButton.setSelected(true);
+				}
+				else if(pluginId == "DYO"){
+					getFilterButtonPanel().dyoFilterButton.setSelected(true);
+				}
+			}
+				
 		}
 	}
 
@@ -3098,6 +3163,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton xhairScaleButton = null;
 		private JButton xlimScaleButton = null; 
 		private JButton ylimScaleButton = null; 
+		private JToggleButton removeGainButton = null; 
 		
 		public ScalingButtonPanel() {
 			super();
@@ -3111,6 +3177,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getCommonScaleButton(), null);
 			add(getYLimScaleButton(), null);
 			add(getXHairScaleButton(), null);
+			add(getRemoveGainButton(), null);
 			
 		}
 		
@@ -3154,6 +3221,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			return ylimScaleButton;
 		}
 		
+		private JToggleButton getRemoveGainButton() {
+			if (removeGainButton == null) {
+				removeGainButton = new JToggleButton("Remove Gain");
+				removeGainButton.addActionListener(this);
+			}
+			return removeGainButton;
+		}
+		
 		public void actionPerformed(ActionEvent evt) {
 		    Object src = evt.getSource();
 		    Action action = null; 
@@ -3175,6 +3250,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		    }
 		    else if (src == ylimScaleButton){
 		    	action = actionMap.get("Y limits");
+		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		    }
+		    else if (src == removeGainButton){
+		    	action = actionMap.get("Remove gain");
 		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 		    }
 	    }

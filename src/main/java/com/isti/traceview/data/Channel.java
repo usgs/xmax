@@ -87,6 +87,8 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	
 	private Status status = Status.DATA;
 	
+	private double sensitivity = 1.0;
+	
 	static {
 		COMPDATA = new ArrayList<Character>();
 		COMPDATA.add('Z');
@@ -181,10 +183,11 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	public double getSampleRate() {
 		return sampleRate;
 	}
-
+	
 	public void setSampleRate(double sampleRate) {
 		this.sampleRate = sampleRate;
 	}
+	
 
 	@SuppressWarnings("unused")	
 	private String[] getArray(String str) {
