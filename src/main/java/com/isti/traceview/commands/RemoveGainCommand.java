@@ -40,6 +40,6 @@ public class RemoveGainCommand extends AbstractUndoableCommand {
 	}
 
 	public boolean canUndo() {
-		return true;
+		return false;
 	}
 }

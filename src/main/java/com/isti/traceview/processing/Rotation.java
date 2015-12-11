@@ -170,7 +170,7 @@ public class Rotation {
 	 */
 	public PlotData rotate(PlotDataProvider channel, TimeInterval ti,
 			int pointCount, IFilter filter, IColorModeState colorMode)
-			throws TraceViewException {
+			throws TraceViewException, RemoveGainException {
 		PlotData[] tripletPlotData = new PlotData[3];
 		char channelType = channel.getType();
 		PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter, null, colorMode);
@@ -491,7 +491,7 @@ public class Rotation {
 	}
 
 	private static PlotData getComplementaryPlotData(PlotDataProvider channel, char channelType, TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode)
-			throws TraceViewException {
+			throws TraceViewException, RemoveGainException {
 		return getComplementaryChannel(channel, channelType).getPlotData(ti, pointCount, null, filter, null, colorMode);
 	}
 

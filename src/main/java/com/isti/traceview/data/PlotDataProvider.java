@@ -30,6 +30,7 @@ import com.isti.traceview.gui.ColorModeBySource;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.RemoveGain;
+import com.isti.traceview.processing.RemoveGainException;
 import com.isti.traceview.processing.Rotation;
 
 /**
@@ -139,10 +140,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 */
 	public PlotData getPlotData(TimeInterval ti, int pointCount,
 			Rotation rotation, IFilter filter, RemoveGain rg, IColorModeState colorMode)
-			throws TraceViewException {
-		if (rotation == null && rg == null) {
+			throws TraceViewException, RemoveGainException {
+		if ((rotation == null && rg == null) || (rg != null && rg.removestate == false)) {
 			return getPlotData(ti, pointCount, filter, colorMode);
-		} else if (rg != null){
+		} else if (rg != null && rg.removestate == true){
 			return rg.removegain(this, ti, pointCount, filter, colorMode);
 		}
 		else {

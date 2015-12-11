@@ -70,15 +70,20 @@ public class RemoveGain {
 	 */
 	public PlotData removegain(PlotDataProvider channel, TimeInterval ti,
 			int pointCount, IFilter filter, IColorModeState colorMode)
-			throws TraceViewException {
+			throws TraceViewException, RemoveGainException{
 		double minFreqValue = 0.0001;
 		double maxFreqValue = 500.0 / channel.getRawData().get(0).getSampleRate();
 		int numberFreqs = 500;
 		double sensitivity = 1;
 		if(removestate){
-			RunEvalResp evalResp = new RunEvalResp(false, false);
-			evalResp.generateResponse(minFreqValue, maxFreqValue, numberFreqs, ti.getStartTime(), new StringReader(channel.getResponse().getContent()));
-			sensitivity = evalResp.sensitivity; 
+			try{
+				RunEvalResp evalResp = new RunEvalResp(false, false);
+				evalResp.generateResponse(minFreqValue, maxFreqValue, numberFreqs, ti.getStartTime(), new StringReader(channel.getResponse().getContent()));
+				sensitivity = evalResp.sensitivity; 
+			}
+			catch(NullPointerException e){
+				throw new RemoveGainException("Unable to remove gain. No response found.");
+			}
 		}
 		PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter,  null, colorMode);
 		PlotData ret = new PlotData(channel.getName(), channel.getColor());

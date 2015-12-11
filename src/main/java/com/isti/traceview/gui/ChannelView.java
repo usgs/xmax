@@ -27,6 +27,7 @@ import com.isti.traceview.data.PlotData;
 import com.isti.traceview.data.PlotDataPoint;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
+import com.isti.traceview.processing.RemoveGainException;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -39,7 +40,9 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jfree.chart.axis.NumberAxis;
@@ -342,14 +345,14 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	/**
 	 * Prepares pixelized data for PlotDataProviders to draw. Should be called before paint.
 	 */
-	public synchronized void updateData() {
+	public synchronized String updateData() {
 
 		int width = graphAreaPanel.getWidth();// - graphAreaPanel.getInsets().left -
 		
 		// graphAreaPanel.getInsets().right;
 		logger.debug("Updating data " + this + "Width = " + width);
 		graphs = new ArrayList<PlotData>();
-
+		List<String> errorChannels = new ArrayList<String>();
 		for (PlotDataProvider channel: plotDataProviders) {
 			// lg.debug("processing channel: " + channel);
 			PlotData data = null;
@@ -360,7 +363,15 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				JOptionPane.showMessageDialog(TraceView.getFrame(), e, "Rotation warning", JOptionPane.WARNING_MESSAGE);
 				try {
 					data = channel.getPlotData(graphPanel.getTimeRange(), width, null, graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
-				} catch (TraceViewException e1) {
+				} catch (TraceViewException | RemoveGainException e1) {
+					// do nothing
+					logger.error("TraceViewException:", e1);	
+				}
+			} catch (RemoveGainException e) {
+				try {
+					errorChannels.add(channel.getNetworkName()+"/"+channel.getStation()+"/"+channel.getLocationName()+"/"+channel.getChannelName() + " - " + e.getMessage());
+					data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getRotation(), graphPanel.getFilter(), null, graphPanel.getColorMode());
+				} catch (TraceViewException | RemoveGainException e1) {
 					// do nothing
 					logger.error("TraceViewException:", e1);	
 				}
@@ -369,11 +380,18 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			graphs.add(data);
 			meanValue = data.getMeanValue();
 		}
+		
 		Collections.sort(graphs);
+		
+		if(errorChannels.size() > 0)
+			return errorChannels.get(0);
+		else
+			return "";
+
 	}
 
 	/**
-	 * Cistomized method to paint events.
+	 * Customized method to paint events.
 	 */
 	public void paintCustomEvent(Graphics g, EventWrapper eventWrapper, int x, int ymax, int ymin) {
 	}

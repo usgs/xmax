@@ -2072,18 +2072,22 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			LinkedList<ICommand> history = CommandHandler.getInstance().getCommandHistory();
-			ICommand command = history.getLast();
-			if (command instanceof IUndoableCommand) {
-				IUndoableCommand undCommand = (IUndoableCommand) command;
-				try {	
-					if (undCommand.canUndo()) {
-						undCommand.undo();
+			if(!history.isEmpty())
+			{
+				ICommand command = history.getLast();
+				if (command instanceof IUndoableCommand) {
+					IUndoableCommand undCommand = (IUndoableCommand) command;
+					try {	
+						if (undCommand.canUndo()) {
+							undCommand.undo();
+							history.removeLast();
+						}
+					} catch (UndoException e1) {
+						logger.error("UndoException:", e1);
 					}
-				} catch (UndoException e1) {
-					logger.error("UndoException:", e1);
 				}
+				statusBar.setMessage("");
 			}
-			statusBar.setMessage("");
 		}
 	}
 	
@@ -3183,7 +3187,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton xhairScaleButton = null;
 		private JButton xlimScaleButton = null; 
 		private JButton ylimScaleButton = null; 
-		private JButton removeGainButton = null; 
+		private JToggleButton removeGainButton = null; 
 		
 		public ScalingButtonPanel() {
 			super();
@@ -3241,9 +3245,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			return ylimScaleButton;
 		}
 		
-		private JButton getRemoveGainButton() {
+		private JToggleButton getRemoveGainButton() {
 			if (removeGainButton == null) {
-				removeGainButton = new JButton("Remove Gain");
+				removeGainButton = new JToggleButton("Remove Gain");
 				removeGainButton.addActionListener(this);
 			}
 			return removeGainButton;

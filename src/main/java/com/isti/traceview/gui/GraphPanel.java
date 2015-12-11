@@ -3,6 +3,7 @@ package com.isti.traceview.gui;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -10,6 +11,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.MouseInputListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
@@ -260,7 +262,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	
 	/** if we need show block header as tooltip. */
 	private boolean isShowBlockHeader = false;
-
+	
 	/**
 	 * Default constructor.
 	 */
@@ -1381,7 +1383,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					if (initialPaint) {
 						System.out.print("Pixelizing channel data...");
 					}
-						
+					
+					List<String> channelsWithErrors = new ArrayList<String>();
 					for (Component component: drawAreaPanel.getComponents()) {
 						ChannelView view = (ChannelView) component;
 
@@ -1396,7 +1399,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						if (initialPaint) {
 							System.out.print("...");
 						}
-						view.updateData();	
+						String errorChannel = view.updateData();
+						if(errorChannel != "")
+							channelsWithErrors.add(errorChannel);
+						
+					}
+					if(channelsWithErrors.size() > 0){
+						JOptionPane.showMessageDialog(TraceView.getFrame(), "Error with:" + "\n" + StringUtils.join(channelsWithErrors, "\n"), "Warning", JOptionPane.WARNING_MESSAGE);
 					}
 					if (initialPaint) {
 						System.out.print("\n");
