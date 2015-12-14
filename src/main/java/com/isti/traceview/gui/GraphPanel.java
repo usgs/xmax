@@ -3,11 +3,11 @@ package com.isti.traceview.gui;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.MouseInputListener;
 
@@ -59,6 +59,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * This is graphics container; it contains a list of ChannelView(s) (panels) and renders them as a
@@ -1405,7 +1406,12 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						
 					}
 					if(channelsWithErrors.size() > 0){
-						JOptionPane.showMessageDialog(TraceView.getFrame(), "Error with:" + "\n" + StringUtils.join(channelsWithErrors, "\n"), "Warning", JOptionPane.WARNING_MESSAGE);
+						SwingUtilities.invokeLater(new Runnable() {
+						    public void run() {
+						    	JOptionPane.showMessageDialog(TraceView.getFrame(), "Error with:" + "\n" + StringUtils.join(channelsWithErrors, "\n"), "Warning", JOptionPane.WARNING_MESSAGE);
+						    }
+						  });
+	
 					}
 					if (initialPaint) {
 						System.out.print("\n");
