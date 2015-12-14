@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
@@ -395,7 +396,11 @@ public class Rotation {
 			@SuppressWarnings("unused")	
 			PlotDataProvider[] triplet = getChannelsTriplet(channel, ti);
 		} catch (TraceViewException e) {
-			JOptionPane.showMessageDialog(TraceView.getFrame(), e, "Rotation warning", JOptionPane.WARNING_MESSAGE);
+			SwingUtilities.invokeLater(new Runnable() {
+			    public void run() {
+					JOptionPane.showMessageDialog(TraceView.getFrame(), e, "Rotation warning", JOptionPane.WARNING_MESSAGE);
+			    }
+			  });
 			return false;
 		}
 		return true;

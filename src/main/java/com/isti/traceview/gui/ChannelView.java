@@ -360,8 +360,8 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getRotation(), graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
 			} catch (TraceViewException e) {
 				graphPanel.setRotation(null);
-				JOptionPane.showMessageDialog(TraceView.getFrame(), e, "Rotation warning", JOptionPane.WARNING_MESSAGE);
 				try {
+					errorChannels.add(channel.getNetworkName()+"/"+channel.getStation()+"/"+channel.getLocationName()+"/"+channel.getChannelName() + " - " + e.getMessage());
 					data = channel.getPlotData(graphPanel.getTimeRange(), width, null, graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
 				} catch (TraceViewException | RemoveGainException e1) {
 					// do nothing

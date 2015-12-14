@@ -4,6 +4,7 @@ import java.util.SimpleTimeZone;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -112,7 +113,11 @@ public class TraceView {
 		if (!getJavaVersionMessage().contains("version OK")) {
 			// send warning to log
 			logger.warn(getJavaVersionMessage());
-			JOptionPane.showMessageDialog(frame, getJavaVersionMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+			SwingUtilities.invokeLater(new Runnable() {
+			    public void run() {
+					JOptionPane.showMessageDialog(frame, getJavaVersionMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+			    }
+			  });
 		}
 		frame = fr;
 	}

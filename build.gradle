@@ -3,7 +3,7 @@ apply plugin: 'eclipse'
 apply plugin: 'application'
 
 mainClassName = "com.isti.xmax.XMAX"
-version = '2.0.2'
+version = '2.0.3'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'

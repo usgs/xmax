@@ -1058,9 +1058,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						forceRepaint();
 					}
 				} else {
-					JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes on panels to set channels to rotate",
-						"Selection missing", JOptionPane.WARNING_MESSAGE);
-					forceRepaint();
+					SwingUtilities.invokeLater(new Runnable() {
+					    public void run() {
+							JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes on panels to set channels to rotate",
+									"Selection missing", JOptionPane.WARNING_MESSAGE);
+							forceRepaint();
+					    }
+					  });
 				}
 			}
 		}
@@ -1219,8 +1223,12 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				overlay.setGraphPanel(this);
 				drawAreaPanel.add(overlay);
 			} else {
-				JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for panels to overlay", "Selection missing",
-						JOptionPane.WARNING_MESSAGE);
+				SwingUtilities.invokeLater(new Runnable() {
+				    public void run() {
+						JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for panels to overlay", "Selection missing",
+								JOptionPane.WARNING_MESSAGE);
+				    }
+				  });
 			}
 		}
 		observable.setChanged();
@@ -1266,8 +1274,12 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					}
 				}
 			} else {
-				JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for panels to select", "Selection missing",
-						JOptionPane.WARNING_MESSAGE);
+				SwingUtilities.invokeLater(new Runnable() {
+				    public void run() {
+						JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for panels to select", "Selection missing",
+								JOptionPane.WARNING_MESSAGE);
+				    }
+				  });
 			}
 		}
 		observable.setChanged();
