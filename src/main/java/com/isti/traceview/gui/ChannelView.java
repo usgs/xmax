@@ -1,7 +1,21 @@
 package com.isti.traceview.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,14 +25,18 @@ import java.util.Observer;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.MouseInputListener;
 
-import com.isti.traceview.TraceView;
+import org.apache.log4j.Logger;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.data.RangeType;
+import org.jfree.ui.RectangleEdge;
+
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.common.TimeInterval;
@@ -28,32 +46,6 @@ import com.isti.traceview.data.PlotDataPoint;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.processing.RemoveGainException;
-
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.data.RangeType;
-import org.jfree.ui.RectangleEdge;
-
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 /**
  * Graphics panel to plot several traces in the same time and values coordinate axis on a single

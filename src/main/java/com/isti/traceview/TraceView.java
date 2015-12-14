@@ -30,12 +30,12 @@ public class TraceView {
 	/**
 	 * Library version label holder
 	 */
-	private static final String version = "0.69";
+	private static final String version = "2.0.3";
 
 	/**
 	 * Library version date holder
 	 */
-	private static final String releaseDate = "Apr 04 2008";
+	private static final String releaseDate = "December 2015";
 
 	/**
 	 * Library {@link Configuration} class
@@ -47,8 +47,8 @@ public class TraceView {
 	 */
 	private static DataModule dataModule = null;
 
-	private static final String MIN_JAVA_VERSION_OSX = "1.5.0";
-	private static final String MIN_JAVA_VERSION = "1.6.0";
+	private static final String MIN_JAVA_VERSION_OSX = "1.7.0";
+	private static final String MIN_JAVA_VERSION = "1.7.0";
 
 	/**
 	 * Global timezone used everywhere in library

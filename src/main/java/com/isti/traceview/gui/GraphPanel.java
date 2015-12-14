@@ -1,6 +1,34 @@
 package com.isti.traceview.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.image.MemoryImageSource;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.TimeZone;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -30,36 +58,6 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.Rotation;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.TimeZone;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.MouseEvent;
-import java.awt.image.MemoryImageSource;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * This is graphics container; it contains a list of ChannelView(s) (panels) and renders them as a

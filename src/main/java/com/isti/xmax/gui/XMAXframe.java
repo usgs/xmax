@@ -42,7 +42,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -109,9 +108,11 @@ import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.common.Pick;
 import com.isti.xmax.data.XMAXDataModule;
+
 /**
  * <p>
- * Main frame for XMAX: holds Swing GUI widgets and information about current application state.
+ * Main frame for XMAX: holds Swing GUI widgets and information about current
+ * application state.
  * </p>
  * <p>
  * Realize singleton pattern, i.e we can have only one frame in the program.
@@ -129,7 +130,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	private ButtonPanel buttonPanel = null;
 	private ScalingButtonPanel scalingButtonPanel = null;
-	private NavigationButtonPanel navigationButtonPanel = null; 
+	private NavigationButtonPanel navigationButtonPanel = null;
 	private FilterButtonPanel filterButtonPanel = null;
 	private SelectionButtonPanel selectionButtonPanel = null;
 	private AnalysisButtonPanel analysisButtonPanel = null;
@@ -166,12 +167,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JCheckBoxMenuItem overlayMenuCheckBox = null;
 	private JCheckBoxMenuItem selectMenuCheckBox = null;
 	private JCheckBoxMenuItem showBlockHeadersMenuCheckBox = null;
-	
+
 	private ButtonGroup scaleModeBG = null; // @jve:decl-index=0:
 	private JRadioButtonMenuItem scaleModeAutoMenuRadioBt = null;
 	private JRadioButtonMenuItem scaleModeComMenuRadioBt = null;
 	private JRadioButtonMenuItem scaleModeXHairMenuRadioBt = null;
-	
+
 	private JMenu colorMenu = null;
 	private ButtonGroup colorBG = null;
 	private JRadioButtonMenuItem bySegmentMenuRadioBt = null;
@@ -182,12 +183,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private ButtonGroup showCommandButtonsBG = null; // @jve:decl-index=0:
 	private JRadioButtonMenuItem commandButtonTopMenuRadioBt = null;
 	private JRadioButtonMenuItem commandButtonBottomMenuRadioBt = null;
-	
+
 	private JMenu filterMenu = null;
 	private ButtonGroup filterBG = null;
-	
+
 	private JMenu transformationMenu = null;
-	
+
 	private JMenuItem undoMenuItem = null;
 
 	private JMenu dumpMenu = null;
@@ -199,9 +200,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JMenuItem saveMseedMenuItem = null;
 
 	private JMenuItem saveASCIImenuItem = null;
-	
+
 	private JMenuItem saveSACMenuItem = null;
-	
+
 	private JMenuItem reloadMenuItem = null;
 
 	private JMenuItem printMenuItem = null;
@@ -215,7 +216,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JMenuItem aboutMenuItem = null;
 
 	private ActionMap actionMap = null;
-	
+
 	static {
 		ToolTipManager.sharedInstance().setInitialDelay(500);
 		ToolTipManager.sharedInstance().setDismissDelay(10000);
@@ -232,9 +233,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		setMinimumSize(new Dimension(400, 300));
 		setExtendedState(XMAX.getConfiguration().getFrameExtendedState());
 		// lg.debug("Java version message: " + XMAX.getJavaVersionMessage());
-		if ((getExtendedState() == Frame.MAXIMIZED_BOTH || getExtendedState() == Frame.MAXIMIZED_HORIZ || getExtendedState() == Frame.MAXIMIZED_VERT) && (XMAX.getJavaVersionMessage().toLowerCase().contains("linux") || XMAX.getJavaVersionMessage().toLowerCase().contains("sunos"))
-			     || XMAX.getJavaVersionMessage().toLowerCase().contains("solaris")) {
-			// Manual size setting for Linux and Solaris, setExtendedState doesn't work
+		if ((getExtendedState() == Frame.MAXIMIZED_BOTH || getExtendedState() == Frame.MAXIMIZED_HORIZ
+				|| getExtendedState() == Frame.MAXIMIZED_VERT)
+				&& (XMAX.getJavaVersionMessage().toLowerCase().contains("linux")
+						|| XMAX.getJavaVersionMessage().toLowerCase().contains("sunos"))
+				|| XMAX.getJavaVersionMessage().toLowerCase().contains("solaris")) {
+			// Manual size setting for Linux and Solaris, setExtendedState
+			// doesn't work
 			GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			GraphicsDevice[] devices = graphicsEnvironment.getScreenDevices();
 			GraphicsDevice gd = devices[0];
@@ -254,7 +259,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		action = new OverlayAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new SelectChannelsAction();
-		actionMap.put(action.getValue(Action.NAME), action);		
+		actionMap.put(action.getValue(Action.NAME), action);
 		action = new DeselectAllAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new ScaleModeAutoAction();
@@ -340,15 +345,16 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		// adding actions for filter plugins
 		for (Class<? extends IFilter> curClass : XMAX.getFilters()) {
 			try {
-				action = new FilterAction((String)curClass.getField("NAME").get(null), (String)curClass.getField("NAME").get(null));
+				action = new FilterAction((String) curClass.getField("NAME").get(null),
+						(String) curClass.getField("NAME").get(null));
 				actionMap.put(action.getValue(Action.NAME), action);
 			} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e1) {
 				logger.error("Filter Initializing failed");
 			}
 		}
 		initialize();
-		CommandHandler.getInstance().addObserver(this);	
-		addMouseListener(new MouseListener(){
+		CommandHandler.getInstance().addObserver(this);
+		addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
 			}
 
@@ -367,24 +373,25 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 		});
 
-		addComponentListener(new ComponentListener(){
+		addComponentListener(new ComponentListener() {
 			public void componentHidden(ComponentEvent e) {
 			}
 
 			public void componentMoved(ComponentEvent e) {
-				XMAX.getConfiguration().setFrameState(getExtendedState(), getX() ,getY() ,getWidth() ,getHeight());
+				XMAX.getConfiguration().setFrameState(getExtendedState(), getX(), getY(), getWidth(), getHeight());
 			}
 
 			public void componentResized(ComponentEvent e) {
-				XMAX.getConfiguration().setFrameState(getExtendedState(), getX() ,getY() ,getWidth() ,getHeight());
-				graphPanel.forceRepaint();	// re-pixelize and paint data when resizing
+				XMAX.getConfiguration().setFrameState(getExtendedState(), getX(), getY(), getWidth(), getHeight());
+				graphPanel.forceRepaint(); // re-pixelize and paint data when
+											// resizing
 			}
 
 			public void componentShown(ComponentEvent e) {
 			}
 		});
 
-		addWindowListener(new WindowListener(){
+		addWindowListener(new WindowListener() {
 			public void windowActivated(WindowEvent e) {
 			}
 
@@ -412,7 +419,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * This method initializes this frame
 	 */
 	private void initialize() {
-        logger.debug("== ENTER");
+		logger.debug("== ENTER");
 		this.setContentPane(getJContentPane());
 		graphPanel.addObserver(statusBar);
 		this.setJMenuBar(getMainMenuBar());
@@ -478,17 +485,18 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			constraints.gridy = 0;
 			constraints.weightx = 0.2;
 			southPanel.add(scalingPanel, constraints);
-			
+
 		}
 
 		graphPanel.setShowBigCursor(XMAX.getConfiguration().getShowBigCursor());
 		showBigCursorMenuCheckBox.setState(graphPanel.getShowBigCursor());
 		graphPanel.setColorMode(XMAX.getConfiguration().getColorModeState());
-		if(XMAX.getConfiguration().getColorModeState() instanceof ColorModeBySegment){
+		if (XMAX.getConfiguration().getColorModeState() instanceof ColorModeBySegment) {
 			bySegmentMenuRadioBt.setSelected(true);
-		} else if(XMAX.getConfiguration().getColorModeState() instanceof ColorModeByGap){
+		} else if (XMAX.getConfiguration().getColorModeState() instanceof ColorModeByGap) {
 			byGapMenuRadioBt.setSelected(true);
-		} if(XMAX.getConfiguration().getColorModeState() instanceof ColorModeBW){
+		}
+		if (XMAX.getConfiguration().getColorModeState() instanceof ColorModeBW) {
 			BWMenuRadioBt.setSelected(true);
 		}
 		if (XMAX.getConfiguration().getShowStatusBar()) {
@@ -511,8 +519,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		} catch (TraceViewException e) {
 			JOptionPane.showMessageDialog(this, "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
 		}
-		statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(), dm.getAllChannels().size());
-        logger.debug("== Exit");
+		statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
+				dm.getAllChannels().size());
+		logger.debug("== Exit");
 	}
 
 	public static synchronized XMAXframe getInstance() {
@@ -568,7 +577,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			message = "Applying " + cb.getText() + " filter to all visible channels";
 		if (e.getStateChange() == ItemEvent.DESELECTED)
 			message = "Removing " + cb.getText() + " filter from all visible channels";
-		JOptionPane.showMessageDialog(XMAXframe.getInstance(), message, "Action description", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(XMAXframe.getInstance(), message, "Action description",
+				JOptionPane.INFORMATION_MESSAGE);
 		getGraphPanel().forceRepaint();
 		statusBar.setMessage("");
 	}
@@ -579,8 +589,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	public void actionPerformed(ActionEvent e) {
 		JMenuItem source = (JMenuItem) (e.getSource());
-	    	Action action = actionMap.get(source.getText());
-	    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+		Action action = actionMap.get(source.getText());
+		action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 
 		statusBar.setMessage("");
 	}
@@ -608,7 +618,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * Sets time range
 	 */
 	public void setTimeRange(TimeInterval ti) {
-		// Create SelectTimeCommand runnable obj	
+		// Create SelectTimeCommand runnable obj
 		SelectTimeCommand timeTask = new SelectTimeCommand(graphPanel, ti);
 
 		// Create ExecuteCommand obj for executing runnable
@@ -619,7 +629,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	/**
-	 * sets flag if internal graph panel should change time range to show all loaded data itself
+	 * sets flag if internal graph panel should change time range to show all
+	 * loaded data itself
 	 */
 	public void setShouldManageTimeRange(boolean value) {
 		graphPanel.setShouldManageTimeRange(value);
@@ -663,7 +674,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return buttonPanel;
 	}
-	
+
 	/**
 	 * This method initializes the ScalingButtonPanel
 	 * 
@@ -675,19 +686,19 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return scalingButtonPanel;
 	}
-	
+
 	/**
 	 * This method initializes the NavigationButtonPanel
 	 * 
 	 * @return NavigationButtonPanel
 	 */
 	private NavigationButtonPanel getNavigationButtonPanel() {
-		if(navigationButtonPanel == null) {
+		if (navigationButtonPanel == null) {
 			navigationButtonPanel = new NavigationButtonPanel();
 		}
 		return navigationButtonPanel;
 	}
-	
+
 	/**
 	 * This method initializes the FilterButtonPanel
 	 * 
@@ -699,7 +710,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return filterButtonPanel;
 	}
-	
+
 	/**
 	 * This method initializes the FilterButtonPanel
 	 * 
@@ -711,7 +722,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return selectionButtonPanel;
 	}
-	
+
 	/**
 	 * This method initializes the AnalysisButtonPanel
 	 * 
@@ -729,7 +740,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return com.isti.xmax.gui.QCPanel
 	 */
-	@SuppressWarnings("unused")	
+	@SuppressWarnings("unused")
 	private JPanel getQCPanel() {
 		if (qCPanel == null) {
 			qCPanel = new QCPanel();
@@ -902,13 +913,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			for (Class<? extends IFilter> curClass : XMAX.getFilters()) {
 				try {
 					JRadioButtonMenuItem filterItem = new JRadioButtonMenuItem();
-					filterItem.setText((String)curClass.getField("NAME").get(null));
+					filterItem.setText((String) curClass.getField("NAME").get(null));
 					filterItem.setSelected(false);
-					filterItem.setAction(actionMap.get((String)curClass.getField("NAME").get(null)));
+					filterItem.setAction(actionMap.get((String) curClass.getField("NAME").get(null)));
 					filterItem.addMouseListener(this);
 					filterBG.add(filterItem);
 					filterMenu.add(filterItem);
-				} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+				} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
+						| SecurityException e) {
 					logger.error("Filter failed to initialize");
 				}
 
@@ -930,10 +942,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			for (Class<? extends ITransformation> curClass : XMAX.getTransformations()) {
 				try {
 					JMenuItem transformationItem = new JMenuItem();
-					transformationItem.setText((String)curClass.getField("NAME").get(null));
+					transformationItem.setText((String) curClass.getField("NAME").get(null));
 					transformationItem.addActionListener(this);
 					transformationMenu.add(transformationItem);
-				} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+				} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
+						| SecurityException e) {
 					logger.error("Transformation failed to initialize");
 				}
 			}
@@ -993,7 +1006,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return viewMenu;
 	}
-	
+
 	/**
 	 * This method initializes colorMenu
 	 * 
@@ -1014,7 +1027,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return colorMenu;
 	}
-	
+
 	/**
 	 * This method initializes bySegmentMenuRadioBt
 	 * 
@@ -1028,7 +1041,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return bySegmentMenuRadioBt;
 	}
-	
+
 	/**
 	 * This method initializes byGapMenuRadioBt
 	 * 
@@ -1042,7 +1055,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return byGapMenuRadioBt;
 	}
-	
+
 	/**
 	 * This method initializes BWMenuRadioBt
 	 * 
@@ -1293,9 +1306,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			constraints = new GridBagConstraints();
 			GridBagLayout gridbagLayout = new GridBagLayout();
 			southPanel.setLayout(gridbagLayout);
-			constraints.gridx = 0; 
+			constraints.gridx = 0;
 			constraints.gridy = 1;
-			constraints.gridwidth = 5; 
+			constraints.gridwidth = 5;
 			constraints.fill = GridBagConstraints.HORIZONTAL;
 			southPanel.add(getStatusBar(), constraints);
 		}
@@ -1348,7 +1361,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return saveASCIImenuItem;
 	}
-	
+
 	/**
 	 * This method initializes saveSACMenuItem
 	 * 
@@ -1362,13 +1375,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return saveSACMenuItem;
 	}
-	
+
 	/**
 	 * This method initializes saveInternalMenuItem
 	 * 
 	 * @return javax.swing.JMenuItem
 	 */
-	@SuppressWarnings("unused")	
+	@SuppressWarnings("unused")
 	private JMenuItem getSaveInternalMenuItem() {
 		if (saveInternalMenuItem == null) {
 			saveInternalMenuItem = new JMenuItem();
@@ -1391,7 +1404,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 		return printMenuItem;
 	}
-	
+
 	/**
 	 * This method initializes reloadMenuItem
 	 * 
@@ -1457,8 +1470,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				XMAXDataModule dm = XMAX.getDataModule();
-				graphPanel.setChannelShowSet(dm.getNextChannelSet()); // and also switch off OVR,
-																		// SEL, ROT
+				graphPanel.setChannelShowSet(dm.getNextChannelSet()); // and
+																		// also
+																		// switch
+																		// off
+																		// OVR,
+																		// SEL,
+																		// ROT
 				graphPanel.setScaleMode(new ScaleModeAuto());
 				graphPanel.setMeanState(new MeanModeDisabled());
 				graphPanel.setOffsetState(new OffsetModeDisabled());
@@ -1467,11 +1485,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				graphPanel.setFilter(null);
 				graphPanel.setManualValueMax(Integer.MIN_VALUE);
 				graphPanel.setManualValueMin(Integer.MAX_VALUE);
-				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(), dm.getAllChannels().size());
+				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
+						dm.getAllChannels().size());
 			} catch (TraceViewException e1) {
-				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information",
+						JOptionPane.INFORMATION_MESSAGE);
 				getGraphPanel().forceRepaint();
-				//logger.error("TraceViewException:", e1);	// last set exception not needed
+				// logger.error("TraceViewException:", e1); // last set
+				// exception not needed
 			} catch (Exception e1) {
 				logger.error("NextAction error: ", e1);
 			} finally {
@@ -1509,11 +1530,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				graphPanel.setFilter(null);
 				graphPanel.setManualValueMax(Integer.MIN_VALUE);
 				graphPanel.setManualValueMin(Integer.MAX_VALUE);
-				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(), dm.getAllChannels().size());
+				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
+						dm.getAllChannels().size());
 			} catch (TraceViewException e1) {
-				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the first set", "Information", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the first set", "Information",
+						JOptionPane.INFORMATION_MESSAGE);
 				getGraphPanel().forceRepaint();
-				//logger.error("TraceViewException:", e1);	// first set exception not needed
+				// logger.error("TraceViewException:", e1); // first set
+				// exception not needed
 			} catch (Exception e1) {
 				logger.error("PreviousAction error: ", e1);
 			} finally {
@@ -1537,9 +1561,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
-			// Create Runnable SaveAllDataCommand obj	
+			// Create Runnable SaveAllDataCommand obj
 			SaveAllDataCommand saveAllTask = new SaveAllDataCommand();
-		
+
 			// Create ExecuteCommand obj for executing Runnable
 			ExecuteCommand executor = new ExecuteCommand(saveAllTask);
 			executor.initialize();
@@ -1547,7 +1571,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			executor.shutdown();
 
 			statusBar.setMessage("");
-			setWaitCursor(false);	
+			setWaitCursor(false);
 		}
 	}
 
@@ -1641,7 +1665,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			try {
 				setWaitCursor(true);
-				// Create Runnable OverlayCommand obj	
+				// Create Runnable OverlayCommand obj
 				OverlayCommand overlayTask = new OverlayCommand(graphPanel);
 
 				// Create ExecuteCommand obj for executing Runnable
@@ -1672,8 +1696,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			try {
 				setWaitCursor(true);
-				// Create SelectCommand obj	
-				SelectCommand selectTask = new SelectCommand(graphPanel);	
+				// Create SelectCommand obj
+				SelectCommand selectTask = new SelectCommand(graphPanel);
 
 				// Create executor obj for Runnable
 				ExecuteCommand executor = new ExecuteCommand(selectTask);
@@ -1688,7 +1712,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 		}
 	}
-	
+
 	/*
 	 * Deselects all selected channels
 	 */
@@ -1725,9 +1749,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale auto")) {
 				setWaitCursor(true);
-				// Create Runnable SetScaleModeCommand obj	
-				SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeAuto());	
-				
+				// Create Runnable SetScaleModeCommand obj
+				SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeAuto());
+
 				// Create ExecuteCommand obj for executing Runnable
 				ExecuteCommand executor = new ExecuteCommand(scaleTask);
 				executor.initialize();
@@ -1738,7 +1762,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				graphPanel.setOffsetState(new OffsetModeDisabled());
 				offsetMenuCheckBox.setState(false);
 			}
-			setWaitCursor(false);	
+			setWaitCursor(false);
 			statusBar.setMessage("");
 		}
 	}
@@ -1758,7 +1782,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale com")) {
 				setWaitCursor(true);
-				// Create SetScaleModeCommand runnable obj	
+				// Create SetScaleModeCommand runnable obj
 				SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeCom());
 
 				// Create executor obj for Runnable
@@ -1771,7 +1795,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				graphPanel.setOffsetState(new OffsetModeDisabled());
 				offsetMenuCheckBox.setState(false);
 			}
-			setWaitCursor(false);	
+			setWaitCursor(false);
 			statusBar.setMessage("");
 		}
 	}
@@ -1791,24 +1815,24 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale Xhair")) {
 				setWaitCursor(true);
-				// Create SetScaleModeCommand obj	
-				SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeXhair());	
+				// Create SetScaleModeCommand obj
+				SetScaleModeCommand scaleTask = new SetScaleModeCommand(graphPanel, new ScaleModeXhair());
 
 				// Create ExecuteCommand obj for executing Runnable
 				ExecuteCommand executor = new ExecuteCommand(scaleTask);
 				executor.initialize();
 				executor.start();
 				executor.shutdown();
-				
+
 				scaleModeXHairMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
 				offsetMenuCheckBox.setState(false);
 			}
-			setWaitCursor(false);	
+			setWaitCursor(false);
 			statusBar.setMessage("");
 		}
 	}
-	
+
 	class RemoveGainAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -1825,9 +1849,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				if (e.getActionCommand().equals("Remove gain")) {
-					// Create Runnable RemoveGainCommand obj	
-					RemoveGainCommand removeGainTask = new RemoveGainCommand(graphPanel, new RemoveGain(!graphPanel.getRemoveGain().removestate));
-	
+					// Create Runnable RemoveGainCommand obj
+					RemoveGainCommand removeGainTask = new RemoveGainCommand(graphPanel,
+							new RemoveGain(!graphPanel.getRemoveGain().removestate));
+
 					// Create ExecuteCommand obj for executing Runnable
 					ExecuteCommand executor = new ExecuteCommand(removeGainTask);
 					executor.initialize();
@@ -1835,7 +1860,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					executor.shutdown();
 				}
 			} finally {
-				if(graphPanel.getRemoveGain().removestate == true)
+				if (graphPanel.getRemoveGain().removestate == true)
 					statusBar.setMessage("Removed Gain");
 				else
 					statusBar.setMessage("");
@@ -1874,13 +1899,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
 		}
 
-		public void actionPerformed(ActionEvent e) {		
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setColorMode(new ColorModeBySegment());
 			bySegmentMenuRadioBt.setSelected(true);
 			statusBar.setMessage("");
 		}
 	}
-	
+
 	class SetColorModeBWAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -1893,13 +1918,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_B);
 		}
 
-		public void actionPerformed(ActionEvent e) {		
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setColorMode(new ColorModeBW());
 			BWMenuRadioBt.setSelected(true);
 			statusBar.setMessage("");
 		}
 	}
-	
+
 	class SetColorModeByGapAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -1912,14 +1937,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
 		}
 
-		public void actionPerformed(ActionEvent e) {		
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setColorMode(new ColorModeByGap());
 			byGapMenuRadioBt.setSelected(true);
 			statusBar.setMessage("");
 		}
 	}
-	
-	//Used in screen toggle button
+
+	// Used in screen toggle button
 	class SwitchColorModeAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -1933,25 +1958,23 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			if(graphPanel.getColorMode() instanceof ColorModeBW){
+			if (graphPanel.getColorMode() instanceof ColorModeBW) {
 				graphPanel.setColorMode(new ColorModeByGap());
 				byGapMenuRadioBt.setSelected(true);
 				statusBar.setMessage("Color mode by gap");
-			}
-			else if(graphPanel.getColorMode() instanceof ColorModeBySegment){
+			} else if (graphPanel.getColorMode() instanceof ColorModeBySegment) {
 				graphPanel.setColorMode(new ColorModeBW());
 				BWMenuRadioBt.setSelected(true);
 				statusBar.setMessage("Color mode black & white");
-			}
-			else if(graphPanel.getColorMode() instanceof ColorModeByGap){
+			} else if (graphPanel.getColorMode() instanceof ColorModeByGap) {
 				graphPanel.setColorMode(new ColorModeBySegment());
 				bySegmentMenuRadioBt.setSelected(true);
 				statusBar.setMessage("Color mode by segment");
 			}
-			
+
 		}
 	}
-	
+
 	class DemeanAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -2072,12 +2095,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			LinkedList<ICommand> history = CommandHandler.getInstance().getCommandHistory();
-			if(!history.isEmpty())
-			{
+			if (!history.isEmpty()) {
 				ICommand command = history.getLast();
 				if (command instanceof IUndoableCommand) {
 					IUndoableCommand undCommand = (IUndoableCommand) command;
-					try {	
+					try {
 						if (undCommand.canUndo()) {
 							undCommand.undo();
 							history.removeLast();
@@ -2090,7 +2112,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 		}
 	}
-	
+
 	class ParticleMotionAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -2109,17 +2131,17 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation resp = new TransPPM();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-				for (ChannelView channelView: selectedViews) {
+				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				// if selected nothing
 				if (selectedChannels.size() == 0) {
 					// Try to fill default channels
 					List<PlotDataProvider> channelSet = graphPanel.getChannelSet();
-					//Station station = null;
+					// Station station = null;
 					PlotDataProvider Nchannel = null;
 					PlotDataProvider Echannel = null;
-					for (PlotDataProvider channel: channelSet) {
+					for (PlotDataProvider channel : channelSet) {
 						if (channel.getType() == 'N') {
 							if (Nchannel == null) {
 								Nchannel = channel;
@@ -2139,7 +2161,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.add(Echannel);
 					}
 				}
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
+						getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2170,11 +2193,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				if (selectedViews.size() == 0) {
 					selectedViews = graphPanel.getChannelShowSet();
 				}
-				for (ChannelView channelView: selectedViews) {
+				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
-				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance().getConfigurationAt("Configuration.Plugins.PSD");
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf, getInstance());
+				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance()
+						.getConfigurationAt("Configuration.Plugins.PSD");
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf,
+						getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2203,10 +2228,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				if (selectedViews.size() == 0) {
 					selectedViews = graphPanel.getChannelShowSet();
 				}
-				for (ChannelView channelView: selectedViews) {
+				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
+						getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2232,10 +2258,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation resp = new TransCorrelation();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-				for (ChannelView channelView: selectedViews) {
+				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null, getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
+						getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2262,7 +2289,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					graphPanel.setRotation(null);
 					rotateMenuCheckBox.setState(false);
 				} else {
-					// Create Runnable RotateCommand obj	
+					// Create Runnable RotateCommand obj
 					RotateCommand rotateTask = new RotateCommand(graphPanel, new Rotation(XMAX.getFrame()));
 
 					// Create ExecuteCommand obj for executing Runnable
@@ -2297,7 +2324,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation resp = new TransResp();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-				for (ChannelView channelView: selectedViews) {
+				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), null, null, getInstance());
@@ -2309,7 +2336,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	class OffsetAction extends AbstractAction implements Action {
-		
+
 		private static final long serialVersionUID = 1L;
 
 		public OffsetAction() {
@@ -2326,7 +2353,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 			} else if (graphPanel.getOffsetState() instanceof OffsetModeEnabled) {
 				graphPanel.getOffsetState().increaseStep();
-				graphPanel.repaint();	// forceRepaint()? Check offsets
+				graphPanel.repaint(); // forceRepaint()? Check offsets
 			}
 			offsetMenuCheckBox.setState(graphPanel.getOffsetState() instanceof OffsetModeEnabled);
 			statusBar.setMessage("");
@@ -2372,7 +2399,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			Pick.geleteLastPick();
-			graphPanel.repaint();	// may need to override graph when deleting (force?)
+			graphPanel.repaint(); // may need to override graph when deleting
+									// (force?)
 			statusBar.setMessage("");
 		}
 	}
@@ -2405,20 +2433,21 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					ds = new DataOutputStream(new FileOutputStream(selectedFile));
 					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-					for (ChannelView channelView: selectedViews) {
+					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
 						Iterator<PlotDataProvider> it = selectedChannels.iterator();
 						while (it.hasNext()) {
-							//(PlotDataProvider)
+							// (PlotDataProvider)
 							channel = it.next();
 							channel.dumpMseed(ds, graphPanel.getTimeRange(), graphPanel.getFilter());
 						}
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to Mseed", "Info",
-								JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to Mseed",
+								"Info", JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "You should select at least one channel to export", "Warning",
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+								"You should select at least one channel to export", "Warning",
 								JOptionPane.WARNING_MESSAGE);
 					}
 					getGraphPanel().forceRepaint();
@@ -2428,7 +2457,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					try {
 						ds.close();
 					} catch (IOException e1) {
-						logger.error("IOException:", e1);	
+						logger.error("IOException:", e1);
 					}
 					setWaitCursor(false);
 				}
@@ -2465,52 +2494,55 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					XMAX.getConfiguration().setUserDir("SAC", selectedFile.getParent());
 					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-					for (ChannelView channelView: selectedViews) {
+					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
 						Iterator<PlotDataProvider> it = selectedChannels.iterator();
 						int i = 1;
 						while (it.hasNext()) {
-							//(PlotDataProvider)
+							// (PlotDataProvider)
 							channel = it.next();
 							DataOutputStream ds = null;
 							try {
 								String exportFileName = "";
-								if(selectedChannels.size()==1){
+								if (selectedChannels.size() == 1) {
 									exportFileName = selectedFile.getName();
 								} else {
-									if(selectedFile.getName().contains(".")){
+									if (selectedFile.getName().contains(".")) {
 										int pointPosition = selectedFile.getName().lastIndexOf(".");
-										exportFileName = selectedFile.getName().substring(0, pointPosition) + i + selectedFile.getName().substring(pointPosition);
+										exportFileName = selectedFile.getName().substring(0, pointPosition) + i
+												+ selectedFile.getName().substring(pointPosition);
 									} else {
-										exportFileName = selectedFile.getName()+i;
+										exportFileName = selectedFile.getName() + i;
 									}
 								}
-								exportFileName = selectedFile.getPath().substring(0, selectedFile.getPath().lastIndexOf(File.separator)) + File.separator + exportFileName;
+								exportFileName = selectedFile.getPath().substring(0,
+										selectedFile.getPath().lastIndexOf(File.separator)) + File.separator
+										+ exportFileName;
 								ds = new DataOutputStream(new FileOutputStream(new File(exportFileName)));
 								channel.dumpSacAscii(ds, graphPanel.getTimeRange(), graphPanel.getFilter());
 							} catch (IOException e1) {
 								logger.error("Can't export to SAC channel " + channel.getChannelName() + ": ", e1);
-							}
-							finally {
+							} finally {
 								try {
 									ds.close();
 								} catch (Exception e1) {
-									logger.error("Exception:", e1);	
+									logger.error("Exception:", e1);
 								}
 							}
 							i++;
 						}
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to SAC", "Info",
-								JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to SAC",
+								"Info", JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "You should select at least one channel to export", "Warning",
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+								"You should select at least one channel to export", "Warning",
 								JOptionPane.WARNING_MESSAGE);
 					}
 					getGraphPanel().forceRepaint();
 				} catch (TraceViewException e2) {
-					logger.error("Can't export to SAC channel " + channel.getChannelName() + ": ", e2);	
+					logger.error("Can't export to SAC channel " + channel.getChannelName() + ": ", e2);
 				} finally {
 					setWaitCursor(false);
 				}
@@ -2520,7 +2552,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			statusBar.setMessage("");
 		}
 	}
-	
+
 	class DumpXMLAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -2549,26 +2581,28 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					fw = new FileWriter(selectedFile);
 					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-					for (ChannelView channelView: selectedViews) {
+					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
 						fw.write("<Export start = \""
-								+ TimeInterval.formatDate(graphPanel.getTimeRange().getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-								+ "\" end = \""
-								+ TimeInterval.formatDate(graphPanel.getTimeRange().getEndTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+								+ TimeInterval.formatDate(graphPanel.getTimeRange().getStartTime(),
+										TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+								+ "\" end = \"" + TimeInterval.formatDate(graphPanel.getTimeRange().getEndTime(),
+										TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 								+ "\">\n");
 						Iterator<PlotDataProvider> it = selectedChannels.iterator();
 						while (it.hasNext()) {
-							//(PlotDataProvider)
+							// (PlotDataProvider)
 							channel = it.next();
 							channel.dumpXML(fw, graphPanel.getTimeRange(), graphPanel.getFilter());
 						}
 						fw.write("</Export>");
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to XML", "Info",
-								JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to XML",
+								"Info", JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "You should select at least one channel to export", "Warning",
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+								"You should select at least one channel to export", "Warning",
 								JOptionPane.WARNING_MESSAGE);
 					}
 					getGraphPanel().forceRepaint();
@@ -2578,7 +2612,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					try {
 						fw.close();
 					} catch (IOException e1) {
-						logger.error("IOException:", e1);	
+						logger.error("IOException:", e1);
 					}
 					setWaitCursor(false);
 				}
@@ -2617,20 +2651,21 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					fw = new FileWriter(selectedFile);
 					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-					for (ChannelView channelView: selectedViews) {
+					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
 						Iterator<PlotDataProvider> it = selectedChannels.iterator();
 						while (it.hasNext()) {
-							//(PlotDataProvider)
+							// (PlotDataProvider)
 							channel = it.next();
 							channel.dumpASCII(fw, graphPanel.getTimeRange(), graphPanel.getFilter());
 						}
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to ASCII", "Info",
-								JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to ASCII",
+								"Info", JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "You should select at least one channel to export", "Warning",
+						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+								"You should select at least one channel to export", "Warning",
 								JOptionPane.WARNING_MESSAGE);
 					}
 					getGraphPanel().forceRepaint();
@@ -2640,7 +2675,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					try {
 						fw.close();
 					} catch (IOException e1) {
-						logger.error("IOException:", e1);	
+						logger.error("IOException:", e1);
 					}
 					setWaitCursor(false);
 				}
@@ -2677,11 +2712,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					IFilter filter = XMAX.getFilter(pluginId);
 					if (filter.needProcessing()) {
 						graphPanel.setFilter(filter);
-						if(graphPanel.getFilter()!=null && graphPanel.getFilter().equals(filter)){
+						if (graphPanel.getFilter() != null && graphPanel.getFilter().equals(filter)) {
 							setFilterMenuItem(pluginId);
 							setFilterButton(pluginId);
 						}
-						if(graphPanel.getFilter()==null){
+						if (graphPanel.getFilter() == null) {
 							filterBG.clearSelection();
 						}
 					} else {
@@ -2705,9 +2740,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		private void setFilterMenuItem(String pluginId) {
-			for (MenuElement m: filterMenu.getSubElements()) {
+			for (MenuElement m : filterMenu.getSubElements()) {
 				if (m instanceof JPopupMenu) {
-					for (MenuElement me: m.getSubElements()) {
+					for (MenuElement me : m.getSubElements()) {
 						if (me instanceof JRadioButtonMenuItem) {
 							JRadioButtonMenuItem mCB = (JRadioButtonMenuItem) me;
 							if (pluginId == null) {
@@ -2720,30 +2755,28 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 			}
 		}
-		
+
 		/**
-		 * Selects the correct filter button group ToggleButton based on filters menu selection.
+		 * Selects the correct filter button group ToggleButton based on filters
+		 * menu selection.
+		 * 
 		 * @param pluginId
 		 */
 		private void setFilterButton(String pluginId) {
-			for(int i = 0; i < getFilterButtonPanel().bg.getButtonCount(); i++){
+			for (int i = 0; i < getFilterButtonPanel().bg.getButtonCount(); i++) {
 				if (pluginId == null) {
 					getFilterButtonPanel().bg.clearSelection();
-				}
-				else if(pluginId == "LP"){
+				} else if (pluginId == "LP") {
 					getFilterButtonPanel().lowPassButton.setSelected(true);
-				}
-				else if(pluginId == "HP"){
+				} else if (pluginId == "HP") {
 					getFilterButtonPanel().highPassButton.setSelected(true);
-				}
-				else if(pluginId == "BP"){
+				} else if (pluginId == "BP") {
 					getFilterButtonPanel().bandPassButton.setSelected(true);
-				}
-				else if(pluginId == "DYO"){
+				} else if (pluginId == "DYO") {
 					getFilterButtonPanel().dyoFilterButton.setSelected(true);
 				}
 			}
-				
+
 		}
 	}
 
@@ -2771,7 +2804,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				executor.initialize();
 				executor.start();
 				executor.shutdown();
-				setWaitCursor(false);	
+				setWaitCursor(false);
 			} else {
 				getGraphPanel().forceRepaint();
 			}
@@ -2792,7 +2825,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			LimYDialog dialog = new LimYDialog(XMAXframe.getInstance(), new Double(graphPanel.getManualValueMin()).intValue(), new Double(graphPanel.getManualValueMax()).intValue());
+			LimYDialog dialog = new LimYDialog(XMAXframe.getInstance(),
+					new Double(graphPanel.getManualValueMin()).intValue(),
+					new Double(graphPanel.getManualValueMax()).intValue());
 			if (dialog.min != Integer.MAX_VALUE && dialog.max != Integer.MIN_VALUE) {
 				if (!(graphPanel.getScaleMode() instanceof ScaleModeXhair)) {
 					// Create Runnable SetScaleModeCommand obj
@@ -2803,7 +2838,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					executor1.initialize();
 					executor1.start();
 					executor1.shutdown();
-					
+
 					scaleModeXHairMenuRadioBt.setSelected(true);
 				}
 				setWaitCursor(true);
@@ -2815,7 +2850,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				executor2.initialize();
 				executor2.start();
 				executor2.shutdown();
-				setWaitCursor(false);	
+				setWaitCursor(false);
 			} else {
 				getGraphPanel().forceRepaint();
 			}
@@ -2916,7 +2951,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			statusBar.setMessage("");
 		}
 	}
-	
+
 	class ViewHeadersAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -2934,7 +2969,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			showBlockHeadersMenuCheckBox.setState(graphPanel.getShowBlockHeader());
 		}
 	}
-	
+
 	class ReLoadAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -2957,14 +2992,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				try {
 					graphPanel.setChannelShowSet(dm.getNextChannelSet());
 				} catch (TraceViewException ex) {
-					JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information",
+							JOptionPane.INFORMATION_MESSAGE);
 					getGraphPanel().forceRepaint();
 				}
-				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(), dm.getAllChannels().size());
+				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
+						dm.getAllChannels().size());
 			} catch (TraceViewException e1) {
 				logger.error("Can't reload trace data: ", e1);
-			} 
-			finally {
+			} finally {
 				setWaitCursor(false);
 				XMAX.getFrame().getGraphPanel().setVisible(true);
 			}
@@ -3003,7 +3039,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			/*
-			 * try { Pick.updatePickFile(); } catch (Exception e1) { e1.printStackTrace(); }
+			 * try { Pick.updatePickFile(); } catch (Exception e1) {
+			 * e1.printStackTrace(); }
 			 */
 			System.exit(0);
 		}
@@ -3017,7 +3054,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton backButton = null;
 		private JButton nextButton = null;
 		private JButton undoButton = null;
-		
+
 		public NavigationButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 0);
@@ -3027,9 +3064,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getNextButton(), null);
 			add(getBackButton(), null);
 			add(getUndoButton(), null);
-			
+
 		}
-		
+
 		private JButton getNextButton() {
 			if (nextButton == null) {
 				nextButton = new JButton("\u2192");
@@ -3037,7 +3074,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return nextButton;
 		}
-		
+
 		private JButton getBackButton() {
 			if (backButton == null) {
 				backButton = new JButton("\u2190");
@@ -3045,7 +3082,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return backButton;
 		}
-		
+
 		private JButton getUndoButton() {
 			if (undoButton == null) {
 				undoButton = new JButton("Undo");
@@ -3053,25 +3090,23 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return undoButton;
 		}
-		
+
 		public void actionPerformed(ActionEvent evt) {
-		    Object src = evt.getSource();
-		    Action action = null; 
-		    if (src == nextButton) {
-		    	action = actionMap.get("Next");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == backButton) {
-		    	action = actionMap.get("Previous");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    } 	
-		    else if (src == undoButton){
-		    	action = actionMap.get("Undo");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
+			Object src = evt.getSource();
+			Action action = null;
+			if (src == nextButton) {
+				action = actionMap.get("Next");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == backButton) {
+				action = actionMap.get("Previous");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == undoButton) {
+				action = actionMap.get("Undo");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			}
 		}
 	}
-	
+
 	/**
 	 * Selection buttons for south panel
 	 */
@@ -3083,7 +3118,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton demeanButton = null;
 		private JButton offsetButton = null;
 		private JButton colormodeButton = null;
-		
+
 		public SelectionButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 2);
@@ -3098,15 +3133,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getOffsetButton(), null);
 			add(getColorModeButton(), null);
 		}
-		
-		private JButton getColorModeButton(){
-			if(colormodeButton == null){
+
+		private JButton getColorModeButton() {
+			if (colormodeButton == null) {
 				colormodeButton = new JButton("Switch color mode");
 				colormodeButton.addActionListener(this);
 			}
 			return colormodeButton;
 		}
-		
+
 		private JButton getSelectButton() {
 			if (selectButton == null) {
 				selectButton = new JButton("Select Channel(s)");
@@ -3114,7 +3149,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return selectButton;
 		}
-		
+
 		private JButton getOverlayButton() {
 			if (overlayButton == null) {
 				overlayButton = new JButton("Overlay Channels");
@@ -3122,15 +3157,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return overlayButton;
 		}
-		
-		private JButton getDeselectAllButton(){
-			if(deselectAllButton == null){
+
+		private JButton getDeselectAllButton() {
+			if (deselectAllButton == null) {
 				deselectAllButton = new JButton("Deselect All");
 				deselectAllButton.addActionListener(this);
 			}
 			return deselectAllButton;
 		}
-		
+
 		private JButton getDemeanButton() {
 			if (demeanButton == null) {
 				demeanButton = new JButton("Demean");
@@ -3138,7 +3173,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return demeanButton;
 		}
-		
+
 		private JButton getOffsetButton() {
 			if (offsetButton == null) {
 				offsetButton = new JButton("Offset");
@@ -3146,37 +3181,32 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return offsetButton;
 		}
-		
+
 		public void actionPerformed(ActionEvent evt) {
-		    Object src = evt.getSource();
-		    Action action = null; 
-		    if (src == selectButton) {
-		    	action = actionMap.get("Select");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == overlayButton) {
-		    	action = actionMap.get("Overlay");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    } 	
-		    else if (src == demeanButton){
-		    	action = actionMap.get("Demean");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == offsetButton){
-		    	action = actionMap.get("Offset");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == deselectAllButton){
-		    	action = actionMap.get("Deselect All");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == colormodeButton){
-		    	action = actionMap.get("Color mode");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
+			Object src = evt.getSource();
+			Action action = null;
+			if (src == selectButton) {
+				action = actionMap.get("Select");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == overlayButton) {
+				action = actionMap.get("Overlay");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == demeanButton) {
+				action = actionMap.get("Demean");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == offsetButton) {
+				action = actionMap.get("Offset");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == deselectAllButton) {
+				action = actionMap.get("Deselect All");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == colormodeButton) {
+				action = actionMap.get("Color mode");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			}
 		}
 	}
-	
+
 	/**
 	 * Scaling buttons for south panel
 	 */
@@ -3185,10 +3215,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton commonScaleButton = null;
 		private JButton autoScaleButton = null;
 		private JButton xhairScaleButton = null;
-		private JButton xlimScaleButton = null; 
-		private JButton ylimScaleButton = null; 
-		private JToggleButton removeGainButton = null; 
-		
+		private JButton xlimScaleButton = null;
+		private JButton ylimScaleButton = null;
+		private JToggleButton removeGainButton = null;
+
 		public ScalingButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 2);
@@ -3202,9 +3232,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getYLimScaleButton(), null);
 			add(getXHairScaleButton(), null);
 			add(getRemoveGainButton(), null);
-			
+
 		}
-		
+
 		private JButton getCommonScaleButton() {
 			if (commonScaleButton == null) {
 				commonScaleButton = new JButton("Common Scale");
@@ -3212,7 +3242,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return commonScaleButton;
 		}
-		
+
 		private JButton getAutoScaleButton() {
 			if (autoScaleButton == null) {
 				autoScaleButton = new JButton("Auto Scale");
@@ -3220,7 +3250,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return autoScaleButton;
 		}
-		
+
 		private JButton getXHairScaleButton() {
 			if (xhairScaleButton == null) {
 				xhairScaleButton = new JButton("Crosshair Scale");
@@ -3228,7 +3258,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return xhairScaleButton;
 		}
-		
+
 		private JButton getXLimScaleButton() {
 			if (xlimScaleButton == null) {
 				xlimScaleButton = new JButton("X limits");
@@ -3236,7 +3266,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return xlimScaleButton;
 		}
-		
+
 		private JButton getYLimScaleButton() {
 			if (ylimScaleButton == null) {
 				ylimScaleButton = new JButton("Y limits");
@@ -3244,7 +3274,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return ylimScaleButton;
 		}
-		
+
 		private JToggleButton getRemoveGainButton() {
 			if (removeGainButton == null) {
 				removeGainButton = new JToggleButton("Remove Gain");
@@ -3252,37 +3282,32 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return removeGainButton;
 		}
-		
+
 		public void actionPerformed(ActionEvent evt) {
-		    Object src = evt.getSource();
-		    Action action = null; 
-		    if (src == commonScaleButton) {
-		    	action = actionMap.get("Scale com");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == autoScaleButton) {
-		    	action = actionMap.get("Scale auto");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    } 	
-		    else if (src == xhairScaleButton){
-		    	action = actionMap.get("Scale Xhair");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == xlimScaleButton){
-		    	action = actionMap.get("X limits");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == ylimScaleButton){
-		    	action = actionMap.get("Y limits");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == removeGainButton){
-		    	action = actionMap.get("Remove gain");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-	    }
+			Object src = evt.getSource();
+			Action action = null;
+			if (src == commonScaleButton) {
+				action = actionMap.get("Scale com");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == autoScaleButton) {
+				action = actionMap.get("Scale auto");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == xhairScaleButton) {
+				action = actionMap.get("Scale Xhair");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == xlimScaleButton) {
+				action = actionMap.get("X limits");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == ylimScaleButton) {
+				action = actionMap.get("Y limits");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == removeGainButton) {
+				action = actionMap.get("Remove gain");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			}
+		}
 	}
-	
+
 	/**
 	 * Filter buttons for south panel
 	 */
@@ -3294,7 +3319,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JToggleButton highPassButton = null;
 		private JToggleButton dyoFilterButton = null;
 		private String filterSelected = "";
-		
+
 		public FilterButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 2);
@@ -3309,10 +3334,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			bg.add(getDYOFilterButton());
 			add(getLowPassButton(), null);
 			add(getBandPassButton(), null);
-			add(getHighPassButton(),null);
+			add(getHighPassButton(), null);
 			add(getDYOFilterButton(), null);
 		}
-		
+
 		private JToggleButton getLowPassButton() {
 			if (lowPassButton == null) {
 				lowPassButton = new JToggleButton("Low Pass Filter");
@@ -3320,7 +3345,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return lowPassButton;
 		}
-		
+
 		private JToggleButton getBandPassButton() {
 			if (bandPassButton == null) {
 				bandPassButton = new JToggleButton("Band Pass Filter");
@@ -3328,7 +3353,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return bandPassButton;
 		}
-		
+
 		private JToggleButton getHighPassButton() {
 			if (highPassButton == null) {
 				highPassButton = new JToggleButton("High Pass Filter");
@@ -3336,7 +3361,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return highPassButton;
 		}
-		
+
 		private JToggleButton getDYOFilterButton() {
 			if (dyoFilterButton == null) {
 				dyoFilterButton = new JToggleButton("DYO Filter");
@@ -3344,68 +3369,61 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return dyoFilterButton;
 		}
-		
+
 		public void actionPerformed(ActionEvent evt) {
-		    Object src = evt.getSource();
-		    Action action = null; 
-		    if (src == lowPassButton) {
-				if(lowPassButton.isSelected() && filterSelected == FilterLP.NAME){
+			Object src = evt.getSource();
+			Action action = null;
+			if (src == lowPassButton) {
+				if (lowPassButton.isSelected() && filterSelected == FilterLP.NAME) {
 					bg.clearSelection();
 					filterSelected = "";
-				}
-				else{
+				} else {
 					filterSelected = FilterLP.NAME;
 				}
-		    	action = actionMap.get(FilterLP.NAME);
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == bandPassButton) {
-				if(bandPassButton.isSelected() && filterSelected == FilterBP.NAME){
+				action = actionMap.get(FilterLP.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == bandPassButton) {
+				if (bandPassButton.isSelected() && filterSelected == FilterBP.NAME) {
 					bg.clearSelection();
 					filterSelected = "";
-				}
-				else{
+				} else {
 					filterSelected = FilterBP.NAME;
 				}
-		    	action = actionMap.get(FilterBP.NAME);
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    } 	
-		    else if (src == highPassButton) {
-				if(highPassButton.isSelected() && filterSelected == FilterHP.NAME){
+				action = actionMap.get(FilterBP.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == highPassButton) {
+				if (highPassButton.isSelected() && filterSelected == FilterHP.NAME) {
 					bg.clearSelection();
 					filterSelected = "";
-				}
-				else{
+				} else {
 					filterSelected = FilterHP.NAME;
 				}
-		    	action = actionMap.get(FilterHP.NAME);
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    } 	
-		    else if (src == dyoFilterButton){
-				if(dyoFilterButton.isSelected() && filterSelected == FilterDYO.NAME){
+				action = actionMap.get(FilterHP.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == dyoFilterButton) {
+				if (dyoFilterButton.isSelected() && filterSelected == FilterDYO.NAME) {
 					bg.clearSelection();
 					filterSelected = "";
-				}
-				else{
+				} else {
 					filterSelected = FilterDYO.NAME;
 				}
-		    	action = actionMap.get(FilterDYO.NAME);
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-	    }
+				action = actionMap.get(FilterDYO.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			}
+		}
 	}
-	
+
 	/**
 	 * Analysis buttons for south panel
 	 */
 	class AnalysisButtonPanel extends JPanel implements ActionListener {
-		private static final long serialVersionUID =1L;
+		private static final long serialVersionUID = 1L;
 		private JButton PSDButton = null;
 		private JButton spectraButton = null;
 		private JButton respButton = null;
 		private JButton particlemotionButton = null;
 		private JButton rotationButton = null;
-		
+
 		public AnalysisButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 2);
@@ -3419,7 +3437,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getParticleMotionButton(), null);
 			add(getRotationButton(), null);
 		}
-		
+
 		private JButton getPSDButton() {
 			if (PSDButton == null) {
 				PSDButton = new JButton("PSD");
@@ -3427,7 +3445,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return PSDButton;
 		}
-		
+
 		private JButton getSpectraButton() {
 			if (spectraButton == null) {
 				spectraButton = new JButton("Spectra");
@@ -3435,7 +3453,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return spectraButton;
 		}
-		
+
 		private JButton getRespButton() {
 			if (respButton == null) {
 				respButton = new JButton("Response");
@@ -3443,7 +3461,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return respButton;
 		}
-		
+
 		private JButton getParticleMotionButton() {
 			if (particlemotionButton == null) {
 				particlemotionButton = new JButton("Particle Motion");
@@ -3451,7 +3469,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return particlemotionButton;
 		}
-		
+
 		private JButton getRotationButton() {
 			if (rotationButton == null) {
 				rotationButton = new JButton("Rotation");
@@ -3459,33 +3477,29 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 			return rotationButton;
 		}
-		
+
 		public void actionPerformed(ActionEvent evt) {
-		    Object src = evt.getSource();
-		    Action action = null; 
-		    if (src == PSDButton) {
-		    	action = actionMap.get(TransPSD.NAME);
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == spectraButton) {
-		    	action = actionMap.get(TransSpectra.NAME);
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    } 	
-		    else if (src == respButton){
-		    	action = actionMap.get(TransResp.NAME);
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == particlemotionButton){
-		    	action = actionMap.get(TransPPM.NAME);
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-		    else if (src == rotationButton){
-		    	action = actionMap.get("Rotation");
-		    	action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-		    }
-	    }
+			Object src = evt.getSource();
+			Action action = null;
+			if (src == PSDButton) {
+				action = actionMap.get(TransPSD.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == spectraButton) {
+				action = actionMap.get(TransSpectra.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == respButton) {
+				action = actionMap.get(TransResp.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == particlemotionButton) {
+				action = actionMap.get(TransPPM.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == rotationButton) {
+				action = actionMap.get("Rotation");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			}
+		}
 	}
-	
+
 	class ButtonPanel extends JPanel {
 
 		private static final long serialVersionUID = 1L;
@@ -3523,7 +3537,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getFilterButton(), null);
 			add(getLimButton(), null);
 		}
-		
 
 		/**
 		 * This method initializes filterButton

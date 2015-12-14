@@ -87,8 +87,6 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	
 	private Status status = Status.DATA;
 	
-	private double sensitivity = 1.0;
-	
 	static {
 		COMPDATA = new ArrayList<Character>();
 		COMPDATA.add('Z');
