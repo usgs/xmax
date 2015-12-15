@@ -20,11 +20,10 @@
 package gov.usgs.anss.cd11;
 
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 import org.apache.log4j.Logger;
-
-import gov.usgs.anss.util.Util;
 
 /**
  * This class represents a CD1.1 channel subframe and has methods for reading
@@ -38,19 +37,15 @@ public class ChannelSubframe {
 
 	private static final Logger logger = Logger.getLogger(ChannelSubframe.class);
 	private int len;
-	@SuppressWarnings("unused")
 	private int authOffset;
 	private byte auth;
 	private byte transform;
 	private byte sensorType;
-	@SuppressWarnings("unused")
 	private byte optionFlag;
 	private String station; // a SSSSSCCCLL name!
 	private byte[] statbuf = new byte[10];
 	private String uncompressedFormat; // two characters\
-	@SuppressWarnings("unused")
 	private float calibFactor;
-	@SuppressWarnings("unused")
 	private float calibPeriod;
 	private String timeStamp;
 	private byte[] timebuf = new byte[20]; // scratch space to get time
@@ -63,7 +58,6 @@ public class ChannelSubframe {
 	private byte[] data;
 	private ByteBuffer bdata;
 	private int subframeCount;
-	@SuppressWarnings("unused")
 	private int authKeyID;
 	private int authSize;
 	private byte[] authBytes;
@@ -135,11 +129,11 @@ public class ChannelSubframe {
 
 	@Override
 	public String toString() {
-		return station + "  " + timeStamp + " " + Util.asctime2(time)
-				+ " #samp=" + nsamp + " msLen=" + msLength + " tfrm="
-				+ transform + " ucfrm=" + uncompressedFormat + " sens="
-				+ sensorType + " auth=" + auth + " #sta=" + statusSize
-				+ " #data=" + dataSize;
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+
+		return station + "  " + timeStamp + " " + timeFormat.format(time) + " #samp=" + nsamp + " msLen=" + msLength + " tfrm="
+				+ transform + " ucfrm=" + uncompressedFormat + " sens=" + sensorType + " auth=" + auth + " #sta="
+				+ statusSize + " #data=" + dataSize;
 	}
 
 	public ChannelSubframe(ByteBuffer b) {
@@ -153,7 +147,7 @@ public class ChannelSubframe {
 	 * @param b
 	 *            A ByteBuffer position to the start of a ChannelSubframe
 	 */
-	public void load(ByteBuffer b) {
+	private void load(ByteBuffer b) {
 		// save position of beginning - These fields are in table 10 pg 23 of
 		// manual
 		int pos = b.position();

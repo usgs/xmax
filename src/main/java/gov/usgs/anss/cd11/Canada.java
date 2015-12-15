@@ -25,15 +25,13 @@ package gov.usgs.anss.cd11;
 
 import java.nio.ByteBuffer;
 import java.util.Random;
-import gov.usgs.anss.util.*;
-
 import org.apache.log4j.Logger;
 
 /**
  * 
  * @author davidketchum
  */
-public class Canada {
+class Canada {
 	private static final Logger logger = Logger.getLogger(Canada.class);
 	/*
 	 * Copyright 1994 Science Applications International Corporation
@@ -60,9 +58,9 @@ public class Canada {
 	 * during decompression
 	 */
 	
-	static boolean dbg = true;
+	private static boolean dbg = true;
 
-	static int corrupt = 0;
+	private static int corrupt = 0;
 
 	// private static StringBuilder sb = new StringBuilder(100);
 	// public static void clearSB() {if(sb.length() > 0)
@@ -91,7 +89,7 @@ public class Canada {
 	 * 
 	 *             sets *n to number of bytes used and elements of y
 	 */
-	public static int canada_uncompress(byte[] b, int[] y, int n, int m, int v0)
+	static int canada_uncompress(byte[] b, int[] y, int n, int m, int v0)
 			throws CanadaException {
 		int i, j, k;
 		int x;
@@ -214,7 +212,7 @@ public class Canada {
 	 * *cannot pass j back through pointer so return int through function call
 	 */
 
-	public static int unpack(int m, int[] y, int offset, ByteBuffer b, int j)
+	private static int unpack(int m, int[] y, int offset, ByteBuffer b, int j)
 
 	{
 		/*
@@ -483,7 +481,7 @@ public class Canada {
 	 *            is used as the last value
 	 * @return The revised number of bytes used in b
 	 */
-	public static int canada_compress(ByteBuffer b, int[] data, int m, int v0) {
+	private static int canada_compress(ByteBuffer b, int[] data, int m, int v0) {
 		int y0, y1, y2, y3, y4;
 
 		if (m % 20 != 0)
@@ -613,7 +611,7 @@ public class Canada {
 	 *            The position n b to put the data
 	 * @return The position of the next place to put data (the length of b used)
 	 */
-	public static int pack(int m, int[] y, int offset, ByteBuffer b, int j) {
+	private static int pack(int m, int[] y, int offset, ByteBuffer b, int j) {
 		int y0 = y[offset];
 		int y1 = y[offset + 1];
 		int y2 = y[offset + 2];
@@ -718,16 +716,6 @@ public class Canada {
 		return j;
 	}
 
-	public static boolean compare(int[] in, int[] out, int len) {
-		boolean ret = false;
-		for (int i = 0; i < len; i++)
-			if (in[i] != out[i]) {
-				System.out.println(i + " diff " + in[i] + "!=" + out[i]);
-				ret = true;
-			}
-		return ret;
-	}
-
 	public static void main(String[] args) {
 		int[] offs = { 1 << 3, 1 << 5, 1 << 7, 1 << 9, 1 << 11, 1 << 13,
 				1 << 15, 1 << 17, 1 << 19, 1 << 23, 1 << 27, 1 << 31 };
@@ -756,8 +744,6 @@ public class Canada {
 		Random ran = new Random();
 		int ind = 0;
 		for (int j = 0; j < 100000000; j++) {
-			if (j % 250000 == 0)
-				System.out.println(Util.asctime() + " " + j);
 			for (int i = 0; i < 40; i = i + 4) {
 				ind = (int) (ran.nextDouble() * 12.);
 				for (int k = i; k < i + 4; k++)
