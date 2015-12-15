@@ -1274,6 +1274,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			overlay = false;
 			rotation = null;
 			ChannelView.currentSelectionNumber = 0;
+			selectedChannelShowSet.clear();
 		} else {
 			List<ChannelView> selected = getCurrentSelectedChannelShowSet();
 			if (selected.size() > 0) {
