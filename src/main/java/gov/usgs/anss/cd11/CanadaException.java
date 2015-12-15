@@ -35,7 +35,7 @@ public class CanadaException extends Exception {
 		super();
 	}
 
-public CanadaException(String msg) {
+CanadaException(String msg) {
     super(msg);
   }
 }
