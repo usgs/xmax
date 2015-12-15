@@ -55,6 +55,7 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.UniqueList;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
+import com.isti.traceview.data.SelectionContainer;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.Rotation;
@@ -100,7 +101,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	
 	/** The selected channel show set. */
 	private List<ChannelView> selectedChannelShowSet = null;
+	
+	/** The previously selected channels with the level that they were selected */
+	private List<SelectionContainer> previousSelectedChannels = new ArrayList<SelectionContainer>();
 
+	/** The current level of channel selection */
+	private int selectionLevel = 0; 
+	
 	/** Amount of units to show simultaneously in this graph panel. */
 	private int unitsShowCount;
 
@@ -1018,19 +1025,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	public void setRotation(Rotation rotation) {
 		if (rotation == null) {
-			drawAreaPanel.removeAll();
-			for (ChannelView cv: channelShowSet) {
-				drawAreaPanel.add(cv);
-			}
 			select = false;
 			overlay = false;
 			this.rotation = rotation;
-			observable.setChanged();
-			observable.notifyObservers("ROT OFF");
-			observable.setChanged();
-			observable.notifyObservers("SEL OFF");
-			//repaint();
-			forceRepaint();	// needed when selecting certain channels to rotate
+			select(true); //undo selection
 		} else {
 			if(rotation.getMatrix()==null){
 				forceRepaint();
@@ -1049,7 +1047,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 							break;
 					}
 					if (dataFound) {
-						select();
+						select(false); //select channels that were rotated
 						this.rotation = rotation;
 						observable.setChanged();
 						observable.notifyObservers("ROT");
@@ -1248,11 +1246,29 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * Switch selection mode on/off. If selection mode turned on, will be shown only ChannelViews
 	 * with selected selection checkboxes.
 	 */
-	public void select() {
-		if (select) {
+	public void select(Boolean undo) {
+		if (undo) {
+			selectionLevel--;
 			drawAreaPanel.removeAll();
-			for (ChannelView cv: channelShowSet) {
-				drawAreaPanel.add(cv);
+			if(selectionLevel > 0){
+				for(SelectionContainer sc: previousSelectedChannels){
+					if(sc.getSelectionLevel() == selectionLevel){
+						for (PlotDataProvider channel: sc.getChannelView().getPlotDataProviders()) {
+							ChannelView sel_cv = channelViewFactory.getChannelView(channel);
+							sel_cv.setGraphPanel(this);
+							drawAreaPanel.add(sel_cv);
+						}
+						previousSelectedChannels.remove(sc.getChannelView());
+					}
+				}
+			} else {
+				for (ChannelView cv: channelShowSet) {
+					for (PlotDataProvider channel: cv.getPlotDataProviders()) {
+						ChannelView sel_cv = channelViewFactory.getChannelView(channel);
+						sel_cv.setGraphPanel(this);
+						drawAreaPanel.add(sel_cv);
+					}
+				}
 			}
 			select = false;
 			overlay = false;
@@ -1263,8 +1279,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (selected.size() > 0) {
 				select = true;
 				drawAreaPanel.removeAll();
+				selectionLevel++;
 				for (ChannelView cv: selected) {
 					//List<PlotDataProvider> toProcess = new ArrayList<PlotDataProvider>();
+					previousSelectedChannels.add(new SelectionContainer(selectionLevel, cv));
 					for (PlotDataProvider channel: cv.getPlotDataProviders()) {
 						ChannelView sel_cv = channelViewFactory.getChannelView(channel);
 						sel_cv.setGraphPanel(this);

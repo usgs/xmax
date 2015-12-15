@@ -25,7 +25,7 @@ public class SelectCommand extends AbstractUndoableCommand {
 	public void run() {
 		try {
 			super.run();
-			graphPanel.select();
+			graphPanel.select(false);
 		} catch (Exception e) {
 			logger.error("SelectCommand error: ", e);
 		}
@@ -34,9 +34,7 @@ public class SelectCommand extends AbstractUndoableCommand {
 	public void undo() {
 		try {
 			super.undo();
-			if (graphPanel.getSelectState()) {
-				graphPanel.select();
-			}
+			graphPanel.select(true);
 		} catch (Exception e) {
 			// do nothing
 			logger.error("Exception:", e);	

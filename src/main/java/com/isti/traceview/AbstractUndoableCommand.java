@@ -26,8 +26,7 @@ public abstract class AbstractUndoableCommand extends AbstractCommand implements
 
 		LinkedList<ICommand> history = CommandHandler.getInstance().getCommandHistory();
 
-		if (history.size() > 1) {
-			history.remove(this);
+		if (history.size() >= 1) {
 			ICommand prevCommand = history.getLast();
 			if (prevCommand instanceof IUndoableCommand) {
 				IUndoableCommand up = (IUndoableCommand) prevCommand;
