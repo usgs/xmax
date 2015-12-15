@@ -87,6 +87,7 @@ import com.isti.traceview.gui.ChannelView;
 import com.isti.traceview.gui.ColorModeBW;
 import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.ColorModeBySegment;
+import com.isti.traceview.gui.ColorModeGray;
 import com.isti.traceview.gui.FileChooser;
 import com.isti.traceview.gui.GraphUtil;
 import com.isti.traceview.gui.MeanModeDisabled;
@@ -177,6 +178,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JRadioButtonMenuItem bySegmentMenuRadioBt = null;
 	private JRadioButtonMenuItem byGapMenuRadioBt = null;
 	private JRadioButtonMenuItem BWMenuRadioBt = null;
+	private JRadioButtonMenuItem GrayMenuRadioBt = null;
 
 	private JCheckBoxMenuItem showButtonsMenuCheckBox = null;
 	private ButtonGroup showCommandButtonsBG = null; // @jve:decl-index=0:
@@ -276,6 +278,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		action = new SetColorModeByGapAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new SetColorModeBWAction();
+		actionMap.put(action.getValue(Action.NAME), action);
+		action = new SetColorModeGrayAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new SwitchColorModeAction();
 		actionMap.put(action.getValue(Action.NAME), action);
@@ -500,10 +504,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			bySegmentMenuRadioBt.setSelected(true);
 		} else if (XMAX.getConfiguration().getColorModeState() instanceof ColorModeByGap) {
 			byGapMenuRadioBt.setSelected(true);
-		}
-		if (XMAX.getConfiguration().getColorModeState() instanceof ColorModeBW) {
+		} else if (XMAX.getConfiguration().getColorModeState() instanceof ColorModeBW) {
 			BWMenuRadioBt.setSelected(true);
+		} else if (XMAX.getConfiguration().getColorModeState() instanceof ColorModeGray){
+			GrayMenuRadioBt.setSelected(true);
 		}
+		
 		if (XMAX.getConfiguration().getShowStatusBar()) {
 			statusBar.setVisible(true);
 			showStatusBarMenuCheckBox.setState(true);
@@ -1014,10 +1020,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			colorBG = new ButtonGroup();
 			colorBG.add(getBySegmentMenuRadioBt());
 			colorMenu.add(getBySegmentMenuRadioBt());
-			colorBG.add(getByGapMenuRadioBt());
-			colorMenu.add(getByGapMenuRadioBt());
+			colorBG.add(getGrayMenuRadioBt());
+			colorMenu.add(getGrayMenuRadioBt());
 			colorBG.add(getBWMenuRadioBt());
 			colorMenu.add(getBWMenuRadioBt());
+			colorBG.add(getByGapMenuRadioBt());
+			colorMenu.add(getByGapMenuRadioBt());
 		}
 		return colorMenu;
 	}
@@ -1064,6 +1072,21 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		return BWMenuRadioBt;
 	}
 
+
+	/**
+	 * This method initializes GrayMenuRadioBt
+	 * 
+	 * @return javax.swing.JRadioButtonMenuItem
+	 */
+	private JRadioButtonMenuItem getGrayMenuRadioBt() {
+		if (GrayMenuRadioBt == null) {
+			GrayMenuRadioBt = new JRadioButtonMenuItem();
+			GrayMenuRadioBt.setAction(actionMap.get("Color mode gray"));
+			GrayMenuRadioBt.addMouseListener(this);
+		}
+		return GrayMenuRadioBt;
+	}
+	
 	/**
 	 * This method initializes qcMenuCheckBox
 	 * 
@@ -1918,6 +1941,25 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			statusBar.setMessage("");
 		}
 	}
+	
+	class SetColorModeGrayAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
+		public SetColorModeGrayAction() {
+			super();
+			putValue(Action.NAME, "Color mode gray");
+			putValue(Action.SHORT_DESCRIPTION, "Gray");
+			putValue(Action.LONG_DESCRIPTION, "All traces drawn in gray");
+			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_B);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			graphPanel.setColorMode(new ColorModeGray());
+			GrayMenuRadioBt.setSelected(true);
+			statusBar.setMessage("");
+		}
+	}
 
 	class SetColorModeByGapAction extends AbstractAction implements Action {
 
@@ -1947,24 +1989,28 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			super();
 			putValue(Action.NAME, "Color mode");
 			putValue(Action.SHORT_DESCRIPTION, "Switch color");
-			putValue(Action.LONG_DESCRIPTION, "Switch color mode in rotating manner: BW - By segment - By gap");
+			putValue(Action.LONG_DESCRIPTION, "Switch color mode in rotating manner: Gray - BW - By segment - By gap");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			if (graphPanel.getColorMode() instanceof ColorModeBW) {
+			if (graphPanel.getColorMode() instanceof ColorModeBySegment) {
+				graphPanel.setColorMode(new ColorModeGray());
+				GrayMenuRadioBt.setSelected(true);
+				statusBar.setMessage("Color mode gray");
+			} else if (graphPanel.getColorMode() instanceof ColorModeGray) {
+				graphPanel.setColorMode(new ColorModeBW());
+				BWMenuRadioBt.setSelected(true);
+				statusBar.setMessage("Color mode by black & white");
+			} else if (graphPanel.getColorMode() instanceof ColorModeBW) {
 				graphPanel.setColorMode(new ColorModeByGap());
 				byGapMenuRadioBt.setSelected(true);
 				statusBar.setMessage("Color mode by gap");
-			} else if (graphPanel.getColorMode() instanceof ColorModeBySegment) {
-				graphPanel.setColorMode(new ColorModeBW());
-				BWMenuRadioBt.setSelected(true);
-				statusBar.setMessage("Color mode black & white");
 			} else if (graphPanel.getColorMode() instanceof ColorModeByGap) {
 				graphPanel.setColorMode(new ColorModeBySegment());
 				bySegmentMenuRadioBt.setSelected(true);
 				statusBar.setMessage("Color mode by segment");
-			}
+			} 
 
 		}
 	}

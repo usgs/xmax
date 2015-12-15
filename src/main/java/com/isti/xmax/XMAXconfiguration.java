@@ -209,6 +209,8 @@ public class XMAXconfiguration extends Configuration {
 			setColorModeState(new ColorModeBySegment());
 		} else if(colorMode.toUpperCase().equals("BW")){
 			setColorModeState(new ColorModeBySegment());
+		} else if(colorMode.toUpperCase().equals("GRAY")){
+			setColorModeState(new ColorModeBySegment());
 		} else {
 			throw new XMAXException("Illegal color mode marker");
 		}
