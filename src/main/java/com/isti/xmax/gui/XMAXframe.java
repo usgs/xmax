@@ -128,7 +128,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	private JPanel jContentPane = null;
 
-	private ButtonPanel buttonPanel = null;
 	private ScalingButtonPanel scalingButtonPanel = null;
 	private NavigationButtonPanel navigationButtonPanel = null;
 	private FilterButtonPanel filterButtonPanel = null;
@@ -156,7 +155,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	private JMenuItem previousMenuItem = null;
 	private JMenu channelsMenu = null;
-	private JPanel southPanel = null;
+	private JPanel buttonPanel = null;
 	private GridBagConstraints constraints;
 	private JCheckBoxMenuItem showBigCursorMenuCheckBox = null;
 	private JCheckBoxMenuItem showStatusBarMenuCheckBox = null;
@@ -445,46 +444,52 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		showCommandButtonsBG = new ButtonGroup();
 		showCommandButtonsBG.add(commandButtonTopMenuRadioBt);
 		showCommandButtonsBG.add(commandButtonBottomMenuRadioBt);
+		
+		//initialize command buttons
+		commandButtonBottomMenuRadioBt.setSelected(true);
+		JPanel navigationPanel = getNavigationButtonPanel();
+		navigationPanel.setBorder(BorderFactory.createEmptyBorder());
+		JPanel selectPanel = getSelectionButtonPanel();
+		selectPanel.setBorder(BorderFactory.createTitledBorder("Misc"));
+		JPanel scalingPanel = getScalingButtonPanel();
+		scalingPanel.setBorder(BorderFactory.createTitledBorder("Scaling"));
+		JPanel analysisPanel = getAnalysisButtonPanel();
+		analysisPanel.setBorder(BorderFactory.createTitledBorder("Analysis"));
+		JPanel filterPanel = getFilterButtonPanel();
+		filterPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
+		constraints.gridwidth = 1;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.weightx = 0;
+		buttonPanel.add(navigationPanel, constraints);
+		constraints.gridwidth = 1;
+		constraints.gridx = 1;
+		constraints.gridy = 0;
+		constraints.weightx = 0.2;
+		buttonPanel.add(selectPanel, constraints);
+		constraints.gridwidth = 1;
+		constraints.gridx = 2;
+		constraints.gridy = 0;
+		constraints.weightx = 0.2;
+		buttonPanel.add(analysisPanel, constraints);
+		constraints.gridwidth = 1;
+		constraints.gridx = 3;
+		constraints.gridy = 0;
+		constraints.weightx = 0.2;
+		buttonPanel.add(filterPanel, constraints);
+		constraints.gridwidth = 1;
+		constraints.gridx = 4;
+		constraints.gridy = 0;
+		constraints.weightx = 0.2;
+		buttonPanel.add(scalingPanel, constraints);
+
+		
 		if (XMAX.getConfiguration().getShowCommandButtonsTop()) {
 			commandButtonTopMenuRadioBt.setSelected(true);
-			jContentPane.add(getButtonPanel(), BorderLayout.NORTH);
+			jContentPane.add(buttonPanel, BorderLayout.NORTH);
 		} else {
 			commandButtonBottomMenuRadioBt.setSelected(true);
-			JPanel navigationPanel = getNavigationButtonPanel();
-			navigationPanel.setBorder(BorderFactory.createEmptyBorder());
-			JPanel selectPanel = getSelectionButtonPanel();
-			selectPanel.setBorder(BorderFactory.createTitledBorder("Misc"));
-			JPanel scalingPanel = getScalingButtonPanel();
-			scalingPanel.setBorder(BorderFactory.createTitledBorder("Scaling"));
-			JPanel analysisPanel = getAnalysisButtonPanel();
-			analysisPanel.setBorder(BorderFactory.createTitledBorder("Analysis"));
-			JPanel filterPanel = getFilterButtonPanel();
-			filterPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
-			constraints.gridwidth = 1;
-			constraints.gridx = 0;
-			constraints.gridy = 0;
-			constraints.weightx = 0;
-			southPanel.add(navigationPanel, constraints);
-			constraints.gridwidth = 1;
-			constraints.gridx = 1;
-			constraints.gridy = 0;
-			constraints.weightx = 0.2;
-			southPanel.add(selectPanel, constraints);
-			constraints.gridwidth = 1;
-			constraints.gridx = 2;
-			constraints.gridy = 0;
-			constraints.weightx = 0.2;
-			southPanel.add(analysisPanel, constraints);
-			constraints.gridwidth = 1;
-			constraints.gridx = 3;
-			constraints.gridy = 0;
-			constraints.weightx = 0.2;
-			southPanel.add(filterPanel, constraints);
-			constraints.gridwidth = 1;
-			constraints.gridx = 4;
-			constraints.gridy = 0;
-			constraints.weightx = 0.2;
-			southPanel.add(scalingPanel, constraints);
+			jContentPane.add(buttonPanel, BorderLayout.SOUTH);
 
 		}
 
@@ -645,7 +650,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new BorderLayout());
-			jContentPane.add(getSouthPanel(), BorderLayout.SOUTH);
+			jContentPane.add(getbuttonPanel(), BorderLayout.SOUTH);
 			jContentPane.add(getGraphPanel(), BorderLayout.CENTER);
 		}
 		return jContentPane;
@@ -663,17 +668,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		return graphPanel;
 	}
 
-	/**
-	 * This method initializes ButtonPanel
-	 * 
-	 * @return ButtonPanel
-	 */
-	private ButtonPanel getButtonPanel() {
-		if (buttonPanel == null) {
-			buttonPanel = new ButtonPanel();
-		}
-		return buttonPanel;
-	}
 
 	/**
 	 * This method initializes the ScalingButtonPanel
@@ -1300,19 +1294,19 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getSouthPanel() {
-		if (southPanel == null) {
-			southPanel = new JPanel();
+	private JPanel getbuttonPanel() {
+		if (buttonPanel == null) {
+			buttonPanel = new JPanel();
 			constraints = new GridBagConstraints();
 			GridBagLayout gridbagLayout = new GridBagLayout();
-			southPanel.setLayout(gridbagLayout);
+			buttonPanel.setLayout(gridbagLayout);
 			constraints.gridx = 0;
 			constraints.gridy = 1;
 			constraints.gridwidth = 5;
 			constraints.fill = GridBagConstraints.HORIZONTAL;
-			southPanel.add(getStatusBar(), constraints);
+			buttonPanel.add(getStatusBar(), constraints);
 		}
-		return southPanel;
+		return buttonPanel;
 	}
 
 	public void setUndoEnabled(boolean enabled) {
@@ -2051,8 +2045,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Show buttons top")) {
-				southPanel.remove(getButtonPanel());
-				jContentPane.add(getButtonPanel(), BorderLayout.NORTH);
+				commandButtonTopMenuRadioBt.setSelected(true);
+				jContentPane.add(buttonPanel, BorderLayout.NORTH);
 				graphPanel.repaint();
 			}
 			statusBar.setMessage("");
@@ -2073,8 +2067,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Show buttons bottom")) {
-				jContentPane.remove(getButtonPanel());
-				southPanel.add(getButtonPanel(), 0);
+				commandButtonBottomMenuRadioBt.setSelected(true);
+				jContentPane.add(buttonPanel, BorderLayout.SOUTH);
 				graphPanel.repaint();
 			}
 			statusBar.setMessage("");
@@ -3499,224 +3493,4 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 		}
 	}
-
-	class ButtonPanel extends JPanel {
-
-		private static final long serialVersionUID = 1L;
-		private CommandButton filterButton = null;
-		private CommandButton selectButton = null;
-		private CommandButton winButton = null;
-		private CommandButton plotButton = null;
-		private CommandButton toggleButton = null;
-		private CommandButton dumpButton = null;
-		private CommandButton qcButton = null;
-		private CommandButton pick_offsetButton = null;
-		private CommandButton exportButton = null;
-		private CommandButton limButton = null;
-		private CommandButton processingButton = null;
-		private CommandButton scaleButton = null;
-
-		public ButtonPanel() {
-			super();
-			GridLayout gridLayout2 = new GridLayout(3, 4, 2, 2);
-			setLayout(gridLayout2);
-			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-			setPreferredSize(new Dimension(100, 100));
-
-			add(getPlotButton(), null);
-			add(getDumpButton(), null);
-			add(getExportButton(), null);
-
-			add(getSelectButton(), null);
-			add(getProcessingButton(), null);
-			add(getPick_offsetButton(), null);
-			add(getWinButton(), null);
-
-			add(getToggleButton(), null);
-			add(getPhaseButton(), null);
-			add(getFilterButton(), null);
-			add(getLimButton(), null);
-		}
-
-		/**
-		 * This method initializes filterButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getFilterButton() {
-			if (filterButton == null) {
-				filterButton = new CommandButton("FLTR");
-				filterButton.setAction1(actionMap.get(FilterLP.NAME));
-				filterButton.setAction2(actionMap.get(FilterBP.NAME));
-				filterButton.setAction3(actionMap.get(FilterDYO.NAME));
-			}
-			return filterButton;
-		}
-
-		/**
-		 * This method initializes scaleButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getScaleButton() {
-			if (scaleButton == null) {
-				scaleButton = new CommandButton("SCL");
-				scaleButton.setAction1(actionMap.get("Scale auto"));
-				scaleButton.setAction2(actionMap.get("Scale com"));
-				scaleButton.setAction3(actionMap.get("Scale Xhair"));
-			}
-			return scaleButton;
-		}
-
-		/**
-		 * This method initializes selectButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getSelectButton() {
-			if (selectButton == null) {
-				selectButton = new CommandButton("SEL");
-				selectButton.setAction1(actionMap.get("Select"));
-				selectButton.setAction2(actionMap.get("Reload data"));
-				selectButton.setAction3(actionMap.get("Overlay"));
-			}
-			return selectButton;
-		}
-
-		/**
-		 * This method initializes winButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getWinButton() {
-			if (winButton == null) {
-				winButton = new CommandButton("WIN");
-				winButton.setAction1(actionMap.get("Particle motion"));
-				winButton.setAction2(actionMap.get("Power spectra density"));
-				winButton.setAction3(actionMap.get("Response"));
-			}
-			return winButton;
-		}
-
-		/**
-		 * This method initializes plotButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getPlotButton() {
-			if (plotButton == null) {
-				plotButton = new CommandButton("PLT");
-				plotButton.setAction1(actionMap.get("Next"));
-				plotButton.setAction2(actionMap.get("Previous"));
-				plotButton.setAction3(actionMap.get("Undo"));
-			}
-			return plotButton;
-		}
-
-		/**
-		 * This method initializes toggleButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getToggleButton() {
-			if (toggleButton == null) {
-				toggleButton = new CommandButton("TOG");
-				toggleButton.setAction1(actionMap.get("Phases"));
-				toggleButton.setAction2(actionMap.get("Color mode"));
-				toggleButton.setAction3(actionMap.get("Demean"));
-			}
-			return toggleButton;
-		}
-
-		/**
-		 * This method initializes dumpButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getDumpButton() {
-			if (dumpButton == null) {
-				dumpButton = new CommandButton("DMP");
-				dumpButton.setAction1(actionMap.get("Dump to XML"));
-				dumpButton.setAction2(actionMap.get("Dump to MSEED"));
-				dumpButton.setAction3(actionMap.get("Dump to ASCII"));
-			}
-			return dumpButton;
-		}
-
-		/**
-		 * This method initializes phaseButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getPhaseButton() {
-			if (qcButton == null) {
-				qcButton = new CommandButton("QC");
-				qcButton.setAction1(actionMap.get("Quality Control"));
-				qcButton.setAction2(actionMap.get("View headers"));
-				qcButton.setAction3(actionMap.get("Dump to SAC"));
-			}
-			return qcButton;
-		}
-
-		/**
-		 * This method initializes exitButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getProcessingButton() {
-			if (processingButton == null) {
-				processingButton = new CommandButton(null);
-				processingButton.setAction1(actionMap.get("Rotation"));
-				processingButton.setAction2(actionMap.get("Spectra"));
-				processingButton.setAction3(actionMap.get("Correlation"));
-			}
-			return processingButton;
-		}
-
-		/**
-		 * This method initializes pick_offsetButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getPick_offsetButton() {
-			if (pick_offsetButton == null) {
-				pick_offsetButton = new CommandButton(null);
-				pick_offsetButton.setAction1(actionMap.get("Offset"));
-				pick_offsetButton.setAction2(actionMap.get("Mark pick"));
-				pick_offsetButton.setAction3(actionMap.get("Delete pick"));
-			}
-			return pick_offsetButton;
-		}
-
-		/**
-		 * This method initializes exportButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getExportButton() {
-			if (exportButton == null) {
-				exportButton = new CommandButton("EXP");
-				exportButton.setAction1(actionMap.get("Print"));
-				exportButton.setAction2(actionMap.get("Export to GRAPH"));
-				exportButton.setAction3(actionMap.get("Export to HTML"));
-			}
-			return exportButton;
-		}
-
-		/**
-		 * This method initializes limButton
-		 * 
-		 * @return CommandButton
-		 */
-		private CommandButton getLimButton() {
-			if (limButton == null) {
-				limButton = new CommandButton("LIM");
-				limButton.setAction1(actionMap.get("X limits"));
-				limButton.setAction2(actionMap.get("Y limits"));
-				limButton.setAction3(actionMap.get("Exit"));
-			}
-			return limButton;
-		}
-
-	}
-} // @jve:decl-index=0:visual-constraint="10,10"
+}
