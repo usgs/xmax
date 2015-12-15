@@ -37,15 +37,19 @@ public class ChannelSubframe {
 
 	private static final Logger logger = Logger.getLogger(ChannelSubframe.class);
 	private int len;
+	@SuppressWarnings("unused") //Placeholder for data read from stream
 	private int authOffset;
 	private byte auth;
 	private byte transform;
 	private byte sensorType;
+	@SuppressWarnings("unused") //Placeholder for data read from stream
 	private byte optionFlag;
 	private String station; // a SSSSSCCCLL name!
 	private byte[] statbuf = new byte[10];
-	private String uncompressedFormat; // two characters\
+	private String uncompressedFormat; // two characters\	
+	@SuppressWarnings("unused") //Placeholder for data read from stream
 	private float calibFactor;
+	@SuppressWarnings("unused") //Placeholder for data read from stream
 	private float calibPeriod;
 	private String timeStamp;
 	private byte[] timebuf = new byte[20]; // scratch space to get time
@@ -58,6 +62,7 @@ public class ChannelSubframe {
 	private byte[] data;
 	private ByteBuffer bdata;
 	private int subframeCount;
+	@SuppressWarnings("unused") //Placeholder for data read from stream
 	private int authKeyID;
 	private int authSize;
 	private byte[] authBytes;
