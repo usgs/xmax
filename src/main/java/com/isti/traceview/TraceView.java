@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.data.DataModule;
 import com.isti.util.UtilFns;
+import com.isti.xmax.XMAX;
 
 /**
  * The main class of library, it should be created first to use lib. 
@@ -30,12 +31,12 @@ public class TraceView {
 	/**
 	 * Library version label holder
 	 */
-	private static final String version = "2.0.3";
+	private static final String version = XMAX.version;
 
 	/**
 	 * Library version date holder
 	 */
-	private static final String releaseDate = "December 2015";
+	private static final String releaseDate = XMAX.releaseDate;
 
 	/**
 	 * Library {@link Configuration} class
