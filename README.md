@@ -53,24 +53,19 @@ xmax
 
 ###Build
 
-######Ant Setup/Execution
+######Gradle Setup/Execution
 
-    Ant commands to clean, compile and package xmax (uses build.xml)
+    Gradle commands to clean, compile and package xmax (uses build.xml)
 ```bash
-    ant jar		# create distribution xmax.jar (default target)
-    ant run		# run java com.isti.xmax.XMAX from /build dir
+    gradle jar		# create distribution xmax.jar (default target)
+    gradle run		# run java com.isti.xmax.XMAX from /build dir
 ```
 
-    Ant target descriptions (order of operations)
+    Gradle target descriptions (order of operations)
 ```bash
-    ant clean_build 	-> delete build/ directory
-    ant init			-> create build/ directory 
-    ant build-plugins	-> compile java plugins/ code
-    ant create-manifest -> create META-INF/MANIFEST.MF 
-    ant compile			-> compile java src/ code to build/ directory
-    ant libraries		-> add lib/ and plugins/ to build/ directory
-    ant jar				-> create distribution xmax.jar (default target)
-    ant javadoc			-> create javadoc web code
+    gradle clean 	        -> delete build/ directory
+    gradle build			-> compile java src/ code to build/ directory
+    gradle jar				-> create distribution xmax.jar (default target)
 ```
 
 ###Usage
