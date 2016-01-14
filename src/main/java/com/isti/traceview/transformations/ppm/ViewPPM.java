@@ -14,6 +14,7 @@ import javax.swing.WindowConstants;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.event.ChartChangeEvent;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYDataset;
@@ -33,6 +34,8 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 	private JOptionPane optionPane;
 	private static PPMPolarItemRenderer renderer = new PPMPolarItemRenderer();
 	private static TraceViewChartPanel cp = null;
+    private static JPanel ret = null;
+    private double altAngle = 180;
 
 	ViewPPM(Frame owner, XYDataset dataset, TimeInterval ti, String annotation, IFilter filter) {
 		super(owner, "Particle Motion", true);
@@ -68,6 +71,7 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 			// If you were going to check something
 			// before closing the window, you'd do
 			// it here.
+			
 			if (value.equals("Close")) {
 				setVisible(false);
 				dispose();
@@ -75,6 +79,10 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 				cp.createChartPrintJob();
 			} else if (value.equals("Enter Angle")) {
 				double angle = getAngle();
+				if(angle >= 180)
+					altAngle = angle - 180;
+				else
+					altAngle = angle + 180;
 				if (angle != Double.POSITIVE_INFINITY) {
 					renderer.setRulerAngle(angle);
 					cp.setRefreshBuffer(true);
@@ -82,29 +90,50 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 				}
 			} else if (value.equals("+1")) {
 				renderer.setRulerAngle(renderer.getRulerAngle() + 1);
+				altAngle = altAngle + 1; 
 				cp.setRefreshBuffer(true);
 				cp.repaint();
 			} else if (value.equals("+5")) {
 				renderer.setRulerAngle(renderer.getRulerAngle() + 5);
 				cp.setRefreshBuffer(true);
+				altAngle = altAngle + 5;
 				cp.repaint();
 			} else if (value.equals("+30")) {
 				renderer.setRulerAngle(renderer.getRulerAngle() + 30);
 				cp.setRefreshBuffer(true);
+				altAngle = altAngle + 30;
 				cp.repaint();
 			} else if (value.equals("-1")) {
 				renderer.setRulerAngle(renderer.getRulerAngle() - 1);
 				cp.setRefreshBuffer(true);
+				altAngle = altAngle - 1;
 				cp.repaint();
 			} else if (value.equals("-5")) {
 				renderer.setRulerAngle(renderer.getRulerAngle() - 5);
 				cp.setRefreshBuffer(true);
+				altAngle = altAngle - 5;
 				cp.repaint();
 			} else if (value.equals("-30")) {
 				renderer.setRulerAngle(renderer.getRulerAngle() - 30);
 				cp.setRefreshBuffer(true);
+				altAngle = altAngle - 30;
 				cp.repaint();
 			}
+			
+			if(renderer.getRulerAngle() < 0)
+				renderer.setRulerAngle(renderer.getRulerAngle() + 360);
+			else if (renderer.getRulerAngle() >= 360)
+				renderer.setRulerAngle(renderer.getRulerAngle() - 360);
+			
+			if(altAngle < 0)
+				altAngle = altAngle + 360;
+			else if (altAngle >= 360)
+				altAngle = altAngle - 360;
+			
+			TextTitle subTitle = new TextTitle("Angle: " + renderer.getRulerAngle() + "\u00b0/" + altAngle + "\u00b0", ret.getFont());
+			cp.getChart().removeSubtitle(cp.getChart().getSubtitle(0));
+			cp.getChart().addSubtitle(subTitle);
+			cp.chartChanged(new ChartChangeEvent(cp.getChart()));
 		}
 	}
 
@@ -113,9 +142,9 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 		double ret = ai.getAngle();
 		return ret;
 	}
-
+	
 	private static JPanel createChartPanel(XYDataset dataset, TimeInterval ti, String annotation, IFilter filter) {
-		JPanel ret = new JPanel();
+		ret = new JPanel();
 		BoxLayout retLayout = new BoxLayout(ret, javax.swing.BoxLayout.Y_AXIS);
 		ret.setLayout(retLayout);
 		JFreeChart chart = ChartFactory.createPolarChart(null, // title
@@ -132,6 +161,8 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 				+ ", Duration: " + ti.convert() + ". Filter: " + filterName + ".", ret.getFont());
 		chart.setTitle(title);
+		TextTitle subTitle = new TextTitle("Angle: 0\u00b0/180\u00b0", ret.getFont());
+		chart.addSubtitle(0, subTitle);
 		PolarPlot plot = (PolarPlot) chart.getPlot();
 		plot.setRenderer(renderer);
 		plot.addCornerTextItem(annotation);
