@@ -165,6 +165,7 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 		chart.addSubtitle(0, subTitle);
 		PolarPlot plot = (PolarPlot) chart.getPlot();
 		plot.setRenderer(renderer);
+		renderer.setRulerAngle(0.);
 		plot.addCornerTextItem(annotation);
 		cp = new TraceViewChartPanel(chart, true);
 		ret.add(cp);
