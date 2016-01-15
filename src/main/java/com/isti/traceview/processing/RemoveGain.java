@@ -7,6 +7,7 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
 import com.isti.traceview.data.PlotDataPoint;
 import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.IColorModeState;
 
@@ -56,26 +57,25 @@ public class RemoveGain {
 				throw new RemoveGainException("Unable to remove gain. No response found.");
 			}
 		}
-		PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter,  null, colorMode);
 		PlotData ret = new PlotData(channel.getName(), channel.getColor());
-		
+		PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter,  null, colorMode);
 		PlotDataPoint pdp = null;
-		for(int r = 0; r < channel.getSegmentCount(); r++){
-			for (int i = 0; i < pointCount; i++) {
-
-				int value = channel.getRawData(ti).get(r).getData().data[i];
+		int curPixelIndex = 0; 
+		for(Segment segment: channel.getRawData(ti)){
+			for (int i = 0; curPixelIndex < pointCount && i < segment.getData().data.length; i++) {
+				int value = segment.getData().data[i];
 				pdp = toProcess.getPixels().get(i)[0];
-				
 				pdp = new PlotDataPoint(removestate ? pdp.getTop()/sensitivity : pdp.getTop(), 
 										removestate ? pdp.getBottom()/sensitivity : pdp.getBottom(), 
 										removestate ? value / sensitivity : value, 
-							            toProcess.getPixels().get(i)[0].getSegmentNumber(), 
-										toProcess.getPixels().get(i)[0].getRawDataProviderNumber(), 
-										toProcess.getPixels().get(i)[0].getContinueAreaNumber(), 
-										toProcess.getPixels().get(i)[0].getEvents());
+										pdp.getSegmentNumber(), 
+										pdp.getRawDataProviderNumber(), 
+										pdp.getContinueAreaNumber(), 
+										pdp.getEvents());
 				PlotDataPoint[] pdpArray = new PlotDataPoint[1];
 				pdpArray[0] = pdp;
 				ret.addPixel(pdpArray);
+				curPixelIndex++;
 			}
 		}
 		
