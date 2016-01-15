@@ -239,17 +239,17 @@ class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressLi
 					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Dump frequencies file updated", "Message",
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (FileNotFoundException e1) {
-					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Can't find Dumo frequencies file", "Error",
+					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Cannot find the dump frequencies file", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				} catch (IOException e2) {
-					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Can't write Dump frequencies: " + e2,
+					JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Cannot write the dump frequencies: " + e2,
 							"Error", JOptionPane.ERROR_MESSAGE);
 				} finally {
 					try {
 						stream.close();
 					} catch (IOException e1) {
 						// do nothing
-						logger.error("Can't close data stream");
+						logger.error("Cannot close the data stream");
 					}
 				}
 			} else if (value.equals("Export GRAPH")) {

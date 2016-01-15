@@ -108,10 +108,10 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 
 		if ((data.length > maxDataLength) && !warningWasShown
 				&& JOptionPane.showConfirmDialog(XMAX.getFrame(),
-						"Too long data, processing could take time. Do you want to continue?", "Warning",
+						"The dataset selected contains "+length+" samples. Processing could take a long time. Do you want to continue?", "Warning",
 						JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
 			warningWasShown = true;
-			throw new TraceViewException("Filtering was calcelled by user");
+			throw new TraceViewException("Filtering was canceled by user");
 		}
 
 		// Make a copy of data since we gonna modify it.

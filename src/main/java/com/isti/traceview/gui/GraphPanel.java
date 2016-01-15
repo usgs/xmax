@@ -987,7 +987,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		logger.debug("filter " + filter);
 		if(filter != null){
 			if(getMaxDataLength()>filter.getMaxDataLength()){
-				if(JOptionPane.showConfirmDialog(TraceView.getFrame(), "Too long data, processing could take time. Do you want to continue?", "Warning", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
+				if(JOptionPane.showConfirmDialog(TraceView.getFrame(), "Too many datapoints are selected. Processing could take time. Do you want to continue?", "Warning", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
 					this.filter = filter;
 					observable.setChanged();
 					observable.notifyObservers(filter);

@@ -143,7 +143,7 @@ public class TransPPM implements ITransformation {
 		}
 		int dataSize = Math.min(intData1.length, intData2.length);
 		if (dataSize > maxDataLength) {
-			throw new XMAXException("Too long data");
+			throw new XMAXException("Too many datapoints are selected.");
 		}
 		ArrayValues values1 = new ArrayValues(intData1, dataSize);
 		ArrayValues values2 = new ArrayValues(intData2, dataSize);

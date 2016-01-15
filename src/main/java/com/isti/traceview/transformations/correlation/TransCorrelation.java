@@ -106,7 +106,7 @@ public class TransCorrelation implements ITransformation {
 		}
 		double[] dblData1 = IstiUtilsMath.normData(intData1);
 		if (dblData1.length > maxDataLength) {
-			throw new XMAXException("Too long data");
+			throw new XMAXException("Too many datapoints are selected.");
 		}
 		/*
 		 * if(dblData1.length%2 == 1){ dblData1 = Arrays.copyOf(dblData1,
@@ -141,7 +141,7 @@ public class TransCorrelation implements ITransformation {
 			}
 			double[] dblData2 = IstiUtilsMath.normData(intData2);
 			if (dblData2.length > maxDataLength) {
-				throw new XMAXException("Too long data");
+				throw new XMAXException(" Too many datapoints are selected");
 			}
 			/*
 			 * if(dblData2.length%2 == 1){ dblData2 = Arrays.copyOf(dblData2,

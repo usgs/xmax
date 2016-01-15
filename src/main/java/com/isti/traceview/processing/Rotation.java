@@ -677,7 +677,7 @@ public class Rotation {
 
 		private JComboBox<String> getStandardRotationCB() {
 			if (standardRotationCB == null) {
-				ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<String>(new String[]{ "Thrillium UVW to XMAX", "Thrillium XMAX to UVW",
+				ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<String>(new String[]{ "Trillium UVW to XMAX", "Trillium XMAX to UVW",
 						"STS2 UVW to XMAX", "STS2 XMAX to UVW" });
 				standardRotationCB = new JComboBox<String>();
 				standardRotationCB.setModel(rotationTypeCBModel);
