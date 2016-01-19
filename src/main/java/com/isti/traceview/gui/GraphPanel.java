@@ -1082,9 +1082,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *            gain to set
 	 */
 	public void setRemoveGainState(RemoveGain gain) {
-		
+			List<ChannelView> currentChannelShowSet = getCurrentChannelShowSet();
 			drawAreaPanel.removeAll();
-			for (ChannelView cv: channelShowSet) {
+			for (ChannelView cv: currentChannelShowSet) {
 				drawAreaPanel.add(cv);
 			}
 			select = false;
@@ -1417,7 +1417,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					List<String> channelsWithErrors = new ArrayList<String>();
 					for (Component component: drawAreaPanel.getComponents()) {
 						ChannelView view = (ChannelView) component;
-
 						if (view.getHeight() == 0 || view.getWidth() == 0) {
 							// Ugly hack to avoid lack of screen redraw sometimes
 							//logger.debug("DrawAreaPanel: rebuilding corrupted layout");
