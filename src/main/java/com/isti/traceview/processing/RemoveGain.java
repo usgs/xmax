@@ -67,7 +67,7 @@ public class RemoveGain {
 				pdp = toProcess.getPixels().get(i)[0];
 				pdp = new PlotDataPoint(removestate ? pdp.getTop()/sensitivity : pdp.getTop(), 
 										removestate ? pdp.getBottom()/sensitivity : pdp.getBottom(), 
-										removestate ? value / sensitivity : value, 
+										removestate ? pdp.getMean() / sensitivity : value, 
 										pdp.getSegmentNumber(), 
 										pdp.getRawDataProviderNumber(), 
 										pdp.getContinueAreaNumber(), 
