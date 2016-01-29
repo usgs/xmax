@@ -53,7 +53,7 @@ public class TransCoherence implements ITransformation{
 				TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
 						ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
 				@SuppressWarnings("unused")				
-				ViewCoherence vc = new ViewCoherence(parentFrame, plotSeries, effectiveInterval, input);
+				ViewCoherence vc = new ViewCoherence(parentFrame, plotSeries, effectiveInterval);
 			} catch (XMAXException e) {
 				if (!e.getMessage().equals("Operation cancelled")) {
 					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
@@ -81,7 +81,7 @@ public class TransCoherence implements ITransformation{
 	 *             channel
 	 */
 
-	private XYSeriesCollection createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame)
+	private XYSeriesCollection createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame) 
 			throws TraceViewException, XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		ListIterator<PlotDataProvider> li = input.listIterator();
@@ -288,7 +288,8 @@ public class TransCoherence implements ITransformation{
 						1000.0 / channel.getSampleRate());
 				final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
 
-				XYSeries series = new XYSeries("coherence series");
+				XYSeries series = new XYSeries("raw series");
+				
 				for(int i = 0; i < finalCoherence.length; i++){
 					series.add(1.0 / frequenciesArray[i], Math.sqrt(finalCoherence[i]));
 				}
