@@ -137,8 +137,9 @@ class ViewCoherence extends JDialog implements PropertyChangeListener, ItemListe
 		NumberAxis domainAxis = new LogarithmicAxis("Period, s");
 		plot.setDomainAxis(domainAxis);
 		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-		rangeAxis.setAutoRange(true);
-		rangeAxis.setAutoRangeIncludesZero(false);
+		rangeAxis.setLowerBound(0);
+		rangeAxis.setUpperBound(1);
+		rangeAxis.setAutoRangeIncludesZero(true);
 		plot.setBackgroundPaint(Color.lightGray);
 		plot.setDomainGridlinePaint(Color.white);
 		plot.setRangeGridlinePaint(Color.white);
