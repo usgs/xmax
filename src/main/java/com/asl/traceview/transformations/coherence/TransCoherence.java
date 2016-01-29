@@ -186,6 +186,22 @@ public class TransCoherence implements ITransformation{
 			int segIndex = 0; // keeps track of where the index is within an
 								// individual segment
 
+			int ds;
+			if (intData.length > maxDataLength) {
+				ds = getPower2Length(maxDataLength);
+				int[] tempIntData = new int[ds];
+				for (int i = 0; i < maxDataLength; i++)
+					tempIntData[i] = intData[i];
+				intData = tempIntData;
+				((XMAXframe) parentFrame).getStatusBar().setMessage(
+						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
+			} else {
+				ds = intData.length;
+			}
+			if (ds > effectiveLength) {
+				effectiveLength = ds;
+			}
+			
 			// Perform windowing and compute the FFT of each segment. The
 			// finalNoiseSpectraData array contains the sum of the FFTs for all
 			// segments.
