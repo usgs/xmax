@@ -1,5 +1,6 @@
 package com.isti.traceview.gui;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import com.isti.traceview.common.TimeInterval;
@@ -17,6 +18,7 @@ public class ScaleModeXhair extends ScaleModeAbstract implements IScaleModeState
 	public void init(List<PlotData> graphs, List<ChannelView> allViews, TimeInterval timeRange, IMeanState meanState, int height) {
 		maxValue = Double.NEGATIVE_INFINITY;
 		double minValue = Double.POSITIVE_INFINITY;
+		DecimalFormat df = new DecimalFormat("#.###E0");
 		for (PlotData data: graphs) {
 			if (data.getMeanValue() == Double.POSITIVE_INFINITY || data.getMeanValue() == Double.NEGATIVE_INFINITY) {
 				maxValue = Double.POSITIVE_INFINITY;
@@ -24,11 +26,11 @@ public class ScaleModeXhair extends ScaleModeAbstract implements IScaleModeState
 			} else {
 				double dataMaxValue = meanState.getValue(data.getMaxValue(), data.getMeanValue());
 				if (dataMaxValue > maxValue) {
-					maxValue = dataMaxValue;
+					maxValue = Double.valueOf(df.format(dataMaxValue));
 				}
 				double dataMinValue = meanState.getValue(data.getMinValue(), data.getMeanValue());
 				if (dataMinValue < minValue) {
-					minValue = dataMinValue;
+					minValue = Double.valueOf(df.format(dataMinValue));
 				}
 			}
 		}

@@ -18,6 +18,7 @@ class AngleInputDialog extends JDialog implements PropertyChangeListener {
 	private JOptionPane optionPane;
 	private JTextField textField;
 	private double angle = Double.POSITIVE_INFINITY;
+	private double curValue = Double.POSITIVE_INFINITY;
 
 	public double getAngle() {
 		return angle;
@@ -25,6 +26,7 @@ class AngleInputDialog extends JDialog implements PropertyChangeListener {
 
 	AngleInputDialog(Dialog f, double value) {
 		super(f, "Angle Input Dialog", true);
+		curValue = value; 
 		JPanel panel = new JPanel();
 		textField = new JTextField();
 		textField.setPreferredSize(new Dimension(70, 22));
@@ -60,6 +62,7 @@ class AngleInputDialog extends JDialog implements PropertyChangeListener {
 					setVisible(true);
 				}
 			} else {
+				angle = curValue; // if cancel, then keep angle the same
 				setVisible(false);
 				dispose();
 			}

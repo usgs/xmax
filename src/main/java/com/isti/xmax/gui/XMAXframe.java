@@ -62,6 +62,7 @@ import javax.swing.event.MouseInputListener;
 
 import org.apache.log4j.Logger;
 
+import com.asl.traceview.transformations.coherence.TransCoherence;
 import com.isti.traceview.CommandHandler;
 import com.isti.traceview.ExecuteCommand;
 import com.isti.traceview.ICommand;
@@ -303,6 +304,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		action = new ParticleMotionAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new PowerSpectraDensityAction();
+		actionMap.put(action.getValue(Action.NAME), action);
+		action = new CoherenceAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new SpectraAction();
 		actionMap.put(action.getValue(Action.NAME), action);
@@ -2170,7 +2173,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			try {
 				ITransformation resp = new TransPPM();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
-				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2239,6 +2242,38 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance()
 						.getConfigurationAt("Configuration.Plugins.PSD");
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf,
+						getInstance());
+			} finally {
+				statusBar.setMessage("");
+				setWaitCursor(false);
+			}
+		}
+	}
+	
+	class CoherenceAction extends AbstractAction implements Action {
+
+		private static final long serialVersionUID = 1L;
+
+		public CoherenceAction() {
+			super();
+			putValue(Action.NAME, TransCoherence.NAME);
+			putValue(Action.SHORT_DESCRIPTION, "Coherence");
+			putValue(Action.LONG_DESCRIPTION, "Show Coherence window");
+			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			setWaitCursor(true);
+			try {
+
+				ITransformation resp = new TransCoherence();
+
+				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+				for (ChannelView channelView : selectedViews) {
+					selectedChannels.addAll(channelView.getPlotDataProviders());
+				}
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
 						getInstance());
 			} finally {
 				statusBar.setMessage("");
@@ -3459,6 +3494,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	class AnalysisButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
 		private JButton PSDButton = null;
+		private JButton CoherenceButton = null;
 		private JButton spectraButton = null;
 		private JButton respButton = null;
 		private JButton particlemotionButton = null;
@@ -3472,6 +3508,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setPreferredSize(new Dimension(100, 100));
 			// Add buttons
 			add(getPSDButton(), null);
+			add(getCoherenceButton(), null);
 			add(getSpectraButton(), null);
 			add(getRespButton(), null);
 			add(getParticleMotionButton(), null);
@@ -3484,6 +3521,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				PSDButton.addActionListener(this);
 			}
 			return PSDButton;
+		}
+		
+		private JButton getCoherenceButton() {
+			if (CoherenceButton == null) {
+				CoherenceButton = new JButton("Coherence");
+				CoherenceButton.addActionListener(this);
+			}
+			return CoherenceButton;
 		}
 
 		private JButton getSpectraButton() {
@@ -3523,6 +3568,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			Action action = null;
 			if (src == PSDButton) {
 				action = actionMap.get(TransPSD.NAME);
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == CoherenceButton) {
+				action = actionMap.get(TransCoherence.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == spectraButton) {
 				action = actionMap.get(TransSpectra.NAME);

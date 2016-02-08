@@ -445,10 +445,12 @@ class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressLi
 	private double getValue(int series, double arg) {
 		for (int i = 0; i < dataset.getItemCount(series); i++) {
 			if (arg < dataset.getXValue(series, i)) {
-				return dataset.getYValue(series, i - 1)
-						+ ((dataset.getYValue(series, i) - dataset.getYValue(series, i - 1))
-								* (arg - dataset.getXValue(series, i - 1))
-								/ (dataset.getXValue(series, i) - dataset.getXValue(series, i - 1)));
+				if(i > 0){
+					return dataset.getYValue(series, i - 1)
+							+ ((dataset.getYValue(series, i) - dataset.getYValue(series, i - 1))
+									* (arg - dataset.getXValue(series, i - 1))
+									/ (dataset.getXValue(series, i) - dataset.getXValue(series, i - 1)));
+				}
 			}
 		}
 		return Double.NaN;
