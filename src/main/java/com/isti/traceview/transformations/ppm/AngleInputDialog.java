@@ -62,8 +62,7 @@ class AngleInputDialog extends JDialog implements PropertyChangeListener {
 					setVisible(true);
 				}
 			} else {
-				angle = curValue;
-				System.out.println("angle = " + angle);
+				angle = curValue; // if cancel, then keep angle the same
 				setVisible(false);
 				dispose();
 			}
