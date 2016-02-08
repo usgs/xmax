@@ -2173,7 +2173,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			try {
 				ITransformation resp = new TransPPM();
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
-				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2269,7 +2269,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation resp = new TransCoherence();
 
 				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
-				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}

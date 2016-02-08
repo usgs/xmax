@@ -93,7 +93,7 @@ public class TransPPM implements ITransformation {
 		PlotDataProvider channel1 = input.get(0);
 		PlotDataProvider channel2 = input.get(1);
 		if (channel1.getSampleRate() != channel2.getSampleRate())
-			throw new XMAXException("Channels have dufferent sample rate");
+			throw new XMAXException("Channels have different sample rate");
 		XYSeries series = new XYSeries(channel1.getName() + " " + channel2.getName(), false);
 		double sampleRate;
 		List<Segment> segments1 = channel1.getRawData(ti);
