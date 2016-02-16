@@ -141,13 +141,14 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public PlotData getPlotData(TimeInterval ti, int pointCount,
 			Rotation rotation, IFilter filter, RemoveGain rg, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException {
-		if ((rotation == null && rg == null) || (rg != null && rg.removestate == false)) {
+		if ((rotation == null && rg == null) || (rg != null && rg.removestate == false && rotation == null)) {
 			return getPlotData(ti, pointCount, filter, colorMode);
-		} else if (rg != null && rg.removestate == true){
+		} else if (rg != null && rg.removestate == true  && rotation == null){
 			return rg.removegain(this, ti, pointCount, filter, colorMode);
 		}
 		else {
-			return rotation.rotate(this, ti, pointCount, filter, colorMode);
+			PlotData pd = rotation.rotate(this, ti, pointCount, filter, colorMode);
+			return pd;
 		}
 	}
 
@@ -610,6 +611,26 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		} else {
 			try {
 				return rotation.rotate(this, getTimeRange());
+			} catch (TraceViewException e) {
+				logger.error("TraceViewException:", e);	
+				return null;
+			}
+		}
+	}
+	
+	/**
+	 * Get rotated raw data for a given time interval
+	 * 
+	 * @param rotation
+	 *            to process data
+	 * @return rotated raw data
+	 */
+	public List<Segment> getRawData(Rotation rotation, TimeInterval ti) {
+		if (rotation == null) {
+			return super.getRawData();
+		} else {
+			try {
+				return rotation.rotate(this, ti);
 			} catch (TraceViewException e) {
 				logger.error("TraceViewException:", e);	
 				return null;

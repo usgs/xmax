@@ -14,6 +14,7 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
@@ -34,8 +35,8 @@ public class TransCorrelation implements ITransformation {
 	private double sampleRate = 0;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
-			JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Rotation rotation,
+			Object configuration, JFrame parentFrame) {
 		if ((input == null) || (input.size() == 0) || (input.size() > 2)) {
 			JOptionPane.showMessageDialog(parentFrame,
 					"You should select two channels to view correlation\nor one channel to view autocorrelation",

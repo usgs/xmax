@@ -56,6 +56,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.MouseInputListener;
@@ -67,6 +68,7 @@ import com.isti.traceview.CommandHandler;
 import com.isti.traceview.ExecuteCommand;
 import com.isti.traceview.ICommand;
 import com.isti.traceview.IUndoableCommand;
+import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.commands.OverlayCommand;
@@ -2204,8 +2206,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.add(Echannel);
 					}
 				}
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), graphPanel.getRotation(),
+						null, getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2241,8 +2243,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance()
 						.getConfigurationAt("Configuration.Plugins.PSD");
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf,
-						getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
+						pluginConf, getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2274,7 +2276,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						getInstance());
+						null, getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2307,7 +2309,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						getInstance());
+						null, getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2337,7 +2339,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						getInstance());
+						null, getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2365,14 +2367,24 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					rotateMenuCheckBox.setState(false);
 				} else {
 					// Create Runnable RotateCommand obj
-					RotateCommand rotateTask = new RotateCommand(graphPanel, new Rotation(XMAX.getFrame()));
-
-					// Create ExecuteCommand obj for executing Runnable
-					ExecuteCommand executor = new ExecuteCommand(rotateTask);
-					executor.initialize();
-					executor.start();
-					executor.shutdown();
-					rotateMenuCheckBox.setState(graphPanel.getRotation() != null);
+					if(graphPanel.getCurrentSelectedChannelShowSet().size() == 2 || graphPanel.getCurrentSelectedChannelShowSet().size() == 3) {
+						RotateCommand rotateTask = new RotateCommand(graphPanel, new Rotation(XMAX.getFrame()));
+	
+						// Create ExecuteCommand obj for executing Runnable
+						ExecuteCommand executor = new ExecuteCommand(rotateTask);
+						executor.initialize();
+						executor.start();
+						executor.shutdown();
+						rotateMenuCheckBox.setState(graphPanel.getRotation() != null);
+					}
+					else {
+						SwingUtilities.invokeLater(new Runnable() {
+						    public void run() {
+								JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes on panels to set channels to rotate",
+										"Selection missing", JOptionPane.WARNING_MESSAGE);;
+						    }
+						  });
+					}
 				}
 			} finally {
 				statusBar.setMessage("");
@@ -2402,7 +2414,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), null, null, getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), null, null, null, getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);

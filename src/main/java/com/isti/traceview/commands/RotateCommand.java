@@ -32,7 +32,7 @@ public class RotateCommand extends AbstractUndoableCommand {
 
 	public void run() {
 		super.run();
-		logger.debug("Rotation command: " + rotation);
+		logger.debug("Rotation command: " + rotation.toString());
 		graphPanel.setRotation(rotation);
 	}
 

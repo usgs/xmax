@@ -15,6 +15,7 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Spectra;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
@@ -33,8 +34,8 @@ public class TransSpectra implements ITransformation {
 	private int maxDataLength = 32768;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval timeInterval, IFilter filter, Object configuration,
-			JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval timeInterval, IFilter filter, Rotation rotation,
+			Object configuration, JFrame parentFrame) {
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "Spectra computation warning",
 					JOptionPane.WARNING_MESSAGE);

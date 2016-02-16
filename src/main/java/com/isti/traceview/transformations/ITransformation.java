@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.processing.Rotation;
 
 /**
  * Interface to represent abstract transformation. Transformation accepts list
@@ -27,11 +28,12 @@ public interface ITransformation {
 	 *            Time interval to define processed range
 	 * @param filter
 	 *            Filter applied before transformation
+	 * @param rotation TODO
 	 * @param parentFrame
 	 *            Host frame
 	 */
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configiration,
-			JFrame parentFrame);
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Rotation rotation,
+			Object configiration, JFrame parentFrame);
 
 	/**
 	 * Sets maximum amount of processed data

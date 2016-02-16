@@ -16,6 +16,7 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
@@ -33,8 +34,8 @@ public class TransPPM implements ITransformation {
 	private int maxDataLength = 8192;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
-			JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Rotation rotation,
+			Object configuration, JFrame parentFrame) {
 		if ((input == null) || (input.size() != 2)) {
 			JOptionPane.showMessageDialog(parentFrame, "You should select two channels to view PPM", "Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -60,7 +61,7 @@ public class TransPPM implements ITransformation {
 					inputRepositioned.add(input.get(1));
 				}
 				@SuppressWarnings("unused")
-				ViewPPM vr = new ViewPPM(parentFrame, createDataset(inputRepositioned, filter, ti), ti,
+				ViewPPM vr = new ViewPPM(parentFrame, createDataset(inputRepositioned, filter, rotation, ti), ti,
 						"N:" + inputRepositioned.get(0).getName() + "  E:" + inputRepositioned.get(1).getName(),
 						filter);
 			} catch (XMAXException e) {
@@ -87,16 +88,21 @@ public class TransPPM implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
+	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, Rotation rotation, TimeInterval ti)
 			throws XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
-		PlotDataProvider channel1 = input.get(0);
-		PlotDataProvider channel2 = input.get(1);
+		PlotDataProvider channel1 = input.get(0); // N/S
+		PlotDataProvider channel2 = input.get(1); // E/W
 		if (channel1.getSampleRate() != channel2.getSampleRate())
 			throw new XMAXException("Channels have different sample rate");
 		XYSeries series = new XYSeries(channel1.getName() + " " + channel2.getName(), false);
 		double sampleRate;
-		List<Segment> segments1 = channel1.getRawData(ti);
+		List<Segment> segments1;
+		if(rotation != null)
+			segments1 = channel1.getRawData(rotation, ti);				
+		else
+			segments1 = channel1.getRawData(ti);	
+
 		int[] intData1 = new int[0];
 		if (segments1.size() > 0) {
 			long segment_end_time = 0;
@@ -117,7 +123,11 @@ public class TransPPM implements ITransformation {
 		} else {
 			throw new XMAXException("You have no data for channel " + channel1.getName());
 		}
-		List<Segment> segments2 = channel2.getRawData(ti);
+		List<Segment> segments2;
+		if(rotation != null)
+			segments2 = channel2.getRawData(rotation, ti);				
+		else
+			segments2 = channel2.getRawData(ti);	
 		int[] intData2 = new int[0];
 		if (segments2.size() > 0) {
 			long segment_end_time = 0;

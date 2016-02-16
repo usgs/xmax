@@ -16,6 +16,7 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.data.Response.FreqParameters;
 import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
@@ -27,8 +28,8 @@ public class TransResp implements ITransformation {
 	private static final int numberFreqs = 500;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
-			JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Rotation rotation,
+			Object configuration, JFrame parentFrame) {
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "RESP computation warning",
 					JOptionPane.WARNING_MESSAGE);

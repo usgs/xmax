@@ -1029,19 +1029,20 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			overlay = false;
 			this.rotation = rotation;
 			select(true); //undo selection
-		} else {
+		} 
+		else {
 			if(rotation.getMatrix()==null){
 				forceRepaint();
-			} else {
-				List<ChannelView> selected = getCurrentSelectedChannelShowSet();
-				if (selected.size() > 0) {
+			} 
+			else {
+					List<ChannelView> selected = getCurrentSelectedChannelShowSet();
 					boolean dataFound = true;
 					for (ChannelView cv: selected) {
 						for (PlotDataProvider ch: cv.getPlotDataProviders()) {
-							if (!Rotation.isComplementaryChannelExist(ch, getTimeRange())) {
-							dataFound = false;
+							if (!Rotation.isComplementaryChannelTrupleExist(ch)) {
+								dataFound = false;
 								break;
-							}
+							}	
 						}
 						if (!dataFound)
 							break;
@@ -1053,16 +1054,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						observable.notifyObservers("ROT");
 						forceRepaint();
 					}
-				} else {
-					SwingUtilities.invokeLater(new Runnable() {
-					    public void run() {
-							JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes on panels to set channels to rotate",
-									"Selection missing", JOptionPane.WARNING_MESSAGE);
-							forceRepaint();
-					    }
-					  });
-				}
-			}
+				} 
 		}
 	}
 
