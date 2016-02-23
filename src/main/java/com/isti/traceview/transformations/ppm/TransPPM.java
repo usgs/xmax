@@ -16,7 +16,6 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
@@ -25,7 +24,6 @@ import com.isti.xmax.gui.XMAXframe;
  * Particle motion transformation. Prepares data for presentation in
  * {@link ViewPPM}
  * 
- * @author Max Kokoulin
  */
 public class TransPPM implements ITransformation {
 
@@ -34,8 +32,8 @@ public class TransPPM implements ITransformation {
 	private int maxDataLength = 8192;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Rotation rotation,
-			Object configuration, JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+			JFrame parentFrame) {
 		if ((input == null) || (input.size() != 2)) {
 			JOptionPane.showMessageDialog(parentFrame, "You should select two channels to view PPM", "Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -61,7 +59,7 @@ public class TransPPM implements ITransformation {
 					inputRepositioned.add(input.get(1));
 				}
 				@SuppressWarnings("unused")
-				ViewPPM vr = new ViewPPM(parentFrame, createDataset(inputRepositioned, filter, rotation, ti), ti,
+				ViewPPM vr = new ViewPPM(parentFrame, createDataset(inputRepositioned, filter, ti), ti,
 						"N:" + inputRepositioned.get(0).getName() + "  E:" + inputRepositioned.get(1).getName(),
 						filter);
 			} catch (XMAXException e) {
@@ -88,7 +86,7 @@ public class TransPPM implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, Rotation rotation, TimeInterval ti)
+	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
 			throws XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		PlotDataProvider channel1 = input.get(0); // N/S
@@ -98,9 +96,9 @@ public class TransPPM implements ITransformation {
 		XYSeries series = new XYSeries(channel1.getName() + " " + channel2.getName(), false);
 		double sampleRate;
 		List<Segment> segments1;
-		if(rotation != null)
-			segments1 = channel1.getRawData(rotation, ti);				
-		else
+		if(channel1.getRotation() != null && channel1.isRotated()) {
+			segments1 = channel1.getRawData(channel1.getRotation(), ti);				
+		} else
 			segments1 = channel1.getRawData(ti);	
 
 		int[] intData1 = new int[0];
@@ -124,8 +122,8 @@ public class TransPPM implements ITransformation {
 			throw new XMAXException("You have no data for channel " + channel1.getName());
 		}
 		List<Segment> segments2;
-		if(rotation != null)
-			segments2 = channel2.getRawData(rotation, ti);				
+		if(channel2.getRotation() != null && channel2.isRotated())
+			segments2 = channel2.getRawData(channel2.getRotation(), ti);				
 		else
 			segments2 = channel2.getRawData(ti);	
 		int[] intData2 = new int[0];

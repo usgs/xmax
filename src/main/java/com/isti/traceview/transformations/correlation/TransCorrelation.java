@@ -14,7 +14,6 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
@@ -35,8 +34,8 @@ public class TransCorrelation implements ITransformation {
 	private double sampleRate = 0;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Rotation rotation,
-			Object configuration, JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+			JFrame parentFrame) {
 		if ((input == null) || (input.size() == 0) || (input.size() > 2)) {
 			JOptionPane.showMessageDialog(parentFrame,
 					"You should select two channels to view correlation\nor one channel to view autocorrelation",
@@ -79,7 +78,12 @@ public class TransCorrelation implements ITransformation {
 			throws XMAXException {
 		List<double[]> ret = new ArrayList<double[]>();
 		PlotDataProvider channel1 = input.get(0);
-		List<Segment> segments1 = channel1.getRawData(ti);
+		List<Segment> segments1; 
+		if(channel1.getRotation() != null)
+			segments1 = channel1.getRawData(ti);
+		else {
+			segments1 = channel1.getRawData(channel1.getRotation(), ti);
+		}
 		int[] intData1 = new int[0];
 		if (segments1.size() > 0) {
 			long segment_end_time = 0;
@@ -116,7 +120,12 @@ public class TransCorrelation implements ITransformation {
 		ret.add(dblData1);
 		if (input.size() == 2) {
 			PlotDataProvider channel2 = input.get(1);
-			List<Segment> segments2 = channel2.getRawData(ti);
+			List<Segment> segments2; 
+			if(channel1.getRotation() != null)
+				segments2 = channel2.getRawData(ti);
+			else {
+				segments2 = channel2.getRawData(channel2.getRotation(), ti);
+			}
 			int[] intData2 = new int[0];
 			if (segments2.size() > 0) {
 				long segment_end_time = 0;

@@ -19,7 +19,6 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.transformations.ITransformation;
 import com.asl.traceview.transformations.coherence.ViewCoherence;
 import com.isti.xmax.XMAXException;
@@ -35,8 +34,8 @@ public class TransCoherence implements ITransformation{
 	private int effectiveLength = 0;
 	
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Rotation rotation,
-			Object configuration, JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+			JFrame parentFrame) {
 		if (input.size() != 2) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select 2 channels", "Coherence computation warning",
 					JOptionPane.WARNING_MESSAGE);
@@ -89,7 +88,12 @@ public class TransCoherence implements ITransformation{
 		List<Cmplx[]> traceArray = new ArrayList<Cmplx[]>();
 		while (li.hasNext()) {
 			PlotDataProvider channel = li.next();
-			List<Segment> segments = channel.getRawData(ti);
+			List<Segment> segments; 
+			if(channel.getRotation() != null && channel.isRotated())
+				segments = channel.getRawData(channel.getRotation(), ti); //if data is rotated then calculate the PSD on the rotated data.
+			else {
+				segments = channel.getRawData(ti);
+			}
 			double samplerate;
 			long segment_end_time = 0;
 			int[] intData = new int[0];

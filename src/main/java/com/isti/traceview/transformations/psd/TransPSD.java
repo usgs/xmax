@@ -19,7 +19,6 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Spectra;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
@@ -41,8 +40,8 @@ public class TransPSD implements ITransformation {
 	private int effectiveLength = 0;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Rotation rotation,
-			Object configuration, JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+			JFrame parentFrame) {
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "PSD computation warning",
 					JOptionPane.WARNING_MESSAGE);

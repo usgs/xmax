@@ -71,7 +71,11 @@ public class Rotation {
 			                                    { Math.sqrt(1.0 / 6.0), -Math.sqrt(0.5),       Math.sqrt(1.0 / 3.0) } 
 			                                  };
 	private Matrix matrix = null;
+	
+	private RotationType type = null;
+	
 
+	private double angle = 0; 
 
 	/**
 	 * Constructor for STANDARD type rotation
@@ -89,11 +93,12 @@ public class Rotation {
 
 	/**
 	 * Constructor with visual query dialog to describe rotation
+	 * @param frame JFrame for rotation menu prompt
+	 * @param numberOfChannels The total number of channels that are ultimately rotated (2 for horizontal, 3 for standard)
 	 */
-	public Rotation(JFrame frame) {
-		RotationDialog dialog = new RotationDialog(frame);
-		RotationType type = dialog.type;
-		//StandardRotation standardRotation = dialog.standardRotation;
+	public Rotation(JFrame frame, int numberOfChannels) {
+		RotationDialog dialog = new RotationDialog(frame, numberOfChannels);
+		type = dialog.type;
 		if(type==null){
 			dialog.dispose();
 		} else if (type.equals(RotationType.STANDARD)) {
@@ -101,10 +106,20 @@ public class Rotation {
 			dialog.dispose();
 		} else if (type.equals(RotationType.HORIZONTAL)) {
 			initMatrix(dialog.horizontalAng);
+			this.angle = dialog.horizontalAng;
 			dialog.dispose();
 		}
 	}
 	
+	public RotationType getRotationType() {
+		return type;
+	}
+	
+	
+	/**
+	 * Gets current rotation matrix
+	 * @return Matrix - current rotation matrix
+	 */
 	public Matrix getMatrix(){
 		return matrix;
 	}
@@ -140,6 +155,15 @@ public class Rotation {
 		}
 		//matrix.show();
 	}
+	
+	public String getRotationAngleText() {
+		if(this.getRotationType() == RotationType.HORIZONTAL)
+			return Double.toString(this.angle) + "\u00b0";
+		else if (this.getRotationType() == RotationType.STANDARD)
+			return "STD";
+		else 
+			return "";
+	}
 
 	/**
 	 * Rotate pixelized data If we have overlap on the trace we take only first
@@ -163,7 +187,7 @@ public class Rotation {
 			throws TraceViewException, RemoveGainException {
 		PlotData[] tripletPlotData = new PlotData[3];
 		char channelType = channel.getType();
-		PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter, null, colorMode);
+		PlotData toProcess = channel.getOriginalPlotData(ti, pointCount, filter, null, colorMode);
 		PlotData ret = new PlotData(channel.getName(), channel.getColor());
 		if (channelType == 'E' || channelType == '2') {
 			tripletPlotData[0] = toProcess;
@@ -363,6 +387,47 @@ public class Rotation {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Checks if two or traces are complementary channels
+	 * 
+	 * @param channel
+	 *            trace to check
+	 * @param ti
+	 *            time interval to process
+	 * @return flag
+	 */
+	public static boolean isComplementaryChannel(PlotDataProvider channel1, PlotDataProvider channel2) {
+		List<Character> channelNames = new ArrayList<Character>();
+		channelNames.add(channel1.getChannelName().charAt(channel1.getChannelName().length() - 1));
+		channelNames.add(channel2.getChannelName().charAt(channel2.getChannelName().length() - 1));
+		if(channelNames.contains('1') && channelNames.contains('2') || 
+				channelNames.contains('N') && channelNames.contains('E'))
+			return true;
+		else
+			return false; 
+	}
+	
+	/**
+	 * Checks if three or traces are complementary channels
+	 * 
+	 * @param channel
+	 *            trace to check
+	 * @param ti
+	 *            time interval to process
+	 * @return flag
+	 */
+	public static boolean isComplementaryChannel(PlotDataProvider channel1, PlotDataProvider channel2, PlotDataProvider channel3) {
+		List<Character> channelNames = new ArrayList<Character>();
+		channelNames.add(channel1.getChannelName().charAt(channel1.getChannelName().length() - 1));
+		channelNames.add(channel2.getChannelName().charAt(channel2.getChannelName().length() - 1));
+		channelNames.add(channel3.getChannelName().charAt(channel3.getChannelName().length() - 1));
+		if(channelNames.contains('1') && channelNames.contains('2') && channelNames.contains('Z') || 
+				channelNames.contains('N') && channelNames.contains('E')  && channelNames.contains('Z'))
+			return true;
+		else
+			return false; 
+	}
 
 	/**
 	 * Checks if we have loaded traces for all three coordinates to process rotation
@@ -475,7 +540,7 @@ public class Rotation {
 	
 	private static PlotData getComplementaryPlotData(PlotDataProvider channel, char channelType, TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException {
-		return getComplementaryChannel(channel, channelType).getPlotData(ti, pointCount, null, filter, null, colorMode);
+		return getComplementaryChannel(channel, channelType).getOriginalPlotData(ti, pointCount, filter, null, colorMode);
 	}
 
 	/**
@@ -487,8 +552,8 @@ public class Rotation {
 		 */
 		private static final long serialVersionUID = 1L;
 		private JFrame frame;
-		private RotationType type = RotationType.HORIZONTAL;
-		private RotationType lastRotationType = RotationType.HORIZONTAL;
+		private RotationType type = null;
+		private RotationType lastRotationType = null;
 		private StandardRotation standardRotation = StandardRotation.STS2_UVW_TO_XMAX;
 		private double horizontalAng; // moves both X and Y components for horizontal rotation option
 		private JOptionPane optionPane = null;
@@ -502,12 +567,18 @@ public class Rotation {
 		private JLabel rotationTypeL;
 		private JPanel swithPanel;
 		private JLabel standardRotationL;
+		private int numberOfChannels; //used to determine what rotation types you can perform based on the number of channels selected
 
-		public RotationDialog(JFrame frame) {
+		public RotationDialog(JFrame frame, int numberOfChannels) {
 			super(frame, "Rotation options", true);
 			this.frame = frame;
-			horizontalAng = 0.0;
+			this.numberOfChannels = numberOfChannels;
+			this.horizontalAng = 0.0;
 			Object[] options = { "OK", "Close" };
+			if(numberOfChannels == 2) 
+				type = RotationType.HORIZONTAL;
+			else
+				type = RotationType.STANDARD;
 			// Create the JOptionPane.
 			optionPane = new JOptionPane(createDesignPanel(type, standardRotation), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null,
 					options, options[0]);
@@ -537,10 +608,10 @@ public class Rotation {
 			BoxLayout panelLayout = new BoxLayout(mainPanel, javax.swing.BoxLayout.Y_AXIS);
 			mainPanel.setLayout(panelLayout);
 			mainPanel.add(getSwithPanel());
-			getRotationTypeCB().setSelectedIndex(type.ordinal());
-			if (type.equals(RotationType.STANDARD)) {
+			getRotationTypeCB().setSelectedIndex(0);
+			if (type.equals(RotationType.STANDARD) && numberOfChannels == 3) {
 				mainPanel.add(getStandardPanel());
-			} else if (type.equals(RotationType.HORIZONTAL)){
+			} else if (type.equals(RotationType.HORIZONTAL) && numberOfChannels == 2){
 				mainPanel.add(getHorizontalPanel());
 			}
 			return mainPanel;
@@ -606,7 +677,12 @@ public class Rotation {
 
 		private JComboBox<String> getRotationTypeCB() {
 			if (rotationTypeCB == null) {
-				ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<String>(new String[]{"Standard", "Horizontal"});
+				String[] rotationOptions;
+				if(this.numberOfChannels == 2)
+					rotationOptions = new String[]{"Horizontal"};
+				else
+					rotationOptions = new String[]{"Standard"};
+				ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<String>(rotationOptions);
 				rotationTypeCB = new JComboBox<String>();
 				rotationTypeCB.setModel(rotationTypeCBModel);
 				rotationTypeCB.setPreferredSize(new java.awt.Dimension(141, 21));

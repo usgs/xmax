@@ -90,9 +90,9 @@
 		<Frame>
 			<State>NORMAL</State>
 			<PosY>23</PosY>
-			<PosX>0</PosX>
+			<PosX>91</PosX>
 			<Width>2485</Width>
-			<Heigth>1200</Heigth>
+			<Heigth>1417</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>

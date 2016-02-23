@@ -1,21 +1,21 @@
 package com.isti.traceview.commands;
 
-import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.UndoException;
+import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.GraphPanel;
+import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
 import com.isti.traceview.processing.Rotation;
 
 /**
  * This command performs rotation
- * 
- * @author Max Kokoulin
  */
 public class RotateCommand extends AbstractUndoableCommand {
-	private static final Logger logger = Logger.getLogger(SelectCommand.class);
-	private GraphPanel graphPanel = null;
-	private Rotation previous = null;
+	private List<PlotDataProvider> plotDataProviders = new ArrayList<PlotDataProvider>();
+	private GraphPanel graphPanel = null; //in order to notify the graph panel to repaint since the data provider was modified.
 	private Rotation rotation = null;
 
 	/**
@@ -24,24 +24,25 @@ public class RotateCommand extends AbstractUndoableCommand {
 	 * @param rotation
 	 *            rotation to perform
 	 */
-	public RotateCommand(GraphPanel gp, Rotation rotation) {
-		this.graphPanel = gp;
+	public RotateCommand(List<PlotDataProvider> pdpsToRotate, GraphPanel graphPanel, Rotation rotation) {
+		this.plotDataProviders = pdpsToRotate;
+		this.graphPanel = graphPanel;
 		this.rotation = rotation;
-		this.previous = graphPanel.getRotation();
 	}
 
 	public void run() {
-		super.run();
-		logger.debug("Rotation command: " + rotation.toString());
-		graphPanel.setRotation(rotation);
+		for(PlotDataProvider pdp : plotDataProviders) {
+			pdp.setRotation(rotation);
+			((GraphPanelObservable) graphPanel.getObservable()).setChanged();
+			((GraphPanelObservable) graphPanel.getObservable()).notifyObservers("ROT");
+			graphPanel.forceRepaint();
+		}
 	}
-
+	
 	public void undo() throws UndoException{
-		super.undo();
-		graphPanel.setRotation(previous);
 	}
 
 	public boolean canUndo() {
-		return true;
+		return false; //undo using toggle button feature
 	}
 }

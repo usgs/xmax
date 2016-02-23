@@ -2206,7 +2206,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.add(Echannel);
 					}
 				}
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), graphPanel.getRotation(),
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(),
 						null, getInstance());
 			} finally {
 				statusBar.setMessage("");
@@ -2241,10 +2241,20 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
+				boolean hasRotatedData = false; 
+				for(PlotDataProvider pdp : selectedChannels) {
+					if(pdp.isRotated())
+						hasRotatedData = true;
+				}
+				if(hasRotatedData) {
+							JOptionPane.showMessageDialog(TraceView.getFrame(), "One or more of the traces you have selected contains rotated data. "
+									+ "The PSD for these rotated traces will be computed using the un-rotated data.",
+									"Unable to compute PSD on rotated data", JOptionPane.WARNING_MESSAGE);
+				}
 				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance()
 						.getConfigurationAt("Configuration.Plugins.PSD");
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						pluginConf, getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), pluginConf,
+						getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2276,7 +2286,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						null, getInstance());
+						getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2309,7 +2319,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						null, getInstance());
+						getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2339,7 +2349,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						null, getInstance());
+						getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2350,7 +2360,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	class RotationAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
-
+		private List<PlotDataProvider> rotatedChannelsList = new ArrayList<PlotDataProvider>(); 
+		
 		public RotationAction() {
 			super();
 			putValue(Action.NAME, "Rotation");
@@ -2362,26 +2373,78 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				if (graphPanel.getRotation() != null) {
-					graphPanel.setRotation(null);
-					rotateMenuCheckBox.setState(false);
-				} else {
-					// Create Runnable RotateCommand obj
-					if(graphPanel.getCurrentSelectedChannelShowSet().size() == 2 || graphPanel.getCurrentSelectedChannelShowSet().size() == 3) {
-						RotateCommand rotateTask = new RotateCommand(graphPanel, new Rotation(XMAX.getFrame()));
-	
-						// Create ExecuteCommand obj for executing Runnable
-						ExecuteCommand executor = new ExecuteCommand(rotateTask);
-						executor.initialize();
-						executor.start();
-						executor.shutdown();
-						rotateMenuCheckBox.setState(graphPanel.getRotation() != null);
+				List<PlotDataProvider> pdpsToRotate = new ArrayList<PlotDataProvider>();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+				for(ChannelView cv : selectedViews){
+					for(PlotDataProvider pdp : cv.getPlotDataProviders())
+					{
+						if (rotatedChannelsList.contains(pdp)) {
+							if(pdp.getRotation() == null || pdp.getRotation().getRotationType() == null) { //for case when the close button was clicked
+								pdpsToRotate.add(pdp);
+							} else {
+								//Undo a already rotated channel
+								rotateMenuCheckBox.setState(false);
+								rotatedChannelsList.remove(pdp); //remove from rotated list if trying to rotate an already rotated channel
+								pdpsToRotate.add(pdp);
+								RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, null);
+								// Create ExecuteCommand obj for executing Runnable
+								ExecuteCommand executor = new ExecuteCommand(rotateTask);
+								executor.initialize();
+								executor.start();
+								executor.shutdown();
+								pdpsToRotate.clear();
+							}
+						} else {
+							rotateMenuCheckBox.setState(pdp.getRotation() != null);
+							pdpsToRotate.add(pdp);
+						}
+					}
+				}
+				if (pdpsToRotate.size() > 0) {
+					if(pdpsToRotate.size() == 2) {
+						if(Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1))) {
+							for(PlotDataProvider pdp : pdpsToRotate)
+								rotatedChannelsList.add(pdp);
+							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, new Rotation(XMAX.getFrame(), 2));
+							// Create ExecuteCommand obj for executing Runnable
+							ExecuteCommand executor = new ExecuteCommand(rotateTask);
+							executor.initialize();
+							executor.start();
+							executor.shutdown();
+						} else {
+							SwingUtilities.invokeLater(new Runnable() {
+							    public void run() {
+									JOptionPane.showMessageDialog(TraceView.getFrame(), "The selected channels are not complementary",
+											"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE);
+							    }
+							  });
+						}
+					}
+					else if (pdpsToRotate.size() == 3) {
+						if(Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1), pdpsToRotate.get(2))) {
+							for(PlotDataProvider pdp : pdpsToRotate)
+								rotatedChannelsList.add(pdp);
+							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, new Rotation(XMAX.getFrame(), 3));
+							// Create ExecuteCommand obj for executing Runnable
+							ExecuteCommand executor = new ExecuteCommand(rotateTask);
+							executor.initialize();
+							executor.start();
+							executor.shutdown();
+						}  else {
+							SwingUtilities.invokeLater(new Runnable() {
+							    public void run() {
+									JOptionPane.showMessageDialog(TraceView.getFrame(), "The selected channels are not complementary",
+											"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE);
+							    }
+							  });
+						}
 					}
 					else {
 						SwingUtilities.invokeLater(new Runnable() {
 						    public void run() {
-								JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes on panels to set channels to rotate",
-										"Selection missing", JOptionPane.WARNING_MESSAGE);;
+								JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for the complementary "
+										+ "channels that you wish to rotate",
+										"Invalid Selection", JOptionPane.WARNING_MESSAGE);
 						    }
 						  });
 					}
@@ -2390,6 +2453,28 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				statusBar.setMessage("");
 				setWaitCursor(false);
 			}
+		}
+		
+		
+		/**
+		 * Returns the rotated channel list
+		 */
+		public List<PlotDataProvider> getRotatedChannelList() {
+			return rotatedChannelsList;
+		}
+		
+		/**
+		 * Adds a rotated channel to the rotatedChannelsList
+		 */
+		public void addRotatedChannel(PlotDataProvider pdp) {
+			rotatedChannelsList.add(pdp);
+		}
+		
+		/**
+		 * Removes a channel from the rotatedChannelsList
+		 */
+		public void removeRotatedChannel(PlotDataProvider pdp) {
+			rotatedChannelsList.remove(pdp);
 		}
 	}
 
@@ -2414,7 +2499,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), null, null, null, getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), null, null, getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -3511,10 +3596,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton respButton = null;
 		private JButton particlemotionButton = null;
 		private JButton rotationButton = null;
+		private JButton correlationButton = null;
 
 		public AnalysisButtonPanel() {
 			super();
-			GridLayout gridLayout = new GridLayout(3, 2);
+			GridLayout gridLayout = new GridLayout(4, 2);
 			setLayout(gridLayout);
 			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			setPreferredSize(new Dimension(100, 100));
@@ -3525,6 +3611,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getRespButton(), null);
 			add(getParticleMotionButton(), null);
 			add(getRotationButton(), null);
+			add(getCorrelationButton(), null);
 		}
 
 		private JButton getPSDButton() {
@@ -3569,10 +3656,18 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private JButton getRotationButton() {
 			if (rotationButton == null) {
-				rotationButton = new JButton("Rotation");
+				rotationButton = new JButton("Rotate/Un-Rotate");
 				rotationButton.addActionListener(this);
 			}
 			return rotationButton;
+		}
+		
+		private JButton getCorrelationButton() {
+			if (correlationButton == null) {
+				correlationButton = new JButton("Correlation");
+				correlationButton.addActionListener(this);
+			}
+			return correlationButton;
 		}
 
 		public void actionPerformed(ActionEvent evt) {
@@ -3595,6 +3690,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == rotationButton) {
 				action = actionMap.get("Rotation");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == correlationButton) {
+				action = actionMap.get("Correlation");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			}
 		}
