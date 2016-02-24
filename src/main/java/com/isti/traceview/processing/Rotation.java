@@ -134,8 +134,8 @@ public class Rotation {
 	private void initMatrix(double angle) {
 		angle = Math.toRadians(angle); //convert to radians
 		double[][] matrixData = { 
-									{ Math.cos(angle) , Math.sin(angle),  0}, 
-									{ -Math.sin(angle), Math.cos(angle),  0},
+									{ Math.cos(angle) , -Math.sin(angle),  0}, 
+									{ Math.sin(angle), Math.cos(angle),  0},
 									{ 0               ,               0,  1}
 								};
 		matrix = new Matrix(matrixData);
