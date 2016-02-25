@@ -187,6 +187,8 @@ public class Rotation {
 			throws TraceViewException, RemoveGainException {
 		PlotData[] tripletPlotData = new PlotData[3];
 		char channelType = channel.getType();
+		if(filter != null)
+			System.out.println("filter = " + filter.toString());
 		PlotData toProcess = channel.getOriginalPlotData(ti, pointCount, filter, null, colorMode);
 		PlotData ret = new PlotData(channel.getName(), channel.getColor());
 		if (channelType == 'E' || channelType == '2') {
@@ -290,11 +292,12 @@ public class Rotation {
 			PlotDataPoint pdp = null;
 			if (allDataFound) {
 				double[][][] rotatedCubicle = new double[8][3][1];
+				double[][] rotatedMean = new double[3][1];
 				try {	
 					for (int j = 0; j < 8; j++) {
 						rotatedCubicle[j] = matrix.times(new Matrix(cubicle[j])).getData();
 					}
-					//double[][] rotatedMean = matrix.times(new Matrix(mean)).getData();
+					rotatedMean = matrix.times(new Matrix(mean)).getData();
 				} catch (MatrixException e) {
 					logger.error("MatrixException:", e);
 					System.exit(0);
@@ -317,7 +320,7 @@ public class Rotation {
 						bottom = rotatedCubicle[j][index][0];
 					}
 				}
-				pdp = new PlotDataPoint(top, bottom, mean[index][0], toProcess.getPixels().get(i)[0].getSegmentNumber(), 
+				pdp = new PlotDataPoint(top, bottom, rotatedMean[index][0], toProcess.getPixels().get(i)[0].getSegmentNumber(), 
 																	 toProcess.getPixels().get(i)[0].getRawDataProviderNumber(), 
 																	 toProcess.getPixels().get(i)[0].getContinueAreaNumber(), 
 																	 toProcess.getPixels().get(i)[0].getEvents());
@@ -330,6 +333,7 @@ public class Rotation {
 			pdpArray[0] = pdp;
 			ret.addPixel(pdpArray);
 		}
+
 		/*
 		 * lg.debug("E: " + tripletPlotData[0]); lg.debug("N: " + tripletPlotData[1]); lg.debug("Z: " +
 		 * tripletPlotData[2]); lg.debug("R: " + ret);
