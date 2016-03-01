@@ -166,9 +166,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JCheckBoxMenuItem phaseMenuCheckBox = null;
 	private JCheckBoxMenuItem meanMenuCheckBox = null;
 	private JCheckBoxMenuItem offsetMenuCheckBox = null;
-	private JCheckBoxMenuItem rotateMenuCheckBox = null;
-	private JCheckBoxMenuItem overlayMenuCheckBox = null;
-	private JCheckBoxMenuItem selectMenuCheckBox = null;
+	private JMenuItem rotateMenuItem = null;
+	private JMenuItem overlayMenuItem = null;
+	private JMenuItem selectMenuItem= null;
 	private JCheckBoxMenuItem showBlockHeadersMenuCheckBox = null;
 
 	private ButtonGroup scaleModeBG = null; // @jve:decl-index=0:
@@ -524,11 +524,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		phaseMenuCheckBox.setState(graphPanel.getPhaseState());
-		overlayMenuCheckBox.setState(graphPanel.getOverlayState());
-		selectMenuCheckBox.setState(graphPanel.getSelectState());
 		meanMenuCheckBox.setState(graphPanel.getMeanState() instanceof MeanModeEnabled);
 		offsetMenuCheckBox.setState(graphPanel.getOffsetState() instanceof OffsetModeEnabled);
-		rotateMenuCheckBox.setState(false);
 		XMAXDataModule dm = XMAX.getDataModule();
 		try {
 			graphPanel.setChannelShowSet(dm.getNextChannelSet());
@@ -890,11 +887,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			channelsMenu.add(getScaleModeComMenuRadioBt());
 			channelsMenu.add(getScaleModeXHairMenuRadioBt());
 			channelsMenu.addSeparator();
-			channelsMenu.add(getOverlayMenuCheckBox());
-			channelsMenu.add(getSelectMenuCheckBox());
+			channelsMenu.add(getOverlayMenuItem());
+			channelsMenu.add(getSelectMenuItem());
 			channelsMenu.add(getMeanMenuCheckBox());
 			channelsMenu.add(getOffsetMenuCheckBox());
-			channelsMenu.add(getRotateMenuCheckBox());
+			channelsMenu.add(getRotateMenuItem());
 			channelsMenu.add(getFilterMenu());
 			channelsMenu.add(getTransformationMenu());
 			channelsMenu.addSeparator();
@@ -1195,13 +1192,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return javax.swing.JCheckBoxMenuItem
 	 */
-	private JCheckBoxMenuItem getOverlayMenuCheckBox() {
-		if (overlayMenuCheckBox == null) {
-			overlayMenuCheckBox = new JCheckBoxMenuItem();
-			overlayMenuCheckBox.setAction(actionMap.get("Overlay"));
-			overlayMenuCheckBox.addMouseListener(this);
+	private JMenuItem getOverlayMenuItem() {
+		if (overlayMenuItem == null) {
+			overlayMenuItem = new JMenuItem();
+			overlayMenuItem.setAction(actionMap.get("Overlay"));
+			overlayMenuItem.addMouseListener(this);
 		}
-		return overlayMenuCheckBox;
+		return overlayMenuItem;
 	}
 
 	/**
@@ -1209,13 +1206,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return javax.swing.JCheckBoxMenuItem
 	 */
-	private JCheckBoxMenuItem getSelectMenuCheckBox() {
-		if (selectMenuCheckBox == null) {
-			selectMenuCheckBox = new JCheckBoxMenuItem();
-			selectMenuCheckBox.setAction(actionMap.get("Select"));
-			selectMenuCheckBox.addMouseListener(this);
+	private JMenuItem getSelectMenuItem() {
+		if (selectMenuItem == null) {
+			selectMenuItem = new JMenuItem();
+			selectMenuItem.setAction(actionMap.get("Select"));
+			selectMenuItem.addMouseListener(this);
 		}
-		return selectMenuCheckBox;
+		return selectMenuItem;
 	}
 
 	/**
@@ -1251,13 +1248,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return javax.swing.JCheckBoxMenuItem
 	 */
-	private JCheckBoxMenuItem getRotateMenuCheckBox() {
-		if (rotateMenuCheckBox == null) {
-			rotateMenuCheckBox = new JCheckBoxMenuItem();
-			rotateMenuCheckBox.setAction(actionMap.get("Rotation"));
-			rotateMenuCheckBox.addMouseListener(this);
+	private JMenuItem getRotateMenuItem() {
+		if (rotateMenuItem == null) {
+			rotateMenuItem = new JMenuItem();
+			rotateMenuItem.setAction(actionMap.get("Rotation"));
+			rotateMenuItem.addMouseListener(this);
 		}
-		return rotateMenuCheckBox;
+		return rotateMenuItem;
 	}
 
 	/**
@@ -1695,7 +1692,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				executor.initialize();
 				executor.start();
 				executor.shutdown();
-				overlayMenuCheckBox.setState(graphPanel.getOverlayState());
 			} finally {
 				setWaitCursor(false);
 				statusBar.setMessage("");
@@ -1726,8 +1722,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				executor.initialize();
 				executor.start();
 				executor.shutdown();
-
-				selectMenuCheckBox.setState(graphPanel.getSelectState());
 			} finally {
 				setWaitCursor(false);
 				statusBar.setMessage("");
@@ -1752,7 +1746,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			graphPanel.clearSelectedChannels();
-			selectMenuCheckBox.setState(false);
 		}
 	}
 
@@ -2383,7 +2376,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 								pdpsToRotate.add(pdp);
 							} else {
 								//Undo a already rotated channel
-								rotateMenuCheckBox.setState(false);
 								rotatedChannelsList.remove(pdp); //remove from rotated list if trying to rotate an already rotated channel
 								pdpsToRotate.add(pdp);
 								RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, null);
@@ -2395,7 +2387,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 								pdpsToRotate.clear();
 							}
 						} else {
-							rotateMenuCheckBox.setState(pdp.getRotation() != null);
 							pdpsToRotate.add(pdp);
 						}
 					}
