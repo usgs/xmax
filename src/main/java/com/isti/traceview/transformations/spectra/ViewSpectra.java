@@ -59,6 +59,7 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 	// private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
 	private JOptionPane optionPane;
 	private JCheckBox SmoothCB;
+	private JCheckBox LogScaleCB;
 	private JPanel selectionP;
 	private JLabel convolveL;
 	private JPanel optionPanel;
@@ -69,6 +70,7 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 	private XYPlot plot = null;
 	private TimeInterval timeInterval = null;
 	private TraceViewChartPanel chartPanel = null;
+	private NumberAxis origRangeAxis = null;
 
 	ViewSpectra(Frame owner, List<Spectra> data, TimeInterval timeInterval) {
 		super(owner, "Spectra", true);
@@ -128,6 +130,14 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 			getConvolveCB().setEnabled(e.getStateChange() == ItemEvent.SELECTED);
 		} else if (e.getSource().equals(getConvolveCB())) {
 
+		} else if (e.getSource().equals(getLogScaleCB())) {
+			if(getLogScaleCB().isSelected()) {
+				NumberAxis rangeAxis = (NumberAxis) new LogarithmicAxis("Spectra");
+				rangeAxis.setAutoRange(true);
+				plot.setRangeAxis(rangeAxis);
+			} else {
+				plot.setRangeAxis(origRangeAxis);
+			}
 		} else if (e.getSource().equals(getShowDiffCB())) {
 			if (getShowDiffCB().isSelected()) {
 				// Component[] ca = selectionP.getComponents();
@@ -176,6 +186,7 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setAutoRange(true);
 		rangeAxis.setAutoRangeIncludesZero(false);
+		origRangeAxis = (NumberAxis) plot.getRangeAxis();
 		plot.setBackgroundPaint(Color.lightGray);
 		plot.setDomainGridlinePaint(Color.white);
 		plot.setRangeGridlinePaint(Color.white);
@@ -276,6 +287,15 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 		return ret;
 	}
 
+	private JCheckBox getLogScaleCB() {
+		if (LogScaleCB == null) {
+			LogScaleCB = new JCheckBox();
+			LogScaleCB.setText("Log Scale");
+			LogScaleCB.addItemListener(this);
+		}
+		return LogScaleCB;
+	}
+	
 	private JCheckBox getSmoothCB() {
 		if (SmoothCB == null) {
 			SmoothCB = new JCheckBox();
@@ -284,7 +304,7 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 		}
 		return SmoothCB;
 	}
-
+	
 	private JCheckBox getShowDiffCB() {
 		if (showDiffCB == null) {
 			showDiffCB = new JCheckBox();
@@ -325,6 +345,7 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 		if (optionPanel == null) {
 			optionPanel = new JPanel();
 			optionPanel.setMaximumSize(new java.awt.Dimension(32767, 32));
+			optionPanel.add(getLogScaleCB());
 			optionPanel.add(getSmoothCB());
 			optionPanel.add(getDeconvolveCB());
 			optionPanel.add(getConvolveL());
