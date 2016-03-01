@@ -368,7 +368,7 @@ public class Rotation {
 				pointPosition[0][0] = triplet[0].getRawData(currentTime); //x
 				pointPosition[1][0] = triplet[1].getRawData(currentTime); //y
 				pointPosition[2][0] = triplet[2].getRawData(currentTime); //z
-				if (pointPosition[0][0] == Integer.MIN_VALUE || pointPosition[0][0] == Integer.MIN_VALUE || pointPosition[0][0] == Integer.MIN_VALUE) {
+				if (pointPosition[0][0] == Integer.MIN_VALUE || pointPosition[1][0] == Integer.MIN_VALUE || pointPosition[2][0] == Integer.MIN_VALUE) {
 				} else {
 					try {
 						double[][] rotatedPointPosition = this.getMatrix().times(new Matrix(pointPosition)).getData();
@@ -457,7 +457,7 @@ public class Rotation {
 		return true;
 	}
 	
-
+	
 	/**
 	 * Finds triplet of traces for cartesian coordinates
 	 * 
@@ -475,7 +475,7 @@ public class Rotation {
 		char channelType = channel.getType();
 		if (channelType == 'E') {
 			chs[0] = channel;
-			chs[1] = getComplementaryChannel(channel, '1');
+			chs[1] = getComplementaryChannel(channel, 'N');
 			chs[2] = getComplementaryChannel(channel, 'Z');
 
 		} else if (channelType == '2') {
@@ -484,7 +484,7 @@ public class Rotation {
 			chs[2] = getComplementaryChannel(channel, 'Z');
 		}
 		else if (channelType == 'N') {
-			chs[0] = getComplementaryChannel(channel, '2');
+			chs[0] = getComplementaryChannel(channel, 'E');
 			chs[1] = channel;
 			chs[2] = getComplementaryChannel(channel, 'Z');
 		} else if (channelType == '1') {

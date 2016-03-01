@@ -89,9 +89,9 @@ public class TransCoherence implements ITransformation{
 		while (li.hasNext()) {
 			PlotDataProvider channel = li.next();
 			List<Segment> segments; 
-			if(channel.getRotation() != null && channel.isRotated())
+			if(channel.getRotation() != null && channel.isRotated()) {
 				segments = channel.getRawData(channel.getRotation(), ti); //if data is rotated then calculate the PSD on the rotated data.
-			else {
+			} else {
 				segments = channel.getRawData(ti);
 			}
 			double samplerate;
@@ -230,9 +230,6 @@ public class TransCoherence implements ITransformation{
 					// Norm the data: remove mean
 					dataCopy = IstiUtilsMath.normData(dataCopy);
 
-					// Apply Hanning window
-					dataCopy = IstiUtilsMath.windowHanning(dataCopy);
-
 					// Calculate FFT of the current segment
 					noise_spectra = IstiUtilsMath.processFft(dataCopy);
 
@@ -268,7 +265,6 @@ public class TransCoherence implements ITransformation{
 			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
 				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], 13.0);
 			}
-
 			
 			traceArray.add(finalNoiseSpectraData);
 			
