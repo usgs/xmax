@@ -227,9 +227,6 @@ public class TransCoherence implements ITransformation{
 					for (int i = 0; i < data.length; i++)
 						dataCopy[i] = data[i];
 
-					// Norm the data: remove mean
-					dataCopy = IstiUtilsMath.normData(dataCopy);
-
 					// Calculate FFT of the current segment
 					noise_spectra = IstiUtilsMath.processFft(dataCopy);
 
@@ -275,7 +272,7 @@ public class TransCoherence implements ITransformation{
 					//Calcluate |Pxy|^2
 					Cmplx x = traceArray.get(0)[i];
 					Cmplx y = traceArray.get(1)[i];
-					double numerator = Math.pow(Cmplx.mul(x, y.conjg()).real(), 2);
+					double numerator = Math.pow(Math.abs(Cmplx.mul(x, y.conjg()).real()), 2);
 					//Calculate |Pxx| * |Pyy|
 					double denominator = Cmplx.mul(x, x.conjg()).real() * Cmplx.mul(y, y.conjg()).real();
 					coherenceTrace[i] = numerator / denominator; //normalized coherence value

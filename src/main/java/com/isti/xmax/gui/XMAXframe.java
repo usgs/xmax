@@ -71,6 +71,7 @@ import com.isti.traceview.IUndoableCommand;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.UndoException;
+import com.isti.traceview.commands.OffsetCommand;
 import com.isti.traceview.commands.OverlayCommand;
 import com.isti.traceview.commands.RemoveGainCommand;
 import com.isti.traceview.commands.RotateCommand;
@@ -96,7 +97,6 @@ import com.isti.traceview.gui.GraphUtil;
 import com.isti.traceview.gui.MeanModeDisabled;
 import com.isti.traceview.gui.MeanModeEnabled;
 import com.isti.traceview.gui.OffsetModeDisabled;
-import com.isti.traceview.gui.OffsetModeEnabled;
 import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.gui.ScaleModeCom;
 import com.isti.traceview.gui.ScaleModeXhair;
@@ -165,7 +165,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JCheckBoxMenuItem showStatusBarMenuCheckBox = null;
 	private JCheckBoxMenuItem phaseMenuCheckBox = null;
 	private JCheckBoxMenuItem meanMenuCheckBox = null;
-	private JCheckBoxMenuItem offsetMenuCheckBox = null;
+	private JMenuItem offsetMenuItem = null;
 	private JMenuItem rotateMenuItem = null;
 	private JMenuItem overlayMenuItem = null;
 	private JMenuItem selectMenuItem= null;
@@ -525,7 +525,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		phaseMenuCheckBox.setState(graphPanel.getPhaseState());
 		meanMenuCheckBox.setState(graphPanel.getMeanState() instanceof MeanModeEnabled);
-		offsetMenuCheckBox.setState(graphPanel.getOffsetState() instanceof OffsetModeEnabled);
 		XMAXDataModule dm = XMAX.getDataModule();
 		try {
 			graphPanel.setChannelShowSet(dm.getNextChannelSet());
@@ -890,7 +889,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			channelsMenu.add(getOverlayMenuItem());
 			channelsMenu.add(getSelectMenuItem());
 			channelsMenu.add(getMeanMenuCheckBox());
-			channelsMenu.add(getOffsetMenuCheckBox());
+			channelsMenu.add(getOffsetMenuItem());
 			channelsMenu.add(getRotateMenuItem());
 			channelsMenu.add(getFilterMenu());
 			channelsMenu.add(getTransformationMenu());
@@ -1230,23 +1229,23 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	/**
-	 * This method initializes offsetMenuCheckBox
+	 * This method initializes offsetMenuItem
 	 * 
-	 * @return javax.swing.JCheckBoxMenuItem
+	 * @return javax.swing.JMenuItem
 	 */
-	private JCheckBoxMenuItem getOffsetMenuCheckBox() {
-		if (offsetMenuCheckBox == null) {
-			offsetMenuCheckBox = new JCheckBoxMenuItem();
-			offsetMenuCheckBox.setAction(actionMap.get("Offset"));
-			offsetMenuCheckBox.addMouseListener(this);
+	private JMenuItem getOffsetMenuItem() {
+		if (offsetMenuItem == null) {
+			offsetMenuItem = new JMenuItem();
+			offsetMenuItem.setAction(actionMap.get("Offset Segments"));
+			offsetMenuItem.addMouseListener(this);
 		}
-		return offsetMenuCheckBox;
+		return offsetMenuItem;
 	}
 
 	/**
-	 * This method initializes rotateMenuCheckBox
+	 * This method initializes rotateMenuItem
 	 * 
-	 * @return javax.swing.JCheckBoxMenuItem
+	 * @return javax.swing.JMenuItem
 	 */
 	private JMenuItem getRotateMenuItem() {
 		if (rotateMenuItem == null) {
@@ -1775,7 +1774,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				scaleModeAutoMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
-				offsetMenuCheckBox.setState(false);
 			}
 			setWaitCursor(false);
 			statusBar.setMessage("");
@@ -1808,7 +1806,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				scaleModeComMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
-				offsetMenuCheckBox.setState(false);
 			}
 			setWaitCursor(false);
 			statusBar.setMessage("");
@@ -1841,7 +1838,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				scaleModeXHairMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
-				offsetMenuCheckBox.setState(false);
 			}
 			setWaitCursor(false);
 			statusBar.setMessage("");
@@ -2504,21 +2500,19 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public OffsetAction() {
 			super();
-			putValue(Action.NAME, "Offset");
+			putValue(Action.NAME, "Offset Segments");
 			putValue(Action.SHORT_DESCRIPTION, "offset");
 			putValue(Action.LONG_DESCRIPTION, "Show segments with offset so gaps could be seen clearer");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			if (graphPanel.getOffsetState() instanceof OffsetModeDisabled) {
-				graphPanel.setOffsetState(new OffsetModeEnabled());
-
-			} else if (graphPanel.getOffsetState() instanceof OffsetModeEnabled) {
-				graphPanel.getOffsetState().increaseStep();
-				graphPanel.repaint(); // forceRepaint()? Check offsets
-			}
-			offsetMenuCheckBox.setState(graphPanel.getOffsetState() instanceof OffsetModeEnabled);
+			OffsetCommand offsetCmd = new OffsetCommand(graphPanel);
+			ExecuteCommand executor = new ExecuteCommand(offsetCmd);
+			executor.initialize();
+			executor.start();
+			executor.shutdown();
+			graphPanel.repaint(); // forceRepaint()? Check offsets
 			statusBar.setMessage("");
 		}
 	}
@@ -3339,7 +3333,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private JButton getOffsetButton() {
 			if (offsetButton == null) {
-				offsetButton = new JButton("Offset");
+				offsetButton = new JButton("Offset Segments");
 				offsetButton.addActionListener(this);
 			}
 			return offsetButton;
@@ -3358,7 +3352,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action = actionMap.get("Demean");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == offsetButton) {
-				action = actionMap.get("Offset");
+				action = actionMap.get("Offset Segments");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == deselectAllButton) {
 				action = actionMap.get("Deselect All");
