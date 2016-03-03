@@ -90,7 +90,7 @@ public class TransCoherence implements ITransformation{
 			PlotDataProvider channel = li.next();
 			List<Segment> segments; 
 			if(channel.getRotation() != null && channel.isRotated()) {
-				segments = channel.getRawData(channel.getRotation(), ti); //if data is rotated then calculate the PSD on the rotated data.
+				segments = channel.getRawData(channel.getRotation(), ti); //if data is rotated then calculate the coherence on the rotated data.
 			} else {
 				segments = channel.getRawData(ti);
 			}

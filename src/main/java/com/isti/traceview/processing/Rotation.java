@@ -187,8 +187,6 @@ public class Rotation {
 			throws TraceViewException, RemoveGainException {
 		PlotData[] tripletPlotData = new PlotData[3];
 		char channelType = channel.getType();
-		if(filter != null)
-			System.out.println("filter = " + filter.toString());
 		PlotData toProcess = channel.getOriginalPlotData(ti, pointCount, filter, null, colorMode);
 		PlotData ret = new PlotData(channel.getName(), channel.getColor());
 		if (channelType == 'E' || channelType == '2') {
