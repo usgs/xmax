@@ -56,6 +56,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.MouseInputListener;
@@ -67,8 +68,10 @@ import com.isti.traceview.CommandHandler;
 import com.isti.traceview.ExecuteCommand;
 import com.isti.traceview.ICommand;
 import com.isti.traceview.IUndoableCommand;
+import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.UndoException;
+import com.isti.traceview.commands.OffsetCommand;
 import com.isti.traceview.commands.OverlayCommand;
 import com.isti.traceview.commands.RemoveGainCommand;
 import com.isti.traceview.commands.RotateCommand;
@@ -94,7 +97,6 @@ import com.isti.traceview.gui.GraphUtil;
 import com.isti.traceview.gui.MeanModeDisabled;
 import com.isti.traceview.gui.MeanModeEnabled;
 import com.isti.traceview.gui.OffsetModeDisabled;
-import com.isti.traceview.gui.OffsetModeEnabled;
 import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.gui.ScaleModeCom;
 import com.isti.traceview.gui.ScaleModeXhair;
@@ -163,10 +165,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JCheckBoxMenuItem showStatusBarMenuCheckBox = null;
 	private JCheckBoxMenuItem phaseMenuCheckBox = null;
 	private JCheckBoxMenuItem meanMenuCheckBox = null;
-	private JCheckBoxMenuItem offsetMenuCheckBox = null;
-	private JCheckBoxMenuItem rotateMenuCheckBox = null;
-	private JCheckBoxMenuItem overlayMenuCheckBox = null;
-	private JCheckBoxMenuItem selectMenuCheckBox = null;
+	private JMenuItem offsetMenuItem = null;
+	private JMenuItem rotateMenuItem = null;
+	private JMenuItem overlayMenuItem = null;
+	private JMenuItem selectMenuItem= null;
 	private JCheckBoxMenuItem showBlockHeadersMenuCheckBox = null;
 
 	private ButtonGroup scaleModeBG = null; // @jve:decl-index=0:
@@ -522,11 +524,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		phaseMenuCheckBox.setState(graphPanel.getPhaseState());
-		overlayMenuCheckBox.setState(graphPanel.getOverlayState());
-		selectMenuCheckBox.setState(graphPanel.getSelectState());
 		meanMenuCheckBox.setState(graphPanel.getMeanState() instanceof MeanModeEnabled);
-		offsetMenuCheckBox.setState(graphPanel.getOffsetState() instanceof OffsetModeEnabled);
-		rotateMenuCheckBox.setState(false);
 		XMAXDataModule dm = XMAX.getDataModule();
 		try {
 			graphPanel.setChannelShowSet(dm.getNextChannelSet());
@@ -888,11 +886,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			channelsMenu.add(getScaleModeComMenuRadioBt());
 			channelsMenu.add(getScaleModeXHairMenuRadioBt());
 			channelsMenu.addSeparator();
-			channelsMenu.add(getOverlayMenuCheckBox());
-			channelsMenu.add(getSelectMenuCheckBox());
+			channelsMenu.add(getOverlayMenuItem());
+			channelsMenu.add(getSelectMenuItem());
 			channelsMenu.add(getMeanMenuCheckBox());
-			channelsMenu.add(getOffsetMenuCheckBox());
-			channelsMenu.add(getRotateMenuCheckBox());
+			channelsMenu.add(getOffsetMenuItem());
+			channelsMenu.add(getRotateMenuItem());
 			channelsMenu.add(getFilterMenu());
 			channelsMenu.add(getTransformationMenu());
 			channelsMenu.addSeparator();
@@ -1193,13 +1191,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return javax.swing.JCheckBoxMenuItem
 	 */
-	private JCheckBoxMenuItem getOverlayMenuCheckBox() {
-		if (overlayMenuCheckBox == null) {
-			overlayMenuCheckBox = new JCheckBoxMenuItem();
-			overlayMenuCheckBox.setAction(actionMap.get("Overlay"));
-			overlayMenuCheckBox.addMouseListener(this);
+	private JMenuItem getOverlayMenuItem() {
+		if (overlayMenuItem == null) {
+			overlayMenuItem = new JMenuItem();
+			overlayMenuItem.setAction(actionMap.get("Overlay"));
+			overlayMenuItem.addMouseListener(this);
 		}
-		return overlayMenuCheckBox;
+		return overlayMenuItem;
 	}
 
 	/**
@@ -1207,13 +1205,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * 
 	 * @return javax.swing.JCheckBoxMenuItem
 	 */
-	private JCheckBoxMenuItem getSelectMenuCheckBox() {
-		if (selectMenuCheckBox == null) {
-			selectMenuCheckBox = new JCheckBoxMenuItem();
-			selectMenuCheckBox.setAction(actionMap.get("Select"));
-			selectMenuCheckBox.addMouseListener(this);
+	private JMenuItem getSelectMenuItem() {
+		if (selectMenuItem == null) {
+			selectMenuItem = new JMenuItem();
+			selectMenuItem.setAction(actionMap.get("Select"));
+			selectMenuItem.addMouseListener(this);
 		}
-		return selectMenuCheckBox;
+		return selectMenuItem;
 	}
 
 	/**
@@ -1231,31 +1229,31 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	/**
-	 * This method initializes offsetMenuCheckBox
+	 * This method initializes offsetMenuItem
 	 * 
-	 * @return javax.swing.JCheckBoxMenuItem
+	 * @return javax.swing.JMenuItem
 	 */
-	private JCheckBoxMenuItem getOffsetMenuCheckBox() {
-		if (offsetMenuCheckBox == null) {
-			offsetMenuCheckBox = new JCheckBoxMenuItem();
-			offsetMenuCheckBox.setAction(actionMap.get("Offset"));
-			offsetMenuCheckBox.addMouseListener(this);
+	private JMenuItem getOffsetMenuItem() {
+		if (offsetMenuItem == null) {
+			offsetMenuItem = new JMenuItem();
+			offsetMenuItem.setAction(actionMap.get("Offset Segments"));
+			offsetMenuItem.addMouseListener(this);
 		}
-		return offsetMenuCheckBox;
+		return offsetMenuItem;
 	}
 
 	/**
-	 * This method initializes rotateMenuCheckBox
+	 * This method initializes rotateMenuItem
 	 * 
-	 * @return javax.swing.JCheckBoxMenuItem
+	 * @return javax.swing.JMenuItem
 	 */
-	private JCheckBoxMenuItem getRotateMenuCheckBox() {
-		if (rotateMenuCheckBox == null) {
-			rotateMenuCheckBox = new JCheckBoxMenuItem();
-			rotateMenuCheckBox.setAction(actionMap.get("Rotation"));
-			rotateMenuCheckBox.addMouseListener(this);
+	private JMenuItem getRotateMenuItem() {
+		if (rotateMenuItem == null) {
+			rotateMenuItem = new JMenuItem();
+			rotateMenuItem.setAction(actionMap.get("Rotation"));
+			rotateMenuItem.addMouseListener(this);
 		}
-		return rotateMenuCheckBox;
+		return rotateMenuItem;
 	}
 
 	/**
@@ -1693,7 +1691,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				executor.initialize();
 				executor.start();
 				executor.shutdown();
-				overlayMenuCheckBox.setState(graphPanel.getOverlayState());
 			} finally {
 				setWaitCursor(false);
 				statusBar.setMessage("");
@@ -1724,8 +1721,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				executor.initialize();
 				executor.start();
 				executor.shutdown();
-
-				selectMenuCheckBox.setState(graphPanel.getSelectState());
 			} finally {
 				setWaitCursor(false);
 				statusBar.setMessage("");
@@ -1750,7 +1745,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public void actionPerformed(ActionEvent e) {
 			graphPanel.clearSelectedChannels();
-			selectMenuCheckBox.setState(false);
 		}
 	}
 
@@ -1780,7 +1774,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				scaleModeAutoMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
-				offsetMenuCheckBox.setState(false);
 			}
 			setWaitCursor(false);
 			statusBar.setMessage("");
@@ -1813,7 +1806,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				scaleModeComMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
-				offsetMenuCheckBox.setState(false);
 			}
 			setWaitCursor(false);
 			statusBar.setMessage("");
@@ -1846,7 +1838,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				scaleModeXHairMenuRadioBt.setSelected(true);
 				graphPanel.setOffsetState(new OffsetModeDisabled());
-				offsetMenuCheckBox.setState(false);
 			}
 			setWaitCursor(false);
 			statusBar.setMessage("");
@@ -2204,8 +2195,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.add(Echannel);
 					}
 				}
-				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
-						getInstance());
+				resp.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(),
+						null, getInstance());
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
@@ -2238,6 +2229,16 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				}
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
+				}
+				boolean hasRotatedData = false; 
+				for(PlotDataProvider pdp : selectedChannels) {
+					if(pdp.isRotated())
+						hasRotatedData = true;
+				}
+				if(hasRotatedData) {
+							JOptionPane.showMessageDialog(TraceView.getFrame(), "One or more of the traces you have selected contains rotated data. "
+									+ "The PSD for these rotated traces will be computed using the un-rotated data.",
+									"Unable to compute PSD on rotated data", JOptionPane.WARNING_MESSAGE);
 				}
 				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance()
 						.getConfigurationAt("Configuration.Plugins.PSD");
@@ -2348,7 +2349,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	class RotationAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
-
+		private List<PlotDataProvider> rotatedChannelsList = new ArrayList<PlotDataProvider>(); 
+		
 		public RotationAction() {
 			super();
 			putValue(Action.NAME, "Rotation");
@@ -2360,24 +2362,106 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				if (graphPanel.getRotation() != null) {
-					graphPanel.setRotation(null);
-					rotateMenuCheckBox.setState(false);
-				} else {
-					// Create Runnable RotateCommand obj
-					RotateCommand rotateTask = new RotateCommand(graphPanel, new Rotation(XMAX.getFrame()));
-
-					// Create ExecuteCommand obj for executing Runnable
-					ExecuteCommand executor = new ExecuteCommand(rotateTask);
-					executor.initialize();
-					executor.start();
-					executor.shutdown();
-					rotateMenuCheckBox.setState(graphPanel.getRotation() != null);
+				List<PlotDataProvider> pdpsToRotate = new ArrayList<PlotDataProvider>();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+				for(ChannelView cv : selectedViews){
+					for(PlotDataProvider pdp : cv.getPlotDataProviders())
+					{
+						if (rotatedChannelsList.contains(pdp)) {
+							if(pdp.getRotation() == null || pdp.getRotation().getRotationType() == null) { //for case when the close button was clicked
+								pdpsToRotate.add(pdp);
+							} else {
+								//Undo a already rotated channel
+								rotatedChannelsList.remove(pdp); //remove from rotated list if trying to rotate an already rotated channel
+								pdpsToRotate.add(pdp);
+								RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, null);
+								// Create ExecuteCommand obj for executing Runnable
+								ExecuteCommand executor = new ExecuteCommand(rotateTask);
+								executor.initialize();
+								executor.start();
+								executor.shutdown();
+								pdpsToRotate.clear();
+							}
+						} else {
+							pdpsToRotate.add(pdp);
+						}
+					}
+				}
+				if (pdpsToRotate.size() > 0) {
+					if(pdpsToRotate.size() == 2) {
+						if(Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1))) {
+							for(PlotDataProvider pdp : pdpsToRotate)
+								rotatedChannelsList.add(pdp);
+							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, new Rotation(XMAX.getFrame(), 2));
+							// Create ExecuteCommand obj for executing Runnable
+							ExecuteCommand executor = new ExecuteCommand(rotateTask);
+							executor.initialize();
+							executor.start();
+							executor.shutdown();
+						} else {
+							SwingUtilities.invokeLater(new Runnable() {
+							    public void run() {
+									JOptionPane.showMessageDialog(TraceView.getFrame(), "The selected channels are not complementary",
+											"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE);
+							    }
+							  });
+						}
+					}
+					else if (pdpsToRotate.size() == 3) {
+						if(Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1), pdpsToRotate.get(2))) {
+							for(PlotDataProvider pdp : pdpsToRotate)
+								rotatedChannelsList.add(pdp);
+							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, new Rotation(XMAX.getFrame(), 3));
+							// Create ExecuteCommand obj for executing Runnable
+							ExecuteCommand executor = new ExecuteCommand(rotateTask);
+							executor.initialize();
+							executor.start();
+							executor.shutdown();
+						}  else {
+							SwingUtilities.invokeLater(new Runnable() {
+							    public void run() {
+									JOptionPane.showMessageDialog(TraceView.getFrame(), "The selected channels are not complementary",
+											"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE);
+							    }
+							  });
+						}
+					}
+					else {
+						SwingUtilities.invokeLater(new Runnable() {
+						    public void run() {
+								JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for the complementary "
+										+ "channels that you wish to rotate",
+										"Invalid Selection", JOptionPane.WARNING_MESSAGE);
+						    }
+						  });
+					}
 				}
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
 			}
+		}
+		
+		
+		/**
+		 * Returns the rotated channel list
+		 */
+		public List<PlotDataProvider> getRotatedChannelList() {
+			return rotatedChannelsList;
+		}
+		
+		/**
+		 * Adds a rotated channel to the rotatedChannelsList
+		 */
+		public void addRotatedChannel(PlotDataProvider pdp) {
+			rotatedChannelsList.add(pdp);
+		}
+		
+		/**
+		 * Removes a channel from the rotatedChannelsList
+		 */
+		public void removeRotatedChannel(PlotDataProvider pdp) {
+			rotatedChannelsList.remove(pdp);
 		}
 	}
 
@@ -2416,21 +2500,19 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		public OffsetAction() {
 			super();
-			putValue(Action.NAME, "Offset");
+			putValue(Action.NAME, "Offset Segments");
 			putValue(Action.SHORT_DESCRIPTION, "offset");
 			putValue(Action.LONG_DESCRIPTION, "Show segments with offset so gaps could be seen clearer");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			if (graphPanel.getOffsetState() instanceof OffsetModeDisabled) {
-				graphPanel.setOffsetState(new OffsetModeEnabled());
-
-			} else if (graphPanel.getOffsetState() instanceof OffsetModeEnabled) {
-				graphPanel.getOffsetState().increaseStep();
-				graphPanel.repaint(); // forceRepaint()? Check offsets
-			}
-			offsetMenuCheckBox.setState(graphPanel.getOffsetState() instanceof OffsetModeEnabled);
+			OffsetCommand offsetCmd = new OffsetCommand(graphPanel);
+			ExecuteCommand executor = new ExecuteCommand(offsetCmd);
+			executor.initialize();
+			executor.start();
+			executor.shutdown();
+			graphPanel.repaint(); // forceRepaint()? Check offsets
 			statusBar.setMessage("");
 		}
 	}
@@ -3251,7 +3333,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private JButton getOffsetButton() {
 			if (offsetButton == null) {
-				offsetButton = new JButton("Offset");
+				offsetButton = new JButton("Offset Segments");
 				offsetButton.addActionListener(this);
 			}
 			return offsetButton;
@@ -3270,7 +3352,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action = actionMap.get("Demean");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == offsetButton) {
-				action = actionMap.get("Offset");
+				action = actionMap.get("Offset Segments");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == deselectAllButton) {
 				action = actionMap.get("Deselect All");
@@ -3499,10 +3581,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton respButton = null;
 		private JButton particlemotionButton = null;
 		private JButton rotationButton = null;
+		private JButton correlationButton = null;
 
 		public AnalysisButtonPanel() {
 			super();
-			GridLayout gridLayout = new GridLayout(3, 2);
+			GridLayout gridLayout = new GridLayout(4, 2);
 			setLayout(gridLayout);
 			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			setPreferredSize(new Dimension(100, 100));
@@ -3513,6 +3596,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getRespButton(), null);
 			add(getParticleMotionButton(), null);
 			add(getRotationButton(), null);
+			add(getCorrelationButton(), null);
 		}
 
 		private JButton getPSDButton() {
@@ -3557,10 +3641,18 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private JButton getRotationButton() {
 			if (rotationButton == null) {
-				rotationButton = new JButton("Rotation");
+				rotationButton = new JButton("Rotate/Un-Rotate");
 				rotationButton.addActionListener(this);
 			}
 			return rotationButton;
+		}
+		
+		private JButton getCorrelationButton() {
+			if (correlationButton == null) {
+				correlationButton = new JButton("Correlation");
+				correlationButton.addActionListener(this);
+			}
+			return correlationButton;
 		}
 
 		public void actionPerformed(ActionEvent evt) {
@@ -3583,6 +3675,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == rotationButton) {
 				action = actionMap.get("Rotation");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == correlationButton) {
+				action = actionMap.get("Correlation");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			}
 		}

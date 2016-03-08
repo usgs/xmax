@@ -215,7 +215,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			graphAreaPanel.repaint();
 		}
 	}
-
+	
 	/**
 	 * Sets graph panel contains this ChannelView
 	 * 
@@ -349,12 +349,12 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			// lg.debug("processing channel: " + channel);
 			PlotData data = null;
 			try {
-				data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getRotation(), graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
+				data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
 			} catch (TraceViewException e) {
-				graphPanel.setRotation(null);
+				channel.setRotation(null);
 				try {
 					errorChannels.add(channel.getNetworkName()+"/"+channel.getStation()+"/"+channel.getLocationName()+"/"+channel.getChannelName() + " - " + e.getMessage());
-					data = channel.getPlotData(graphPanel.getTimeRange(), width, null, graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
+					data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
 				} catch (TraceViewException | RemoveGainException e1) {
 					// do nothing
 					logger.error("TraceViewException:", e1);	
@@ -362,7 +362,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			} catch (RemoveGainException e) {
 				try {
 					errorChannels.add(channel.getNetworkName()+"/"+channel.getStation()+"/"+channel.getLocationName()+"/"+channel.getChannelName() + " - " + e.getMessage());
-					data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getRotation(), graphPanel.getFilter(), null, graphPanel.getColorMode());
+					data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(), null, graphPanel.getColorMode());
 				} catch (TraceViewException | RemoveGainException e1) {
 					// do nothing
 					logger.error("TraceViewException:", e1);	
@@ -717,7 +717,8 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				int i = 1;
 				for (PlotData data: graphs) {
 					g.setColor(data.getLabelColor());
-					g.drawString(data.getLabel(), getWidth() - 120, i++ * fontHeight);
+					g.drawString(data.getLabel() + (plotDataProviders.get(i-1).isRotated() ? " (ROT "+plotDataProviders.get(i-1).getRotation().getRotationAngleText()+")" : ""), 
+							(plotDataProviders.get(i-1).isRotated() ? getWidth() - 150 : getWidth() - 120), i++ * fontHeight);
 				}
 				// drawing Y axis labels
 				g.setColor(Color.BLACK);
