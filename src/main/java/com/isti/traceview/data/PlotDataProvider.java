@@ -86,6 +86,11 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * May be used by ColorModeByTrace to color trace in manual mode.
 	 */
 	private Color manualColor = Color.BLACK;
+	
+	/**
+	 * Current plots applied rotation
+	 */
+	private Rotation rotation = null;
 
 	public PlotDataProvider(String channelName, Station station, String networkName, String locationName) {
 		super(channelName, station, networkName, locationName);
@@ -110,6 +115,37 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			logger.error("PlotDataException:", e);
 		}
 	}
+	
+	/**
+	 * Sets rotation. Null means rotation doesn't affected. Selected traces will be redrawn with
+	 * rotation with using of "selection" mode.
+	 * 
+	 * @param rotation
+	 *            rotation to set to set
+	 */
+	public void setRotation(Rotation rotation) {
+			this.rotation = rotation;
+	}
+	
+	/**
+	 * Gets the rotation.
+	 *
+	 * @return current rotation, null if rotation is not present
+	 */
+	public Rotation getRotation() {
+		return this.rotation;
+	}
+	
+	/**
+	 * Returns whether the current channel is rotated or not
+	 * @return true if channel is rotated otherwise false
+	 */
+	public boolean isRotated() {
+		if(this.rotation != null && this.rotation.getRotationType() != null)
+			return true;
+		else 
+			return false;
+	}
 
 	/**
 	 * From interface Observer
@@ -125,7 +161,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	}
 
 	/**
-	 * Generate rotated plot data
+	 * Generate plot data
 	 * 
 	 * @param ti
 	 *            Requested time interval
@@ -138,17 +174,38 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @return generated plot data to draw
 	 * @throws TraceViewException if thrown in {@link com.isti.traceview.processing.Rotation#rotate(PlotDataProvider, TimeInterval, int, IFilter, IColorModeState)}
 	 */
-	public PlotData getPlotData(TimeInterval ti, int pointCount,
-			Rotation rotation, IFilter filter, RemoveGain rg, IColorModeState colorMode)
+	public PlotData getPlotData(TimeInterval ti, int pointCount, IFilter filter, 
+			RemoveGain rg, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException {
-		if ((rotation == null && rg == null) || (rg != null && rg.removestate == false)) {
-			return getPlotData(ti, pointCount, filter, colorMode);
-		} else if (rg != null && rg.removestate == true){
+		if (rg != null && rg.removestate == true  && this.rotation == null){
 			return rg.removegain(this, ti, pointCount, filter, colorMode);
 		}
-		else {
+		else if (this.rotation != null && this.rotation.getRotationType() != null){
 			return rotation.rotate(this, ti, pointCount, filter, colorMode);
 		}
+		else {
+			return getPlotData(ti, pointCount, filter, colorMode);
+		}
+	}
+	
+	/**
+	 * Generate original plot data
+	 * 
+	 * @param ti
+	 *            Requested time interval
+	 * @param pointCount -
+	 *            requested count of points
+	 * @param rotation -
+	 *            rotation data, if null no rotation
+	 * @param filter -
+	 *            filter to apply
+	 * @return generated plot data to draw from original dataset
+	 * @throws TraceViewException if thrown in {@link com.isti.traceview.processing.Rotation#rotate(PlotDataProvider, TimeInterval, int, IFilter, IColorModeState)}
+	 */
+	public PlotData getOriginalPlotData(TimeInterval ti, int pointCount, IFilter filter, 
+			RemoveGain rg, IColorModeState colorMode)
+			throws TraceViewException, RemoveGainException {
+			return getPlotData(ti, pointCount, filter, colorMode);
 	}
 
 	/**
@@ -597,19 +654,20 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		return lastAccessed;
 	}
 
+
 	/**
-	 * Get rotated raw data
+	 * Get rotated raw data for a given time interval
 	 * 
 	 * @param rotation
 	 *            to process data
 	 * @return rotated raw data
 	 */
-	public List<Segment> getRawData(Rotation rotation) {
+	public List<Segment> getRawData(Rotation rotation, TimeInterval ti) {
 		if (rotation == null) {
 			return super.getRawData();
 		} else {
 			try {
-				return rotation.rotate(this, getTimeRange());
+				return rotation.rotate(this, ti);
 			} catch (TraceViewException e) {
 				logger.error("TraceViewException:", e);	
 				return null;

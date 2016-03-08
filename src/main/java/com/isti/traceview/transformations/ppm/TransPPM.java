@@ -24,7 +24,6 @@ import com.isti.xmax.gui.XMAXframe;
  * Particle motion transformation. Prepares data for presentation in
  * {@link ViewPPM}
  * 
- * @author Max Kokoulin
  */
 public class TransPPM implements ITransformation {
 
@@ -90,13 +89,18 @@ public class TransPPM implements ITransformation {
 	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
 			throws XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
-		PlotDataProvider channel1 = input.get(0);
-		PlotDataProvider channel2 = input.get(1);
+		PlotDataProvider channel1 = input.get(0); // N/S
+		PlotDataProvider channel2 = input.get(1); // E/W
 		if (channel1.getSampleRate() != channel2.getSampleRate())
 			throw new XMAXException("Channels have different sample rate");
 		XYSeries series = new XYSeries(channel1.getName() + " " + channel2.getName(), false);
 		double sampleRate;
-		List<Segment> segments1 = channel1.getRawData(ti);
+		List<Segment> segments1;
+		if(channel1.getRotation() != null && channel1.isRotated()) {
+			segments1 = channel1.getRawData(channel1.getRotation(), ti);				
+		} else
+			segments1 = channel1.getRawData(ti);	
+
 		int[] intData1 = new int[0];
 		if (segments1.size() > 0) {
 			long segment_end_time = 0;
@@ -117,7 +121,11 @@ public class TransPPM implements ITransformation {
 		} else {
 			throw new XMAXException("You have no data for channel " + channel1.getName());
 		}
-		List<Segment> segments2 = channel2.getRawData(ti);
+		List<Segment> segments2;
+		if(channel2.getRotation() != null && channel2.isRotated())
+			segments2 = channel2.getRawData(channel2.getRotation(), ti);				
+		else
+			segments2 = channel2.getRawData(ti);	
 		int[] intData2 = new int[0];
 		if (segments2.size() > 0) {
 			long segment_end_time = 0;

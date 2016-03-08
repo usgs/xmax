@@ -45,6 +45,10 @@ public class TransPSD implements ITransformation {
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "PSD computation warning",
 					JOptionPane.WARNING_MESSAGE);
+		} else if (input.get(0).getDataLength(ti) < 32) {
+			JOptionPane.showMessageDialog(parentFrame, "One or more of the traces you selected does not contain enough datapoints (<32). "
+					+ "Please select a longer dataset.", "PSD computation warning",
+					JOptionPane.WARNING_MESSAGE);
 		} else {
 			try {
 				List<Spectra> spList = createData(input, filter, ti, parentFrame);
@@ -88,7 +92,6 @@ public class TransPSD implements ITransformation {
 		List<Spectra> dataset = new ArrayList<Spectra>();
 		ListIterator<PlotDataProvider> li = input.listIterator();
 		String respNotFound = "";
-		// int userAnswer = -1;
 		while (li.hasNext()) {
 			PlotDataProvider channel = li.next();
 			List<Segment> segments = channel.getRawData(ti);
@@ -101,11 +104,12 @@ public class TransPSD implements ITransformation {
 					if (segment.getSampleRate() != samplerate) {
 						throw new XMAXException(
 								"You have data with different sample rate for channel " + channel.getName());
-					}
+					} 
 					if (segment_end_time != 0
 							&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), samplerate)) {
 						throw new XMAXException("You have gap in the data for channel " + channel.getName());
 					}
+					
 					segment_end_time = segment.getEndTime().getTime();
 					intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
 				}
@@ -214,6 +218,7 @@ public class TransPSD implements ITransformation {
 			// Perform windowing and compute the FFT of each segment. The
 			// finalNoiseSpectraData array contains the sum of the FFTs for all
 			// segments.
+			int numsegs = 1;
 			while (cnt < intData.length) {
 
 				if (cnt < dsDataSegmentLimit) {
@@ -255,22 +260,23 @@ public class TransPSD implements ITransformation {
 						cnt = intData.length - smallDataSegmentLimit;
 						dsDataSegmentLimit = intData.length;
 					} else {
-						cnt = cnt - ((dsDataSegment * 3) / 4); // move window
+						cnt = cnt - ((smallDataSegmentLimit * 3) / 4); // move window
 																// backwards 75%
-						dsDataSegmentLimit = dsDataSegmentLimit + (dsDataSegment / 4); // increase
+						dsDataSegmentLimit = dsDataSegmentLimit + (smallDataSegmentLimit / 4); // increase
 																						// new
 																						// dsDataSegmentLimit
 																						// by
 																						// 25%
+						numsegs++;
 					}
 
 				}
 
 			}
-
+			
 			// average each bin by dividing by the number of segments
 			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
-				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], 13.0);
+				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], numsegs);
 			}
 
 			// Note that channel.getSampleRate() really returns the sampling

@@ -47,6 +47,10 @@ public class TransCoherence implements ITransformation{
 					"Coherence computation warning",
 					JOptionPane.WARNING_MESSAGE);
 		}
+		else if (input.get(0).getDataLength(ti) < 32) {
+			JOptionPane.showMessageDialog(parentFrame, "One or more of the traces that you selected does not contain enough datapoints (<32). Please select a longer dataset.", "Coherence computation warning",
+					JOptionPane.WARNING_MESSAGE);
+		}
 		else {
 			try {
 				XYSeriesCollection plotSeries = createData(input, filter, ti, parentFrame);
@@ -85,220 +89,273 @@ public class TransCoherence implements ITransformation{
 			throws TraceViewException, XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		ListIterator<PlotDataProvider> li = input.listIterator();
-		List<Cmplx[]> traceArray = new ArrayList<Cmplx[]>();
+		List<Cmplx[]> xSegmentData = new ArrayList<Cmplx[]>();
+		List<Cmplx[]> ySegmentData = new ArrayList<Cmplx[]>();
+		PlotDataProvider channel = null;
+		int currentTraceNum = 0; 
+		int numsegs = 1;
 		while (li.hasNext()) {
-			PlotDataProvider channel = li.next();
-			List<Segment> segments = channel.getRawData(ti);
-			double samplerate;
-			long segment_end_time = 0;
-			int[] intData = new int[0];
-			if (segments.size() > 0) {
-				samplerate = segments.get(0).getSampleRate();
-				for (Segment segment : segments) {
-					if (segment.getSampleRate() != samplerate) {
-						throw new XMAXException(
-								"You have data with different sample rate for channel " + channel.getName());
-					}
-					if (segment_end_time != 0
-							&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), samplerate)) {
-						throw new XMAXException("You have gap in the data for channel " + channel.getName());
-					}
-					segment_end_time = segment.getEndTime().getTime();
-					intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
-				}
-
-			} else {
-				throw new XMAXException("You have no data for channel " + channel.getName());
-			}
-			if (intData.length > maxDataLength) {
-				int ds = getPower2Length(maxDataLength);
-				int[] tempIntData = new int[ds];
-				for (int i = 0; i < maxDataLength; i++)
-					tempIntData[i] = intData[i];
-				intData = tempIntData;
-				((XMAXframe) parentFrame).getStatusBar().setMessage(
-						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
-			}
-		
-			/*
-			 * Here we compute the power spectral density of the selected data
-			 * using the Welch method with 13 windows 75% overlap. The actual
-			 * PSD is calculated in the getPSD function within Spectra.java.
-			 */
-			int dsDataSegment = new Double(Math.round(intData.length / 4.0)).intValue(); // length
-																							// of
-																							// each
-																							// segment
-																							// for
-																							// 13
-																							// segments
-																							// 75%
-																							// overlap
-			int smallDataSegmentLimit = new Double(
-					Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1))))).intValue(); // set
-																														// smallDataSegment
-																														// limit
-																														// to
-																														// be
-																														// one
-																														// power
-																														// of
-																														// 2
-																														// less
-																														// than
-																														// the
-																														// dsDataSegment
-																														// length
-
-			int[] data = new int[smallDataSegmentLimit]; // array containing
-															// data values in
-															// the time domain
-			Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; // array
-																		// containing
-																		// the
-																		// fft
-																		// of
-																		// the
-																		// current
-																		// segment
-			Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit / 2) + 1]; // array
-																						// containing
-																						// the
-																						// cumulative
-																						// sum
-																						// of
-																						// the
-																						// each
-																						// segments
-																						// fft.
-
-			// initialize the finalNoiseSpectraData array to all zeros since we
-			// will be taking a cumulative sum of the data.
-			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
-				finalNoiseSpectraData[i] = new Cmplx(0, 0);
-			}
-
-			// loop indexes
-			int dsDataSegmentLimit = dsDataSegment; // keeps track of where a
-													// segment ends in the data
-													// array
-			int cnt = 0; // keeps track where in the intData array the index is
-			int segIndex = 0; // keeps track of where the index is within an
-								// individual segment
-
-			int ds;
-			if (intData.length > maxDataLength) {
-				ds = getPower2Length(maxDataLength);
-				int[] tempIntData = new int[ds];
-				for (int i = 0; i < maxDataLength; i++)
-					tempIntData[i] = intData[i];
-				intData = tempIntData;
-				((XMAXframe) parentFrame).getStatusBar().setMessage(
-						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
-			} else {
-				ds = intData.length;
-			}
-			if (ds > effectiveLength) {
-				effectiveLength = ds;
-			}
-			
-			// Perform windowing and compute the FFT of each segment. The
-			// finalNoiseSpectraData array contains the sum of the FFTs for all
-			// segments.
-			while (cnt < intData.length) {
-
-				if (cnt < dsDataSegmentLimit) {
-					if (segIndex < smallDataSegmentLimit)
-						data[segIndex] = intData[cnt];
-					cnt++;
-					segIndex++;
+				channel = li.next();
+				List<Segment> segments; 
+	
+				if(channel.getRotation() != null && channel.isRotated()) {
+					segments = channel.getRawData(channel.getRotation(), ti); //if data is rotated then calculate the coherence on the rotated data.
 				} else {
-					if (filter != null) {
-						data = new FilterFacade(filter, channel).filter(data);
+					segments = channel.getRawData(ti);
+				}
+	
+				double samplerate;
+				long segment_end_time = 0;
+				int[] intData = new int[0];
+				if (segments.size() > 0) {
+					samplerate = segments.get(0).getSampleRate();
+					for (Segment segment : segments) {
+						if (segment.getSampleRate() != samplerate) {
+							throw new XMAXException(
+									"You have data with different sample rate for channel " + channel.getName());
+						}
+						if (segment_end_time != 0
+								&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), samplerate)) {
+							throw new XMAXException("You have gap in the data for channel " + channel.getName());
+						}
+						segment_end_time = segment.getEndTime().getTime();
+						intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
 					}
-
-					// Make a copy of data to make it an array of doubles
-					double[] dataCopy = new double[data.length];
-					for (int i = 0; i < data.length; i++)
-						dataCopy[i] = data[i];
-
-					// Norm the data: remove mean
-					dataCopy = IstiUtilsMath.normData(dataCopy);
-
-					// Apply Hanning window
-					dataCopy = IstiUtilsMath.windowHanning(dataCopy);
-
-					// Calculate FFT of the current segment
-					noise_spectra = IstiUtilsMath.processFft(dataCopy);
-
-					// Compute a running total of the FFTs for all segments
-					for (int i = 0; i < noise_spectra.length; i++) {
-						finalNoiseSpectraData[i] = Cmplx.add(finalNoiseSpectraData[i], noise_spectra[i]);
-					}
-
-					// move cursors
-					segIndex = 0;
-					if (cnt + smallDataSegmentLimit > intData.length) // correction
-																		// for
-																		// last
-																		// segment
-					{
-						cnt = intData.length - smallDataSegmentLimit;
-						dsDataSegmentLimit = intData.length;
+				} else {
+					throw new XMAXException("You have no data for channel " + channel.getName());
+				}
+				if (intData.length > maxDataLength) {
+					int ds = getPower2Length(maxDataLength);
+					int[] tempIntData = new int[ds];
+					for (int i = 0; i < maxDataLength; i++)
+						tempIntData[i] = intData[i];
+					intData = tempIntData;
+					((XMAXframe) parentFrame).getStatusBar().setMessage(
+							"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
+				}
+			
+				/*
+				 * Here we compute the power spectral density of the selected data
+				 * using the Welch method with 13 windows 75% overlap. The actual
+				 * PSD is calculated in the getPSD function within Spectra.java.
+				 */
+				int dsDataSegment = new Double(Math.round(intData.length / 4.0)).intValue(); // length
+																								// of
+																								// each
+																								// segment
+																								// for
+																								// 13
+																								// segments
+																								// 75%
+																								// overlap
+				int smallDataSegmentLimit = new Double(
+						Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1))))).intValue(); // set
+																															// smallDataSegment
+																															// limit
+																															// to
+																															// be
+																															// one
+																															// power
+																															// of
+																															// 2
+																															// less
+																															// than
+																															// the
+																															// dsDataSegment
+																															// length
+	
+				int[] data = new int[smallDataSegmentLimit]; // array containing
+																// data values in
+																// the time domain
+				Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; // array
+																			// containing
+																			// the
+																			// fft
+																			// of
+																			// the
+																			// current
+																			// segment
+				Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit / 2) + 1]; // array
+																							// containing
+																							// the
+																							// cumulative
+																							// sum
+																							// of
+																							// the
+																							// each
+																							// segments
+																							// fft.
+	
+				// initialize the finalNoiseSpectraData array to all zeros since we
+				// will be taking a cumulative sum of the data.
+				for (int i = 0; i < finalNoiseSpectraData.length; i++) {
+					finalNoiseSpectraData[i] = new Cmplx(0, 0);
+				}
+	
+				// loop indexes
+				int dsDataSegmentLimit = dsDataSegment; // keeps track of where a
+														// segment ends in the data
+														// array
+				int cnt = 0; // keeps track where in the intData array the index is
+				int segIndex = 0; // keeps track of where the index is within an
+									// individual segment
+	
+				int ds;
+				if (intData.length > maxDataLength) {
+					ds = getPower2Length(maxDataLength);
+					int[] tempIntData = new int[ds];
+					for (int i = 0; i < maxDataLength; i++)
+						tempIntData[i] = intData[i];
+					intData = tempIntData;
+					((XMAXframe) parentFrame).getStatusBar().setMessage(
+							"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
+				} else {
+					ds = intData.length;
+				}
+				if (ds > effectiveLength) {
+					effectiveLength = ds;
+				}
+				
+				// Perform windowing and compute the FFT of each segment. The
+				// finalNoiseSpectraData array contains the sum of the FFTs for all
+				// segments.
+				numsegs = 1; 
+				while (cnt < intData.length) {
+	
+					if (cnt < dsDataSegmentLimit) {
+						if (segIndex < smallDataSegmentLimit)
+							data[segIndex] = intData[cnt];
+						cnt++;
+						segIndex++;
 					} else {
-						cnt = cnt - ((dsDataSegment * 3) / 4); // move window
-																// backwards 75%
-						dsDataSegmentLimit = dsDataSegmentLimit + (dsDataSegment / 4); // increase
-																						// new
-																						// dsDataSegmentLimit
-																						// by
-																						// 25%
+						if (filter != null) {
+							data = new FilterFacade(filter, channel).filter(data);
+						}
+	
+						// Make a copy of data to make it an array of doubles
+						double[] dataCopy = new double[data.length];
+						for (int i = 0; i < data.length; i++)
+							dataCopy[i] = data[i];
+
+						// Calculate FFT of the current segment
+						noise_spectra = IstiUtilsMath.processFft(dataCopy);
+						
+						if(currentTraceNum == 0){
+							xSegmentData.add(noise_spectra);
+						} else {
+							ySegmentData.add(noise_spectra);
+						}
+
+						// move cursors
+						segIndex = 0;
+						if (cnt + smallDataSegmentLimit > intData.length) // correction
+																			// for
+																			// last
+																			// segment
+						{
+							cnt = intData.length - smallDataSegmentLimit;
+							dsDataSegmentLimit = intData.length;
+						} else {
+							cnt = cnt - ((smallDataSegmentLimit * 3) / 4); // move window
+																	// backwards 75%
+							dsDataSegmentLimit = dsDataSegmentLimit + (smallDataSegmentLimit / 4); // increase
+																							// new
+																							// dsDataSegmentLimit
+																							// by
+																							// 25%
+							numsegs++;
+						}
 					}
-
 				}
-
+				currentTraceNum++;
 			}
-
-			// average each bin by dividing by the number of segments
-			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
-				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], 13.0);
-			}
-
-			
-			traceArray.add(finalNoiseSpectraData);
-			
-			if(traceArray.size() > 1){
-				final double[] finalCoherence; 
-				double[] coherenceTrace = new double[traceArray.get(0).length];
-				for(int i = 0; i < traceArray.get(0).length; i++){
-					//Calcluate |Pxy|^2
-					Cmplx x = traceArray.get(0)[i];
-					Cmplx y = traceArray.get(1)[i];
-					double numerator = Math.pow(Cmplx.mul(x, y.conjg()).real(), 2);
-					//Calculate |Pxx| * |Pyy|
-					double denominator = Cmplx.mul(x, x.conjg()).real() * Cmplx.mul(y, y.conjg()).real();
-					coherenceTrace[i] = numerator / denominator; //normalized coherence value
-				}
-				finalCoherence = coherenceTrace; 
-
-				// Note that channel.getSampleRate() really returns the sampling
-				// interval. (e.g. For a sample frequency of 40Hz you have
-				// 1000.0/channel.getSampleRate() = 1000.0/25 = 40Hz)
-				final Response.FreqParameters fp = Response.getFreqParameters(finalCoherence.length*2,
-						1000.0 / channel.getSampleRate());
-				final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
-
-				XYSeries series = new XYSeries("raw series");
 				
-				for(int i = 0; i < finalCoherence.length; i++){
-					series.add(1.0 / frequenciesArray[i], Math.sqrt(finalCoherence[i]));
+			//Caculate the averaged Pxx*
+			Cmplx[] pXConj = new Cmplx[xSegmentData.get(0).length];
+			for(int i = 0; i < pXConj.length; i++)
+				pXConj[i] = new Cmplx(0,0);
+			for(Cmplx[] segdata : xSegmentData) {
+				for(int i = 0; i < segdata.length; i++) {
+					pXConj[i] = Cmplx.add(pXConj[i], Cmplx.mul(segdata[i], segdata[i].conjg()));				
 				}
-				
-				dataset.addSeries(series);
 			}
-		}
+			for(int i = 0; i < pXConj.length; i++) {
+				pXConj[i] = Cmplx.div(pXConj[i], numsegs);
+			}
+			
+			//Calculate the average Pyy*
+			Cmplx[] pYConj = new Cmplx[ySegmentData.get(0).length];
+			for(int i = 0; i < pYConj.length; i++)
+				pYConj[i] = new Cmplx(0,0);
+			for(Cmplx[] segdata : ySegmentData) {
+				for(int i = 0; i < segdata.length; i++) {
+					pYConj[i] = Cmplx.add(pYConj[i], Cmplx.mul(segdata[i], segdata[i].conjg()));				
+				}
+			}
+			for(int i = 0; i < pYConj.length; i++) {
+				pYConj[i] = Cmplx.div(pYConj[i], numsegs);
+			}
+			
+			//Calculate the average Pxy*
+			Cmplx[] pXYConj = new Cmplx[ySegmentData.get(0).length];
+			for(int i = 0; i < pXYConj.length; i++)
+				pXYConj[i] = new Cmplx(0,0);
+			for(int r = 0; r < numsegs; r++) {
+				Cmplx[] curXSeg = xSegmentData.get(r);
+				Cmplx[] curYSeg = ySegmentData.get(r);
+				for(int c = 0; c < pXYConj.length; c++) {
+					pXYConj[c] = Cmplx.add(pXYConj[c], Cmplx.mul(curXSeg[c], curYSeg[c].conjg()));				
+				}
+			}
+			for(int i = 0; i < pXYConj.length; i++) {
+				pXYConj[i] = Cmplx.div(pXYConj[i], numsegs);
+			}
+			
+			//Calculate the average Pyx*
+			Cmplx[] pYXConj = new Cmplx[ySegmentData.get(0).length];
+			for(int i = 0; i < pYXConj.length; i++)
+				pYXConj[i] = new Cmplx(0,0);
+			for(int r = 0; r < numsegs; r++) {
+				Cmplx[] curXSeg = xSegmentData.get(r);
+				Cmplx[] curYSeg = ySegmentData.get(r);
+				for(int c = 0; c < pYXConj.length; c++) {
+					pYXConj[c] = Cmplx.add(pYXConj[c], Cmplx.mul(curYSeg[c], curXSeg[c].conjg()));				
+				}
+			}
+			for(int i = 0; i < pXYConj.length; i++) {
+				pYXConj[i] = Cmplx.div(pYXConj[i], numsegs);
+			}
 		
-		
+			final double[] finalCoherence; 
+			double[] coherenceTrace = new double[pXConj.length];
+			for(int i = 0; i < pXConj.length; i++){
+				Cmplx pxx = pXConj[i];
+				Cmplx pyy = pYConj[i];
+				Cmplx pxy = pXYConj[i];
+				Cmplx pyx = pYXConj[i];
+				//Calcluate |Pxy|^2
+				double numerator = Cmplx.mul(pxy, pyx).real();
+				//Calculate |Pxx| * |Pyy|
+				double denominator = Cmplx.mul(pxx, pyy).real();
+				coherenceTrace[i] = numerator / denominator; //normalized coherence value
+			}
+			finalCoherence = coherenceTrace; 
+
+			// Note that channel.getSampleRate() really returns the sampling
+			// interval. (e.g. For a sample frequency of 40Hz you have
+			// 1000.0/channel.getSampleRate() = 1000.0/25 = 40Hz)
+			final Response.FreqParameters fp = Response.getFreqParameters(finalCoherence.length*2,
+					1000.0 / channel.getSampleRate());
+			final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
+
+			XYSeries series = new XYSeries("raw series");
+			
+			for(int i = 0; i < finalCoherence.length; i++){
+				series.add(1.0 / frequenciesArray[i], Math.sqrt(finalCoherence[i]));
+			}
+			
+			dataset.addSeries(series);
+
 		return dataset;
 	}
 

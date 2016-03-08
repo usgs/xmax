@@ -13,7 +13,7 @@ import com.isti.traceview.processing.RemoveGain;
  * @author Nick Falco
  */
 public class RemoveGainCommand extends AbstractUndoableCommand {
-	private static final Logger logger = Logger.getLogger(SelectCommand.class);
+	private static final Logger logger = Logger.getLogger(RemoveGainCommand.class);
 	private GraphPanel graphPanel = null;
 	private RemoveGain gain = null;
 
