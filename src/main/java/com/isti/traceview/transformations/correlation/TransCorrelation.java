@@ -78,7 +78,12 @@ public class TransCorrelation implements ITransformation {
 			throws XMAXException {
 		List<double[]> ret = new ArrayList<double[]>();
 		PlotDataProvider channel1 = input.get(0);
-		List<Segment> segments1 = channel1.getRawData(ti);
+		List<Segment> segments1; 
+		if(channel1.getRotation() != null)
+			segments1 = channel1.getRawData(ti);
+		else {
+			segments1 = channel1.getRawData(channel1.getRotation(), ti);
+		}
 		int[] intData1 = new int[0];
 		if (segments1.size() > 0) {
 			long segment_end_time = 0;
@@ -115,7 +120,12 @@ public class TransCorrelation implements ITransformation {
 		ret.add(dblData1);
 		if (input.size() == 2) {
 			PlotDataProvider channel2 = input.get(1);
-			List<Segment> segments2 = channel2.getRawData(ti);
+			List<Segment> segments2; 
+			if(channel1.getRotation() != null)
+				segments2 = channel2.getRawData(ti);
+			else {
+				segments2 = channel2.getRawData(channel2.getRotation(), ti);
+			}
 			int[] intData2 = new int[0];
 			if (segments2.size() > 0) {
 				long segment_end_time = 0;

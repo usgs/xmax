@@ -42,7 +42,6 @@ import com.isti.xmax.XMAX;
 class ViewCoherence extends JDialog implements PropertyChangeListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
-	// private static final Logger logger = Logger.getLogger(ViewSpectra.class);
 
 	// private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
 	private JOptionPane optionPane;

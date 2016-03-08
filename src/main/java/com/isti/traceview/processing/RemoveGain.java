@@ -58,7 +58,7 @@ public class RemoveGain {
 			}
 		}
 		PlotData ret = new PlotData(channel.getName(), channel.getColor());
-		PlotData toProcess = channel.getPlotData(ti, pointCount, null, filter,  null, colorMode);
+		PlotData toProcess = channel.getPlotData(ti, pointCount, filter,  null, colorMode);
 		PlotDataPoint pdp = null;
 		int curPixelIndex = 0; 
 		for(Segment segment: channel.getRawData(ti)){

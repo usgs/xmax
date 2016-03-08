@@ -34,7 +34,7 @@ import com.isti.xmax.gui.XMAXframe;
  */
 public class XMAX extends TraceView {
 	private static final Logger logger = Logger.getLogger(XMAX.class);	
-	public static final String version = "2.0.6";
+	public static final String version = "2.0.7";
 	public static final String releaseDate = "February 2016";
 
 	/**
