@@ -1404,7 +1404,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						System.out.print("Pixelizing channel data...");
 					}
 					
-					List<String> channelsWithErrors = new ArrayList<String>();
+					final List<String> channelsWithErrors = new ArrayList<String>();
 					for (Component component: drawAreaPanel.getComponents()) {
 						ChannelView view = (ChannelView) component;
 						if (view.getHeight() == 0 || view.getWidth() == 0) {
