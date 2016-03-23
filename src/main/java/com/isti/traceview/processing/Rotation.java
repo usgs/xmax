@@ -444,7 +444,7 @@ public class Rotation {
 		try {
 			@SuppressWarnings("unused")	
 			PlotDataProvider[] triplet = getChannelsTriplet(channel);
-		} catch (TraceViewException e) {
+		} catch (final TraceViewException e) {
 			SwingUtilities.invokeLater(new Runnable() {
 			    public void run() {
 					JOptionPane.showMessageDialog(TraceView.getFrame(), e, "Rotation warning", JOptionPane.WARNING_MESSAGE);
