@@ -48,7 +48,7 @@ public class FilterHP implements IFilter {
 	 * Default constructor
 	 */
 	public FilterHP() {
-		this(2, 50);
+		this(2, 1);
 	}
 
 	@Override
