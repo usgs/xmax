@@ -269,7 +269,9 @@ class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressLi
 				invalidate();
 				optionPane.invalidate();
 				chartPanel.invalidate();
-				validateTree();
+				synchronized(getTreeLock()) {
+				     validateTree();
+				}
 				doLayout();
 				repaint();
 			}
