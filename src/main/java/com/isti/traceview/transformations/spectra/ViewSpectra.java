@@ -132,7 +132,8 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 
 		} else if (e.getSource().equals(getLogScaleCB())) {
 			if(getLogScaleCB().isSelected()) {
-				NumberAxis rangeAxis = (NumberAxis) new LogarithmicAxis("Spectra");
+				LogarithmicAxis rangeAxis = new LogarithmicAxis("Spectra");
+				rangeAxis.setAllowNegativesFlag(true);
 				rangeAxis.setAutoRange(true);
 				plot.setRangeAxis(rangeAxis);
 			} else {
@@ -214,27 +215,38 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 
 		if (getShowDiffCB().isSelected()) {
 			XYSeries[] series = new XYSeries[2];
-			// Component[] ca = selectionP.getComponents();
-			int seriesFound = 0;
-			int i = 1;
-			while (i < selectionP.getComponentCount() && seriesFound < 2) {
+			//determine the total number of selected channel checkboxes
+			int totalSelectedChannels = 0; 
+			for(int i = 1; i < selectionP.getComponentCount(); i++) {
 				JCheckBox cb = (JCheckBox) selectionP.getComponent(i);
 				if (cb.isSelected()) {
-					series[seriesFound] = ret.getSeries(i - 1);
-					seriesFound++;
+					totalSelectedChannels++;
 				}
-				i++;
 			}
-			double mean1 = getSeriesMean(series[0]);
-			double mean2 = getSeriesMean(series[1]);
-			XYSeries subtract = null;
-			if (mean1 > mean2) {
-				subtract = subtractSeries(series[0], series[1]);
+			if(totalSelectedChannels == 2) {
+				int seriesFound = 0;
+				int i = 1; // skip show difference button
+				while (i < selectionP.getComponentCount()) {
+					JCheckBox cb = (JCheckBox) selectionP.getComponent(i);
+					if (cb.isSelected()) {
+						series[seriesFound] = ret.getSeries(i - 1);
+						seriesFound++;
+					}
+					i++;
+				}
+				double mean1 = getSeriesMean(series[0]);
+				double mean2 = getSeriesMean(series[1]);
+				XYSeries subtract = null;
+				if (mean1 > mean2) {
+					subtract = subtractSeries(series[0], series[1]);
+				} else {
+					subtract = subtractSeries(series[1], series[0]);
+				}
+				ret = new XYSeriesCollection();
+				ret.addSeries(subtract);
 			} else {
-				subtract = subtractSeries(series[1], series[0]);
+				getShowDiffCB().setSelected(false);
 			}
-			ret = new XYSeriesCollection();
-			ret.addSeries(subtract);
 		}
 		return ret;
 	}
