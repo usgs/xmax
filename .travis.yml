@@ -3,5 +3,4 @@ jdk:
   - oraclejdk8
   - oraclejdk7
 sudo: false
-script: 
-gradle check
+script: gradle check
