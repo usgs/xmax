@@ -1,8 +1,10 @@
 language: java
 jdk:
   - oraclejdk8
-  - openjdk8
   - oraclejdk7
-  - openjdk7
 sudo: false
-script: gradle check
+script: 
+- jdk_switcher use oraclejdk8
+gradle check
+- jdk_switcher use oraclejdk7
+gradle check
