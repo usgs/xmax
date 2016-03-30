@@ -1,4 +1,4 @@
-xmax
+XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https://travis-ci.org/usgs/xmax)
 ====
 
 ###Purpose
