@@ -64,17 +64,19 @@ public class RemoveGain {
 		for(Segment segment: channel.getRawData(ti)){
 			for (int i = 0; curPixelIndex < pointCount && i < segment.getData().data.length; i++) {
 				int value = segment.getData().data[i];
-				pdp = toProcess.getPixels().get(i)[0];
-				pdp = new PlotDataPoint(removestate ? pdp.getTop()/sensitivity : pdp.getTop(), 
-										removestate ? pdp.getBottom()/sensitivity : pdp.getBottom(), 
-										removestate ? pdp.getMean() / sensitivity : value, 
-										pdp.getSegmentNumber(), 
-										pdp.getRawDataProviderNumber(), 
-										pdp.getContinueAreaNumber(), 
-										pdp.getEvents());
-				PlotDataPoint[] pdpArray = new PlotDataPoint[1];
-				pdpArray[0] = pdp;
-				ret.addPixel(pdpArray);
+				if(toProcess.getPixels().get(curPixelIndex).length > 0) {
+					pdp = toProcess.getPixels().get(curPixelIndex)[0];
+					pdp = new PlotDataPoint(removestate ? pdp.getTop()/sensitivity : pdp.getTop(), 
+											removestate ? pdp.getBottom()/sensitivity : pdp.getBottom(), 
+											removestate ? pdp.getMean() / sensitivity : value, 
+											pdp.getSegmentNumber(), 
+											pdp.getRawDataProviderNumber(), 
+											pdp.getContinueAreaNumber(), 
+											pdp.getEvents());
+					PlotDataPoint[] pdpArray = new PlotDataPoint[1];
+					pdpArray[0] = pdp;
+					ret.addPixel(pdpArray);
+				}
 				curPixelIndex++;
 			}
 		}
