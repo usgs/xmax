@@ -55,8 +55,6 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
 
 ######Gradle Setup/Execution
 
-    Built jars are located in the standard gradle location: build/libs/
-
     Gradle commands to clean, compile and package xmax (uses build.xml)
 ```bash
     gradle jar		# create distribution xmax.jar (default target)
@@ -67,7 +65,7 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
 ```bash
     gradle clean 	        -> delete build/ directory
     gradle build			-> compile java src/ code to build/ directory
-    gradle jar				-> create distribution xmax.jar (default target)
+    gradle jar				-> create distribution build/libs/xmax-[version].jar (default target)
 ```
 
 ###Usage
