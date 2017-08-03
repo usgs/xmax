@@ -55,17 +55,12 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
 
 ######Gradle Setup/Execution
 
-    Gradle commands to clean, compile and package xmax (uses build.xml)
+    Gradle commands to run, clean, build and package xmax (uses build.xml)
 ```bash
-    gradle jar		# create distribution xmax.jar (default target)
-    gradle run		# run java com.isti.xmax.XMAX from /build dir
-```
-
-    Gradle target descriptions (order of operations)
-```bash
-    gradle clean 	        -> delete build/ directory
-    gradle build			-> compile java src/ code to build/ directory
-    gradle jar				-> create distribution build/libs/xmax-[version].jar (default target)
+    gradle run              # run java com.isti.xmax.XMAX from /build dir
+    gradle clean            # delete build/ directory
+    gradle build			# compile java src/ code to build/ directory. Builds everything including jar
+    gradle jar				# create distribution build/libs/xmax-[version].jar (default target)
 ```
 
 ###Usage
