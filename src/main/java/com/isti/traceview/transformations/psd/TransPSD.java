@@ -3,13 +3,10 @@ package com.isti.traceview.transformations.psd;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
-
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
@@ -19,17 +16,17 @@ import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Spectra;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
-
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 
 /**
  * Power spectra density transformation. Prepares data for presentation in
  * {@link ViewPSD}
- * 
+ *
  * @author Max Kokoulin
  */
 public class TransPSD implements ITransformation {
@@ -94,7 +91,13 @@ public class TransPSD implements ITransformation {
 		String respNotFound = "";
 		while (li.hasNext()) {
 			PlotDataProvider channel = li.next();
-			List<Segment> segments = channel.getRawData(ti);
+			List<Segment> segments;
+			if (!channel.isRotated()) {
+			   segments = channel.getRawData(ti);
+			} else {
+			   Rotation rt = channel.getRotation();
+	           segments = channel.getRawData(rt, ti);
+			}
 			double samplerate;
 			long segment_end_time = 0;
 			int[] intData = new int[0];
@@ -104,12 +107,12 @@ public class TransPSD implements ITransformation {
 					if (segment.getSampleRate() != samplerate) {
 						throw new XMAXException(
 								"You have data with different sample rate for channel " + channel.getName());
-					} 
+					}
 					if (segment_end_time != 0
 							&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), samplerate)) {
 						throw new XMAXException("You have gap in the data for channel " + channel.getName());
 					}
-					
+
 					segment_end_time = segment.getEndTime().getTime();
 					intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
 				}
@@ -273,7 +276,7 @@ public class TransPSD implements ITransformation {
 				}
 
 			}
-			
+
 			// average each bin by dividing by the number of segments
 			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
 				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], numsegs);
