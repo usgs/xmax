@@ -1,5 +1,6 @@
 package com.isti.xmax.gui;
 
+import com.isti.traceview.transformations.modal.TransModal;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -307,6 +308,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		action = new CoherenceAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new SpectraAction();
+		actionMap.put(action.getValue(Action.NAME), action);
+		action = new ModalAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new CorrelationAction();
 		actionMap.put(action.getValue(Action.NAME), action);
@@ -624,6 +627,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
   public void actionPerformed(ActionEvent e) {
 		JMenuItem source = (JMenuItem) (e.getSource());
 		Action action = actionMap.get(source.getText());
+		System.out.println("ACTION NAME: " + action.getValue(Action.NAME));
 		action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 
 		statusBar.setMessage("");
@@ -2399,6 +2403,35 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 	}
 
+	class ModalAction extends AbstractAction implements Action {
+
+		public ModalAction() {
+			super();
+			putValue(Action.NAME, TransModal.NAME);
+			putValue(Action.SHORT_DESCRIPTION, "N.MODES");
+			putValue(Action.LONG_DESCRIPTION, "Show normal mode Overlays");
+			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			setWaitCursor(true);
+			try {
+				ITransformation psd = new TransModal();
+				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+				for (ChannelView channelView : selectedViews) {
+					selectedChannels.addAll(channelView.getPlotDataProviders());
+				}
+				psd.transform(selectedChannels, graphPanel.getTimeRange(), graphPanel.getFilter(), null,
+						getInstance());
+			} finally {
+				statusBar.setMessage("");
+				setWaitCursor(false);
+			}
+		}
+	}
+
 	class RotationAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
@@ -3661,6 +3694,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton particlemotionButton = null;
 		private JButton rotationButton = null;
 		private JButton correlationButton = null;
+		private JButton modalButton = null; // for normal mode overlay plot
 
 		public AnalysisButtonPanel() {
 			super();
@@ -3676,6 +3710,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			add(getParticleMotionButton(), null);
 			add(getRotationButton(), null);
 			add(getCorrelationButton(), null);
+			add(getModalButton(), null);
+		}
+
+		private JButton getModalButton() {
+			if (modalButton == null) {
+				modalButton = new JButton("Normal mode overlay");
+				modalButton.addActionListener(this);
+			}
+			return modalButton;
 		}
 
 		private JButton getPSDButton() {
@@ -3758,6 +3801,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == correlationButton) {
 				action = actionMap.get("Correlation");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == modalButton) {
+				action = actionMap.get(TransModal.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			}
 		}

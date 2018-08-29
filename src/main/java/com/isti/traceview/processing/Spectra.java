@@ -231,7 +231,7 @@ public class Spectra {
 			if(out[i] != 0)
 			{
 				y = 10.0 * Math.log10(out[i]); // put PSD in dB units
-				series.add(x, y);	
+				series.add(x, y);
 			}
 		}
 		
@@ -270,5 +270,18 @@ public class Spectra {
 				newLength);
 		System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));
 		return copy;
+	}
+
+	public XYSeries getSpectraSeriesTruncated(boolean isDeconvolve, double lowPeriod, double highPeriod) {
+		XYSeries series = new XYSeries(getName());
+		double[] out = getSpectraAmp(isDeconvolve, "");
+		for (int i = 1; i < spectra.length; i++) {
+			double x = 1.0 / frequenciesArray[i];
+			double y = out[i];
+			if (x > lowPeriod && x < highPeriod) {
+				series.add(x, y);
+			}
+		}
+		return series;
 	}
 }

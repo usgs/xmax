@@ -29,11 +29,11 @@ import com.isti.xmax.gui.XMAXframe;
 /**
  * Main class for XMAX. Keeps command line parsing logic, handles with plugins, initialize data and
  * graphics.
- * 
+ *
  * @author Max Kokoulin
  */
 public class XMAX extends TraceView {
-	private static final Logger logger = Logger.getLogger(XMAX.class);	
+	private static final Logger logger = Logger.getLogger(XMAX.class);
 	public static final String version = "2.0.7";
 	public static final String releaseDate = "February 2016";
 
@@ -44,27 +44,27 @@ public class XMAX extends TraceView {
 	private static Options options;
 	private static Set<Class<? extends IFilter>> filters;
 	private static Set<Class<? extends ITransformation>> transformations;
-	
+
 	public XMAX() {
 		super();
 		setUndoAdapter(new XMAXUndoAdapter());
 		try {
 			boolean dump = false;
 			System.out.println("  XMAX ver." + getVersionMessage() );
-            
-	    	System.out.println("===============");
-            if (cmd.getOptions().length == 0) {
-            	System.out.println("[ Quick Examples ]\n");
-            	System.out.println("* Read from -d 'data/path':");
-            	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_PTGA/2014_1{93,94}/00_LHZ*seed'\n");
-                System.out.println("* Read from BOTH -d 'data/path' AND existing serialized data in DATA_TEMP:");
-               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'\n");
-               	System.out.println("* Overwrite Serialized data in DATA_TEMP:");
-               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'\n");
-               	System.out.println("* Append to Serialized data in DATA_TEMP:");
-               	System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
-            }
-            System.out.println("===============");
+
+			System.out.println("===============");
+			if (cmd.getOptions().length == 0) {
+				System.out.println("[ Quick Examples ]\n");
+				System.out.println("* Read from -d 'data/path':");
+				System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_PTGA/2014_1{93,94}/00_LHZ*seed'\n");
+				System.out.println("* Read from BOTH -d 'data/path' AND existing serialized data in DATA_TEMP:");
+				System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'\n");
+				System.out.println("* Overwrite Serialized data in DATA_TEMP:");
+				System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'\n");
+				System.out.println("* Append to Serialized data in DATA_TEMP:");
+				System.out.println(" >java -Xms512M -Xmx512M -jar xmax.jar -T -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'");
+			}
+			System.out.println("===============");
 			if (cmd.hasOption("h")) {
 				if (cmd.getOptions().length > 1) {
 					throw new XMAXException("It isn't allowed to use any other options with -h");
@@ -72,7 +72,7 @@ public class XMAX extends TraceView {
 				HelpFormatter formatter = new HelpFormatter();
 				formatter
 						.printHelp(
-								"xmax [-h | -v | -T] {-t -u<units> -o<order>} [-c<config file> -d<data mask> -s<station file> -k<earthquakes mask> -q<QC file> -b<begin time> -e<end time> -f<units count>]", 
+								"xmax [-h | -v | -T] {-t -u<units> -o<order>} [-c<config file> -d<data mask> -s<station file> -k<earthquakes mask> -q<QC file> -b<begin time> -e<end time> -f<units count>]",
 								options);
 			} else if (cmd.hasOption("v")) {
 				if (cmd.getOptions().length > 1) {
@@ -88,21 +88,21 @@ public class XMAX extends TraceView {
 					dump = true;
 					getConfiguration().setDumpData(true);
 /** MTH: This has changed
-					if (cmd.hasOption("t")) {
-						throw new XMAXException("It isn't allowed to use -T and -t options together");
-					}
-**/
+ if (cmd.hasOption("t")) {
+ throw new XMAXException("It isn't allowed to use -T and -t options together");
+ }
+ **/
 				}
 				if (cmd.hasOption("t")) {
 					getConfiguration().setUseTempData(true);
 /**
-					if (cmd.hasOption("T")) {
-						throw new XMAXException("It isn't allowed to use -T and -t options together");
-					}
-**/
+ if (cmd.hasOption("T")) {
+ throw new XMAXException("It isn't allowed to use -T and -t options together");
+ }
+ **/
 				}
 				if (cmd.hasOption("d")) {
-                    getConfiguration().setUseDataPath(true);
+					getConfiguration().setUseDataPath(true);
 					getConfiguration().setDataPath(dequote(cmd.getOptionValue("d")).trim());
 				}
 				if (cmd.hasOption("i")) {
@@ -165,9 +165,9 @@ public class XMAX extends TraceView {
 					Reflections reflect = new Reflections("com.isti");
 					filters = reflect.getSubTypesOf(IFilter.class);
 					transformations = reflect.getSubTypesOf(ITransformation.class);
-					
+
 					setDataModule(XMAXDataModule.getInstance());
-                    
+
 					getDataModule().loadData();
 
 					if (getDataModule().getAllChannels().size() > 0) {
@@ -180,7 +180,7 @@ public class XMAX extends TraceView {
 							// Wait while frame will be created to correct repaint
 							Thread.sleep(200);
 						} catch (InterruptedException e) {
-							logger.error("InterruptedException:", e);	
+							logger.error("InterruptedException:", e);
 						}
 						getFrame().setVisible(true);
 						getFrame().setShouldManageTimeRange(true);
@@ -191,7 +191,7 @@ public class XMAX extends TraceView {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception:", e);	
+			logger.error("Exception:", e);
 			System.exit(0);
 		}
 	}
@@ -252,7 +252,7 @@ public class XMAX extends TraceView {
 
 	/**
 	 * Get transformation by id.
-	 * 
+	 *
 	 * @return the matching ITransformation or null if none matches
 	 */
 	public static ITransformation getTransformation(String id)
@@ -329,13 +329,13 @@ public class XMAX extends TraceView {
 		return releaseDate;
 	}
 
-	@SuppressWarnings("unused")	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		options = getOptions();
 		try {
 			CommandLineParser parser = new PosixParser();
 			cmd = parser.parse(options, args);
-			XMAX xyz = new XMAX();	
+			XMAX xyz = new XMAX();
 		} catch (ParseException e) {
 			//System.err.println("Command line parsing failed.  Reason: " + e.getMessage());
 			String message = "Command line parsing failed. Reason:";
@@ -353,7 +353,7 @@ public class XMAX extends TraceView {
 		apd.setMaxFileSize("1000KB");
 		apd.setMaxBackupIndex(10);
 		apd.setLayout(new PatternLayout("%d %5p %m%n"));
-		apd.setAppend(false);	
+		apd.setAppend(false);
 		apd.activateOptions();
 		Logger.getRootLogger().addAppender(apd);
 		Runtime.getRuntime().addShutdownHook(new ClearLogShutDownHook());
