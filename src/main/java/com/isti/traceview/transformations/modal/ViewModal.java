@@ -1,8 +1,10 @@
 package com.isti.traceview.transformations.modal;
 
 import com.isti.jevalresp.OutputGenerator;
+import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.SacTimeSeriesASCII;
 import com.isti.traceview.gui.GraphUtil;
@@ -55,7 +57,7 @@ public class ViewModal extends JDialog implements PropertyChangeListener, Change
 
   private static final long serialVersionUID = 1L;
   private static final Logger logger = Logger.getLogger(ViewModal.class);
-  private static final int INIT_MIN_PERIOD = 900;
+  private static final int INIT_MIN_PERIOD = 500;
   private static final int INIT_MAX_PERIOD = 3500;
   private static final int MIN_DISTANCE = 100;
 

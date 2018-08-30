@@ -274,7 +274,9 @@ public class Spectra {
 
 	public XYSeries getSpectraSeriesTruncated(boolean isDeconvolve, double lowPeriod, double highPeriod) {
 		XYSeries series = new XYSeries(getName());
-		double[] out = getSpectraAmp(isDeconvolve, "");
+		String respToDeconvolve = "RESP." + getNetworkName() + "." + getStationName() + "." +
+				getLocationName() + "." + getChannelName();
+		double[] out = getSpectraAmp(isDeconvolve, respToDeconvolve);
 		for (int i = 1; i < spectra.length; i++) {
 			double x = 1.0 / frequenciesArray[i];
 			double y = out[i];
