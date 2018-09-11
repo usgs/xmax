@@ -1,5 +1,6 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.processing.Rotation;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -154,6 +155,26 @@ public class RawDataProvider extends Channel {
 			}
 			return ret;
 		}
+	}
+
+	/**
+	 * Get rotated raw data for a given time interval
+	 *
+	 * @param rotation
+	 *            to process data
+	 * @return rotated raw data
+	 */
+	public List<Segment> getRawData(Rotation rotation, TimeInterval ti) {
+		if (rotation != null)  {
+			try {
+				return rotation.rotate(this, ti);
+			} catch (TraceViewException e) {
+				logger.error("TraceViewException:", e);
+				return null;
+			}
+		}
+
+		return getRawData(ti);
 	}
 	
 	public int getDataLength(TimeInterval ti){
@@ -434,11 +455,15 @@ public class RawDataProvider extends Channel {
 	 *            stream to dump
 	 * @param ti
 	 *            content's time interval
+	 * @param filter
+	 * 						filter being applied to the data
+	 * @param rotation
+	 * 						system of rotation applied to the data (can be null)
 	 * @throws IOException if there are problems writing the miniseed dump
 	 */
 	@SuppressWarnings("unchecked")
-	public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter) throws IOException {
-		for (Segment segment: getRawData(ti)) {
+	public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter, Rotation rotation) throws IOException {
+		for (Segment segment: getRawData(rotation, ti)) {
 			int[] data = segment.getData(ti).data;
 			if (filter != null) {
 				data = new FilterFacade(filter, this).filter(data);
@@ -446,8 +471,7 @@ public class RawDataProvider extends Channel {
 			TimeInterval exportedRange = TimeInterval.getIntersect(ti, new TimeInterval(segment.getStartTime(), segment.getEndTime()));
 			if (data.length > 0) {
 				try {
-					List<SteimFrameBlock> lst = new LinkedList<SteimFrameBlock>();
-					lst = Recompress.steim1(data);
+					List<SteimFrameBlock> lst = Recompress.steim1(data);
 
 					EncodedData edata[] = new EncodedData[lst.size()];
 					for (int i = 0; i < edata.length; i++) {
@@ -484,9 +508,9 @@ public class RawDataProvider extends Channel {
 	 *            content's time interval
 	 * @throws IOException if there are problems writing the ascii dump
 	 */
-	public void dumpASCII(FileWriter fw, TimeInterval ti, IFilter filter) throws IOException {
+	public void dumpASCII(FileWriter fw, TimeInterval ti, IFilter filter, Rotation rotation) throws IOException {
 		int i = 1;
-		for (Segment segment: getRawData(ti)) {
+		for (Segment segment: getRawData(rotation, ti)) {
 			Double sampleRate = segment.getSampleRate();
 			long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
 			int[] data = segment.getData(ti).data;
@@ -513,12 +537,12 @@ public class RawDataProvider extends Channel {
 	 *            content's time interval
 	 * @throws IOException if there are problems writing the XML dump
 	 */
-	public void dumpXML(FileWriter fw, TimeInterval ti, IFilter filter) throws IOException {
+	public void dumpXML(FileWriter fw, TimeInterval ti, IFilter filter, Rotation rotation) throws IOException {
 		@SuppressWarnings("unused")	
 		int i = 1;
 		fw.write("<Trace network=\"" + getNetworkName() + "\" station=\"" + getStation().getName() + "\" location=\"" + getLocationName()
 				+ "\" channel=\"" + getChannelName() + "\">\n");
-		for (Segment segment: getRawData(ti)) {
+		for (Segment segment: getRawData(rotation, ti)) {
 			Double sampleRate = segment.getSampleRate();
 			long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
 			boolean segmentStarted = false;
@@ -553,8 +577,8 @@ public class RawDataProvider extends Channel {
 	 *            content's time interval
 	 * @throws IOException if there are problems writing the sac dump
 	 */
-	public void dumpSacAscii(DataOutputStream ds, TimeInterval ti, IFilter filter) throws IOException, TraceViewException {
-		List<Segment> segments = getRawData(ti);
+	public void dumpSacAscii(DataOutputStream ds, TimeInterval ti, IFilter filter, Rotation rotation) throws IOException, TraceViewException {
+		List<Segment> segments = getRawData(rotation, ti);
 		if(segments.size() !=1){
 			throw new TraceViewException("You have gaps in the interval to import as SAC");
 		}
