@@ -2693,7 +2693,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						while (it.hasNext()) {
 							// (PlotDataProvider)
 							channel = it.next();
-							channel.dumpMseed(ds, graphPanel.getTimeRange(), graphPanel.getFilter());
+							channel.dumpMseed(ds, graphPanel.getTimeRange(), graphPanel.getFilter(),
+									channel.getRotation());
 						}
 						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to Mseed",
 								"Info", JOptionPane.INFORMATION_MESSAGE);
@@ -2774,7 +2775,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 										selectedFile.getPath().lastIndexOf(File.separator)) + File.separator
 										+ exportFileName;
 								ds = new DataOutputStream(new FileOutputStream(new File(exportFileName)));
-								channel.dumpSacAscii(ds, graphPanel.getTimeRange(), graphPanel.getFilter());
+								channel.dumpSacAscii(ds, graphPanel.getTimeRange(), graphPanel.getFilter(),
+										channel.getRotation());
 							} catch (IOException e1) {
 								logger.error("Can't export to SAC channel " + channel.getChannelName() + ": ", e1);
 							} finally {
@@ -2849,7 +2851,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						while (it.hasNext()) {
 							// (PlotDataProvider)
 							channel = it.next();
-							channel.dumpXML(fw, graphPanel.getTimeRange(), graphPanel.getFilter());
+							channel.dumpXML(fw, graphPanel.getTimeRange(), graphPanel.getFilter(),
+									channel.getRotation());
 						}
 						fw.write("</Export>");
 						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to XML",
@@ -2914,7 +2917,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						while (it.hasNext()) {
 							// (PlotDataProvider)
 							channel = it.next();
-							channel.dumpASCII(fw, graphPanel.getTimeRange(), graphPanel.getFilter());
+							channel.dumpASCII(fw, graphPanel.getTimeRange(), graphPanel.getFilter(),
+									channel.getRotation());
 						}
 						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to ASCII",
 								"Info", JOptionPane.INFORMATION_MESSAGE);
