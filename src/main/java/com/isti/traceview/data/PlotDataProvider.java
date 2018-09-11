@@ -167,8 +167,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *            Requested time interval
 	 * @param pointCount -
 	 *            requested count of points
-	 * @param rotation -
-	 *            rotation data, if null no rotation
 	 * @param filter -
 	 *            filter to apply
 	 * @return generated plot data to draw
@@ -195,8 +193,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *            Requested time interval
 	 * @param pointCount -
 	 *            requested count of points
-	 * @param rotation -
-	 *            rotation data, if null no rotation
 	 * @param filter -
 	 *            filter to apply
 	 * @return generated plot data to draw from original dataset
@@ -205,7 +201,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public PlotData getOriginalPlotData(TimeInterval ti, int pointCount, IFilter filter, 
 			RemoveGain rg, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException {
-			return getPlotData(ti, pointCount, filter, colorMode);
+			return getPlotData(ti, pointCount, filter, rg, colorMode);
 	}
 
 	/**
@@ -656,26 +652,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 
 
 	/**
-	 * Get rotated raw data for a given time interval
-	 * 
-	 * @param rotation
-	 *            to process data
-	 * @return rotated raw data
-	 */
-	public List<Segment> getRawData(Rotation rotation, TimeInterval ti) {
-		if (rotation == null) {
-			return super.getRawData();
-		} else {
-			try {
-				return rotation.rotate(this, ti);
-			} catch (TraceViewException e) {
-				logger.error("TraceViewException:", e);	
-				return null;
-			}
-		}
-	}
-
-	/**
 	 * Returns a string representation of the PlotDataProvider for debug purposes.
 	 * 
 	 * @return a string representation of the PlotDataProvider.
@@ -728,7 +704,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
         logger.debug("\n== ENTER: Deserialize channel from file:" + fileName);
 		PlotDataProvider channel = null;
 		ObjectInputStream ois = null;
-		//String serialDataFileName = TemporaryStorage.getDataFileName(fileName);
 		try {
 			Object objRead = null;
 			ois = new ObjectInputStream(new FileInputStream(fileName));
