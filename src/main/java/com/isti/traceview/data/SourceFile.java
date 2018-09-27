@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ExecutionException;
@@ -62,7 +63,7 @@ public abstract class SourceFile implements ISource {
 		this.file = file;
 	}
 
-	public abstract Set<RawDataProvider> parse(DataModule dataModule);
+	public abstract Set<PlotDataProvider> parse();
 
 	public abstract void load(Segment segment);
 
@@ -124,7 +125,7 @@ public abstract class SourceFile implements ISource {
 		 * @return ISource
 		 * 		data file for type
 		 */
-		public ISource call() throws Exception {
+		public ISource call() {
 			ISource datafile = null;
 			if (isIMS(file)) {
 				datafile = new SourceFileIMS(file);
@@ -141,10 +142,10 @@ public abstract class SourceFile implements ISource {
 			} else if (isSEGD(file)) {
 				datafile = new SourceFileSEGD(file);
 				logger.debug("SEGD data file added: " + file.getAbsolutePath());
-			} else if (isSEED(file)) {
+			}/* else if (isSEED(file)) {
 				datafile = new SourceFileSEGD(file);
 				logger.debug("SEED data file added: " + file.getAbsolutePath());
-			} else {
+			}*/ else {
 				logger.warn("Unknown file format: " + file.getName());
 			}
 			return datafile;
@@ -157,22 +158,15 @@ public abstract class SourceFile implements ISource {
 	 * @param wildcardedMask
 	 *            wildcarded path to search
 	 */
-	public static List<ISource> getDataFiles(String wildcardedMask) throws TraceViewException {
+	public static List<File> getDataFiles(String wildcardedMask) throws TraceViewException {
 		logger.info("Loading data using path: " + wildcardedMask);
 		List<ISource> dataFiles = new ArrayList<ISource>();
 		List<File> listFiles = new Wildcard().getFilesByMask(wildcardedMask);
-		Iterator<File> it = listFiles.iterator();
-		while (it.hasNext()) {
-			File file = it.next();
-            		System.out.format("         Found file:%s\n", file.toString());
-            		logger.debug("== getDataFiles: file=" + file.toString());
-			if (file.getName().matches(".*\\.log(\\.\\d{1,2}){0,1}$")) {
-				logger.warn("Excluding file " + file.getName() + " from loading list");
-				it.remove();
-			}
-		}
-		dataFiles = getDataFiles(listFiles);
-		return dataFiles;
+		return listFiles;
+	}
+
+	public static ISource getDataFile(File file) {
+		return new FileType(file).call();
 	}
 
 	/**
@@ -194,13 +188,12 @@ public abstract class SourceFile implements ISource {
 		else
 			threadCount = (numProc + 1) / 2;
 		ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multi-thread executor
-		List<Future<ISource>> tasks = new ArrayList<Future<ISource>>(filelen);	// list of future tasks
+		List<Future<ISource>> tasks = new ArrayList<>(filelen);	// list of future tasks
 		List<ISource> dataFileList = new ArrayList<ISource>(filelen);	// main datafiles list
 		try {	
 			long start = System.nanoTime();
 			for (File file: files) {
-				FileType task = new FileType(file);	// filetype task
-				Future<ISource> future = executor.submit(task);	// submit task for exec	
+				Future<ISource> future = executor.submit(new FileType(file));
 				tasks.add(future);	// add future filetype to tasks list
 			}
 		

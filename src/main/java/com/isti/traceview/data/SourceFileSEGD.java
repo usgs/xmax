@@ -31,15 +31,15 @@ public class SourceFileSEGD extends SourceFile implements Serializable {
 	}
 	
 	@Override
-	public Set<RawDataProvider> parse(DataModule dataModule) {
-		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
+	public Set<PlotDataProvider> parse() {
+		Set<PlotDataProvider> ret = new HashSet<>();
 		try {
 			SegdRecord segd = new SegdRecord(getFile());
 			segd.readHeaders();
 			for(ScanType st: segd.getScanTypes()){
 				for(ChannelSet cs:st.getChannelSets()){
 					for(Trace trace: cs.getTraces()){
-						RawDataProvider channel = dataModule.getOrAddChannel("Z",									//Channel 
+						PlotDataProvider channel = new PlotDataProvider("Z",									//Channel
 								DataModule.getOrAddStation(new Double(trace.getReceiverLineNumber()).toString()),	//Station ID
 								new Integer(segd.getManufacturerCode()).toString(),									//Network ID 
 								new Double(trace.getReceiverPointNumber()).toString());								//Location

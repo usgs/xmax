@@ -57,15 +57,15 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	 * this includes gappy data (i.e. new segment for each gap)
 	 * 
 	 */
-	public synchronized Set<RawDataProvider> parse(DataModule dataModule) {
-		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
+	public synchronized Set<PlotDataProvider> parse() {
+		Set<PlotDataProvider> ret = new HashSet<>();
 		long blockNumber = 0;
 		long endPointer = 0;
 		BufferedRandomAccessFile dis = null;
 		try {
 			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
-			RawDataProvider currentChannel = new RawDataProvider("", new Station(""), "", "");
+			PlotDataProvider currentChannel = new PlotDataProvider("", new Station(""), "", "");
 			long blockEndTime = 0;
 			double sampleRate = -1.0;
 			//double correction = 0.0;
@@ -115,12 +115,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 										.getChannelIdentifier())) {
 									// Starts new channel
 									// dataModule.addStation();
-									currentChannel = dataModule.getOrAddChannel(dh.getChannelIdentifier(), DataModule.getOrAddStation(dh
+									currentChannel = new PlotDataProvider(dh.getChannelIdentifier(), DataModule.getOrAddStation(dh
 											.getStationIdentifier()), dh.getNetworkCode(), dh.getLocationIdentifier());
 									ret.add(currentChannel);
 									skipChannel = false;
 								} else {
-									currentChannel = new RawDataProvider(dh.getChannelIdentifier().trim(), new Station(dh.getStationIdentifier()
+									currentChannel = new PlotDataProvider(dh.getChannelIdentifier().trim(), new Station(dh.getStationIdentifier()
 											.trim()), dh.getNetworkCode().trim(), dh.getLocationIdentifier().trim());
 									skipChannel = true;
 								}
