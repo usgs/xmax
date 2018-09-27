@@ -97,11 +97,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		events = Collections.synchronizedSortedSet(new TreeSet<IEvent>());
 	}
 
-	public PlotDataProvider() {
-		super();
-		events = Collections.synchronizedSortedSet(new TreeSet<IEvent>());
-	}
-
 	/**
 	 * Initialize point cache, fill it with initPointCount points, this cache is used to show big
 	 * parts of data, and raw data access during zooming happens only to limited small parts of data

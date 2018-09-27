@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -41,7 +40,7 @@ public class DataModule extends Observable {
 	/**
 	 * List of found channels
 	 */
-	private List<PlotDataProvider> channels;
+	private final List<PlotDataProvider> channels;
 	
 	/**
 	 * Map of affected stations
@@ -49,16 +48,11 @@ public class DataModule extends Observable {
 	private static Map<String, Station> stations = new HashMap<String, Station>();
 	
 	/**
-	 * Set of parsed channels
-	 */
-	private Set<RawDataProvider> changedChannels;
-	
-	/**
 	 * List of found files with trace data
 	 */
 	private List<ISource> dataSources;
 
-	List<Response> responses;
+	private List<Response> responses;
 
 	// Information about current channel set
 	private int markerPosition;
@@ -71,7 +65,7 @@ public class DataModule extends Observable {
 	 */
 	private TimeInterval allChannelsTI = null;
 
-	private static TemporaryStorage storage = null;
+	protected static TemporaryStorage storage = null;
 
 	/**
 	 * Constructor
@@ -81,14 +75,13 @@ public class DataModule extends Observable {
 		channels = Collections.synchronizedList(new ArrayList<PlotDataProvider>());
 		markerPosition = 0;
 		dataSources = new ArrayList<ISource>();
-		changedChannels = new HashSet<RawDataProvider>();
 		responses = new ArrayList<Response>();
 	}
-	
+
 	/**
 	 * Sets channel factory. Customers can set their own channel factory and get
 	 * their customized data providers during sources parsing
-	 * 
+	 *
 	 * @param factory
 	 *            instance of class implementing IChannelFactory interface
 	 */
@@ -97,65 +90,27 @@ public class DataModule extends Observable {
 	}
 
 	/**
-	 * Loads data during startup. If useTempData flag set in the configuration,
-	 * first looks in temporary storage, after looks in configured data
-	 * directory and parse file data sources which absent in temp storage area
+	 * Class to load in data from a list of files (taken from config file, -d parameter in cmd,
+	 * or built as part of the setup in a test case)
+	 * @param files List of file objects to be loaded in
 	 */
-	public void loadData() throws TraceViewException {
-		logger.debug("== Enter\n");
-        List<ISource> datafiles = new ArrayList<ISource>();
-     
-     	// -t: Read serialized PlotDataProviders from TEMP_DATA
-		if (TraceView.getConfiguration().getUseTempData()) {
-			logger.debug("-t: Read from temp storage\n");
-			if (storage == null) {
-				storage = new TemporaryStorage(TraceView.getConfiguration().getDataTempPath());
-			}
-			for (String tempFileName : storage.getAllTempFiles()) {
-				logger.debug("PDP.load: tempFileName = " + tempFileName);
-				System.out.format("\tRead serialized file:%s\n", tempFileName);
-				PlotDataProvider channel = PlotDataProvider.load(tempFileName);
-             
-	     		// MTH:
-                if (TraceView.getConfiguration().getUseDataPath()) {
-                	logger.debug("== -t AND -d chosen --> null PlotDataProvider's pointsCache");
-                	channel.nullPointsCache();
-                }
-				if ((channels.indexOf(channel) <= 0)) {
-					addChannel(channel);
+	public void loadNewDataFromSources(File... files) {
+		for (File file : files) {
+			ISource fileParser = SourceFile.getDataFile(file);
+			dataSources.add(fileParser);
+			Set<PlotDataProvider> dataSet = fileParser.parse();
+			for (PlotDataProvider channel : dataSet) {
+				int i = Collections.binarySearch(channels, channel, new NameComparator());
+				if (i < 0) {
+					channels.add(channel);
+					Collections.sort(channels, new NameComparator());
+				} else {
+					channels.get(i).mergeData(channel);
 				}
+				channel.load();
 			}
-        	// Move to after the -d read in case there are other channels ... ?
-			Collections.sort(channels, Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
-            logger.debug("-t: Read from temp storage DONE\n\n");
 		}
-	
-     	// -d: Read data from data path. At this point we are merely *parsing* the
-     	//     data (e.g., mseed files) to construct PlotDataProviders, and the actual 
-     	//     traces (=Segments) won't be read in until just before they are displayed on the screen. 
-		if (TraceView.getConfiguration().getUseDataPath()) {
-			logger.debug("-d: Read from data path --> addDataSources()\n");
-           
-	   		// IMPLEMENT ExecutorService to split getDataFiles() and addDataSources() into multi-threads
-	    	datafiles = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
-	    	addDataSources(datafiles);
-            logger.debug("-d: Read from data path DONE\n\n");
-		} else if (!TraceView.getConfiguration().getUseTempData()) {
-        	logger.debug("-d + -t are both false: Read from data path --> addDataSources()\n");
-            	
-	   		// IMPLEMENT ExecutorService to split getDataFiles() and addDataSources() into multi-threads
-			datafiles = SourceFile.getDataFiles(TraceView.getConfiguration().getDataPath());
-			addDataSources(datafiles);
-            logger.debug("-d + -t: Read from data path DONE\n\n");
-		}
-
-		// Fill up stations from station file
-		loadStations();
-		setChanged();
-		notifyObservers();
-
-        //printAllChannels();
-        logger.debug("== Exit loadData()\n\n");
+		Collections.sort(channels, Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
 	}
 
 	public void reLoadData() throws TraceViewException {
@@ -166,8 +121,6 @@ public class DataModule extends Observable {
 		channels.clear();
 		dataSources.clear();
 		stations.clear();
-		changedChannels.clear();
-		loadData();
 	}
 
 	/**
@@ -183,7 +136,7 @@ public class DataModule extends Observable {
 	 * Cleanup temp storage and dump all found data to temp storage
 	 */
 	public void dumpData(IColorModeState colorMode) throws TraceViewException {
-		loadData();	// initialize data
+
 
         System.out.format("     -T: Serialize data to temp storage ");
 		if (storage == null) {
@@ -249,58 +202,15 @@ public class DataModule extends Observable {
 	 *            file to add
 	 * @return list of {@link RawDataProvider}s found in the data file
 	 */
-	public Set<RawDataProvider> addDataSource(ISource datafile) {
+	public void addDataSource(ISource datafile) {
 		
 		// Parse seed file into trace segments based on times and/or gaps
 		if (!isSourceLoaded(datafile)) {
 			//dataSources.add(datafile);	// why is it adding twice?
 			logger.debug("Parsing file " + datafile.getName());
-			changedChannels = datafile.parse(this);
 			dataSources.add(datafile);
-			
-			// Check data integrity of parsed channels
-			checkDataIntegrity(changedChannels);
-			if (!isChangedAllChannelsTI()) {
-				setChanged();
-				notifyObservers(datafile);
-			}
-		}
-		return changedChannels;		
-	}
 
-	/**
-	 * Add list of data sources to data module
-	 * 
-	 * @param datafiles
-	 *            sources list to add
-	 * @return list of {@link RawDataProvider}s found in the sources
-	 */
-	public Set<RawDataProvider> addDataSources(List<ISource> datafiles) {
-		
-		// Compare to parse loop
-		long start = System.nanoTime();
-		for (ISource datafile: datafiles) {
-			if (!isSourceLoaded(datafile)) {
-				changedChannels.addAll(datafile.parse(this));
-				dataSources.add(datafile);
-			}
 		}
-		long endl = System.nanoTime() - start;
-		double end = endl * Math.pow(10, -9);
-		System.out.format("DataModule: addDataSources() execution time = %.9f sec\n\n", end);
-		
-		// Check size of changed channels after processing, this 
-		// will replace 'wasAdded' boolean. Then check data 
-		// integrity (checks rawData size for parsed channels)
-		if (changedChannels.size() != 0) {
-			checkDataIntegrity(changedChannels);
-			if (!isChangedAllChannelsTI()) {
-				setChanged();
-				notifyObservers(datafiles);
-			}
-		}
-		
-		return changedChannels;
 	}
 
 	/**
@@ -312,31 +222,6 @@ public class DataModule extends Observable {
 		} else {
 			return false;
 		}
-	}
-	
-	/**
-	 * Checks if channel contains data (i.e. raw data segments)
-	 * 
-	 * @param changedChannels
-	 * 			parsed *.mseed files
-	 */
-	private void checkDataIntegrity(Set<RawDataProvider> changedChannels) {
-		Iterator<RawDataProvider> it = changedChannels.iterator();
-		int rawDataSize = 0;
-		
-		// Checks if channel contains RawData segment traces
-		while (it.hasNext()) {
-			RawDataProvider channel = it.next();
-			rawDataSize = channel.getRawData().size();  // loops through rawData segments 
-			if (rawDataSize == 0) {
-				logger.warn("Deleting " + channel.toString()
-						+ " due to absence of data");
-				channels.remove(channel);
-			} else {
-				channel.sort();
-			}
-		}
-		Collections.sort(channels, Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
 	}
 
 	/**
@@ -473,7 +358,7 @@ public class DataModule extends Observable {
 	 */
 	public PlotDataProvider getOrAddChannel(String channelName,
 		Station station, String networkName, String locationName) {
-			PlotDataProvider channel = channelFactory.getChannel(channelName.trim(), 
+			PlotDataProvider channel = channelFactory.getChannel(channelName.trim(),
 					station, networkName.trim(), locationName.trim());
 		synchronized (channels) {
 			int i = channels.indexOf(channel);
@@ -503,7 +388,7 @@ public class DataModule extends Observable {
 	 */
 	public synchronized PlotDataProvider getChannel(String channelName,
 			Station station, String networkName, String locationName) {
-				PlotDataProvider channel = channelFactory.getChannel(channelName.trim(), 
+				PlotDataProvider channel = channelFactory.getChannel(channelName.trim(),
 						station, networkName.trim(), locationName.trim());
 		synchronized (channels) {
 			int i = channels.indexOf(channel);

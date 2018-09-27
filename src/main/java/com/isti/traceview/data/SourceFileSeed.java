@@ -60,8 +60,8 @@ public class SourceFileSeed extends SourceFile implements Serializable {
 		return FormatType.SEED;
 	}
 
-	public Set<RawDataProvider> parse(DataModule dataModule) {
-		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
+	public Set<PlotDataProvider> parse() {
+		Set<PlotDataProvider> ret = new HashSet<>();
 		DataInputStream dataInputStream = null;
 		try {
 			Jseedr jseedr = new Jseedr();

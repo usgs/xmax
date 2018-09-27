@@ -30,8 +30,8 @@ public class SourceFileIMS extends SourceFile {
 	}
 
 	@Override
-	public Set<RawDataProvider> parse(DataModule dataModule) {
-		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
+	public Set<PlotDataProvider> parse() {
+		Set<PlotDataProvider> ret = new HashSet<>();
 		BufferedRandomAccessFile dis = null;
 		try {
 			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
@@ -43,7 +43,7 @@ public class SourceFileIMS extends SourceFile {
 					if (dataType instanceof DataTypeWaveform) {
 						DataTypeWaveform dtw = (DataTypeWaveform) dataType;
 						for (BlockSet bs : dtw.getBlockSets()) {
-							RawDataProvider channel = dataModule.getOrAddChannel(bs.getWID2().getChannel(), DataModule.getOrAddStation(bs.getWID2().getStation()), "", "");
+							PlotDataProvider channel = new PlotDataProvider(bs.getWID2().getChannel(), DataModule.getOrAddStation(bs.getWID2().getStation()), "", "");
 							ret.add(channel);
 							Segment segment = new Segment(this, bs.getStartOffset(), bs.getWID2().getStart(), 1000.0/bs.getWID2().getSampleRate(), bs.getWID2().getNumSamples(), 0);
 							channel.addSegment(segment);

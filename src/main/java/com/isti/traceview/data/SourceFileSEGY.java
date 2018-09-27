@@ -29,12 +29,12 @@ public class SourceFileSEGY extends SourceFile implements Serializable {
 		return FormatType.SEGY;
 	}
 
-	public Set<RawDataProvider> parse(DataModule dataModule) {
-		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
+	public Set<PlotDataProvider> parse() {
+		Set<PlotDataProvider> ret = new HashSet<>();
 		try {
 			SegyTimeSeries segy = new SegyTimeSeries();
 			segy.readHeader(getFile().getCanonicalPath());
-			RawDataProvider channel = dataModule.getOrAddChannel(segy.getChannel(), DataModule.getOrAddStation(segy.getStation()), segy.getNetwork(), "");
+			PlotDataProvider channel = new PlotDataProvider(segy.getChannel(), DataModule.getOrAddStation(segy.getStation()), segy.getNetwork(), "");
 			ret.add(channel);
 			Segment segment = new Segment(this, 0, segy.getTimeRange().getStartTime(), segy.getRateMicroSampPerSec()/1000.0, segy.getNumSamples(), 0);
 			channel.addSegment(segment);

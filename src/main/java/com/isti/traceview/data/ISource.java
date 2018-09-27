@@ -45,12 +45,10 @@ public interface ISource extends Serializable {
 	 * Parse this data source, i.e scans it, determine which traces placed inside, filling metadata
 	 * how we can find desired trace information using direct access method, see
 	 * {@link ISource#load(Segment)}
-	 * 
-	 * @param dataModule
-	 *            data module to store metadata
+	 *
 	 * @return list of found traces
 	 */
-	public Set<RawDataProvider> parse(DataModule dataModule);
+	public Set<PlotDataProvider> parse();
 
 	/**
 	 * @return name of this data source

@@ -1,5 +1,6 @@
 package com.isti.traceview.processing;
 
+import com.isti.traceview.data.PlotDataProvider;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -30,7 +31,7 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
 import com.isti.traceview.data.PlotDataPoint;
-import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.IColorModeState;
@@ -363,11 +364,11 @@ public class Rotation {
     * @return rotated raw data
     * @throws TraceViewException
     *             if thrown in
-    *             {@link com.isti.traceview.processing.Rotation#getChannelsTriplet(PlotDataProvider, TimeInterval)}
+    *             {@link com.isti.traceview.processing.Rotation#getChannelsTriplet(RawDataProvider)}
     */
-   public List<Segment> rotate(PlotDataProvider channel, TimeInterval ti)
+   public List<Segment> rotate(RawDataProvider channel, TimeInterval ti)
        throws TraceViewException {
-     PlotDataProvider[] triplet = getChannelsTriplet(channel);
+     RawDataProvider[] triplet = getChannelsTriplet(channel);
      char channelType = channel.getType();
      List<Segment> ret = new ArrayList<Segment>();
      double[][] pointPosition = new double[3][1];
@@ -407,13 +408,13 @@ public class Rotation {
    /**
     * Checks if two or traces are complementary channels
     *
-    * @param channel
-    *            trace to check
-    * @param ti
-    *            time interval to process
-    * @return flag
+    * @param channel1
+    *            first trace to check
+    * @param channel2
+    *            second trace to check
+    * @return true if channels are complementary (one is N and other is E, or 1 and 2)
     */
-   public static boolean isComplementaryChannel(PlotDataProvider channel1, PlotDataProvider channel2) {
+   public static boolean isComplementaryChannel(RawDataProvider channel1, RawDataProvider channel2) {
      List<Character> channelNames = new ArrayList<Character>();
      channelNames.add(channel1.getChannelName().charAt(channel1.getChannelName().length() - 1));
      channelNames.add(channel2.getChannelName().charAt(channel2.getChannelName().length() - 1));
@@ -427,13 +428,15 @@ public class Rotation {
    /**
     * Checks if three or traces are complementary channels
     *
-    * @param channel
-    *            trace to check
-    * @param ti
-    *            time interval to process
-    * @return flag
+    * @param channel1
+    *            first trace to check
+    * @param channel2
+    *            second trace to check
+    * @param channel3
+    *            third trace to check
+    * @return true if one channel is E, one N, one Z; or if one is 1, one 2, one Z
     */
-   public static boolean isComplementaryChannel(PlotDataProvider channel1, PlotDataProvider channel2, PlotDataProvider channel3) {
+   public static boolean isComplementaryChannel(RawDataProvider channel1, RawDataProvider channel2, RawDataProvider channel3) {
      List<Character> channelNames = new ArrayList<Character>();
      channelNames.add(channel1.getChannelName().charAt(channel1.getChannelName().length() - 1));
      channelNames.add(channel2.getChannelName().charAt(channel2.getChannelName().length() - 1));
@@ -450,14 +453,12 @@ public class Rotation {
     *
     * @param channel
     *            trace to check
-    * @param ti
-    *            time interval to process
     * @return flag
     */
-   public static boolean isComplementaryChannelTrupleExist(PlotDataProvider channel) {
+   public static boolean isComplementaryChannelTrupleExist(RawDataProvider channel) {
      try {
        @SuppressWarnings("unused")
-       PlotDataProvider[] triplet = getChannelsTriplet(channel);
+       RawDataProvider[] triplet = getChannelsTriplet(channel);
      } catch (final TraceViewException e) {
        SwingUtilities.invokeLater(new Runnable() {
          @Override
@@ -479,12 +480,12 @@ public class Rotation {
     * @return array of 3 traces for 3 coordinates
     * @throws TraceViewException
     *             if channel is missing data or if thrown by
-    *             {@link com.isti.traceview.processing.Rotation#getComplementaryChannel(PlotDataProvider, char)}
+    *             {@link com.isti.traceview.processing.Rotation#getComplementaryChannel(RawDataProvider, char)}
     */
-   public static PlotDataProvider[] getChannelsTriplet(
-       PlotDataProvider channel)
+   public static RawDataProvider[] getChannelsTriplet(
+       RawDataProvider channel)
            throws TraceViewException {
-     PlotDataProvider[] chs = new PlotDataProvider[3];
+     RawDataProvider[] chs = new RawDataProvider[3];
      char channelType = channel.getType();
      if (channelType == 'E') {
        chs[0] = channel;
@@ -543,9 +544,9 @@ public class Rotation {
      return chs;
    }
 
-   private static PlotDataProvider getComplementaryChannel(PlotDataProvider channel, char channelType) throws TraceViewException {
+   private static RawDataProvider getComplementaryChannel(RawDataProvider channel, char channelType) throws TraceViewException {
      String channelName = channel.getChannelName().substring(0, channel.getChannelName().length() - 1) + channelType;
-     PlotDataProvider channelComplementary = TraceView.getDataModule().getChannel(channelName, channel.getStation(), channel.getNetworkName(),
+     RawDataProvider channelComplementary = TraceView.getDataModule().getChannel(channelName, channel.getStation(), channel.getNetworkName(),
          channel.getLocationName());
      if (channelComplementary != null && channelComplementary.getSampleRate() == channel.getSampleRate()) {
        return channelComplementary;
@@ -557,7 +558,8 @@ public class Rotation {
 
    private static PlotData getComplementaryPlotData(PlotDataProvider channel, char channelType, TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode)
        throws TraceViewException, RemoveGainException {
-     return getComplementaryChannel(channel, channelType).getOriginalPlotData(ti, pointCount, filter, null, colorMode);
+     PlotDataProvider complement = (PlotDataProvider) getComplementaryChannel(channel, channelType);
+     return complement.getOriginalPlotData(ti, pointCount, filter, null, colorMode);
    }
 
    /**

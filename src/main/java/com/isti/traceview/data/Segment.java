@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -117,6 +118,51 @@ public class Segment implements Externalizable, Cloneable {
 		data = null;
 		currentPos = 0;
 		logger.debug("Created: " + this);
+	}
+
+	/**
+	 * Constructor to build a trimmed segment from an existing one, to fill in gaps with previously
+	 * loaded data. If the times for trimming are outside of the boundary of the existing segment,
+	 * the segment's original time interval will be used, unless the start point comes after the
+	 * end point, in which case an empty segment (sample count of 0) will be created.
+	 *
+	 * This scanning operation
+	 * @param segment Segment to trim data from
+	 * @param newStartPoint epoch millisecond to start data at
+	 * @param newEndPoint epoch millisecond to end data at
+	 */
+	public Segment(Segment segment, long newStartPoint, long newEndPoint) {
+
+		// can't start before existing segment's start point
+		newStartPoint = Math.max(segment.getStartTime().getTime(), newStartPoint);
+		// can't end after existing segment's end point
+		newEndPoint = Math.min(segment.getStartTime().getTime(), newEndPoint);
+		this.dataSource = segment.getDataSource();
+		this.startOffset = segment.getStartOffset();
+		this.sampleRate = segment.getSampleRate();
+		this.sourceSerialNumber = segment.getSourceSerialNumber();
+		// TODO: verify that sample rates are in units of Hz
+		this.sampleCount = (int) ((newEndPoint - newStartPoint) / sampleRate);
+		if (sampleCount > 0) {
+			long millisecondOffset = (long) (sampleRate * sampleCount * 1000);
+			long untrimmedStartMilli = segment.getStartTime().getTime();
+			this.startTime = untrimmedStartMilli + millisecondOffset;
+
+			int firstStartPoint = (int) ((untrimmedStartMilli - startTime) / sampleRate);
+			int lastEndPoint = firstStartPoint + sampleCount;
+			this.data = Arrays.copyOfRange(segment.data, firstStartPoint, lastEndPoint);
+			logger.debug("Created trimmed segment: " + this);
+		} else {
+			// if newStartPoint is set to be after the newEndPoint, we must enforce 0 length
+			// this happens if we try to see if the segment has data after another segment that might
+			// have ended already -- in which case there wouldn't be any data to add
+			// (i.e., we change the start time but leave the original segment's end time)
+			sampleCount = 0;
+			this.startTime = newStartPoint;
+			data = new int[]{};
+		}
+
+		currentPos = data.length;
 	}
 
 	/**
@@ -275,7 +321,12 @@ public class Segment implements Externalizable, Cloneable {
 	 */
 	@SuppressWarnings("null")	
 	public SegmentData getData(double start, double end) {
-		// lg.debug("startTime=" + startTime +", endTime=" + getEndTime().getTime());
+		if (data == null) {
+			logger.debug("== Underlying array has not been initialized");
+		} else {
+			logger.debug("== Length of underlying data array: " + data.length);
+		}
+
 		int[] ret = null;
 		int previous = Integer.MAX_VALUE;
 		int next = Integer.MAX_VALUE;
@@ -291,9 +342,7 @@ public class Segment implements Externalizable, Cloneable {
                 		logger.debug("== dataStream == null --> Get points from RAM data[] " +
                 "startTime=" + startTime + " endTime=" + getEndTime().getTime());
 				// we use internal data in the ram
-				for (int i = startIndex; i < endIndex; i++) {
-					ret[i - startIndex] = data[i];
-				}
+				ret = Arrays.copyOfRange(data, startIndex, endIndex);
 				
 				if (startIndex > 0) {
 					previous = data[startIndex-1];
@@ -311,7 +360,7 @@ public class Segment implements Externalizable, Cloneable {
 						previous = dataStream.readInt();
 					} else {
 						dataStream.seek(startOffsetSerial);
-					}					
+					}
 					for (int i = startIndex; i < endIndex; i++) {
 						ret[i - startIndex] = dataStream.readInt();
 					}
