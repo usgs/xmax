@@ -69,6 +69,10 @@ public class RawDataProvider extends Channel {
     rawData = new ArrayList<SegmentCache>();
   }
 
+  public int[] getUncutSegmentData(int i) {
+    return rawData.get(i).getSegment().getData().data;
+  }
+
   /**
    * Runnable class for loadData(TimeInterval ti) NOTE: This is currently not used due to hardware
    * constraints on different machines
@@ -407,7 +411,6 @@ public class RawDataProvider extends Channel {
     String station = getStation().getName();
     String location = getLocationName();
     String channel = getChannelName();
-    System.out.print(network + "." + station + "." + location + "." + channel);
     //long startl = System.nanoTime();
 /*		for (SegmentCache sc: rawData) {
             Segment seg = sc.getSegment();
@@ -433,7 +436,6 @@ public class RawDataProvider extends Channel {
         //seg.loadDataInt();
       }
     }
-    System.out.print("\n");
     //long endl = System.nanoTime() - startl;
     //double end = endl * Math.pow(10, -9);
     //System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
@@ -569,7 +571,6 @@ public class RawDataProvider extends Channel {
       }
       TimeInterval exportedRange = TimeInterval
           .getIntersect(ti, new TimeInterval(segment.getStartTime(), segment.getEndTime()));
-      System.out.println(exportedRange.getStart() + ", " + exportedRange.getEnd());
       if (data.length > 0) {
         try {
           List<SteimFrameBlock> lst = Recompress.steim1(data);
