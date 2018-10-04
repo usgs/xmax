@@ -69,8 +69,13 @@ public class RawDataProvider extends Channel {
     rawData = new ArrayList<SegmentCache>();
   }
 
-  public int[] getUncutSegmentData(int i) {
-    return rawData.get(i).getSegment().getData().data;
+  /**
+   * Convenience method for loading in the raw data from a segment
+   * @param index Index of data to load in from list of segments
+   * @return Array of ints representing raw timeseries data from trace
+   */
+  public int[] getUncutSegmentData(int index) {
+    return rawData.get(index).getSegment().getData().data;
   }
 
   /**
@@ -585,6 +590,7 @@ public class RawDataProvider extends Channel {
           Time channelStartTime = new Time(
               FissuresConvert.getISOTime(FissuresConvert.getBtime(new MicroSecondDate(exportedRange
                   .getStartTime()))), 0);
+
           LinkedList<DataRecord> dataRecords = FissuresConvert
               .toMSeed(edata, new ChannelId(new NetworkId(getNetworkName(),
                       channelStartTime), getStation().getName(), getLocationName(), getChannelName(),
