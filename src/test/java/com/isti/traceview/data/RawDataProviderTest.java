@@ -140,7 +140,6 @@ public class RawDataProviderTest {
       assertNotNull(segment.getData().data);
     }
 
-
     // then we may need to convert it (perform LPF)
     // save this converted data as miniseed
     // re-load that data
