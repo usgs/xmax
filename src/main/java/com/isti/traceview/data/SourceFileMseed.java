@@ -5,11 +5,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Arrays;
 
+import java.util.TimeZone;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceView;
@@ -283,7 +289,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			segment.addDataPoint(value);
 		
 		//logger.info("Loaded " + this + " " + segment + " [samples read = " + currentSampleCount + ", samples from headers = " + headerSampleCount + ", blocks read = " + blockNumber + "]");
-		System.out.print("...");
 	}
 
 	public String toString() {
@@ -341,8 +346,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
 	private static long getBlockStartTime(DataHeader dh) {
 		Btime startBtime = dh.getStartBtime();
-		return TimeInterval.getTime(startBtime.year, startBtime.jday, startBtime.hour, startBtime.min, startBtime.sec, new Long(Math
-				.round(startBtime.tenthMilli)).intValue() / 10);
+		return startBtime.convertToCalendar().getTimeInMillis();
 	}
 
 	private static long getBlockEndTime(DataHeader dh, double sampleRate) {
