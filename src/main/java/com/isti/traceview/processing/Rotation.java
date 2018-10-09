@@ -49,13 +49,35 @@ public class Rotation {
      */
     STANDARD,
     /**
-     * Horizontal rotation of 2 components
+     * Horizontal rotation of 2 components (used for azimuth correction)
      */
     HORIZONTAL
   };
 
+
+  /**
+   * Some hardware uses multiple sensors at fixed locations to get 3D data that isn't in a
+   * typical North-East-Vertical (NEZ) orientation, using a unique representation with axes
+   * usually referred to as a UVW triplet, at angles to the surface of the earth.
+   * These correspond to rotation matrices given in the sensor manufacturers' datasheets.
+   */
   public enum StandardRotation {
-    STS2_UVW_TO_XMAX, STS2_XMAX_TO_UVW, TRIL_UVW_TO_XMAX, TRIL_XMAX_TO_UVW
+    /**
+     * Rotate STS-2's UVW into NEZ
+     */
+    STS2_UVW_TO_XMAX,
+    /**
+     * Rotate from NEZ into STS-2 UVW coordinates
+     */
+    STS2_XMAX_TO_UVW,
+    /**
+     * Rotate from a Trillium sensor's UVW into NEZ
+     */
+    TRIL_UVW_TO_XMAX,
+    /**
+     * Rotate from NEZ into Trillium UVW coordinates
+     */
+    TRIL_XMAX_TO_UVW
   };
 
   private static final Logger logger = Logger.getLogger(Rotation.class);
