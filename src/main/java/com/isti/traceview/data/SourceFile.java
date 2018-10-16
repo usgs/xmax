@@ -288,11 +288,10 @@ public abstract class SourceFile implements ISource {
 	 */
 	public static boolean isMSEED(File file) {
 		if (file.length() > 0) {
-			BufferedRandomAccessFile dis = null;
+			RandomAccessFile dis = null;
 			//ControlHeader ch = null;
 			try {
-				dis = new BufferedRandomAccessFile(file.getCanonicalPath(), "r");
-				dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
+				dis = new RandomAccessFile(file.getCanonicalPath(), "r");
 				long blockNumber = 0;
  
 			    while (blockNumber < 5) {

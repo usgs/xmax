@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +61,7 @@ public class RawDataProvider extends Channel {
 
   // Used to store dataStream file name and restore it after serialization
   private String serialFile = null;
-  private transient BufferedRandomAccessFile serialStream = null;
+  private transient RandomAccessFile serialStream = null;
 
   // Constructor 1 (multiple args)
   public RawDataProvider(String channelName, Station station, String networkName,
@@ -501,8 +502,7 @@ public class RawDataProvider extends Channel {
         }
         // MTH: This is a little redundant since readObject() already wraps the serialFile in a
         //      BufferedRandomAccessFile before using it to call setDataStream(raf) ...
-        BufferedRandomAccessFile raf = new BufferedRandomAccessFile(serialFile, "rw");
-        raf.order(BufferedRandomAccessFile.BIG_ENDIAN);
+        RandomAccessFile raf = new RandomAccessFile(serialFile, "rw");
         this.serialStream = raf;
       }
       for (SegmentCache sc : rawData) {
@@ -512,15 +512,13 @@ public class RawDataProvider extends Channel {
       logger.debug("== DONE");
     } catch (FileNotFoundException e) {
       logger.error("FileNotFoundException:", e);
-    } catch (IOException e) {
-      logger.error("IOException:", e);
     }
   }
 
   /**
    * @return data stream where this provider was serialized
    */
-  public BufferedRandomAccessFile getDataStream() {
+  public RandomAccessFile getDataStream() {
     return serialStream;
   }
 
@@ -603,9 +601,7 @@ public class RawDataProvider extends Channel {
           for (DataRecord rec : dataRecords) {
             rec.write(ds);
           }
-        } catch (SteimException e) {
-          logger.error("Can't encode data: " + ti + ", " + this + e);
-        } catch (SeedFormatException e) {
+        } catch (SteimException | SeedFormatException e) {
           logger.error("Can't encode data: " + ti + ", " + this + e);
         }
       }
@@ -824,8 +820,7 @@ public class RawDataProvider extends Channel {
     in.defaultReadObject();
     logger.debug("== defaultReadObject() DONE");
     if (serialFile != null) {
-      serialStream = new BufferedRandomAccessFile(serialFile, "rw");
-      serialStream.order(BufferedRandomAccessFile.BIG_ENDIAN);
+      serialStream = new RandomAccessFile(serialFile, "rw");
       setDataStream(serialStream);
     }
     logger.debug("== EXIT");
@@ -865,7 +860,7 @@ public class RawDataProvider extends Channel {
      *
      * @param dataStream stream to serialize
      */
-    public void setDataStream(BufferedRandomAccessFile dataStream) {
+    public void setDataStream(RandomAccessFile dataStream) {
       initialData.setDataStream(dataStream);
     }
 

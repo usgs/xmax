@@ -5,6 +5,7 @@ import gov.usgs.anss.cd11.CanadaException;
 import java.io.DataInput;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class IMSFile {
 
@@ -48,7 +47,7 @@ public class IMSFile {
 
 	public static IMSFile read(DataInput inStream, boolean parseOnly) throws IOException, IMSFormatException, ParseException, CanadaException {
 		IMSFile imsFile = new IMSFile();
-		BufferedRandomAccessFile input = (BufferedRandomAccessFile) inStream;
+		RandomAccessFile input = (RandomAccessFile) inStream;
 		try {
 			while (true) {
 				long filePointer = input.getFilePointer();
@@ -88,7 +87,7 @@ public class IMSFile {
 		return imsFile;
 	}
 
-	private void readMessageHeader(BufferedRandomAccessFile input, long startPointer) throws IOException, IMSFormatException, ParseException {
+	private void readMessageHeader(RandomAccessFile input, long startPointer) throws IOException, IMSFormatException, ParseException {
 		long filePointer = 0;
 		while (true) {
 			filePointer = input.getFilePointer();
@@ -127,7 +126,7 @@ public class IMSFile {
 		}
 	}
 
-	private void readDataTypes(boolean parseOnly, BufferedRandomAccessFile input, long startPointer) throws IOException, IMSFormatException,
+	private void readDataTypes(boolean parseOnly, RandomAccessFile input, long startPointer) throws IOException, IMSFormatException,
 			ParseException, CanadaException {
 		long filePointer = 0;
 		try {

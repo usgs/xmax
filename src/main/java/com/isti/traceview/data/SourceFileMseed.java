@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -61,10 +62,9 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		Set<PlotDataProvider> ret = new HashSet<>();
 		long blockNumber = 0;
 		long endPointer = 0;
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		try {
-			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
-			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
+			dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
 			PlotDataProvider currentChannel = new PlotDataProvider("", new Station(""), "", "");
 			long blockEndTime = 0;
 			double sampleRate = -1.0;
@@ -191,15 +191,14 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
 		int segmentSampleCount = segment.getSampleCount();	// sample count of current segment
 		int[] data = new int[segmentSampleCount];	// testing for memory usage
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		int currentSampleCount = 0; //Counter on the basis of data values
 		int headerSampleCount = 0; //Counter on the basis of header information
 		int drSampleCount = 0;		//Counter on current DataRecord
 		int blockNumber = 0;
 		try {
 			logger.debug("source = " + getFile().getCanonicalPath());	
-			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
-			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
+			dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.seek(segment.getStartOffset());
 			logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
 			while (currentSampleCount < segmentSampleCount) {
@@ -290,11 +289,10 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	}
 
 	public synchronized String getBlockHeaderText(long blockStartOffset) {
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		String ret = "<html><i>File type:</i>" + this.getFormatType();
 		try {
-			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
-			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
+			dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.seek(blockStartOffset);
 			//FileInputStream d = null;
 			SeedRecord sr = SynchronizedSeedRecord.read(dis, TraceView.getConfiguration().getDefaultBlockLength());

@@ -4,13 +4,12 @@ import gov.usgs.anss.cd11.CanadaException;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class DataTypeWaveform extends DataType {
 	private static final Logger logger = Logger.getLogger(DataTypeWaveform.class);
@@ -26,7 +25,7 @@ public class DataTypeWaveform extends DataType {
 		return channels;
 	}
 	
-	public void read(BufferedRandomAccessFile input, boolean parseOnly) throws IOException, IMSFormatException, ParseException, CanadaException {
+	public void read(RandomAccessFile input, boolean parseOnly) throws IOException, IMSFormatException, ParseException, CanadaException {
 		long filePointer = 0;
 		try {
 			while (true) {

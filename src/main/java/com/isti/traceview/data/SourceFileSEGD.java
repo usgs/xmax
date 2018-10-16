@@ -40,9 +40,9 @@ public class SourceFileSEGD extends SourceFile implements Serializable {
 				for(ChannelSet cs:st.getChannelSets()){
 					for(Trace trace: cs.getTraces()){
 						PlotDataProvider channel = new PlotDataProvider("Z",									//Channel
-								DataModule.getOrAddStation(new Double(trace.getReceiverLineNumber()).toString()),	//Station ID
-								new Integer(segd.getManufacturerCode()).toString(),									//Network ID 
-								new Double(trace.getReceiverPointNumber()).toString());								//Location
+								DataModule.getOrAddStation(Double.toString(trace.getReceiverLineNumber())),	//Station ID
+								Integer.toString(segd.getManufacturerCode()),									//Network ID
+								Double.toString(trace.getReceiverPointNumber()));								//Location
 						ret.add(channel);
 						Segment segment = new Segment(this, trace.getDataOffset(), trace.getTimeRange().getStartTime(), segd.getBaseScanInterval(), trace.getSamplesNumber(), 0);
 						channel.addSegment(segment);						

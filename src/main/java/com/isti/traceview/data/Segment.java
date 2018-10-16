@@ -7,6 +7,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
@@ -87,7 +88,7 @@ public class Segment implements Externalizable, Cloneable {
 	// map of time-offset pairs for blocks to quick find block by time
 	private SortedMap<Long, Long> blockMap = null;
 
-	private transient BufferedRandomAccessFile dataStream = null;
+	private transient RandomAccessFile dataStream = null;
 
     // MTH: Use to combine segments read with -t and -d within a single PlotDataProvider
     private boolean isLoaded = false;
@@ -553,14 +554,14 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Sets data stream to serialize this segment
-	 * 
+	 *
 	 * @param dataStream the new dataStream
 	 */
-	public void setDataStream(BufferedRandomAccessFile dataStream) {
+	public void setDataStream(RandomAccessFile dataStream) {
 		this.dataStream = dataStream;
 	}
     // MTH:
-	public BufferedRandomAccessFile getDataStream() {
+	public RandomAccessFile getDataStream() {
 		return dataStream;
 	}
 
