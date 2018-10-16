@@ -3,6 +3,7 @@ package com.isti.traceview.data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,10 +33,9 @@ public class SourceFileIMS extends SourceFile {
 	@Override
 	public Set<PlotDataProvider> parse() {
 		Set<PlotDataProvider> ret = new HashSet<>();
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		try {
-			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
-			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
+			dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
 			if (getFile().length() > 0) {
 				//long currentOffset = dis.getFilePointer();
 				IMSFile ims = IMSFile.read(dis, true);
@@ -76,10 +76,9 @@ public class SourceFileIMS extends SourceFile {
 
 	public void load(Segment segment) {
 		//int[] data = null;
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		try {
-			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
-			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
+			dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
 			if (getFile().length() > 0) {
 				dis.seek(segment.getStartOffset());
 				WID2 wid2 = new WID2(segment.getStartOffset());

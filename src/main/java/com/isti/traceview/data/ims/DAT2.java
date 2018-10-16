@@ -4,6 +4,7 @@ import gov.usgs.anss.cd11.CanadaException;
 import gov.usgs.anss.cd11.ChannelSubframe;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -11,8 +12,6 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class DAT2 extends Block {
 	private static final Logger logger = Logger.getLogger(DAT2.class);
@@ -29,7 +28,7 @@ public class DAT2 extends Block {
 		return data;
 	}
 
-	public void read(BufferedRandomAccessFile input) throws IMSFormatException, IOException, ParseException, CanadaException {
+	public void read(RandomAccessFile input) throws IMSFormatException, IOException, ParseException, CanadaException {
 		header = input.readLine();
 		if (!header.startsWith("DAT2")) {
 			throw new IMSFormatException("Wrong data block header: " + header);

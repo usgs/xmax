@@ -1,11 +1,10 @@
 package com.isti.traceview.data.ims;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.ParseException;
 
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class STA2 extends Block {
 	private static final Logger logger = Logger.getLogger(STA2.class);
@@ -45,7 +44,7 @@ public class STA2 extends Block {
 		return emplacement;
 	}
 	
-	public void read(BufferedRandomAccessFile input) throws IMSFormatException, IOException, ParseException {
+	public void read(RandomAccessFile input) throws IMSFormatException, IOException, ParseException {
 		logger.info("Reading STA2 RandomAccessFile");	
 		header = input.readLine();
 		if(!header.startsWith("STA2")){
