@@ -73,6 +73,10 @@ public class XMAXDataModule extends DataModule {
 		} catch (XMAXException e) {
 			logger.error("Can't load picks: ", e);
 		}
+
+		loadStations();
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
@@ -80,7 +84,7 @@ public class XMAXDataModule extends DataModule {
 	 * first looks in temporary storage, after looks in configured data
 	 * directory and parse file data sources which absent in temp storage area
 	 */
-	private File[] getDataFiles() throws TraceViewException {
+	File[] getDataFiles() throws TraceViewException {
 		logger.debug("== Enter\n");
 		List<File> dataFiles = new ArrayList<File>();
 

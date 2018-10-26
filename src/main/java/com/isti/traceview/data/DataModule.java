@@ -95,22 +95,22 @@ public class DataModule extends Observable {
    * @param files List of file objects to be loaded in
    */
   public void loadNewDataFromSources(File... files) {
+    // TODO: probably need to find a way to parallelize this?
     for (File file : files) {
       ISource fileParser = SourceFile.getDataFile(file);
-      dataSources.add(fileParser);
+      addDataSource(fileParser);
       Set<PlotDataProvider> dataSet = fileParser.parse();
       for (PlotDataProvider channel : dataSet) {
-        int i = Collections.binarySearch(channels, channel, new NameComparator());
-        if (i < 0) {
-          channels.add(channel);
-          Collections.sort(channels, new NameComparator());
-        } else {
-          channels.get(i).mergeData(channel);
-        }
+        String station = channel.getStation().getName();
+        getOrAddStation(station);
+        getOrAddChannel(channel.getChannelName(), channel.getStation(),
+            channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
         channel.load();
       }
     }
     Collections.sort(channels, Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
+    //from = 0;
+    //to = channels.size();
   }
 
   public void reLoadData() throws TraceViewException {
