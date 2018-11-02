@@ -103,14 +103,13 @@ public class DataModule extends Observable {
       for (PlotDataProvider channel : dataSet) {
         String station = channel.getStation().getName();
         getOrAddStation(station);
+        // merge in the new data into any channel that may already exist
         getOrAddChannel(channel.getChannelName(), channel.getStation(),
             channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
         channel.load();
       }
     }
     Collections.sort(channels, Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
-    //from = 0;
-    //to = channels.size();
   }
 
   public void reLoadData() throws TraceViewException {

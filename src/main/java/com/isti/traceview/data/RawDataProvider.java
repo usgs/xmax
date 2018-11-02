@@ -70,9 +70,6 @@ public class RawDataProvider extends Channel {
     rawData = new ArrayList<SegmentCache>();
   }
 
-  public int[] getUncutSegmentData(int i) {
-    return rawData.get(i).getSegment().getData().data;
-  }
 
   /**
    * Convenience method for loading in the raw data from a segment
