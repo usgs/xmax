@@ -164,6 +164,9 @@ public class Rotation {
 
    private void initMatrix(double angle) {
      angle = Math.toRadians(angle); //convert to radians
+     // order of data is E, N, Z
+     // rotation of N looks like (- e sin theta + n cos theta)
+     // rotation of E looks like (e cos theta + n sin theta)
      double[][] matrixData = {
          { Math.cos(angle) , -Math.sin(angle),  0},
          { Math.sin(angle), Math.cos(angle),  0},

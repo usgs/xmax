@@ -6,6 +6,7 @@ import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.processing.Rotation;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -193,6 +194,92 @@ public class RawDataProviderTest {
     assertArrayEquals(dataFromFirstFile, dataFromSecondFile);
     assertEquals(end-start, secondEnd-secondStart);
     assertEquals(start, secondStart); // small correction for leap-seconds?
+  }
+
+  @Test
+  public void dumpMseed_rotated() throws IOException {
+
+    String folderStructure = "src/test/resources/rotation/";
+
+    DataModule dm = new DataModule();
+    String originalNorthFilename = folderStructure + "unrot_10_BH1.512.seed";
+    String originalEastFilename = folderStructure + "unrot_10_BH2.512.seed";
+    String originalVertFilename = folderStructure + "unrot_10_BHZ.512.seed";
+
+    // first, we need to load in the data (may be moved to set-up method)
+    File originalNorthFile = new File(originalNorthFilename);
+    File originalEastFile = new File(originalEastFilename);
+    File originalVertFile = new File(originalVertFilename);
+    assertTrue(originalEastFile.exists() &&
+        originalNorthFile.exists() && originalVertFile.exists());
+
+    dm.loadNewDataFromSources(originalNorthFile, originalEastFile, originalVertFile);
+    // now that we have the data, rotate it
+    Rotation twentyDegreesRotation = new Rotation(20.);
+    for (PlotDataProvider dataProvider : dm.getAllChannels().subList(0, 2)) {
+      dataProvider.setRotation(twentyDegreesRotation);
+    }
+
+    String filenameNorth = folderStructure + "rotated_north_output.mseed";
+    String filenameEast = folderStructure + "rotated_east_output.mseed";
+    // make sure data from a previous test isn't lingering
+    File outputFileNorth = new File(filenameNorth);
+    File outputFileEast = new File(filenameEast);
+    if (outputFileNorth.exists()) {
+      outputFileNorth.delete();
+    }
+    if (outputFileEast.exists()) {
+      outputFileEast.delete();
+    }
+
+    TraceView.setDataModule(dm); // step used to get matching pairs for horiz. rotation
+
+    RawDataProvider dataNorth = dm.getAllChannels().get(0);
+    TimeInterval ti = dataNorth.getTimeRange();
+    assertEquals("BH1", dataNorth.getChannelName());
+    DataOutputStream dsNorth = new DataOutputStream(new FileOutputStream(outputFileNorth));
+    dataNorth.dumpMseed(dsNorth, ti, null, twentyDegreesRotation);
+
+    RawDataProvider dataEast = dm.getAllChannels().get(1);
+    assertEquals("BH2", dataEast.getChannelName());
+    DataOutputStream dsEast = new DataOutputStream(new FileOutputStream(outputFileEast));
+    dataEast.dumpMseed(dsEast, ti, null, twentyDegreesRotation);
+
+    dm = new DataModule();
+    dm.loadNewDataFromSources(outputFileNorth, outputFileEast);
+    // now the data in dataNorth, dataEast is rotated data (by 20 degrees)
+    dataNorth = dm.getAllChannels().get(0);
+    dataEast = dm.getAllChannels().get(1);
+
+    int[] rawDataNorth = dataNorth.getRawData(ti).get(0).getData().data;
+    int[] rawDataEast = dataEast.getRawData(ti).get(0).getData().data;
+
+    String rotatedNorthFilename = folderStructure + "rotated-20-deg_10.BH1.512.seed";
+    String rotatedEastFilename = folderStructure + "rotated-20-deg_10.BH2.512.seed";
+    // first, we need to load in the data (may be moved to set-up method)
+    File expectedDataNorthFile = new File(rotatedNorthFilename);
+    File expectedDataEastFile = new File(rotatedEastFilename);
+    assertTrue(expectedDataEastFile.exists());
+    assertTrue(expectedDataNorthFile.exists());
+    DataModule holdsExpectedData = new DataModule();
+    holdsExpectedData.loadNewDataFromSources(expectedDataNorthFile, expectedDataEastFile);
+
+    int[] expectedDataNorth =
+        holdsExpectedData.getAllChannels().get(0).getRawData(ti).get(0).getData().data;
+    assertEquals("BH1", holdsExpectedData.getAllChannels().get(0).getChannelName());
+    int[] expectedDataEast =
+        holdsExpectedData.getAllChannels().get(1).getRawData(ti).get(0).getData().data;
+
+    // we'll skip over every 40 points
+    for (int i = 0; i < expectedDataNorth.length; i+=40) {
+      assertEquals("Discrepancy found at north data index " + i + "(of " +
+          expectedDataNorth.length + ")", (double) expectedDataNorth[i],
+          (double) rawDataNorth[i], 220);
+      assertEquals("Discrepancy found at east data index " + i + "(of " +
+          expectedDataNorth.length + ")", (double) expectedDataEast[i],
+          (double) rawDataEast[i], 220);
+    }
+
   }
 
   @Test
