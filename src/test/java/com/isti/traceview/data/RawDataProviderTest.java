@@ -7,6 +7,7 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.processing.Rotation;
+import com.isti.xmax.data.XMAXDataModule;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -253,6 +254,16 @@ public class RawDataProviderTest {
 
     int[] rawDataNorth = dataNorth.getRawData(ti).get(0).getData().data;
     int[] rawDataEast = dataEast.getRawData(ti).get(0).getData().data;
+
+    // delete the files now that we've read them in
+    outputFileNorth = new File(filenameNorth);
+    outputFileEast = new File(filenameEast);
+    if (outputFileNorth.exists()) {
+      outputFileNorth.delete();
+    }
+    if (outputFileEast.exists()) {
+      outputFileEast.delete();
+    }
 
     String rotatedNorthFilename = folderStructure + "rotated-20-deg_10.BH1.512.seed";
     String rotatedEastFilename = folderStructure + "rotated-20-deg_10.BH2.512.seed";

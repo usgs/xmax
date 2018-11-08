@@ -1,5 +1,6 @@
 package com.isti.traceview.common;
 
+import com.isti.traceview.gui.ColorModeByGap;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Observable;
@@ -169,7 +170,7 @@ public class Configuration extends Observable {
 	/**
 	 * flag if we use color to draw graphs
 	 */
-	private IColorModeState colorModeState = new ColorModeBySegment();
+	private IColorModeState colorModeState = new ColorModeByGap();
 
 	/**
 	 * flag if we show big crosshair cursor or use ordinary cursor

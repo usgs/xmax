@@ -710,24 +710,19 @@ public class DataModule extends Observable {
   private static void addRespFiles(String dirname, String network,
       String station, String location, String channel,
       List<String> whereToAdd) throws TraceViewException {
-    File f = new File(dirname);
-    if (f.isDirectory()) {
-      File[] dir = f.listFiles();
-      if (dir.length > 0) {
-        for (int i = 0; i < dir.length; i++) {
-          if (!dir[i].isDirectory()
-              && dir[i].getName().matches(
-              "^RESP\\." + network + "\\." + station
-                  + "\\." + location + "\\."
-                  + channel + "$")) {
-            String absPath = dir[i].getAbsolutePath();
-            whereToAdd.add(absPath);
-          }
-        }
-      }
-    } else {
+
+    File path = new File(dirname);
+    if (!path.isDirectory()) {
       throw new TraceViewException("Loading responses from " + dirname
           + ": is not directory");
+    }
+
+    // TODO: do we need to add a slash between dirname and resp?
+    String fullPath = dirname + "RESP." + network + "." + station + "." + location + "." + channel;
+    File file = new File(fullPath);
+
+    if (file.exists()) {
+      whereToAdd.add(file.getAbsolutePath());
     }
   }
 
