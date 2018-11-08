@@ -255,8 +255,7 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 			List<String> options = new ArrayList<String>();
 			options.add("None");
 			try {
-				XMAX.getDataModule();
-				for (String respFile : DataModule.getAllResponseFiles()) {
+				for (String respFile : XMAX.getDataModule().getAllResponseFiles()) {
 					options.add(respFile);
 					int width = fontMetrics.stringWidth(respFile);
 					if ((width + comboBoxHeight) > convolveCB.getPreferredSize().getWidth()) {

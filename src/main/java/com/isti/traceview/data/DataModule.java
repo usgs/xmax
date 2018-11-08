@@ -1,6 +1,7 @@
 package com.isti.traceview.data;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -685,7 +686,7 @@ public class DataModule extends Observable {
   public static String getResponseFile(String network, String station,
       String location, String channel) throws TraceViewException {
     List<String> respFiles = new ArrayList<String>();
-    // note that first entry string should end with "/" as it is a directory location
+    // note that first entry string should always end with "/" as it is a directory location
     addRespFiles(TraceView.getConfiguration().getConfigFileDir(), network, station, location,
         channel, respFiles);
     if (respFiles.size() > 0) {
@@ -700,11 +701,11 @@ public class DataModule extends Observable {
     return respFiles.size() == 0 ? null : respFiles.get(0);
   }
 
-  public static List<String> getAllResponseFiles() throws TraceViewException {
+  public List<String> getAllResponseFiles() throws TraceViewException {
     List<String> respFiles = new ArrayList<String>();
-    addRespFiles(TraceView.getConfiguration().getConfigFileDir(), respFiles);
-    addRespFiles("./", respFiles);
-    addRespFiles(TraceView.getConfiguration().getResponsePath(), respFiles);
+    addRespFiles(TraceView.getConfiguration().getConfigFileDir(), channels, respFiles);
+    addRespFiles("./", channels, respFiles);
+    addRespFiles(TraceView.getConfiguration().getResponsePath(), channels, respFiles);
     return respFiles;
   }
 
@@ -718,17 +719,38 @@ public class DataModule extends Observable {
           + ": is not directory");
     }
 
-    String fullPath = dirname + "RESP." + network + "." + station + "." + location + "." + channel;
-    File file = new File(fullPath);
-
+    String respFileName = "RESP." + network + "." + station + "." + location + "." + channel;
+    File file = new File(dirname + respFileName);
     if (file.exists()) {
       whereToAdd.add(file.getAbsolutePath());
+      return;
     }
+    
+
+    // our acceptance criterion is whether or not a file is a directory
+    // this is slightly odd syntax for older Java developers; we're basically using a lambda here
+    File[] subdirectories = path.listFiles(File::isDirectory);
+    assert subdirectories != null;
+    for (File subdirectory : subdirectories) {
+      int size = whereToAdd.size();
+      String subPath = subdirectory.getAbsolutePath() + "/";
+      addRespFiles(subPath, network, station, location, channel, whereToAdd);
+      if (whereToAdd.size() > size) {
+        return;
+      }
+    }
+
   }
 
-  private static void addRespFiles(String dirname, List<String> whereToAdd)
-      throws TraceViewException {
-    addRespFiles(dirname, ".*", ".*", ".*", ".*", whereToAdd);
+  private static void addRespFiles(String dirname, List<? extends Channel> channels,
+      List<String> whereToAdd) throws TraceViewException {
+    for (Channel channel : channels) {
+      String network = channel.getNetworkName();
+      String station = channel.getStation().getName();
+      String location = channel.getLocationName();
+      String channelName = channel.getChannelName();
+      addRespFiles(dirname, network, station, location, channelName, whereToAdd);
+    }
   }
 
   /**
