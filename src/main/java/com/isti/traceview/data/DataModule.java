@@ -685,6 +685,7 @@ public class DataModule extends Observable {
   public static String getResponseFile(String network, String station,
       String location, String channel) throws TraceViewException {
     List<String> respFiles = new ArrayList<String>();
+    // note that first entry string should end with "/" as it is a directory location
     addRespFiles(TraceView.getConfiguration().getConfigFileDir(), network, station, location,
         channel, respFiles);
     if (respFiles.size() > 0) {
@@ -717,7 +718,6 @@ public class DataModule extends Observable {
           + ": is not directory");
     }
 
-    // TODO: do we need to add a slash between dirname and resp?
     String fullPath = dirname + "RESP." + network + "." + station + "." + location + "." + channel;
     File file = new File(fullPath);
 
