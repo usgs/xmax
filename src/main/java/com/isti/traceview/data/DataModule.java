@@ -725,7 +725,7 @@ public class DataModule extends Observable {
       whereToAdd.add(file.getAbsolutePath());
       return;
     }
-    
+
 
     // our acceptance criterion is whether or not a file is a directory
     // this is slightly odd syntax for older Java developers; we're basically using a lambda here

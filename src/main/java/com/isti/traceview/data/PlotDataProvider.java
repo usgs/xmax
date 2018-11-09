@@ -36,7 +36,7 @@ import com.isti.traceview.processing.Rotation;
 /**
  * <p>
  * Class for trace representation, produces and holds pixelized trace view and manage pixalization
- * policy.
+ * policy.a
  * </p>
  * <p>
  * The concept of a pixelized view is a realization of a simple idea that the computer screen can

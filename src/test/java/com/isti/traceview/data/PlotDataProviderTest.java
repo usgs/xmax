@@ -37,6 +37,7 @@ public class PlotDataProviderTest {
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     List<Segment> segments = dataProvider.getRawData();
+    assertEquals(2, segments.size());
     Segment firstSegment = segments.get(0);
     Segment lastSegment = segments.get(segments.size() - 1);
     assertTrue(Segment.isDataBreak(
