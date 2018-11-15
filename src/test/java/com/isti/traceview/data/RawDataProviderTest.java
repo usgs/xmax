@@ -6,6 +6,8 @@ import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.filters.FilterLP;
+import com.isti.traceview.processing.LPFilterException;
 import com.isti.traceview.processing.Rotation;
 import com.isti.xmax.data.XMAXDataModule;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
@@ -121,7 +123,7 @@ public class RawDataProviderTest {
   }
 
   @Test
-  public void dumpMseed_filter() throws FileNotFoundException {
+  public void dumpMseed_filter() throws IOException, LPFilterException {
     // first, we need to load in the data (may be moved to set-up method)
     DataModule dm = new DataModule();
 
@@ -141,10 +143,52 @@ public class RawDataProviderTest {
       assertEquals(86400, segment.getSampleCount());
       assertNotNull(segment.getData().data);
     }
+    TimeInterval ti = data.getTimeRange();
+    int sampleCount = segments.get(0).getSampleCount();
 
-    // then we may need to convert it (perform LPF)
-    // save this converted data as miniseed
-    // re-load that data
+    FilterLP lowPass = new FilterLP();
+    lowPass.init(data);
+
+    double[] unfilteredExpected = new double[sampleCount];
+    for (int i = 0; i < unfilteredExpected.length; ++i) {
+      unfilteredExpected[i] = segments.get(0).getData().data[i];
+    }
+    double[] filteredExpected = lowPass.filter(unfilteredExpected, sampleCount);
+
+    for (int i = 0; i < filteredExpected.length; ++i) {
+      assertNotEquals(segments.get(0).getData().data[i], filteredExpected[i]);
+    }
+
+    String filename2 = "src/test/resources/filtered_00_LHZ.512.mseed";
+    // make sure data from a previous test isn't lingering
+    File outputFile = new File(filename2);
+    if (outputFile.exists()) {
+      outputFile.delete();
+    }
+
+    // write out filtered data
+    DataOutputStream ds = new DataOutputStream(new FileOutputStream(outputFile));
+    data.dumpMseed(ds, data.getTimeRange(), lowPass, null);
+    dm = new DataModule();
+    dm.loadNewDataFromSources(outputFile);
+    if (outputFile.exists()) {
+      outputFile.delete();
+    }
+
+    data = dm.getAllChannels().get(0);
+    segments = data.getRawData();
+    assertEquals(1, segments.size());
+    for (Segment segment : segments) {
+      assertEquals(86400, segment.getSampleCount());
+      assertNotNull(segment.getData().data);
+    }
+    double[] filteredLoaded = new double[segments.get(0).getData().data.length];
+    for (int i = 0; i < filteredLoaded.length; ++i) {
+      filteredLoaded[i] = segments.get(0).getData().data[i];
+    }
+
+    assertArrayEquals(filteredExpected, filteredLoaded, 1.);
+
 
   }
 
