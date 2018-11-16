@@ -337,7 +337,7 @@ public class TimeInterval {
 	 * @return time in GregorianCalendar form
 	 */
 	public static long getTime(int year, int jday, int hour_of_day, int minute, int second, int millisecond) {
-		GregorianCalendar cal = new GregorianCalendar(TraceView.timeZone);
+		Calendar cal = new GregorianCalendar(TraceView.timeZone);
 		cal.set(Calendar.YEAR, year);
 		cal.set(Calendar.DAY_OF_YEAR, jday);
 		cal.set(Calendar.HOUR_OF_DAY, hour_of_day);

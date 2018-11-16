@@ -36,8 +36,8 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 		return FormatType.SAC;
 	}
 
-	public Set<RawDataProvider> parse(DataModule dataModule) {
-		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
+	public Set<PlotDataProvider> parse() {
+		Set<PlotDataProvider> ret = new HashSet<>();
 		try {
 			SacTimeSeries sac = new SacTimeSeries();
 
@@ -52,7 +52,7 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 			} else {
 				loc = sac.getHeader().getKhole().trim();
 			}
-			RawDataProvider channel = dataModule.getOrAddChannel(sac.getHeader().getKcmpnm(), DataModule.getOrAddStation(sac.getHeader().getKstnm()), sac.getHeader().getKnetwk(), loc);
+			PlotDataProvider channel = new PlotDataProvider(sac.getHeader().getKcmpnm(), DataModule.getOrAddStation(sac.getHeader().getKstnm()), sac.getHeader().getKnetwk(), loc);
 			ret.add(channel);
 			Segment segment = new Segment(this, 0, new Date(getSACtime(sac)), sac.getHeader().getDelta() * 1000, sac.getHeader().getNpts(), 0);
 			channel.addSegment(segment);

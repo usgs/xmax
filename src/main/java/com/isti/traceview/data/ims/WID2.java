@@ -1,12 +1,11 @@
 package com.isti.traceview.data.ims;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.data.BufferedRandomAccessFile;
 
 public class WID2 extends Block {
 	private static final Logger logger = Logger.getLogger(WID2.class);
@@ -94,7 +93,7 @@ public class WID2 extends Block {
 		return orientVer;
 	}
 
-	public void read(BufferedRandomAccessFile input) throws IMSFormatException, IOException, ParseException{
+	public void read(RandomAccessFile input) throws IMSFormatException, IOException, ParseException{
 		logger.debug("== START WID2 Read");
 		header = input.readLine();
 		if(!header.startsWith("WID2")){

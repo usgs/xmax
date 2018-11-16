@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -57,15 +58,14 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	 * this includes gappy data (i.e. new segment for each gap)
 	 * 
 	 */
-	public synchronized Set<RawDataProvider> parse(DataModule dataModule) {
-		Set<RawDataProvider> ret = new HashSet<RawDataProvider>();
+	public synchronized Set<PlotDataProvider> parse() {
+		Set<PlotDataProvider> ret = new HashSet<>();
 		long blockNumber = 0;
 		long endPointer = 0;
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		try {
-			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
-			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
-			RawDataProvider currentChannel = new RawDataProvider("", new Station(""), "", "");
+			dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
+			PlotDataProvider currentChannel = new PlotDataProvider("", new Station(""), "", "");
 			long blockEndTime = 0;
 			double sampleRate = -1.0;
 			//double correction = 0.0;
@@ -115,12 +115,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 										.getChannelIdentifier())) {
 									// Starts new channel
 									// dataModule.addStation();
-									currentChannel = dataModule.getOrAddChannel(dh.getChannelIdentifier(), DataModule.getOrAddStation(dh
+									currentChannel = new PlotDataProvider(dh.getChannelIdentifier(), DataModule.getOrAddStation(dh
 											.getStationIdentifier()), dh.getNetworkCode(), dh.getLocationIdentifier());
 									ret.add(currentChannel);
 									skipChannel = false;
 								} else {
-									currentChannel = new RawDataProvider(dh.getChannelIdentifier().trim(), new Station(dh.getStationIdentifier()
+									currentChannel = new PlotDataProvider(dh.getChannelIdentifier().trim(), new Station(dh.getStationIdentifier()
 											.trim()), dh.getNetworkCode().trim(), dh.getLocationIdentifier().trim());
 									skipChannel = true;
 								}
@@ -191,15 +191,14 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
 		int segmentSampleCount = segment.getSampleCount();	// sample count of current segment
 		int[] data = new int[segmentSampleCount];	// testing for memory usage
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		int currentSampleCount = 0; //Counter on the basis of data values
 		int headerSampleCount = 0; //Counter on the basis of header information
 		int drSampleCount = 0;		//Counter on current DataRecord
 		int blockNumber = 0;
 		try {
 			logger.debug("source = " + getFile().getCanonicalPath());	
-			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
-			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
+			dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.seek(segment.getStartOffset());
 			logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
 			while (currentSampleCount < segmentSampleCount) {
@@ -283,7 +282,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			segment.addDataPoint(value);
 		
 		//logger.info("Loaded " + this + " " + segment + " [samples read = " + currentSampleCount + ", samples from headers = " + headerSampleCount + ", blocks read = " + blockNumber + "]");
-		System.out.print("...");
 	}
 
 	public String toString() {
@@ -291,11 +289,10 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	}
 
 	public synchronized String getBlockHeaderText(long blockStartOffset) {
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		String ret = "<html><i>File type:</i>" + this.getFormatType();
 		try {
-			dis = new BufferedRandomAccessFile(getFile().getCanonicalPath(), "r");
-			dis.order(BufferedRandomAccessFile.BIG_ENDIAN);
+			dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
 			dis.seek(blockStartOffset);
 			//FileInputStream d = null;
 			SeedRecord sr = SynchronizedSeedRecord.read(dis, TraceView.getConfiguration().getDefaultBlockLength());
@@ -341,8 +338,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
 	private static long getBlockStartTime(DataHeader dh) {
 		Btime startBtime = dh.getStartBtime();
-		return TimeInterval.getTime(startBtime.year, startBtime.jday, startBtime.hour, startBtime.min, startBtime.sec, new Long(Math
-				.round(startBtime.tenthMilli)).intValue() / 10);
+		return startBtime.convertToCalendar().getTimeInMillis();
 	}
 
 	private static long getBlockEndTime(DataHeader dh, double sampleRate) {

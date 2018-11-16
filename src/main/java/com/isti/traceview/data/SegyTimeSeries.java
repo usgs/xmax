@@ -8,6 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.Arrays;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceViewException;
@@ -31,6 +35,8 @@ import com.isti.traceview.common.TimeInterval;
 public class SegyTimeSeries { /* Offset Description */
 	private static final Logger logger = Logger.getLogger(SegyTimeSeries.class);
 	static final boolean doRepacketize = false;
+
+	private boolean bigEndian;
 
 	String oNetwork = "";
 	String oChannel = "";
@@ -147,6 +153,7 @@ public class SegyTimeSeries { /* Offset Description */
 	 */
 	public SegyTimeSeries() {
 		logger.debug("ENTER");
+		bigEndian = true;
 		//lg.debug("SegyTimeSeries::SegyTimeSeries() left");
 	}
 
@@ -248,7 +255,7 @@ public class SegyTimeSeries { /* Offset Description */
 	 *             if it happens
 	 */
 	public void read(String filename) throws FileNotFoundException, IOException, TraceViewException {
-		BufferedRandomAccessFile dis = new BufferedRandomAccessFile(filename, "r");
+		RandomAccessFile dis = new RandomAccessFile(filename, "r");
 		//double bgn = System.currentTimeMillis();
 		/*
 		 * checkNeedToSwap(dis); skipHeader(dis);
@@ -278,23 +285,16 @@ public class SegyTimeSeries { /* Offset Description */
 	/**
 	 * Check the byte order by checking the date/time fields
 	 */
-	protected void checkNeedToSwap(BufferedRandomAccessFile dis, long pointer) throws IOException {
+	protected void checkNeedToSwap(RandomAccessFile dis, long pointer) throws IOException {
+		bigEndian = true;
 		dis.seek(156);
-		int tyear = dis.readShort(); /* 156 year of Start of trace */
-		int tday = dis.readShort(); /* 158 day of year at Start of trace */
-		int thour = dis.readShort(); /* 160 hour of day at Start of trace */
-		int tmin = dis.readShort(); /* 162 minute of hour at Start of trace */
-		int tsec = dis.readShort(); /* 164 second of minute at Start of trace */
-		if (tyear < 1900 | tyear > 3000)
-			dis.order(BufferedRandomAccessFile.LITTLE_ENDIAN);
-		if (tday < 0 | tday > 366)
-			dis.order(BufferedRandomAccessFile.LITTLE_ENDIAN);
-		if (thour < 0 | thour > 23)
-			dis.order(BufferedRandomAccessFile.LITTLE_ENDIAN);
-		if (tmin < 0 | tmin > 59)
-			dis.order(BufferedRandomAccessFile.LITTLE_ENDIAN);
-		if (tsec < 0 | tsec > 59)
-			dis.order(BufferedRandomAccessFile.LITTLE_ENDIAN);
+		int tyear = readShort(dis); /* 156 year of Start of trace */
+		int tday = readShort(dis); /* 158 day of year at Start of trace */
+		int thour = readShort(dis); /* 160 hour of day at Start of trace */
+		int tmin = readShort(dis); /* 162 minute of hour at Start of trace */
+		int tsec = readShort(dis); /* 164 second of minute at Start of trace */
+		bigEndian = (tyear < 1900 || tyear > 3000 || tday < 0 || tday > 366 || thour < 0 || thour > 23 ||
+				tmin < 0 || tmin > 59 || tsec < 0 || tsec > 59);
 		dis.seek(pointer);
 		return;
 	}
@@ -303,8 +303,8 @@ public class SegyTimeSeries { /* Offset Description */
 	 * Reads the header from the given stream.
 	 * @param dis the BufferedRandomAccessFile to skip over the header of.
 	 */
-	protected void skipHeader(BufferedRandomAccessFile dis) throws IOException {
-		// skip forware 240 bytes.
+	protected void skipHeader(RandomAccessFile dis) throws IOException {
+		// skip forward 240 bytes.
 		if (dis.skipBytes(240) != 240) {
 			throw new IOException("could not read 240 bytes are start of segy file.");
 		}
@@ -315,15 +315,17 @@ public class SegyTimeSeries { /* Offset Description */
 	 * really is a segy file.
 	 */
 	public void readHeader(String filename) throws FileNotFoundException, TraceViewException {
-		BufferedRandomAccessFile dis = null;
+		RandomAccessFile dis = null;
 		try {
-			dis = new BufferedRandomAccessFile(filename, "r");
+			dis = new RandomAccessFile(filename, "r");
 			readHeader(dis);
 		} catch (IOException e) {
 			throw new TraceViewException(e.toString());
 		} finally {
 			try {
-				dis.close();
+				if (dis != null) {
+					dis.close();
+				}
 			} catch (IOException e) {
 				// do nothing
 				logger.error("IOException:", e);	
@@ -334,103 +336,104 @@ public class SegyTimeSeries { /* Offset Description */
 	/**
 	 * reads the header from the given stream.
 	 */
-	protected void readHeader(BufferedRandomAccessFile dis) throws FileNotFoundException, IOException, TraceViewException {
+	protected void readHeader(RandomAccessFile dis) throws FileNotFoundException, IOException, TraceViewException {
+		// TODO: probably need to replace a lot of this with bytebuffer calls to handle byte order
 		checkNeedToSwap(dis, dis.getFilePointer());
-		lineSeq = dis.readInt(); /* 0 Sequence numbers within line */
-		reelSeq = dis.readInt(); /* 4 Sequence numbers within reel */
-		event_number = dis.readInt(); /* 8 Original field record number or trigger number */
-		channel_number = dis.readInt(); /*
+		lineSeq = readInt(dis); /* 0 Sequence numbers within line */
+		reelSeq = readInt(dis); /* 4 Sequence numbers within reel */
+		event_number = readInt(dis); /* 8 Original field record number or trigger number */
+		channel_number = readInt(dis); /*
 										 * 12 Trace channel number within the original field record
 										 */
-		energySourcePt = dis.readInt(); /* 16 X */
-		cdpEns = dis.readInt(); /* 20 X */
-		traceInEnsemble = dis.readInt(); /* 24 X */
-		traceID = dis.readShort(); /* 28 Trace identification code: seismic data = 1 */
-		if (traceID != 1 && traceID != 2 && traceID != 3 && traceID != 4 && traceID != 5 && traceID != 6 && traceID != 7 && traceID != 8
-				&& traceID != 9)
+		energySourcePt = readInt(dis); /* 16 X */
+		cdpEns = readInt(dis); /* 20 X */
+		traceInEnsemble = readInt(dis); /* 24 X */
+		traceID = readShort(dis); /* 28 Trace identification code: seismic data = 1 */
+		if (traceID != 1 && traceID != 2 && traceID != 3 && traceID != 4 &&  traceID != 5
+				&& traceID != 6 && traceID != 7 && traceID != 8 && traceID != 9)
 			throw new TraceViewException("Segy Format Exception");
-		vertSum = dis.readShort(); /* 30 X */
-		horSum = dis.readShort(); /* 32 X */
-		dataUse = dis.readShort(); /* 34 X */
-		sourceToRecDist = dis.readInt(); /* 36 X */
-		recElevation = dis.readInt(); /* 40 X */
-		sourceSurfaceElevation = dis.readInt(); /* 44 X */
-		sourceDepth = dis.readInt(); /* 48 X */
-		datumElevRec = dis.readInt(); /* 52 X */
-		datumElevSource = dis.readInt(); /* 56 X */
-		sourceWaterDepth = dis.readInt(); /* 60 X */
-		recWaterDepth = dis.readInt(); /* 64 X */
-		elevationScale = dis.readShort(); /* 68 Elevation Scaler: scale = 1 */
-		coordScale = dis.readShort(); /* 70 Coordinate Scaler: scale = 1 */
-		sourceLongOrX = dis.readInt(); /* 72 X */
-		sourceLatOrY = dis.readInt(); /* 76 X */
-		recLongOrX = dis.readInt(); /* 80 X */
-		recLatOrY = dis.readInt(); /* 84 X */
-		coordUnits = dis.readShort(); /* 88 Coordinate Units: = 2 (Lat/Long) */
+		vertSum = readShort(dis); /* 30 X */
+		horSum = readShort(dis); /* 32 X */
+		dataUse = readShort(dis); /* 34 X */
+		sourceToRecDist = readInt(dis); /* 36 X */
+		recElevation = readInt(dis); /* 40 X */
+		sourceSurfaceElevation = readInt(dis); /* 44 X */
+		sourceDepth = readInt(dis); /* 48 X */
+		datumElevRec = readInt(dis); /* 52 X */
+		datumElevSource = readInt(dis); /* 56 X */
+		sourceWaterDepth = readInt(dis); /* 60 X */
+		recWaterDepth = readInt(dis); /* 64 X */
+		elevationScale = readShort(dis); /* 68 Elevation Scaler: scale = 1 */
+		coordScale = readShort(dis); /* 70 Coordinate Scaler: scale = 1 */
+		sourceLongOrX = readInt(dis); /* 72 X */
+		sourceLatOrY = readInt(dis); /* 76 X */
+		recLongOrX = readInt(dis); /* 80 X */
+		recLatOrY = readInt(dis); /* 84 X */
+		coordUnits = readShort(dis); /* 88 Coordinate Units: = 2 (Lat/Long) */
 		if (coordUnits != 1 && coordUnits != 2)
 			throw new TraceViewException("Segy Format Exception");
-		weatheringVelocity = dis.readShort(); /* 90 X */
-		subWeatheringVelocity = dis.readShort(); /* 92 X */
-		sourceUpholeTime = dis.readShort(); /* 94 X */
-		recUpholeTime = dis.readShort(); /* 96 X */
-		sourceStaticCor = dis.readShort(); /* 98 X */
-		recStaticCor = dis.readShort(); /* 100 X */
-		totalStatic = dis.readShort(); /*
+		weatheringVelocity = readShort(dis); /* 90 X */
+		subWeatheringVelocity = readShort(dis); /* 92 X */
+		sourceUpholeTime = readShort(dis); /* 94 X */
+		recUpholeTime = readShort(dis); /* 96 X */
+		sourceStaticCor = readShort(dis); /* 98 X */
+		recStaticCor = readShort(dis); /* 100 X */
+		totalStatic = readShort(dis); /*
 										 * 102 Total Static in MILLISECS added to Trace Start Time
 										 * (lower 2 bytes)
 										 */
-		lagTimeA = dis.readShort(); /* 104 X */
-		lagTimeB = dis.readShort(); /* 106 X */
-		delay = dis.readShort(); /* 108 X */
-		muteStart = dis.readShort(); /* 110 X */
-		muteEnd = dis.readShort(); /* 112 X */
-		sampleLength = dis.readShort(); /* 114 Number of samples in this trace (unless == 32767) */
-		deltaSample = dis.readShort(); /* 116 Sampling interval in MICROSECONDS (unless == 1) */
-		gainType = dis.readShort(); /* 118 Gain Type: 1 = Fixed Gain */
+		lagTimeA = readShort(dis); /* 104 X */
+		lagTimeB = readShort(dis); /* 106 X */
+		delay = readShort(dis); /* 108 X */
+		muteStart = readShort(dis); /* 110 X */
+		muteEnd = readShort(dis); /* 112 X */
+		sampleLength = readShort(dis); /* 114 Number of samples in this trace (unless == 32767) */
+		deltaSample = readShort(dis); /* 116 Sampling interval in MICROSECONDS (unless == 1) */
+		gainType = readShort(dis); /* 118 Gain Type: 1 = Fixed Gain */
 		if (gainType != 1 && gainType != 2 && gainType != 3 && gainType != 4)
 			throw new TraceViewException("Segy Format Exception");
-		gainConst = dis.readShort(); /* 120 Gain of amplifier */
-		initialGain = dis.readShort(); /* 122 X */
-		correlated = dis.readShort(); /* 124 X */
-		sweepStart = dis.readShort(); /* 126 X */
-		sweepEnd = dis.readShort(); /* 128 X */
-		sweepLength = dis.readShort(); /* 130 X */
-		sweepType = dis.readShort(); /* 132 X */
-		sweepTaperAtStart = dis.readShort(); /* 134 X */
-		sweepTaperAtEnd = dis.readShort(); /* 136 X */
-		taperType = dis.readShort(); /* 138 X */
-		aliasFreq = dis.readShort(); /* 140 X */
-		aliasSlope = dis.readShort(); /* 142 X */
-		notchFreq = dis.readShort(); /* 144 X */
-		notchSlope = dis.readShort(); /* 146 X */
-		lowCutFreq = dis.readShort(); /* 148 X */
-		hiCutFreq = dis.readShort(); /* 150 X */
-		lowCutSlope = dis.readShort(); /* 152 X */
-		hiCutSlope = dis.readShort(); /* 154 X */
-		year = dis.readShort(); /* 156 year of Start of trace */
+		gainConst = readShort(dis); /* 120 Gain of amplifier */
+		initialGain = readShort(dis); /* 122 X */
+		correlated = readShort(dis); /* 124 X */
+		sweepStart = readShort(dis); /* 126 X */
+		sweepEnd = readShort(dis); /* 128 X */
+		sweepLength = readShort(dis); /* 130 X */
+		sweepType = readShort(dis); /* 132 X */
+		sweepTaperAtStart = readShort(dis); /* 134 X */
+		sweepTaperAtEnd = readShort(dis); /* 136 X */
+		taperType = readShort(dis); /* 138 X */
+		aliasFreq = readShort(dis); /* 140 X */
+		aliasSlope = readShort(dis); /* 142 X */
+		notchFreq = readShort(dis); /* 144 X */
+		notchSlope = readShort(dis); /* 146 X */
+		lowCutFreq = readShort(dis); /* 148 X */
+		hiCutFreq = readShort(dis); /* 150 X */
+		lowCutSlope = readShort(dis); /* 152 X */
+		hiCutSlope = readShort(dis); /* 154 X */
+		year = readShort(dis); /* 156 year of Start of trace */
 		if (year < 0 || year > 3000)
 			throw new TraceViewException("Segy Format Exception");
-		day = dis.readShort(); /* 158 day of year at Start of trace */
+		day = readShort(dis); /* 158 day of year at Start of trace */
 		if (day < 0 || day > 366)
 			throw new TraceViewException("Segy Format Exception");
-		hour = dis.readShort(); /* 160 hour of day at Start of trace */
+		hour = readShort(dis); /* 160 hour of day at Start of trace */
 		if (hour < 0 || hour > 23)
 			throw new TraceViewException("Segy Format Exception");
-		minute = dis.readShort(); /* 162 minute of hour at Start of trace */
+		minute = readShort(dis); /* 162 minute of hour at Start of trace */
 		if (minute < 0 || minute > 59)
 			throw new TraceViewException("Segy Format Exception");
-		second = dis.readShort(); /* 164 second of minute at Start of trace */
+		second = readShort(dis); /* 164 second of minute at Start of trace */
 		if (second < 0 || second > 59)
 			throw new TraceViewException("Segy Format Exception");
-		timeBasisCode = dis.readShort(); /* 166 Time basis code: 2 = GMT */
+		timeBasisCode = readShort(dis); /* 166 Time basis code: 2 = GMT */
 		if (timeBasisCode != 1 && timeBasisCode != 2 && timeBasisCode != 3)
 			throw new TraceViewException("Segy Format Exception");
-		traceWeightingFactor = dis.readShort(); /* 168 X */
-		phoneRollPos1 = dis.readShort(); /* 170 X */
-		phoneFirstTrace = dis.readShort(); /* 172 X */
-		phoneLastTrace = dis.readShort(); /* 174 X */
-		gapSize = dis.readShort(); /* 176 X */
-		taperOvertravel = dis.readShort(); /* 178 X */
+		traceWeightingFactor = readShort(dis); /* 168 X */
+		phoneRollPos1 = readShort(dis); /* 170 X */
+		phoneFirstTrace = readShort(dis); /* 172 X */
+		phoneLastTrace = readShort(dis); /* 174 X */
+		gapSize = readShort(dis); /* 176 X */
+		taperOvertravel = readShort(dis); /* 178 X */
 
 		byte[] sevenBytes = new byte[7];
 		byte[] fiveBytes = new byte[5];
@@ -461,34 +464,77 @@ public class SegyTimeSeries { /* Offset Description */
 			channel_name = new String(threeBytes);
 		}
 		dis.read(oneBytes);
-		totalStaticHi = dis.readShort(); /*
+		totalStaticHi = readShort(dis); /*
 											 * 198 Total Static in MILLISECS added to Trace Start
 											 * Time (high 2 bytes)
 											 */
-		samp_rate = dis.readInt(); /* 200 Sample interval in MICROSECS as a 32 bit integer */
-		data_form = dis.readShort(); /* 204 Data Format flag: 0=16 bit, 1=32 bit integer */
-		m_secs = dis.readShort(); /* 206 MILLISECONDS of seconds of Start of trace */
-		trigyear = dis.readShort(); /* 208 year of Trigger time */
-		trigday = dis.readShort(); /* 210 day of year at Trigger time */
-		trighour = dis.readShort(); /* 212 hour of day at Trigger time */
-		trigminute = dis.readShort(); /* 214 minute of hour at Trigger time */
-		trigsecond = dis.readShort(); /* 216 second of minute at Trigger time */
-		trigmills = dis.readShort(); /* 218 MILLISECONDS of seconds of Trigger time */
+		samp_rate = readInt(dis); /* 200 Sample interval in MICROSECS as a 32 bit integer */
+		data_form = readShort(dis); /* 204 Data Format flag: 0=16 bit, 1=32 bit integer */
+		m_secs = readShort(dis); /* 206 MILLISECONDS of seconds of Start of trace */
+		trigyear = readShort(dis); /* 208 year of Trigger time */
+		trigday = readShort(dis); /* 210 day of year at Trigger time */
+		trighour = readShort(dis); /* 212 hour of day at Trigger time */
+		trigminute = readShort(dis); /* 214 minute of hour at Trigger time */
+		trigsecond = readShort(dis); /* 216 second of minute at Trigger time */
+		trigmills = readShort(dis); /* 218 MILLISECONDS of seconds of Trigger time */
 		scale_fac = dis.readFloat(); /* 220 Scale Factor (IEEE 32 bit float) */
-		inst_no = dis.readShort(); /* 224 Instrument Serial Number */
-		not_to_be_used = dis.readShort(); /* 226 X */
-		num_samps = dis.readInt();
+		inst_no = readShort(dis); /* 224 Instrument Serial Number */
+		not_to_be_used = readShort(dis); /* 226 X */
+		num_samps = readInt(dis);
 		/*
 		 * 228 Number of Samples as a 32 bit integer (when sampleLength == 32767)
 		 */
-		max = dis.readInt(); /* 232 Maximum value in Counts */
-		min = dis.readInt(); /* 236 Minimum value in Counts */
+		max = readInt(dis); /* 232 Maximum value in Counts */
+		min = readInt(dis); /* 236 Minimum value in Counts */
 	}
+
+	/**
+	 * Take in 4 bytes from a random access file and parse as an integer.
+	 * This is a custom implementation of RandomAccessFile's readInt() that handles little endianness
+	 * (SegY files can be either big or little endian)
+	 * @param raf SegY file being read in
+	 * @return integer parsed in
+	 * @throws IOException If the raf cannot be read from
+	 */
+	private int readInt(RandomAccessFile raf) throws IOException {
+		int ch1 = raf.readUnsignedByte();
+		int ch2 = raf.readUnsignedByte();
+		int ch3 = raf.readUnsignedByte();
+		int ch4 = raf.readUnsignedByte();
+
+
+		if (bigEndian) {
+			return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + ch4);
+		} else {
+			return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + ch1);
+		}
+	}
+
+	/**
+	 * Take in 2 bytes from a random access file and parse as a short.
+	 * This is a custom implementation of RandomAccessFile's readShort() that handles little
+	 * endianness
+	 * (SegY files can be either big or little endian)
+	 * @param raf SegY file being read in
+	 * @return short parsed in
+	 * @throws IOException If the raf cannot be read from
+	 */
+	private short readShort(RandomAccessFile raf) throws IOException {
+		int ch1 = raf.readUnsignedByte();
+		int ch2 = raf.readUnsignedByte();
+
+		if (bigEndian) {
+			return (short) ((ch1 << 8) + ch2);
+		} else {
+			return (short) ((ch2 << 8) + ch1);
+		}
+	}
+
 
 	/**
 	 * read the data portion of the given File
 	 */
-	protected void readData(BufferedRandomAccessFile fis) throws IOException {
+	protected void readData(RandomAccessFile fis) throws IOException {
 		if (sampleLength != 32767) {
 			y = new int[sampleLength];
 		} else {
@@ -500,7 +546,6 @@ public class SegyTimeSeries { /* Offset Description */
 		byte[] buf = new byte[4096]; // buf length must be == 0 % 4 or 2 based on data_form
 		// and for efficiency, should be
 		// a multiple of the disk sector size
-		boolean bigEndian = fis.isBE();
 		while ((numRead = fis.read(buf)) > 0) {
 			if ((data_form == 1 && numRead % 4 != 0) || (data_form == 0 && numRead % 2 != 0)) {
 				throw new EOFException();
@@ -510,10 +555,11 @@ public class SegyTimeSeries { /* Offset Description */
 				// 32 bit ints
 				while (i < numRead) {
 					if (bigEndian) {
-						y[numAdded++] = ((buf[i++] & 0xff) << 24) + ((buf[i++] & 0xff) << 16) + ((buf[i++] & 0xff) << 8) + ((buf[i++] & 0xff) << 0);
+						y[numAdded++] = ((buf[i++] & 0xff) << 24) + ((buf[i++] & 0xff) << 16) +
+								((buf[i++] & 0xff) << 8) + (( buf[i++] & 0xff));
 					} else {
-						y[numAdded++] = ((buf[i + 3] & 0xff) << 24) + ((buf[i + 2] & 0xff) << 16) + ((buf[i + 1] & 0xff) << 8)
-								+ ((buf[i] & 0xff) << 0);
+						y[numAdded++] = ((buf[i + 3] & 0xff) << 24) + ((buf[i + 2] & 0xff) << 16) +
+								((buf[i + 1] & 0xff) << 8) + ((buf[i] & 0xff));
 						i += 4;
 					}
 				}
@@ -521,9 +567,9 @@ public class SegyTimeSeries { /* Offset Description */
 				// 16 bit shorts
 				while (i < numRead) {
 					if (bigEndian) {
-						y[numAdded++] = ((buf[i++] & 0xff) << 8) + ((buf[i++] & 0xff) << 0);
+						y[numAdded++] = ((buf[i++] & 0xff) << 8) + ((buf[i++] & 0xff));
 					} else {
-						y[numAdded++] = ((buf[i + 1] & 0xff) << 8) + ((buf[i] & 0xff) << 0);
+						y[numAdded++] = ((buf[i + 1] & 0xff) << 8) + ((buf[i] & 0xff));
 						i += 2;
 					}
 				}

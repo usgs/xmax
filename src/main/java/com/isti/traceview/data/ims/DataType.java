@@ -3,12 +3,11 @@ package com.isti.traceview.data.ims;
 import gov.usgs.anss.cd11.CanadaException;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.isti.traceview.data.BufferedRandomAccessFile;
 
 /**
  * 	data_type type of data that follows; typical examples  
@@ -55,7 +54,7 @@ public abstract class DataType {
 		this.startOffset = startOffset;
 	}
 	
-	public static DataType readHeader(BufferedRandomAccessFile input) throws IMSFormatException, IOException {
+	public static DataType readHeader(RandomAccessFile input) throws IMSFormatException, IOException {
 		DataType ret = null;
 		long filePointer = input.getFilePointer();
 		String line = input.readLine();
@@ -87,7 +86,7 @@ public abstract class DataType {
 		return ret;
 	}
 	
-	public abstract void read(BufferedRandomAccessFile input, boolean parseOnly) throws IOException, IMSFormatException, ParseException, CanadaException;
+	public abstract void read(RandomAccessFile input, boolean parseOnly) throws IOException, IMSFormatException, ParseException, CanadaException;
 	public abstract void check() throws IMSFormatException;
 
 }

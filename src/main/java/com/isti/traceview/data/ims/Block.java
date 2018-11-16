@@ -3,11 +3,10 @@ package com.isti.traceview.data.ims;
 import gov.usgs.anss.cd11.CanadaException;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.isti.traceview.data.BufferedRandomAccessFile;
 
 
 public abstract class Block {
@@ -53,6 +52,6 @@ public abstract class Block {
 		return ret;
 	}
 	
-	public abstract void read(BufferedRandomAccessFile input) throws IMSFormatException, IOException, ParseException, CanadaException;
+	public abstract void read(RandomAccessFile input) throws IMSFormatException, IOException, ParseException, CanadaException;
 
 }

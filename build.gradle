@@ -3,10 +3,10 @@ apply plugin: 'eclipse'
 apply plugin: 'application'
 
 mainClassName = "com.isti.xmax.XMAX"
-version = '2.0.7'
+version = '2.1.0'
 
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
@@ -39,7 +39,11 @@ dependencies {
 //    compile group: 'com.isti', name: 'jevalresp', version: '1.57'
 
     compile files('./lib/fissuresIDL-1.0.jar', './lib/fissuresUtil-1.0.19.jar', './lib/TauP-1.1.7.jar', './lib/JEvalResp.jar', './lib/ekit-1.4.jar', './lib/JavaSeed.jar')
+
+    testCompile group: 'junit', name: 'junit', version: '4.+'
 }
+
+
 
 jar {
     /* Adds all dependent libraries*/
@@ -66,6 +70,11 @@ if (JavaVersion.current().isJava8Compatible()) {
             options.addStringOption('Xdoclint:none', '-quiet')
         }
     }
+}
+
+task copyJar(type: Copy) {
+    from jar
+    into rootDir
 }
 
 javadoc {
