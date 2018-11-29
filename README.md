@@ -1,14 +1,14 @@
 XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https://travis-ci.org/usgs/xmax)
 ====
 
-###Purpose
+### Purpose
     XMAX waveform display for .seed files
 
-###Configuration
+### Configuration
     The main configuration is found in config.xml. File is under
     source control where user can change system paths accordingly
 
-######Data Setup
+###### Data Setup
 
     Wildcarded mask of data files to load (when no cmd line args given):
 ```xml
@@ -34,7 +34,7 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
     <PickPath>resources/Picks</PickPath>
 ```
 
-######View Setup
+###### View Setup
 
     Show big cursor, status bar, buttons:
 ```xml
@@ -51,9 +51,9 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
     <LogFile>logs/xmax.log</LogFile>
 ```
 
-###Build
+### Build
 
-######Gradle Setup/Execution
+###### Gradle Setup/Execution
 
     Gradle commands to run, clean, build and package xmax (uses build.xml)
 ```bash
@@ -63,9 +63,9 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
     gradle jar              # create distribution build/libs/xmax-[version].jar (default target)
 ```
 
-###Usage
+### Usage
 
-######Basic Execution Display
+###### Basic Execution Display
 
     No arguments specified (reads data from resources/DATA in config.xml):
 ```ruby
@@ -87,7 +87,7 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
     java -Xms512M -Xmx512M -jar xmax.jar -t -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
 ```
 
-######Basic Execution Serial Dump
+###### Basic Execution Serial Dump
 
     Read any data files found in resources/DATA and dump serialized data into resources/DATA_TEMP (-T option):
     (**NOTE: This will wipe out any existing serialized data in resources/DATA_TEMP)
@@ -112,7 +112,7 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
     java -Dlog4j.configuration=file:./src/log4j.properties -Xms512M -Xmx512M -jar xmax.jar -d '/xs0/seed/IU_ANMO/2012/2012_1{59,60}_*/00_LHZ*seed'
 ```
 
-######Basic Execution in Eclipse
+###### Basic Execution in Eclipse
 
     Eclipse reads seed files from config DataMask at runtime (config.xml):
 ```xml
