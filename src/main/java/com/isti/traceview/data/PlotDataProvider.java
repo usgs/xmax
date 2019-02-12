@@ -196,7 +196,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public PlotData getOriginalPlotData(TimeInterval ti, int pointCount, IFilter filter, 
 			RemoveGain rg, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException {
-			return getPlotData(ti, pointCount, filter, rg, colorMode);
+		if (rg != null) {
+			return  rg.removegain(this, ti, pointCount, filter, colorMode);
+		}
+			return getPlotData(ti, pointCount, filter, colorMode);
 	}
 
 	/**
