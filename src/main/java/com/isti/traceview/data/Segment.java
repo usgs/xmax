@@ -431,6 +431,7 @@ public class Segment implements Externalizable, Cloneable {
 	 */
 	public synchronized void addDataPoint(int value) {
 		if (data == null){
+			currentPos = 0;
 			data = new int[sampleCount];
 		}
 		data[currentPos++] = value;
