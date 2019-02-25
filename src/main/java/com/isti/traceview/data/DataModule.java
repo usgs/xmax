@@ -723,7 +723,7 @@ public class DataModule extends Observable {
     }
 
     String respFileName = "RESP." + network + "." + station + "." + location + "." + channel;
-    File file = new File(dirname + respFileName);
+    File file = new File(dirname + File.separator + respFileName);
     if (file.exists()) {
       whereToAdd.add(file.getAbsolutePath());
       return;
