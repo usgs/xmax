@@ -1,9 +1,13 @@
 package com.isti.xmax;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Objects;
 import java.util.Set;
 
+import java.util.jar.Manifest;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.cli.CommandLine;
@@ -34,8 +38,8 @@ import com.isti.xmax.gui.XMAXframe;
  */
 public class XMAX extends TraceView {
 	private static final Logger logger = Logger.getLogger(XMAX.class);
-	public static final String version = "2.0.7";
-	public static final String releaseDate = "February 2016";
+	public static final String version = XMAX.class.getPackage().getImplementationVersion();
+	public static final String releaseDate = getReleaseDate();
 
 	/**
 	 * Parsed command line
@@ -44,6 +48,17 @@ public class XMAX extends TraceView {
 	private static Options options;
 	private static Set<Class<? extends IFilter>> filters;
 	private static Set<Class<? extends ITransformation>> transformations;
+
+	public static String getReleaseDate() {
+		URLClassLoader urlLoader = (URLClassLoader) XMAX.class.getClassLoader();
+		try {
+			URL url = urlLoader.findResource("META-INF/MANIFEST.MF");
+			Manifest manifest = new Manifest(url.openStream());
+			return manifest.getMainAttributes().getValue("Build-Timestamp");
+		} catch (IOException e) {
+			return "RELEASE DATE UNKNOWN";
+		}
+	}
 
 	public XMAX() {
 		super();

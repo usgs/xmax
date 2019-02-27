@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
@@ -59,7 +61,8 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'XMAX',
                    'Implementation-Version': version,
-                   'Main-Class': mainClassName
+                   'Main-Class': mainClassName,
+                   'Build-Timestamp': new SimpleDateFormat("yyyy.MM.dd").format(new Date())
     }
 }
 
