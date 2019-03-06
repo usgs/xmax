@@ -120,6 +120,7 @@ public class Rotation {
     */
    public Rotation(double horizontalRotationAngle) {
      initMatrix(horizontalRotationAngle);
+     type = RotationType.HORIZONTAL;
    }
 
    /**
@@ -179,6 +180,7 @@ public class Rotation {
     * Computes rotation matrix
     */
    private void initMatrix(StandardRotation standardRotation) {
+     type = RotationType.STANDARD;
      switch (standardRotation) {
        case STS2_UVW_TO_XMAX:
          matrix = new Matrix(UVWtoXMAXsts2);
