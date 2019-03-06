@@ -86,7 +86,7 @@ public class TransPSDTest {
     }
 
     TransPSD psd = new TransPSD();
-    List<Spectra> psdData = psd.createData(toPSD, null, ti, new JFrame());
+    List<Spectra> psdData = psd.createData(toPSD, null, ti, null);
     Spectra firstSpectra = psdData.get(0);
     Spectra secondSpectra = psdData.get(1);
 
