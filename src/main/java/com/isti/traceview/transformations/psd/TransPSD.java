@@ -96,7 +96,7 @@ public class TransPSD implements ITransformation {
 			   segments = channel.getRawData(ti);
 			} else {
 			   Rotation rt = channel.getRotation();
-	           segments = channel.getRawData(rt, ti);
+			   segments = channel.getRawData(rt, ti);
 			}
 			double samplerate;
 			long segment_end_time = 0;
