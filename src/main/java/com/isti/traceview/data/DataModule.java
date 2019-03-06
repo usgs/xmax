@@ -116,6 +116,12 @@ public class DataModule extends Observable {
     }
   }
 
+  public void loadNewDataFromSources() throws TraceViewException {
+    String mask = TraceView.getConfiguration().getDataPath();
+    File[] files = SourceFile.getDataFiles(mask).toArray(new File[] {});
+    loadNewDataFromSources(files);
+  }
+
   public void reLoadData() throws TraceViewException {
     markerPosition = 0;
     windowSize = 0;
