@@ -2289,10 +2289,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						hasRotatedData = true;
 				}
 				if(hasRotatedData) {
-							JOptionPane.showMessageDialog(TraceView.getFrame(), "One or more of the traces you have selected contains rotated data. "
-									+ "The PSD for these rotated traces will be computed using rotated data and the original responses for each. "
-							        + "To use the original data, un-rotate the data before calculating the PSD.",
-									"Attempting to compute PSD on rotated data", JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(TraceView.getFrame(),
+									"One or more of the traces you have selected contains rotated data.\n"
+											+ "The rotated data will be plotted using their original responses.\n"
+											+ "To use the original traces, un-rotate the data before calculating the PSD.",
+									"PSD will be computed on rotated data", JOptionPane.INFORMATION_MESSAGE);
 				}
 				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance()
 						.getConfigurationAt("Configuration.Plugins.PSD");
