@@ -13,16 +13,16 @@ public interface ICommand extends Runnable {
 	/**
 	 * @return priority of command.
 	 */
-	public int getPriority();
+  int getPriority();
 
 	/**
 	 * @return returns starting time of command execution.
 	 */
-	public Date getStartTime();
+  Date getStartTime();
 
 	/**
 	 * @return creation time of command.
 	 */
-	public Date getCreationTime();
+  Date getCreationTime();
 	
 }

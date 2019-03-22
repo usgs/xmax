@@ -37,7 +37,7 @@ public class TimeInterval {
 		 * format yyyy,DDD,HH:mm
 		 */
 		DATE_FORMAT_LONG
-	};
+	}
 
 	private static final Logger logger = Logger.getLogger(TimeInterval.class);
 	public static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD,HH:mm:ss.SSS");
@@ -374,7 +374,7 @@ public class TimeInterval {
 			}
 		} catch (ParseException e) {
 			StringBuilder message = new StringBuilder();
-			message.append(String.format("Cant parse date from string " + date));
+			message.append("Cant parse date from string " + date);
 			logger.error(message.toString(), e);
 		}
 		return ret;

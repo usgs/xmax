@@ -29,7 +29,7 @@ public class ComplexDoubleFFT_Radix2 extends ComplexDoubleFFT {
 
 	private int logn;
 	private int decimate = DECINTIME;
-	private double trigs[];
+  private double[] trigs;
 
 	public ComplexDoubleFFT_Radix2(int n) {
 		super(n);
@@ -57,7 +57,7 @@ public class ComplexDoubleFFT_Radix2 extends ComplexDoubleFFT {
 		decimate = DECINFREQ;
 	}
 
-	public void transform(double data[], int i0, int stride) {
+	public void transform(double[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 			transform_internal(data, i0, stride, FORWARD);
@@ -66,7 +66,7 @@ public class ComplexDoubleFFT_Radix2 extends ComplexDoubleFFT {
 		}
 	}
 
-	public void backtransform(double data[], int i0, int stride) {
+	public void backtransform(double[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 			transform_internal(data, i0, stride, BACKWARD);
@@ -77,7 +77,7 @@ public class ComplexDoubleFFT_Radix2 extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void transform_internal(double data[], int i0, int stride, int direction) {
+	void transform_internal(double[] data, int i0, int stride, int direction) {
 		if (decimate == DECINFREQ) {
 			transform_DIF(data, i0, stride, direction);
 		} else {
@@ -85,7 +85,7 @@ public class ComplexDoubleFFT_Radix2 extends ComplexDoubleFFT {
 		}
 	}
 
-	void transform_DIT(double data[], int i0, int stride, int direction) {
+	void transform_DIT(double[] data, int i0, int stride, int direction) {
 		if (n == 1)
 			return; // Identity operation!
 
@@ -146,7 +146,7 @@ public class ComplexDoubleFFT_Radix2 extends ComplexDoubleFFT {
 		}
 	}
 
-	void transform_DIF(double data[], int i0, int stride, int direction) {
+	void transform_DIF(double[] data, int i0, int stride, int direction) {
 		if (n == 1)
 			return; // Identity operation!
 
@@ -192,7 +192,7 @@ public class ComplexDoubleFFT_Radix2 extends ComplexDoubleFFT {
 		bitreverse(data, i0, stride);
 	}
 
-	protected void bitreverse(double data[], int i0, int stride) {
+	protected void bitreverse(double[] data, int i0, int stride) {
 		/* This is the Goldrader bit-reversal algorithm */
 
 		for (int i = 0, j = 0; i < n - 1; i++) {

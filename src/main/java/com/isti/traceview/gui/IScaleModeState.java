@@ -24,34 +24,35 @@ public interface IScaleModeState {
 	 * @param height
 	 *            height of current view, in pixels
 	 */
-	public void init(List<PlotData> graphs, List<ChannelView> allViews, TimeInterval timeRange, IMeanState meanState, int height);
+  void init(List<PlotData> graphs, List<ChannelView> allViews, TimeInterval timeRange,
+      IMeanState meanState, int height);
 
 	/**
 	 * @param value
 	 *            trace value
 	 * @return Y screen panel coordinate to draw
 	 */
-	public int getY(double value);
+  int getY(double value);
 
 	/**
 	 * @param y
 	 *            Y screen panel coordinate
 	 * @return trace value
 	 */
-	public double getValue(int y);
+  double getValue(int y);
 
 	/**
 	 * @return name of state
 	 */
-	public String getStateName();
+  String getStateName();
 
 	/**
 	 * @return max value for all traces in current ChannelView
 	 */
-	public double getMaxValue();
+  double getMaxValue();
 
 	/**
 	 * @return min value for all traces in current ChannelView
 	 */
-	public double getMinValue();
+  double getMinValue();
 }

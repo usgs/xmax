@@ -44,7 +44,7 @@ public abstract class RealDoubleFFT {
 		this.n = n;
 	}
 
-	protected void checkData(double data[], int i0, int stride) {
+	protected void checkData(double[] data, int i0, int stride) {
 		if (i0 < 0)
 			throw new IllegalArgumentException("The offset must be >=0 : " + i0);
 		if (stride < 1)
@@ -58,19 +58,19 @@ public abstract class RealDoubleFFT {
 	}
 
 	/** Compute the Fast Fourier Transform of data leaving the result in data. */
-	public void transform(double data[]) {
+	public void transform(double[] data) {
 		transform(data, 0, 1);
 	}
 
 	/** Compute the Fast Fourier Transform of data leaving the result in data. */
-	public abstract void transform(double data[], int i0, int stride);
+	public abstract void transform(double[] data, int i0, int stride);
 
 	/**
 	 * Return data in wraparound order.
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public abstract double[] toWraparoundOrder(double data[]);
+	public abstract double[] toWraparoundOrder(double[] data);
 
 	/**
 	 * Return data in wraparound order. i0 and stride are used to traverse data;
@@ -78,15 +78,15 @@ public abstract class RealDoubleFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public abstract double[] toWraparoundOrder(double data[], int i0, int stride);
+	public abstract double[] toWraparoundOrder(double[] data, int i0, int stride);
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(double data[]) {
+	public void backtransform(double[] data) {
 		backtransform(data, 0, 1);
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public abstract void backtransform(double data[], int i0, int stride);
+	public abstract void backtransform(double[] data, int i0, int stride);
 
 	/**
 	 * Return the normalization factor. Multiply the elements of the
@@ -97,12 +97,12 @@ public abstract class RealDoubleFFT {
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(double data[]) {
+	public void inverse(double[] data) {
 		inverse(data, 0, 1);
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(double data[], int i0, int stride) {
+	public void inverse(double[] data, int i0, int stride) {
 		backtransform(data, i0, stride);
 
 		/* normalize inverse fft with 1/n */

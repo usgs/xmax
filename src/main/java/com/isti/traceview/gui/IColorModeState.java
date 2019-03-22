@@ -8,7 +8,7 @@ import java.awt.Color;
  * @author Max Kokoulin
  */
 public interface IColorModeState {
-	static final Color[] colors = new Color[]{ Color.RED, Color.BLACK, Color.CYAN, Color.GREEN, Color.GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK,
+	Color[] colors = new Color[]{ Color.RED, Color.BLACK, Color.CYAN, Color.GREEN, Color.GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK,
 			Color.YELLOW, Color.BLUE };
 
 	/**
@@ -18,5 +18,6 @@ public interface IColorModeState {
 	 *            ordinal number of segment's data source in raw data provider
 	 * @return Color to draw segment
 	 */
-	public Color getSegmentColor(int segmentNumber, int sourceNumber, int continueAreaNumber, Color manualColor);
+  Color getSegmentColor(int segmentNumber, int sourceNumber, int continueAreaNumber,
+      Color manualColor);
 }

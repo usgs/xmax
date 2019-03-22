@@ -63,7 +63,7 @@ public class RealFloat2DFFT_Even {
 				nrows));
 	}
 
-	protected void checkData(float data[], int rowspan) {
+	protected void checkData(float[] data, int rowspan) {
 		if (rowspan < ncols + 2)
 			throw new IllegalArgumentException("The row span " + rowspan
 					+ "is not long enough for ncols=" + ncols);
@@ -74,12 +74,12 @@ public class RealFloat2DFFT_Even {
 	}
 
 	/** Compute the Fast Fourier Transform of data leaving the result in data. */
-	public void transform(float data[]) {
+	public void transform(float[] data) {
 		transform(data, ncols + 2);
 	}
 
 	/** Compute the Fast Fourier Transform of data leaving the result in data. */
-	public void transform(float data[], int rowspan) {
+	public void transform(float[] data, int rowspan) {
 		try {
 			checkData(data, rowspan);
 		} catch (IllegalArgumentException e) {
@@ -104,8 +104,8 @@ public class RealFloat2DFFT_Even {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public float[] toWraparoundOrder(float data[], int rowspan) {
-		float newdata[] = new float[2 * nrows * ncols];
+	public float[] toWraparoundOrder(float[] data, int rowspan) {
+    float[] newdata = new float[2 * nrows * ncols];
 		int nc = ncols / 2;
 		for (int i = 0; i < nrows; i++) {
 			int i0 = 2 * i * ncols;
@@ -126,12 +126,12 @@ public class RealFloat2DFFT_Even {
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(float data[]) {
+	public void backtransform(float[] data) {
 		backtransform(data, ncols + 2);
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(float data[], int rowspan) {
+	public void backtransform(float[] data, int rowspan) {
 		try {
 			checkData(data, rowspan);
 		} catch (IllegalArgumentException e) {
@@ -151,7 +151,7 @@ public class RealFloat2DFFT_Even {
 		}
 	}
 
-	private void shuffle(float data[], int i0, int sign) {
+	private void shuffle(float[] data, int i0, int sign) {
 		int nh = ncols / 2;
 		int nq = ncols / 4;
 		float c1 = 0.5f, c2 = -0.5f * sign;
@@ -201,12 +201,12 @@ public class RealFloat2DFFT_Even {
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(float data[]) {
+	public void inverse(float[] data) {
 		inverse(data, ncols + 2);
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(float data[], int rowspan) {
+	public void inverse(float[] data, int rowspan) {
 		backtransform(data, rowspan);
 		float norm = normalization();
 		for (int i = 0; i < nrows; i++)

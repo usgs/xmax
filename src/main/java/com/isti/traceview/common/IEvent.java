@@ -19,33 +19,33 @@ public interface IEvent extends Comparable<Object> {
 	/**
 	 * @return event's type
 	 */
-	public String getType();
+  String getType();
 
 	/**
 	 * @return event's starting time
 	 */
-	public Date getStartTime();
+  Date getStartTime();
 
 	/**
 	 * @return event's duration in milliseconds, or 0 if it's one-moment event
 	 */
-	public long getDuration();
+  long getDuration();
 
 	/**
 	 * @return color to draw event on channel's graph
 	 */
-	public Color getColor();
+  Color getColor();
 
 	/**
 	 * @return set of available parameters for this event
 	 */
-	public Set<String> getParameters();
+  Set<String> getParameters();
 
 	/**
 	 * @param parameterName
 	 *            name of parameter
 	 * @return value of given parameter
 	 */
-	public Object getParameterValue(String parameterName);
+  Object getParameterValue(String parameterName);
 
 }

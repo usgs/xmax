@@ -52,7 +52,7 @@ public class Rotation {
      * Horizontal rotation of 2 components (used for azimuth correction)
      */
     HORIZONTAL
-  };
+  }
 
 
   /**
@@ -78,7 +78,7 @@ public class Rotation {
      * Rotate from NEZ into Trillium UVW coordinates
      */
     TRIL_XMAX_TO_UVW
-  };
+  }
 
   private static final Logger logger = Logger.getLogger(Rotation.class);
 
@@ -200,7 +200,7 @@ public class Rotation {
 
    public String getRotationAngleText() {
      if(this.getRotationType() == RotationType.HORIZONTAL)
-       return Double.toString(this.angle) + "\u00b0";
+       return this.angle + "\u00b0";
      else if (this.getRotationType() == RotationType.STANDARD)
        return "STD";
      else

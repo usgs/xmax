@@ -38,7 +38,7 @@ public class ComplexDouble2DFFT {
 		colFFT = (nrows == ncols ? rowFFT : new ComplexDoubleFFT_Mixed(nrows));
 	}
 
-	protected void checkData(double data[], int rowspan) {
+	protected void checkData(double[] data, int rowspan) {
 		if (rowspan < 2 * ncols)
 			throw new IllegalArgumentException("The row span " + rowspan
 					+ "is shorter than the row length " + 2 * ncols);
@@ -53,7 +53,7 @@ public class ComplexDouble2DFFT {
 	 * The array data must be dimensioned (at least) 2*nrows*ncols, consisting
 	 * of alternating real and imaginary parts.
 	 */
-	public void transform(double data[]) {
+	public void transform(double[] data) {
 		transform(data, 2 * ncols);
 	}
 
@@ -62,7 +62,7 @@ public class ComplexDouble2DFFT {
 	 * The array data must be dimensioned (at least) 2*nrows*ncols, consisting
 	 * of alternating real and imaginary parts.
 	 */
-	public void transform(double data[], int rowspan) {
+	public void transform(double[] data, int rowspan) {
 		checkData(data, rowspan);
 		for (int i = 0; i < nrows; i++) {
 			rowFFT.transform(data, i * rowspan, 2);
@@ -77,7 +77,7 @@ public class ComplexDouble2DFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public double[] toWraparoundOrder(double data[]) {
+	public double[] toWraparoundOrder(double[] data) {
 		return data;
 	}
 
@@ -87,10 +87,10 @@ public class ComplexDouble2DFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public double[] toWraparoundOrder(double data[], int rowspan) {
+	public double[] toWraparoundOrder(double[] data, int rowspan) {
 		if (rowspan == 2 * ncols)
 			return data;
-		double newdata[] = new double[2 * nrows * ncols];
+		double[] newdata = new double[2 * nrows * ncols];
 		for (int i = 0; i < nrows; i++)
 			for (int j = 0; j < ncols; j++) {
 				newdata[i * 2 * ncols + 2 * j] = data[i * rowspan + 2 * j];
@@ -101,12 +101,12 @@ public class ComplexDouble2DFFT {
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(double data[]) {
+	public void backtransform(double[] data) {
 		backtransform(data, 2 * ncols);
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(double data[], int rowspan) {
+	public void backtransform(double[] data, int rowspan) {
 		checkData(data, rowspan);
 		for (int j = 0; j < ncols; j++) {
 			colFFT.backtransform(data, 2 * j, rowspan);
@@ -125,12 +125,12 @@ public class ComplexDouble2DFFT {
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(double data[]) {
+	public void inverse(double[] data) {
 		inverse(data, 2 * ncols);
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(double data[], int rowspan) {
+	public void inverse(double[] data, int rowspan) {
 		backtransform(data, rowspan);
 		double norm = normalization();
 		for (int i = 0; i < nrows; i++) {

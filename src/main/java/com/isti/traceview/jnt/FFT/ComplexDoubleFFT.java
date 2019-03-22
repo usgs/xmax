@@ -48,7 +48,7 @@ public abstract class ComplexDoubleFFT {
 		return new ComplexDoubleFFT_Mixed(n);
 	}
 
-	protected void checkData(double data[], int i0, int stride) {
+	protected void checkData(double[] data, int i0, int stride) {
 		if (i0 < 0)
 			throw new IllegalArgumentException("The offset must be >=0 : " + i0);
 		if (stride < 2)
@@ -66,7 +66,7 @@ public abstract class ComplexDoubleFFT {
 	 * The array data must be dimensioned (at least) 2*n, consisting of
 	 * alternating real and imaginary parts.
 	 */
-	public void transform(double data[]) {
+	public void transform(double[] data) {
 		transform(data, 0, 2);
 	}
 
@@ -79,14 +79,14 @@ public abstract class ComplexDoubleFFT {
 	 *    Im(d[i]) = data[i0 + stride*i+1]
 	 * </PRE>
 	 */
-	public abstract void transform(double data[], int i0, int stride);
+	public abstract void transform(double[] data, int i0, int stride);
 
 	/**
 	 * Return data in wraparound order.
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public double[] toWraparoundOrder(double data[]) {
+	public double[] toWraparoundOrder(double[] data) {
 		return data;
 	}
 
@@ -96,10 +96,10 @@ public abstract class ComplexDoubleFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public double[] toWraparoundOrder(double data[], int i0, int stride) {
+	public double[] toWraparoundOrder(double[] data, int i0, int stride) {
 		if ((i0 == 0) && (stride == 2))
 			return data;
-		double newdata[] = new double[2 * n];
+    double[] newdata = new double[2 * n];
 		for (int i = 0; i < n; i++) {
 			newdata[2 * i] = data[i0 + stride * i];
 			newdata[2 * i + 1] = data[i0 + stride * i + 1];
@@ -108,7 +108,7 @@ public abstract class ComplexDoubleFFT {
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(double data[]) {
+	public void backtransform(double[] data) {
 		backtransform(data, 0, 2);
 	}
 
@@ -122,7 +122,7 @@ public abstract class ComplexDoubleFFT {
 	 *    Im(D[i]) = data[i0 + stride*i+1]
 	 * </PRE>
 	 */
-	public abstract void backtransform(double data[], int i0, int stride);
+	public abstract void backtransform(double[] data, int i0, int stride);
 
 	/**
 	 * Return the normalization factor. Multiply the elements of the
@@ -133,7 +133,7 @@ public abstract class ComplexDoubleFFT {
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(double data[]) {
+	public void inverse(double[] data) {
 		inverse(data, 0, 2);
 	}
 
@@ -147,7 +147,7 @@ public abstract class ComplexDoubleFFT {
 	 *    Im(D[i]) = data[i0 + stride*i+1]
 	 * </PRE>
 	 */
-	public void inverse(double data[], int i0, int stride) {
+	public void inverse(double[] data, int i0, int stride) {
 		backtransform(data, i0, stride);
 
 		/* normalize inverse fft with 1/n */

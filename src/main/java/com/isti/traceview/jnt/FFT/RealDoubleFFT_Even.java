@@ -22,7 +22,7 @@ public class RealDoubleFFT_Even extends RealDoubleFFT {
 	}
 
 	/** Compute the Fast Fourier Transform of data leaving the result in data. */
-	public void transform(double data[]) {
+	public void transform(double[] data) {
 		fft.transform(data);
 		shuffle(data, +1);
 	}
@@ -33,8 +33,8 @@ public class RealDoubleFFT_Even extends RealDoubleFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public double[] toWraparoundOrder(double data[]) {
-		double newdata[] = new double[2 * n];
+	public double[] toWraparoundOrder(double[] data) {
+    double[] newdata = new double[2 * n];
 		int nh = n / 2;
 		newdata[0] = data[0];
 		newdata[1] = 0.0;
@@ -54,17 +54,17 @@ public class RealDoubleFFT_Even extends RealDoubleFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public double[] toWraparoundOrder(double data[], int i0, int stride) {
+	public double[] toWraparoundOrder(double[] data, int i0, int stride) {
 		throw new Error("Not Implemented!");
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(double data[]) {
+	public void backtransform(double[] data) {
 		shuffle(data, -1);
 		fft.backtransform(data);
 	}
 
-	private void shuffle(double data[], int sign) {
+	private void shuffle(double[] data, int sign) {
 		int nh = n / 2;
 		int nq = n / 4;
 		double c1 = 0.5, c2 = -0.5 * sign;
@@ -102,17 +102,17 @@ public class RealDoubleFFT_Even extends RealDoubleFFT {
 	}
 
 	/** Compute the Fast Fourier Transform of data leaving the result in data. */
-	public void transform(double data[], int i0, int stride) {
+	public void transform(double[] data, int i0, int stride) {
 		throw new Error("Not Implemented!");
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(double data[], int i0, int stride) {
+	public void backtransform(double[] data, int i0, int stride) {
 		throw new Error("Not Implemented!");
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(double data[], int i0, int stride) {
+	public void inverse(double[] data, int i0, int stride) {
 		throw new Error("Not Implemented!");
 	}
 
@@ -125,7 +125,7 @@ public class RealDoubleFFT_Even extends RealDoubleFFT {
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(double data[]) {
+	public void inverse(double[] data) {
 		backtransform(data);
 		/* normalize inverse fft with 2/n */
 		double norm = normalization();

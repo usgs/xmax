@@ -207,7 +207,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	private JTextField getLowFrequencyTF() {
 		if (lowFrequencyTF == null) {
 			lowFrequencyTF = new JTextField();
-			lowFrequencyTF.setText(new Double(cutLowFrequency).toString());
+			lowFrequencyTF.setText(cutLowFrequency.toString());
 			lowFrequencyTF.setPreferredSize(new Dimension(50, 20));
 		}
 		return lowFrequencyTF;
@@ -221,7 +221,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	private JTextField getHighFrequencyTF() {
 		if (highFrequencyTF == null) {
 			highFrequencyTF = new JTextField();
-			highFrequencyTF.setText(new Double(cutHighFrequency).toString());
+			highFrequencyTF.setText(cutHighFrequency.toString());
 			highFrequencyTF.setPreferredSize(new Dimension(50, 20));
 		}
 		return highFrequencyTF;

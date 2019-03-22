@@ -175,7 +175,7 @@ public class SegyTimeSeries { /* Offset Description */
 	 * @deprecated This method is not called by anything
 	 */
 	public int[] getDataArray(TimeInterval ti) throws TraceViewException {
-		int retAR[];
+		int[] retAR;
 		if (!ti.isIntersect(getTimeRange())) {
 			throw (new TraceViewException("SegyTimeSeries: start after end time"));
 		}

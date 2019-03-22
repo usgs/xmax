@@ -49,7 +49,7 @@ public abstract class ComplexFloatFFT {
 		return new ComplexFloatFFT_Mixed(n);
 	}
 
-	protected void checkData(float data[], int i0, int stride) {
+	protected void checkData(float[] data, int i0, int stride) {
 		if (i0 < 0)
 			throw new IllegalArgumentException("The offset must be >=0 : " + i0);
 		if (stride < 2)
@@ -67,7 +67,7 @@ public abstract class ComplexFloatFFT {
 	 * The array data must be dimensioned (at least) 2*n, consisting of
 	 * alternating real and imaginary parts.
 	 */
-	public void transform(float data[]) {
+	public void transform(float[] data) {
 		transform(data, 0, 2);
 	}
 
@@ -76,7 +76,7 @@ public abstract class ComplexFloatFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public float[] toWraparoundOrder(float data[]) {
+	public float[] toWraparoundOrder(float[] data) {
 		return data;
 	}
 
@@ -86,10 +86,10 @@ public abstract class ComplexFloatFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public float[] toWraparoundOrder(float data[], int i0, int stride) {
+	public float[] toWraparoundOrder(float[] data, int i0, int stride) {
 		if ((i0 == 0) && (stride == 2))
 			return data;
-		float newdata[] = new float[2 * n];
+    float[] newdata = new float[2 * n];
 		for (int i = 0; i < n; i++) {
 			newdata[2 * i] = data[i0 + stride * i];
 			newdata[2 * i + 1] = data[i0 + stride * i + 1];
@@ -106,10 +106,10 @@ public abstract class ComplexFloatFFT {
 	 *    Im(d[i]) = data[i0 + stride*i+1]
 	 * </PRE>
 	 */
-	public abstract void transform(float data[], int i0, int stride);
+	public abstract void transform(float[] data, int i0, int stride);
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(float data[]) {
+	public void backtransform(float[] data) {
 		backtransform(data, 0, 2);
 	}
 
@@ -123,7 +123,7 @@ public abstract class ComplexFloatFFT {
 	 *    Im(D[i]) = data[i0 + stride*i+1]
 	 * </PRE>
 	 */
-	public abstract void backtransform(float data[], int i0, int stride);
+	public abstract void backtransform(float[] data, int i0, int stride);
 
 	/**
 	 * Return the normalization factor. Multiply the elements of the
@@ -134,7 +134,7 @@ public abstract class ComplexFloatFFT {
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(float data[]) {
+	public void inverse(float[] data) {
 		inverse(data, 0, 2);
 	}
 
@@ -148,7 +148,7 @@ public abstract class ComplexFloatFFT {
 	 *    Im(D[i]) = data[i0 + stride*i+1]
 	 * </PRE>
 	 */
-	public void inverse(float data[], int i0, int stride) {
+	public void inverse(float[] data, int i0, int stride) {
 		backtransform(data, i0, stride);
 
 		/* normalize inverse fft with 1/n */

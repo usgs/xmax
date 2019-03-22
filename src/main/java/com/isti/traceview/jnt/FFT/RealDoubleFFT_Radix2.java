@@ -65,7 +65,7 @@ public class RealDoubleFFT_Radix2 extends RealDoubleFFT {
 	 * See <a href="#transformlayout"> Radix2 Transform Layout</a> for
 	 * description of the resulting data layout.
 	 */
-	public void transform(double data[], int i0, int stride) {
+	public void transform(double[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 		} catch (IllegalArgumentException e) {
@@ -161,7 +161,7 @@ public class RealDoubleFFT_Radix2 extends RealDoubleFFT {
 	 * data must be in the same arrangement as that produced by
 	 * {@link #transform transform}.
 	 */
-	public void backtransform(double data[], int i0, int stride) {
+	public void backtransform(double[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 		} catch (IllegalArgumentException e) {
@@ -256,7 +256,7 @@ public class RealDoubleFFT_Radix2 extends RealDoubleFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public double[] toWraparoundOrder(double data[]) {
+	public double[] toWraparoundOrder(double[] data) {
 		return toWraparoundOrder(data, 0, 1);
 	}
 
@@ -266,13 +266,13 @@ public class RealDoubleFFT_Radix2 extends RealDoubleFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public double[] toWraparoundOrder(double data[], int i0, int stride) {
+	public double[] toWraparoundOrder(double[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 		} catch (IllegalArgumentException e) {
 			logger.error("IllegalArgumentException:", e);
 		}
-		double newdata[] = new double[2 * n];
+    double[] newdata = new double[2 * n];
 		int nh = n / 2;
 		newdata[0] = data[i0];
 		newdata[1] = 0.0;
@@ -287,7 +287,7 @@ public class RealDoubleFFT_Radix2 extends RealDoubleFFT {
 		return newdata;
 	}
 
-	protected void bitreverse(double data[], int i0, int stride) {
+	protected void bitreverse(double[] data, int i0, int stride) {
 		/* This is the Goldrader bit-reversal algorithm */
 
 		for (int i = 0, j = 0; i < n - 1; i++) {

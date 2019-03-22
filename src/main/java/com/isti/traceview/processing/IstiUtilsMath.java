@@ -308,7 +308,7 @@ public class IstiUtilsMath {
 	/**
 	 * Compute correlation
 	 */
-	public static final double[] correlate(double fdata[], double gdata[]) {
+	public static final double[] correlate(double[] fdata, double[] gdata) {
 		if (fdata.length != gdata.length)
 			throw new IllegalArgumentException("fdata and gdata must have same length. " + fdata.length + " " + gdata.length);
 		int dataLength = fdata.length;
@@ -329,8 +329,8 @@ public class IstiUtilsMath {
 			}
 		}
 		double scale = StrictMath.sqrt(sumF * sumG);
-		Cmplx fTrans[] = processFft(fdataPadded);
-		Cmplx gTrans[] = processFft(gdataPadded);
+		Cmplx[] fTrans = processFft(fdataPadded);
+		Cmplx[] gTrans = processFft(gdataPadded);
 		for (int i = 0; i < fTrans.length; i++)
 			fTrans[i] = Cmplx.mul(fTrans[i], gTrans[i].conjg());
 		double[] corr = inverseFft(fTrans);
@@ -466,8 +466,8 @@ public class IstiUtilsMath {
 	 */
 	public static Cmplx[] processFft_Even(double[] indata) {
 		RealDoubleFFT_Even fft = new RealDoubleFFT_Even(indata.length);
-		fft.transform(indata);;
-		
+		fft.transform(indata);
+
 		final int outLen = indata.length / 2;
 		final Cmplx[] ret = new Cmplx[outLen];
 		for (int k = 0; k < outLen; k++) {
