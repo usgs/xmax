@@ -3,7 +3,6 @@ package com.isti.xmax.data;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.data.SourceFile;
 import com.isti.traceview.data.TemporaryStorage;
-import com.isti.xmax.XMAXconfiguration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

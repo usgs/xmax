@@ -25,7 +25,6 @@ import javax.swing.border.EtchedBorder;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceViewException;
-import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.processing.IstiUtilsMath;

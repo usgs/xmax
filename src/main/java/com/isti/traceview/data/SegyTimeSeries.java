@@ -9,9 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.Arrays;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceViewException;
