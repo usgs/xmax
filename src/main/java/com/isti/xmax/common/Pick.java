@@ -379,7 +379,7 @@ class SAXHandler extends DefaultHandler {
 
 	}
 
-	public void characters(char ch[], int start, int length) {
+	public void characters(char[] ch, int start, int length) {
 
 	}
 

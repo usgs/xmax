@@ -27,8 +27,8 @@ public class ScaleModeAuto extends ScaleModeAbstract implements IScaleModeState 
 			}
 			double dataMinValue = meanState.getValue(data.getMinValue(), data.getMeanValue());
 			if (dataMinValue < minValue) {
-				minValue = Double.valueOf(df.format(dataMinValue));;
-			}
+				minValue = Double.valueOf(df.format(dataMinValue));
+      }
 		}
 		if (maxValue == minValue) {
 			amp = 100.0;

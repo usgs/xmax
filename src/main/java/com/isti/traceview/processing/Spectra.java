@@ -194,7 +194,7 @@ public class Spectra {
 				IstiUtilsMath.velToAccel(psd, sampFreq, spectra.length);
 				break;
 			default:
-				; // Do nothing
+        // Do nothing
 				break;
 			}
 			return psd;

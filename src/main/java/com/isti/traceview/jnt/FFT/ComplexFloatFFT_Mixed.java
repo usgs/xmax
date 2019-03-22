@@ -39,7 +39,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 		}
 	}
 
-	public void transform(float data[], int i0, int stride) {
+	public void transform(float[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 			transform_internal(data, i0, stride, FORWARD);
@@ -48,7 +48,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 		}
 	}
 
-	public void backtransform(float data[], int i0, int stride) {
+	public void backtransform(float[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 			transform_internal(data, i0, stride, BACKWARD);
@@ -62,11 +62,11 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 	 * Setting up the Wavetable
 	 */
 
-	private int factors[];
-	// Reversed the last 2 levels of the twiddle array compared to what the C
-	// version had.
-	private float twiddle[][][];
-	private int available_factors[] = { 7, 6, 5, 4, 3, 2 };
+  private int[] factors;
+  // Reversed the last 2 levels of the twiddle array compared to what the C
+  // version had.
+  private float[][][] twiddle;
+  private int[] available_factors = {7, 6, 5, 4, 3, 2};
 
 	void setup_wavetable(int n) {
 
@@ -90,7 +90,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 			int q = n / product;
 
 			twiddle[i] = new float[q + 1][2 * (factor - 1)];
-			float twid[][] = twiddle[i];
+      float[][] twid = twiddle[i];
 			for (int j = 1; j < factor; j++) {
 				twid[0][2 * (j - 1)] = 1.0f;
 				twid[0][2 * (j - 1) + 1] = 0.0f;
@@ -113,16 +113,17 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 	 * ______________________________________________________________________
 	 * The main transformation driver
 	 */
-	void transform_internal(float data[], int i0, int stride, int sign) {
+	void transform_internal(float[] data, int i0, int stride, int sign) {
 
 		if (n == 1)
 			return; /* FFT of 1 data point is the identity */
 
-		float scratch[] = new float[2 * n];
+    float[] scratch = new float[2 * n];
 		int product = 1;
 		int state = 0;
-		float in[], out[];
-		int istride, ostride;
+    float[] in;
+    float[] out;
+    int istride, ostride;
 		int in0, out0;
 
 		for (int i = 0; i < factors.length; i++) {
@@ -181,7 +182,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_2(int fi, float in[], int in0, int istride, float out[],
+	void pass_2(int fi, float[] in, int in0, int istride, float[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -195,7 +196,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 		int i = in0, j = out0;
 		float x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			float twids[] = twiddle[fi][k];
+      float[] twids = twiddle[fi][k];
 			float w_real = twids[0];
 			float w_imag = -sign * twids[1];
 
@@ -228,7 +229,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_3(int fi, float in[], int in0, int istride, float out[],
+	void pass_3(int fi, float[] in, int in0, int istride, float[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -244,7 +245,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 		int i = in0, j = out0;
 		float x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			float twids[] = twiddle[fi][k];
+      float[] twids = twiddle[fi][k];
 			float w1_real = twids[0];
 			float w1_imag = -sign * twids[1];
 			float w2_real = twids[2];
@@ -299,7 +300,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_4(int fi, float in[], int in0, int istride, float out[],
+	void pass_4(int fi, float[] in, int in0, int istride, float[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -314,7 +315,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 		int dj = ostride * p_1;
 		float x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			float twids[] = twiddle[fi][k];
+      float[] twids = twiddle[fi][k];
 			float w1_real = twids[0];
 			float w1_imag = -sign * twids[1];
 			float w2_real = twids[2];
@@ -383,7 +384,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_5(int fi, float in[], int in0, int istride, float out[],
+	void pass_5(int fi, float[] in, int in0, int istride, float[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -401,7 +402,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 		int dj = ostride * p_1;
 		float x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			float twids[] = twiddle[fi][k];
+      float[] twids = twiddle[fi][k];
 			float w1_real = twids[0];
 			float w1_imag = -sign * twids[1];
 			float w2_real = twids[2];
@@ -512,7 +513,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_6(int fi, float in[], int in0, int istride, float out[],
+	void pass_6(int fi, float[] in, int in0, int istride, float[] out,
 			int out0, int ostride, int sign, int product) {
 
 		int k, k1;
@@ -529,7 +530,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 		int dj = ostride * p_1;
 		float x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			float twids[] = twiddle[fi][k];
+      float[] twids = twiddle[fi][k];
 			float w1_real = twids[0];
 			float w1_imag = -sign * twids[1];
 			float w2_real = twids[2];
@@ -655,7 +656,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_7(int fi, float in[], int in0, int istride, float out[],
+	void pass_7(int fi, float[] in, int in0, int istride, float[] out,
 			int out0, int ostride, int sign, int product) {
 
 		int k, k1;
@@ -678,7 +679,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 		int dj = ostride * p_1;
 		float x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			float twids[] = twiddle[fi][k];
+      float[] twids = twiddle[fi][k];
 			float w1_real = twids[0];
 			float w1_imag = -sign * twids[1];
 			float w2_real = twids[2];
@@ -899,7 +900,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_n(int fi, float in[], int in0, int istride, float out[],
+	void pass_n(int fi, float[] in, int in0, int istride, float[] out,
 			int out0, int ostride, int sign, int factor, int product) {
 		int i = 0, j = 0;
 		int k, k1;
@@ -946,7 +947,7 @@ public class ComplexFloatFFT_Mixed extends ComplexFloatFFT {
 			}
 		}
 
-		float twiddl[] = twiddle[fi][q];
+    float[] twiddl = twiddle[fi][q];
 
 		for (e = 1; e < (factor - 1) / 2 + 1; e++) {
 			int idx = e;

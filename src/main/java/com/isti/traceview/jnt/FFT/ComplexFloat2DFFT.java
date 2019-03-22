@@ -38,7 +38,7 @@ public class ComplexFloat2DFFT {
 		colFFT = (nrows == ncols ? rowFFT : new ComplexFloatFFT_Mixed(nrows));
 	}
 
-	protected void checkData(float data[], int rowspan) {
+	protected void checkData(float[] data, int rowspan) {
 		if (rowspan < 2 * ncols)
 			throw new IllegalArgumentException("The row span " + rowspan
 					+ "is shorter than the row length " + 2 * ncols);
@@ -53,7 +53,7 @@ public class ComplexFloat2DFFT {
 	 * The array data must be dimensioned (at least) 2*nrows*ncols, consisting
 	 * of alternating real and imaginary parts.
 	 */
-	public void transform(float data[]) {
+	public void transform(float[] data) {
 		transform(data, 2 * ncols);
 	}
 
@@ -62,7 +62,7 @@ public class ComplexFloat2DFFT {
 	 * The array data must be dimensioned (at least) 2*nrows*ncols, consisting
 	 * of alternating real and imaginary parts.
 	 */
-	public void transform(float data[], int rowspan) {
+	public void transform(float[] data, int rowspan) {
 		try {
 			checkData(data, rowspan);
 			for (int i = 0; i < nrows; i++) {
@@ -81,7 +81,7 @@ public class ComplexFloat2DFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public float[] toWraparoundOrder(float data[]) {
+	public float[] toWraparoundOrder(float[] data) {
 		return data;
 	}
 
@@ -91,10 +91,10 @@ public class ComplexFloat2DFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public float[] toWraparoundOrder(float data[], int rowspan) {
+	public float[] toWraparoundOrder(float[] data, int rowspan) {
 		if (rowspan == 2 * ncols)
 			return data;
-		float newdata[] = new float[2 * nrows * ncols];
+    float[] newdata = new float[2 * nrows * ncols];
 		for (int i = 0; i < nrows; i++)
 			for (int j = 0; j < ncols; j++) {
 				newdata[i * 2 * ncols + 2 * j] = data[i * rowspan + 2 * j];
@@ -105,12 +105,12 @@ public class ComplexFloat2DFFT {
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(float data[]) {
+	public void backtransform(float[] data) {
 		backtransform(data, 2 * ncols);
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(float data[], int rowspan) {
+	public void backtransform(float[] data, int rowspan) {
 		try {
 			checkData(data, rowspan);
 			for (int i = 0; i < nrows; i++) {
@@ -133,12 +133,12 @@ public class ComplexFloat2DFFT {
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(float data[]) {
+	public void inverse(float[] data) {
 		inverse(data, 2 * ncols);
 	}
 
 	/** Compute the (nomalized) inverse FFT of data, leaving it in place. */
-	public void inverse(float data[], int rowspan) {
+	public void inverse(float[] data, int rowspan) {
 		backtransform(data, rowspan);
 		float norm = normalization();
 		for (int i = 0; i < nrows; i++) {

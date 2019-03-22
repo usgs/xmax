@@ -11,12 +11,12 @@ public interface IOffsetState {
 	 * @param shift
 	 *            Shift in pixels
 	 */
-	public void setShift(double shift);
+  void setShift(double shift);
 	
 	/**
 	 * increase count of steps. Resulting segments offset will be shift*step.
 	 */
-	public void increaseStep();
+  void increaseStep();
 
 	/**
 	 * Computes trace value to place on graph
@@ -27,5 +27,5 @@ public interface IOffsetState {
 	 *            segment's ordinary number
 	 * @return trace value to draw
 	 */
-	public double getValue(double value, int segmentNumber);
+  double getValue(double value, int segmentNumber);
 }

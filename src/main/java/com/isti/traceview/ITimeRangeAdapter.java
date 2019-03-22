@@ -9,6 +9,6 @@ import com.isti.traceview.common.TimeInterval;
  */
 
 public interface ITimeRangeAdapter {
-	public void setTimeRange(TimeInterval timeRange);
+	void setTimeRange(TimeInterval timeRange);
 
 }

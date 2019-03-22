@@ -18,9 +18,9 @@ public class IMSFile {
 
 	public enum MessageType {
 		DATA, REQUEST, SUBSCRIPTION
-	};
+	}
 
-	private static final Logger logger = Logger.getLogger(IMSFile.class);
+  private static final Logger logger = Logger.getLogger(IMSFile.class);
 	//private static Pattern wid2Pattern = Pattern.compile("(\\w.)\\s.(\\S.)\\s.(\\S.)\\s.");
 	private static Pattern msgTypePattern = Pattern.compile("^MSG_TYPE\\s+(\\S+)$");
 	private static Pattern msgIdPattern = Pattern.compile("^MSG_ID\\s+(\\S+\\.*)$");
@@ -63,10 +63,8 @@ public class IMSFile {
 					if (imsFile.msg_type == MessageType.DATA) {
 						imsFile.readDataTypes(parseOnly, input, filePointer);
 					} else if (imsFile.msg_type == MessageType.REQUEST) {
-						;
-					} else if (imsFile.msg_type == MessageType.SUBSCRIPTION) {
-						;
-					}
+          } else if (imsFile.msg_type == MessageType.SUBSCRIPTION) {
+          }
 				} else if (tag.equals("DATA_TYPE")) {
 					input.seek(filePointer);
 					imsFile.readDataTypes(parseOnly, input, filePointer);

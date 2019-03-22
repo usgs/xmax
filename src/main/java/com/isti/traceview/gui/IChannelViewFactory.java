@@ -11,10 +11,10 @@ import com.isti.traceview.data.PlotDataProvider;
  * @author Max Kokoulin
  */
 public interface IChannelViewFactory {
-	public int getInfoAreaWidth();
+	int getInfoAreaWidth();
 	
-	public ChannelView getChannelView(List<PlotDataProvider> channels);
+	ChannelView getChannelView(List<PlotDataProvider> channels);
 
-	public ChannelView getChannelView(PlotDataProvider channel);
+	ChannelView getChannelView(PlotDataProvider channel);
 
 }

@@ -15,6 +15,6 @@ public interface IMeanState {
 	 *            trace mean
 	 * @return trace value to draw
 	 */
-	public abstract double getValue(double value, double mean);
+  double getValue(double value, double mean);
 
 }

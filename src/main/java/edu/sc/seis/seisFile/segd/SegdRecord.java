@@ -33,17 +33,17 @@ public class SegdRecord {
 		HEXADECIMAL_DEMUX_16_BIT, // (not implemented)
 		HEXADECIMAL_DEMUX_32_BIT, // (not implemented)
 		IEEE_MULTIPLEXED_32_BIT, IEEE_DEMUX_32_BIT
-	};
+	}
 
-	public enum Polarity {
+  public enum Polarity {
 		UNTESTED, ZERO, DEGREES_45, DEGREES_90, DEGREES_135, DEGREES_180, DEGREES_225, DEGREES_270, DEGREES_315, UNASSIGNED
-	};
+	}
 
-	public enum RecordType {
+  public enum RecordType {
 		TEST_RECORD, PARALLEL_CHANNEL_TEST, DIRECT_CHANNEL_TEST, NORMAL_RECORD, OTHER
-	};
+	}
 
-	// -----------General header 1 data------------
+  // -----------General header 1 data------------
 	private int fileNumber = -1;
 	private Format format;
 	private short[] general_constants = new short[12];

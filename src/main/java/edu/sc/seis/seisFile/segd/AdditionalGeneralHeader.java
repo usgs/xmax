@@ -10,12 +10,12 @@ public class AdditionalGeneralHeader {
 
 	public enum PhaseControl {
 		NOT_RECORDED, BASEPLATE_ACCELEROMETER, REACTION_MASS, WEIGHTED_SUM, DIRECT_FORCE_MEASUREMENT
-	};
-	
+	}
+
 	public enum VibratorType {
 		NOT_RECORDED, P_WAVE, SHEAR_WAVE, MARINE
-	};
-	
+	}
+
 	int fileNumber = -1;
 	int sourceLineNumberInteger = -1;
 	int sourceLineNumberFraction = -1;

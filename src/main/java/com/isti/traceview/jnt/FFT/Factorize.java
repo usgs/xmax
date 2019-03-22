@@ -19,8 +19,8 @@ public class Factorize {
 	 * fromfactors, in order (which needn't actually be prime). Remaining
 	 * factors in increasing order follow.
 	 */
-	public static int[] factor(int n, int fromfactors[]) {
-		int factors[] = new int[64]; // Cant be more than 64 factors.
+	public static int[] factor(int n, int[] fromfactors) {
+    int[] factors = new int[64]; // Cant be more than 64 factors.
 		int nf = 0;
 		int ntest = n;
 		int factor;
@@ -63,7 +63,7 @@ public class Factorize {
 			throw new Error("factorization failed for " + n);
 
 		/* Now, make an array of the right length containing the factors... */
-		int f[] = new int[nf];
+    int[] f = new int[nf];
 		System.arraycopy(factors, 0, f, 0, nf);
 		return f;
 	}

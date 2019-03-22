@@ -65,7 +65,7 @@ public class RealFloatFFT_Radix2 extends RealFloatFFT {
 	 * See <a href="#transformlayout"> Radix2 Transform Layout</a> for
 	 * description of the resulting data layout.
 	 */
-	public void transform(float data[], int i0, int stride) {
+	public void transform(float[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 		} catch (IllegalArgumentException e) {
@@ -160,7 +160,7 @@ public class RealFloatFFT_Radix2 extends RealFloatFFT {
 	 * data must be in the same arrangement as that produced by
 	 * {@link #transform transform}.
 	 */
-	public void backtransform(float data[], int i0, int stride) {
+	public void backtransform(float[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 		} catch (IllegalArgumentException e) {
@@ -255,7 +255,7 @@ public class RealFloatFFT_Radix2 extends RealFloatFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public float[] toWraparoundOrder(float data[]) {
+	public float[] toWraparoundOrder(float[] data) {
 		return toWraparoundOrder(data, 0, 1);
 	}
 
@@ -265,13 +265,13 @@ public class RealFloatFFT_Radix2 extends RealFloatFFT {
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
 	 */
-	public float[] toWraparoundOrder(float data[], int i0, int stride) {
+	public float[] toWraparoundOrder(float[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 		} catch (IllegalArgumentException e) {
 			logger.error("IllegalArgumentException:", e);
 		}
-		float newdata[] = new float[2 * n];
+    float[] newdata = new float[2 * n];
 		int nh = n / 2;
 		newdata[0] = data[i0];
 		newdata[1] = 0.0f;
@@ -286,7 +286,7 @@ public class RealFloatFFT_Radix2 extends RealFloatFFT {
 		return newdata;
 	}
 
-	protected void bitreverse(float data[], int i0, int stride) {
+	protected void bitreverse(float[] data, int i0, int stride) {
 		/* This is the Goldrader bit-reversal algorithm */
 
 		for (int i = 0, j = 0; i < n - 1; i++) {

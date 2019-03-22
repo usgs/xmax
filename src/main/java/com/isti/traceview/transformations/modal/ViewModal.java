@@ -250,8 +250,8 @@ public class ViewModal extends JDialog implements PropertyChangeListener, Change
             fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_"
                 + seriesName.replace("/", "_") + ".SAC";
             ds = new DataOutputStream(new FileOutputStream(new File(fileName)));
-            float ydata[] = new float[dataset.getItemCount(i)];
-            float xdata[] = new float[dataset.getItemCount(i)];
+            float[] ydata = new float[dataset.getItemCount(i)];
+            float[] xdata = new float[dataset.getItemCount(i)];
             for (int j = 0; j < dataset.getItemCount(i); j++) {
               xdata[j] = new Double(dataset.getXValue(i, j)).floatValue();
               ydata[j] = new Double(dataset.getYValue(i, j)).floatValue();

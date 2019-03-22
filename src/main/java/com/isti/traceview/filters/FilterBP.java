@@ -187,7 +187,7 @@ public class FilterBP implements IFilter {
 	 * 
 	 * @return the sum of the array
 	 */
-	private double demean(double buf[], int n) {
+	private double demean(double[] buf, int n) {
 		double sum = 0.0;
 		for (int i = 0; i < n; i++) {
 			sum = sum + buf[i];

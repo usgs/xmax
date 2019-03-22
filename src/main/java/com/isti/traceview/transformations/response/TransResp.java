@@ -66,7 +66,8 @@ public class TransResp implements ITransformation {
 			Response resp = channel.getResponse();
 			if (resp == null)
 				throw new XMAXException("Can't load response for channel " + channel.getName());
-			final double respAmp[] = resp.getRespAmp(ti.getStartTime(), fp.startFreq, fp.endFreq, numberFreqs);
+			final double[] respAmp = resp
+					.getRespAmp(ti.getStartTime(), fp.startFreq, fp.endFreq, numberFreqs);
 			for (int i = 0; i < numberFreqs; i++) {
 				series.add(Math.log10(frequenciesArray[i]), Math.log10(respAmp[i]));
 			}

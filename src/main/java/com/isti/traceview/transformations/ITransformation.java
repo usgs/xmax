@@ -30,17 +30,18 @@ public interface ITransformation {
 	 * @param parentFrame
 	 *            Host frame
 	 */
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configiration,
-			JFrame parentFrame);
+  void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter,
+      Object configiration,
+      JFrame parentFrame);
 
 	/**
 	 * Sets maximum amount of processed data
 	 */
-	public void setMaxDataLength(int dataLength);
+  void setMaxDataLength(int dataLength);
 
 	/**
 	 * Return name of transformation
 	 */
-	public String getName();
+  String getName();
 
 }

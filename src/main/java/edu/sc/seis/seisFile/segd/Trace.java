@@ -19,8 +19,8 @@ public class Trace {
 		DEAD_CHANNEL, 
 		INTENTIONALLY_ZEROED, 
 		EDITED
-	};
-	
+	}
+
 	public enum SensorType {
 		NOT_DEFINED, 
 		PRESSURE, 
@@ -32,8 +32,8 @@ public class Trace {
 		ACCELERATION_HORIZONTAL_INLINE, 
 		ACCELERATION_HORIZONTAL_CROSSLINE, 
 		ACCELERATION_HORIZONTAL_OTHER
-	};
-	
+	}
+
 	private SegdRecord record = null;
 	private int fileNumber = -1;
 	private int scanTypeNumber = -1;

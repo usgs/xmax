@@ -49,7 +49,7 @@ public class ComplexFloatFFT_Radix2 extends ComplexFloatFFT {
 		decimate = DECINFREQ;
 	}
 
-	public void transform(float data[], int i0, int stride) {
+	public void transform(float[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 			transform_internal(data, i0, stride, FORWARD);
@@ -58,7 +58,7 @@ public class ComplexFloatFFT_Radix2 extends ComplexFloatFFT {
 		}
 	}
 
-	public void backtransform(float data[], int i0, int stride) {
+	public void backtransform(float[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 			transform_internal(data, i0, stride, BACKWARD);
@@ -69,7 +69,7 @@ public class ComplexFloatFFT_Radix2 extends ComplexFloatFFT {
 
 	/* ______________________________________________________________________ */
 
-	void transform_internal(float data[], int i0, int stride, int direction) {
+	void transform_internal(float[] data, int i0, int stride, int direction) {
 		if (decimate == DECINFREQ) {
 			transform_DIF(data, i0, stride, direction);
 		} else {
@@ -77,7 +77,7 @@ public class ComplexFloatFFT_Radix2 extends ComplexFloatFFT {
 		}
 	}
 
-	void transform_DIT(float data[], int i0, int stride, int direction) {
+	void transform_DIT(float[] data, int i0, int stride, int direction) {
 		if (n == 1)
 			return; // Identity operation!
 
@@ -136,7 +136,7 @@ public class ComplexFloatFFT_Radix2 extends ComplexFloatFFT {
 		}
 	}
 
-	void transform_DIF(float data[], int i0, int stride, int direction) {
+	void transform_DIF(float[] data, int i0, int stride, int direction) {
 		if (n == 1)
 			return; // Identity operation!
 
@@ -179,7 +179,7 @@ public class ComplexFloatFFT_Radix2 extends ComplexFloatFFT {
 		bitreverse(data, i0, stride);
 	}
 
-	protected void bitreverse(float data[], int i0, int stride) {
+	protected void bitreverse(float[] data, int i0, int stride) {
 		/* This is the Goldrader bit-reversal algorithm */
 
 		for (int i = 0, j = 0; i < n - 1; i++) {
