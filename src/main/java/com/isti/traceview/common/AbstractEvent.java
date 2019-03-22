@@ -46,16 +46,6 @@ public abstract class AbstractEvent implements IEvent {
 		return duration;
 	}
 
-	/**
-	 * Setter of the property <tt>duration</tt>
-	 * 
-	 * @param duration
-	 *            The duration to set.
-	 */
-	public void setDuration(long duration) {
-		this.duration = duration;
-	}
-
 	public Color getColor() {
 		return Color.BLACK;
 	}
@@ -79,16 +69,6 @@ public abstract class AbstractEvent implements IEvent {
 	 */
 	public Date getStartTime() {
 		return startTime;
-	}
-
-	/**
-	 * Setter of the property <tt>startTime</tt>
-	 * 
-	 * @param startTime
-	 *            The startTime to set.
-	 */
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
 	}
 
 	/**

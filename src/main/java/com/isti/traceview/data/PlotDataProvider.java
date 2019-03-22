@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -94,7 +93,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 
 	public PlotDataProvider(String channelName, Station station, String networkName, String locationName) {
 		super(channelName, station, networkName, locationName);
-		events = Collections.synchronizedSortedSet(new TreeSet<IEvent>());
+		events = Collections.synchronizedSortedSet(new TreeSet<>());
 	}
 
 	/**
@@ -136,10 +135,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @return true if channel is rotated otherwise false
 	 */
 	public boolean isRotated() {
-		if(this.rotation != null && this.rotation.getRotationType() != null)
-			return true;
-		else 
-			return false;
+		return this.rotation != null && this.rotation.getRotationType() != null;
 	}
 
 	/**
@@ -170,7 +166,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public PlotData getPlotData(TimeInterval ti, int pointCount, IFilter filter, 
 			RemoveGain rg, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException {
-		if (rg != null && rg.removestate == true  && this.rotation == null){
+		if (rg != null && rg.removestate && this.rotation == null){
 			return rg.removegain(this, ti, pointCount, filter, colorMode);
 		}
 		else if (this.rotation != null && this.rotation.getRotationType() != null){
@@ -233,7 +229,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		//Double durationTest = new Double(effectiveTimeRange.getDuration()) / new Double(getTimeRange().getDuration());
 		//Double pointsCacheSize = pointsCache.size() * durationTest;
 		if (effectiveTimeRange != null) {
-			if ((pointCount > pointsCache.size() * new Double(effectiveTimeRange.getDuration()) / new Double(getTimeRange().getDuration()))
+			if ((pointCount > pointsCache.size() * (double) effectiveTimeRange.getDuration() / (double) getTimeRange()
+					.getDuration())
 					|| filter != null) 
 			{
 				try {				
@@ -243,7 +240,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					logger.error("PlotDataException:", e);	
 				}
 			} else {
-				points = new ArrayList<PlotDataPoint[]>();
+				points = new ArrayList<>();
 				int startIndex = new Double((effectiveTimeRange.getStart() - getTimeRange().getStart()) * initPointCount
 						/ getTimeRange().getDuration()).intValue();
 				if (startIndex < 0) {
@@ -272,7 +269,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			}
 			
 			// Second level of pixelization related to screen size (i.e. width)	
-			double timeRatio = (ti.getDuration()) / new Double(pointCount);	
+			double timeRatio = (ti.getDuration()) / (double) pointCount;
 			for (int i = 0; i < pointCount; i++) {
 				// we divide requested time range into pointCount time slices and calculate data to
 				// display for every slice
@@ -281,13 +278,15 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				if (!((startSlice >= effectiveTimeRange.getEnd() && endSlice >= effectiveTimeRange.getEnd()) || (startSlice <= effectiveTimeRange
 						.getStart() && endSlice <= effectiveTimeRange.getStart()))) {
 					// if effective time range intersects this time slice
-					int startIndex = new Long(Math.round(new Double((startSlice - effectiveTimeRange.getStart()) * points.size())
-							/ new Double(effectiveTimeRange.getDuration()))).intValue();
+					int startIndex = new Long(Math.round(
+							(startSlice - effectiveTimeRange.getStart()) * points.size()
+							/ (double) effectiveTimeRange.getDuration())).intValue();
 					if (startIndex < 0) {
 						startIndex = 0;
 					}
-					int endIndex = new Long(Math.round(new Double((endSlice - effectiveTimeRange.getStart()) * points.size())
-							/ new Double(effectiveTimeRange.getDuration()))).intValue();
+					int endIndex = new Long(Math.round(
+							(endSlice - effectiveTimeRange.getStart()) * points.size()
+							/ (double) effectiveTimeRange.getDuration())).intValue();
 					if (endIndex > points.size()) {
 						endIndex = points.size();
 					}
@@ -296,7 +295,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 						endIndex = endIndex + 1;
 					}
 					List<PlotDataPoint[]> data = points.subList(startIndex, endIndex);
-					List<SliceData> sliceDataList = new ArrayList<SliceData>();
+					List<SliceData> sliceDataList = new ArrayList<>();
 					@SuppressWarnings("unused")	
 					int j =0;
 					for (PlotDataPoint[] sublist: data) {
@@ -324,9 +323,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 						j++;
 					}
 					if (events == null) {
-						events = Collections.synchronizedSortedSet(new TreeSet<IEvent>()); // class was deserialized
+						events = Collections.synchronizedSortedSet(new TreeSet<>()); // class was deserialized
 					}
-					SortedSet<EventWrapper> evts = new TreeSet<EventWrapper>();
+					SortedSet<EventWrapper> evts = new TreeSet<>();
 					for (IEvent event: events) {
 						long eventTime = event.getStartTime().getTime();
 						if (eventTime > startSlice && eventTime <= endSlice) {
@@ -390,7 +389,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		//logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
 		
 		// Why is 'pointSet' synchronized with no threading?
-		List<PlotDataPoint[]> pointSet = Collections.synchronizedList(new ArrayList<PlotDataPoint[]>(pointCount));
+		List<PlotDataPoint[]> pointSet = Collections.synchronizedList(new ArrayList<>(pointCount));
 		// waiting if data still is not loaded
 		int attemptCount = 0;
 		while (!isLoaded()) {
@@ -405,7 +404,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				logger.error("InterruptedException:", e);	
 			}
 		}
-		List<SegmentData> rawData = new ArrayList<SegmentData>();
+		List<SegmentData> rawData = new ArrayList<>();
 		List<Segment> segments = getRawData(ti);
 		int numSegments = segments.size();
 		
@@ -431,14 +430,14 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		//filtering
 		if(filter != null){
 			FilterFacade ff = new FilterFacade(filter, this);
-			List<SegmentData> filteredRawData = new ArrayList<SegmentData>();
+			List<SegmentData> filteredRawData = new ArrayList<>();
 			for(SegmentData segmentData: rawData){
 				filteredRawData.add(new SegmentData(segmentData.startTime, segmentData.sampleRate, segmentData.sourceSerialNumber, segmentData.channelSerialNumber, segmentData.continueAreaNumber, segmentData.previous, segmentData.next, ff.filter(segmentData.data)));
 			}
 			rawData = filteredRawData;
 		}
 		
-		double interval = (ti.getDuration()) / new Double(pointCount);
+		double interval = (ti.getDuration()) / (double) pointCount;
 		double time = ti.getStart();
 		for (int i = 0; i < pointCount; i++) {
 			//lg.debug("Iteration # "+ i + ", processing interval " + time + " - " + (time+interval));
@@ -456,7 +455,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					double top = Double.NEGATIVE_INFINITY;
 					double bottom = Double.POSITIVE_INFINITY;
 					double sum = 0.0;
-					int rawDataPointCount = 0;
+					int rawDataPointCount;
 					SegmentData data;
 					if (i == (pointCount - 1)) {
 						data = segData.getData(time, ti.getEnd());	// last chunk
@@ -479,11 +478,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 						//lg.debug("Data present, point " + k + " added: " + intervalPoints[k]);
 					} else {
 						
-						if (currentSegmentDataTI.isContain(new Double(time).longValue())) {
-							rawDataPointCount = 1;
-
+						if (currentSegmentDataTI.isContain((long) time)) {
 							double value = segData.interpolateValue(time);
-							//lg.debug("Interpolated value, point " + k + " added: " + value);
 							intervalPoints[k] = new PlotDataPoint(value, value, value, segData.channelSerialNumber, segData.sourceSerialNumber, segData.continueAreaNumber, null);
 
 						} else {
@@ -518,10 +514,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *         of segment overlapping or gaps. If no segments found, return null.
 	 */
 	private static SegmentData[] getSegmentData(List<SegmentData> sps, double start, double end) {
-		List<SegmentData> ret = new ArrayList<SegmentData>();
-		Iterator<SegmentData> it = sps.iterator();
-		while (it.hasNext()) {
-			SegmentData segData = it.next();
+		List<SegmentData> ret = new ArrayList<>();
+		for (SegmentData segData : sps) {
 			long retStart = segData.startTime;
 			long retEnd = segData.endTime();
 			if (!((start >= retEnd && end >= retEnd) || (start <= retStart && end <= retStart))) {
@@ -549,10 +543,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 */
 	@SuppressWarnings("unused")	
 	private static Segment[] getSegment(List<Segment> sps, double start, double end) {
-		List<Segment> ret = new ArrayList<Segment>();
-		Iterator<Segment> it = sps.iterator();
-		while (it.hasNext()) {
-			Segment seg = it.next();
+		List<Segment> ret = new ArrayList<>();
+		for (Segment seg : sps) {
 			long retStart = seg.getStartTime().getTime();
 			long retEnd = seg.getEndTime().getTime();
 			if (!((start >= retEnd && end >= retEnd) || (start <= retStart && end <= retStart))) {
@@ -594,7 +586,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @return set of events
 	 */
 	public SortedSet<IEvent> getEvents(Date time, long precision) {
-		SortedSet<IEvent> ret = Collections.synchronizedSortedSet(new TreeSet<IEvent>());
+		SortedSet<IEvent> ret = Collections.synchronizedSortedSet(new TreeSet<>());
 		for (IEvent event: events) {
 			if (event.getStartTime().getTime() > time.getTime() && event.getStartTime().getTime() < time.getTime() + 2 * precision) {
 				ret.add(event);
@@ -612,7 +604,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 */
 	public boolean addEvent(IEvent event) {
 		if (events == null) {
-			events = Collections.synchronizedSortedSet(new TreeSet<IEvent>());
+			events = Collections.synchronizedSortedSet(new TreeSet<>());
 		}
 		return events.add(event);
 	}
@@ -626,7 +618,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 */
 	public boolean removeEvent(IEvent event) {
 		if (events == null) {
-			events = Collections.synchronizedSortedSet(new TreeSet<IEvent>());
+			events = Collections.synchronizedSortedSet(new TreeSet<>());
 		}
 		return events.remove(event);
 	}
@@ -639,7 +631,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public void addEvents(Set<IEvent> evt) {
 		logger.debug("Adding " + evt.size() + " events to plot data provider" + this);
 		if (events == null) {
-			events = Collections.synchronizedSortedSet(new TreeSet<IEvent>());
+			events = Collections.synchronizedSortedSet(new TreeSet<>());
 		}
 		events.addAll(evt);
 	}
@@ -703,7 +695,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		PlotDataProvider channel = null;
 		ObjectInputStream ois = null;
 		try {
-			Object objRead = null;
+			Object objRead;
 			ois = new ObjectInputStream(new FileInputStream(fileName));
             logger.debug("== call ois.readObject()");
 			objRead = ois.readObject();
@@ -769,7 +761,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		int rdpNumber = -1;
 		
 		PlotDataPoint getPoint(SortedSet<EventWrapper> evts){
-			double mean = dataPointCount == 0.0 ? Double.POSITIVE_INFINITY : sum / new Double(dataPointCount);
+			double mean = dataPointCount == 0.0 ? Double.POSITIVE_INFINITY : sum / (double) dataPointCount;
 			return new PlotDataPoint(top, bottom, mean, segmentNumber, continueAreaNumber, rdpNumber, evts);
 		}
 	}

@@ -67,7 +67,7 @@ public class RawDataProvider extends Channel {
   public RawDataProvider(String channelName, Station station, String networkName,
       String locationName) {
     super(channelName, station, networkName, locationName);
-    rawData = new ArrayList<SegmentCache>();
+    rawData = new ArrayList<>();
   }
 
 
@@ -120,7 +120,7 @@ public class RawDataProvider extends Channel {
    * @return Returns all raw data this provider contains.
    */
   public List<Segment> getRawData() {
-    List<Segment> ret = new ArrayList<Segment>();
+    List<Segment> ret = new ArrayList<>();
     synchronized (rawData) {
       for (SegmentCache sc : rawData) {
         ret.add(sc.getSegment());
@@ -134,7 +134,7 @@ public class RawDataProvider extends Channel {
    */
   public int getRawData(double time) {
     List<Segment> ret = getRawData(
-        new TimeInterval(new Double(time).longValue(), new Double(time).longValue()));
+        new TimeInterval((long) time, (long) time));
     if (ret.size() > 0) {
       Segment segment = ret.get(0);
       int[] data = segment.getData(time, time).data;
@@ -152,7 +152,7 @@ public class RawDataProvider extends Channel {
    * @return Returns the raw data this provider contains for the time window.
    */
   public List<Segment> getRawData(TimeInterval ti) {
-    List<Segment> ret = Collections.synchronizedList(new ArrayList<Segment>());
+    List<Segment> ret = Collections.synchronizedList(new ArrayList<>());
     synchronized (rawData) {
       // lg.debug("getRawData:" + toString() + ti);
       for (SegmentCache sc : rawData) {
@@ -360,20 +360,6 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * clears this provider, drops all data
-   */
-  public void drop() {
-    synchronized (rawData) {
-      for (SegmentCache sc : rawData) {
-        sc.drop();
-      }
-      loaded = false;
-    }
-    setChanged();
-    notifyObservers(getTimeRange());
-  }
-
-  /**
    * @return flag if data loading process was started for this provider
    */
   public boolean isLoadingStarted() {
@@ -399,82 +385,25 @@ public class RawDataProvider extends Channel {
    *
    * @param ti The TimeInterval to load
    */
-  public void loadData(TimeInterval ti) {
-/*        // Setup pool of workers to load data segments for current channel
-       	int index = 0;	// indexes each segment 
-       	int numProc = Runtime.getRuntime().availableProcessors();
-        int threadCount = 0;
-        if (numProc % 2 == 0) {
-        	if ((numProc - 2) != 0)
-        		threadCount = numProc - 2;	// this should be greater than x/2
-        	else
-        		threadCount = numProc / 2;
-        } else {
-        	threadCount = (numProc + 1) / 2;
-        }
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multithread executor
-*/
-    String network = getNetworkName();
-    String station = getStation().getName();
-    String location = getLocationName();
-    String channel = getChannelName();
-    //long startl = System.nanoTime();
-/*		for (SegmentCache sc: rawData) {
-            Segment seg = sc.getSegment();
-            LoadDataWorker worker = new LoadDataWorker(seg, index);
-            executor.execute(worker);
-            index++; 
-		}
-		executor.shutdown();
-		while (!executor.isTerminated()) {}
-*/
-
+  private void loadData(TimeInterval ti) {
     for (SegmentCache sc : rawData) {
       Segment seg = sc.getSegment();
       if (!seg.getIsLoaded()) {
-        //logger.debug("== Load Segment:" + seg.toString());
         seg.load();
         seg.setIsLoaded(true);
       } else {
         logger.debug("== RDP.loadData(): Segment is ALREADY loaded:" + seg.toString());
-        // MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
-        //      in order to have the segment's int[] data filled before serialization, but we're
-        //      doing this instead via PDP.initPointCache() --> PDP.pixelize(ti) --> Segment.getData(ti)
-        //seg.loadDataInt();
       }
     }
-    //long endl = System.nanoTime() - startl;
-    //double end = endl * Math.pow(10, -9);
-    //System.out.format("RawDataProvider: Finished all threads for loadData(segments). Execution time = %.9f sec\n", end);
   }
 
   /**
    * @return list of data sources
    */
   public List<ISource> getSources() {
-    List<ISource> ret = new ArrayList<ISource>();
+    List<ISource> ret = new ArrayList<>();
     for (SegmentCache sc : rawData) {
       ret.add(sc.getSegment().getDataSource());
-    }
-    return ret;
-  }
-
-  /**
-   * This method appears to restrict the segment to ending before the passed Date and starting after
-   * the passed Date. Further inspection is needed to determine if this is a bug.
-   *
-   * @param date the Date to get data
-   * @return data source contains data on this timel
-   * @deprecated This method appears to not be used by anything.
-   */
-  public ISource getSource(Date date) {
-    ISource ret = null;
-    for (SegmentCache sc : rawData) {
-      if ((sc.getSegment().getEndTime().getTime() <= date.getTime())
-          && (sc.getSegment().getStartTime().getTime() >= date
-          .getTime())) {
-        return sc.getSegment().getDataSource();
-      }
     }
     return ret;
   }
@@ -503,8 +432,7 @@ public class RawDataProvider extends Channel {
         }
         // MTH: This is a little redundant since readObject() already wraps the serialFile in a
         //      BufferedRandomAccessFile before using it to call setDataStream(raf) ...
-        RandomAccessFile raf = new RandomAccessFile(serialFile, "rw");
-        this.serialStream = raf;
+        this.serialStream = new RandomAccessFile(serialFile, "rw");
       }
       for (SegmentCache sc : rawData) {
         logger.debug("== sc.setDataStream(serialStream)");
@@ -579,7 +507,7 @@ public class RawDataProvider extends Channel {
         try {
           List<SteimFrameBlock> lst = Recompress.steim1(data);
 
-          EncodedData edata[] = new EncodedData[lst.size()];
+          EncodedData[] edata = new EncodedData[lst.size()];
           for (int i = 0; i < edata.length; i++) {
             //(SteimFrameBlock)
             SteimFrameBlock block = lst.get(i);
@@ -621,7 +549,7 @@ public class RawDataProvider extends Channel {
       throws IOException {
     int i = 1;
     for (Segment segment : getRawData(rotation, ti)) {
-      Double sampleRate = segment.getSampleRate();
+      double sampleRate = segment.getSampleRate();
       long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
       int[] data = segment.getData(ti).data;
       if (filter != null) {
@@ -634,7 +562,7 @@ public class RawDataProvider extends Channel {
               + " " + value
               + "\n");
         }
-        currentTime = new Double(currentTime + sampleRate).longValue();
+        currentTime = (long) (currentTime + sampleRate);
       }
       i++;
     }
@@ -655,7 +583,7 @@ public class RawDataProvider extends Channel {
         + "\" location=\"" + getLocationName()
         + "\" channel=\"" + getChannelName() + "\">\n");
     for (Segment segment : getRawData(rotation, ti)) {
-      Double sampleRate = segment.getSampleRate();
+      double sampleRate = segment.getSampleRate();
       long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
       boolean segmentStarted = false;
       int[] data = segment.getData(ti).data;
@@ -673,7 +601,7 @@ public class RawDataProvider extends Channel {
           }
           fw.write("<Value>" + value + "</Value>\n");
         }
-        currentTime = new Double(currentTime + sampleRate).longValue();
+        currentTime = (long) (currentTime + sampleRate);
       }
       i++;
       fw.write("</Segment>\n");
@@ -694,14 +622,14 @@ public class RawDataProvider extends Channel {
     if (segments.size() != 1) {
       throw new TraceViewException("You have gaps in the interval to import as SAC");
     }
-    int intData[] = segments.get(0).getData(ti).data;
+    int[] intData = segments.get(0).getData(ti).data;
     long currentTime = Math.max(ti.getStart(), segments.get(0).getStartTime().getTime());
     if (filter != null) {
       intData = new FilterFacade(filter, this).filter(intData);
     }
     float[] floatData = new float[intData.length];
     for (int i = 0; i < intData.length; i++) {
-      floatData[i] = new Integer(intData[i]).floatValue();
+      floatData[i] = (float) intData[i];
     }
     SacTimeSeriesASCII sacAscii = SacTimeSeriesASCII.getSAC(this, new Date(currentTime), floatData);
     sacAscii.writeHeader(ds);
@@ -838,11 +766,9 @@ public class RawDataProvider extends Channel {
      */
     private static final long serialVersionUID = 1L;
     private Segment initialData;
-    private transient List<Segment> filterCache;
 
     public SegmentCache(Segment segment) {
       initialData = segment;
-      filterCache = new ArrayList<Segment>();
     }
 
     /**
@@ -853,7 +779,6 @@ public class RawDataProvider extends Channel {
     @SuppressWarnings("unused")  //Why is this here?
     public void setData(Segment segment) {
       initialData = segment;
-      filterCache.clear();
     }
 
     /**
@@ -872,16 +797,6 @@ public class RawDataProvider extends Channel {
      */
     public Segment getSegment() {
       return initialData;
-    }
-
-    /**
-     * Clears all data
-     */
-    public void drop() {
-      for (int i = 0; i < filterCache.size(); i++) {
-        filterCache.remove(i);
-      }
-      this.getSegment().drop();
     }
 
     /**
