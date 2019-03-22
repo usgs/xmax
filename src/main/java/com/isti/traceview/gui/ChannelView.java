@@ -475,7 +475,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public int compareTo(Object o) {
 		if (o instanceof ChannelView) {
 			ChannelView c = (ChannelView) o;
-			return new Integer(getSelectionNumber()).compareTo(new Integer(c.getSelectionNumber()));
+			return new Integer(getSelectionNumber()).compareTo(c.getSelectionNumber());
 		} else {
 			return 1;
 		}
@@ -751,7 +751,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		 */
 		public long getTime(int x) {
 			TimeInterval ti = graphPanel.getTimeRange();
-			return new Double(ti.getStart() + x * new Double(ti.getDuration())/ getWidth()).longValue();
+			return new Double(ti.getStart() + x * (double) ti.getDuration() / getWidth()).longValue();
 		}
 
 		public void mouseMoved(MouseEvent e) {

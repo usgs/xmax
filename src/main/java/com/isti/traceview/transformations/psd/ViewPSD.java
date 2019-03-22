@@ -545,7 +545,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener, ChartProgressLi
 			}
 			double factor;
 			if (showWaves) {
-				factor = new Double(cp.getHeight()) / (waveP.getHeight() + cp.getHeight());
+				factor = (double) cp.getHeight() / (waveP.getHeight() + cp.getHeight());
 			} else {
 				factor = 1.0;
 			}

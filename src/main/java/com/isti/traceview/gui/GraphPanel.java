@@ -1579,7 +1579,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public long getTime(int x) {
 		// lg.debug("GraphPanel getTime: " + x);
 		Insets i = getInsets();
-		double sr = new Double(getTimeRange().getDuration()) / (getWidth() - i.left - i.right - channelViewFactory.getInfoAreaWidth());
+		double sr = (double) getTimeRange().getDuration() / (getWidth() - i.left - i.right - channelViewFactory.getInfoAreaWidth());
 		return new Double(getTimeRange().getStart() + x * sr).longValue();
 	}
 
@@ -1594,7 +1594,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			return Integer.MAX_VALUE;
 		else
 			return new Double((getWidth() - channelViewFactory.getInfoAreaWidth() - getInsets().left - getInsets().right)
-					* new Double((date - getTimeRange().getStart())) / new Double(getTimeRange().getDuration())).intValue();
+					* (double) (date - getTimeRange().getStart()) / (double) getTimeRange().getDuration()).intValue();
 	}
 
 	/**
@@ -1792,7 +1792,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 		Graphics2D g2 = (Graphics2D) pg;
 		g2.translate(pf.getImageableX(), pf.getImageableY());
-		g2.scale(g2.getClipBounds().width / new Double(this.getWidth()), g2.getClipBounds().height / new Double(this.getHeight()));
+		g2.scale(g2.getClipBounds().width / (double) this
+				.getWidth(), g2.getClipBounds().height / (double) this
+				.getHeight());
 		this.paint(g2);
 		return Printable.PAGE_EXISTS;
 	}

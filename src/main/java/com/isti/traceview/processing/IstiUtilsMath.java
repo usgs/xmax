@@ -240,7 +240,7 @@ public class IstiUtilsMath {
 		double sumData = 0.0;
 		for (int i = 0; i < data.length; i++)
 			sumData += data[i];
-		final double meanData = new Double(sumData) / data.length;
+		final double meanData = sumData / data.length;
 		for (int i = 0; i < data.length; i++)
 			ret[i] = data[i] - meanData;
 		return ret;
