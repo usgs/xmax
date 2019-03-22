@@ -35,7 +35,7 @@ public class IMSFile {
 	private String ref_id = null; // msg_id of referenced message
 	@SuppressWarnings("unused")	
 	private String prod_id = null;
-	private List<DataType> dataTypes = new ArrayList<DataType>();
+	private List<DataType> dataTypes = new ArrayList<>();
 
 	private IMSFile() {
 

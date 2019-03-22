@@ -47,7 +47,7 @@ public class TransPPM implements ITransformation {
 				 * East. For all other channel pairs, they go in the selection
 				 * order: first NS, second EW.
 				 */
-				List<PlotDataProvider> inputRepositioned = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> inputRepositioned = new ArrayList<>();
 				char type1 = input.get(0).getType();
 				char type2 = input.get(1).getType();
 				if (((type2 == 'N' || type2 == '1') && type1 != 'N' && type1 != '1')

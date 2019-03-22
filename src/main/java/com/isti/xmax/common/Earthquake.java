@@ -133,7 +133,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 	 */
 	public static List<IEvent> getEarthquakes(TimeInterval ti) 
 			throws TraceViewException {
-		List<IEvent> ret = new ArrayList<IEvent>();
+		List<IEvent> ret = new ArrayList<>();
 		List<File> files = new Wildcard().getFilesByMask(XMAXconfiguration.
 				getInstance().getEarthquakeFileMask());
 		for (File file: files) {
@@ -186,10 +186,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 									magnitude_MS, location);
 							ret.add(earthquake);
 						}
-					} catch (NumberFormatException e) {
-						logger.error("Can't parse earthquake, line " 
-								+ (r.getLineNumber() - rawData.length) + ": ", e);
-					} catch (ParseException e) {
+					} catch (NumberFormatException | ParseException e) {
 						logger.error("Can't parse earthquake, line " 
 								+ (r.getLineNumber() - rawData.length) + ": ", e);
 					}
@@ -228,7 +225,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 	 * @return set of arrivals
 	 */
 	public SortedSet<IEvent> computeArrivals(PlotDataProvider channel) {
-		TreeSet<IEvent> ret = new TreeSet<IEvent>();
+		TreeSet<IEvent> ret = new TreeSet<>();
 		Station station = channel.getStation();
 		try {
 			TauP_Time timeTool = new TauP_Time("iasp91");

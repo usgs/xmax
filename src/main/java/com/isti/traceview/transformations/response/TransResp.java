@@ -36,9 +36,7 @@ public class TransResp implements ITransformation {
 			try {
 				@SuppressWarnings("unused")
 				ViewResp vr = new ViewResp(parentFrame, createDataset(input, ti));
-			} catch (XMAXException e) {
-				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
-			} catch (TraceViewException e) {
+			} catch (XMAXException | TraceViewException e) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		}

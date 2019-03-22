@@ -76,7 +76,7 @@ public class Station implements Comparable<Object>, Serializable {
 	 *            the station name.
 	 */
 	public Station(String stationName) {
-		this(stationName, null, null, 0.0, 0.0, 0.0, 0.0, new HashSet<Channel>());
+		this(stationName, null, null, 0.0, 0.0, 0.0, 0.0, new HashSet<>());
 	}
 
 	/**
@@ -292,6 +292,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
-		channels = new TreeSet<Channel>();
+		channels = new TreeSet<>();
 	}
 }

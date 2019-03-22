@@ -397,7 +397,7 @@ public class Rotation {
        throws TraceViewException {
      RawDataProvider[] triplet = getChannelsTriplet(channel);
      char channelType = channel.getType();
-     List<Segment> ret = new ArrayList<Segment>();
+     List<Segment> ret = new ArrayList<>();
      double[][] pointPosition = new double[3][1];
      for (Segment segment: channel.getRawData(ti)) {
        Segment rotated = new Segment(null, segment.getStartOffset(), segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
@@ -442,7 +442,7 @@ public class Rotation {
     * @return true if channels are complementary (one is N and other is E, or 1 and 2)
     */
    public static boolean isComplementaryChannel(RawDataProvider channel1, RawDataProvider channel2) {
-     List<Character> channelNames = new ArrayList<Character>();
+     List<Character> channelNames = new ArrayList<>();
      channelNames.add(channel1.getChannelName().charAt(channel1.getChannelName().length() - 1));
      channelNames.add(channel2.getChannelName().charAt(channel2.getChannelName().length() - 1));
      if(channelNames.contains('1') && channelNames.contains('2') ||
@@ -464,7 +464,7 @@ public class Rotation {
     * @return true if one channel is E, one N, one Z; or if one is 1, one 2, one Z
     */
    public static boolean isComplementaryChannel(RawDataProvider channel1, RawDataProvider channel2, RawDataProvider channel3) {
-     List<Character> channelNames = new ArrayList<Character>();
+     List<Character> channelNames = new ArrayList<>();
      channelNames.add(channel1.getChannelName().charAt(channel1.getChannelName().length() - 1));
      channelNames.add(channel2.getChannelName().charAt(channel2.getChannelName().length() - 1));
      channelNames.add(channel3.getChannelName().charAt(channel3.getChannelName().length() - 1));
@@ -731,8 +731,8 @@ public class Rotation {
            rotationOptions = new String[]{"Horizontal"};
          else
            rotationOptions = new String[]{"Standard"};
-         ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<String>(rotationOptions);
-         rotationTypeCB = new JComboBox<String>();
+         ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<>(rotationOptions);
+         rotationTypeCB = new JComboBox<>();
          rotationTypeCB.setModel(rotationTypeCBModel);
          rotationTypeCB.setPreferredSize(new java.awt.Dimension(141, 21));
          rotationTypeCB.addItemListener(this);
@@ -770,10 +770,10 @@ public class Rotation {
 
      private JComboBox<String> getStandardRotationCB() {
        if (standardRotationCB == null) {
-         ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<String>(
+         ComboBoxModel<String> rotationTypeCBModel = new DefaultComboBoxModel<>(
              new String[]{"STS2 UVW to XMAX", "STS2 XMAX to UVW",
                  "Trill. UVW to XMAX", "Trill XMAX to UVW"});
-         standardRotationCB = new JComboBox<String>();
+         standardRotationCB = new JComboBox<>();
          standardRotationCB.setModel(rotationTypeCBModel);
          standardRotationCB.setPreferredSize(new java.awt.Dimension(180, 23));
          standardRotationCB.addItemListener(this);

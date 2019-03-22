@@ -2215,7 +2215,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransPPM();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2275,7 +2275,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				ITransformation resp = new TransPSD();
 
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				if (selectedViews.size() == 0) {
 					selectedViews = graphPanel.getChannelShowSet();
@@ -2325,7 +2325,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				ITransformation resp = new TransCoherence();
 
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2356,7 +2356,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransSpectra();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				if (selectedViews.size() == 0) {
 					selectedViews = graphPanel.getChannelShowSet();
@@ -2390,7 +2390,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransCorrelation();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2419,7 +2419,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation psd = new TransModal();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2436,7 +2436,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	class RotationAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
-		private List<PlotDataProvider> rotatedChannelsList = new ArrayList<PlotDataProvider>();
+		private List<PlotDataProvider> rotatedChannelsList = new ArrayList<>();
 
 		public RotationAction() {
 			super();
@@ -2450,7 +2450,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
     public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				List<PlotDataProvider> pdpsToRotate = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> pdpsToRotate = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for(ChannelView cv : selectedViews){
 					for(PlotDataProvider pdp : cv.getPlotDataProviders())
@@ -2573,7 +2573,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransResp();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2684,7 +2684,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("MSEED", selectedFile.getParent());
 					ds = new DataOutputStream(new FileOutputStream(selectedFile));
-					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> selectedChannels = new ArrayList<>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2747,7 +2747,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					setWaitCursor(true);
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("SAC", selectedFile.getParent());
-					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> selectedChannels = new ArrayList<>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2836,7 +2836,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("XML", selectedFile.getParent());
 					fw = new FileWriter(selectedFile);
-					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> selectedChannels = new ArrayList<>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2908,7 +2908,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("ASCII", selectedFile.getParent());
 					fw = new FileWriter(selectedFile);
-					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> selectedChannels = new ArrayList<>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2988,11 +2988,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						filter = null;
 					}
 				}
-			} catch (ClassNotFoundException e1) {
-				logger.error("Can't get " + pluginId + " plugin filter: ", e1);
-			} catch (InstantiationException e1) {
-				logger.error("Can't get " + pluginId + " plugin filter: ", e1);
-			} catch (IllegalAccessException e1) {
+			} catch (ClassNotFoundException | IllegalAccessException | InstantiationException e1) {
 				logger.error("Can't get " + pluginId + " plugin filter: ", e1);
 			} finally {
 				setWaitCursor(false);

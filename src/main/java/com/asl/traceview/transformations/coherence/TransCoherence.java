@@ -89,8 +89,8 @@ public class TransCoherence implements ITransformation{
 			throws TraceViewException, XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		ListIterator<PlotDataProvider> li = input.listIterator();
-		List<Cmplx[]> xSegmentData = new ArrayList<Cmplx[]>();
-		List<Cmplx[]> ySegmentData = new ArrayList<Cmplx[]>();
+		List<Cmplx[]> xSegmentData = new ArrayList<>();
+		List<Cmplx[]> ySegmentData = new ArrayList<>();
 		PlotDataProvider channel = null;
 		int currentTraceNum = 0; 
 		int numsegs = 1;

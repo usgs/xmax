@@ -212,10 +212,6 @@ public class GraphUtil {
 			panel.paintAll(g2);
 			g2.dispose();
 			ImageIO.write(image, encFormat, out);
-		} catch (FileNotFoundException e1) {
-			StringBuilder message = new StringBuilder();
-			message.append("Can't export graphics to file " + filename + ": ");
-			logger.error(message.toString(), e1);
 		} catch (IOException e1) {
 			StringBuilder message = new StringBuilder();
 			message.append("Can't export graphics to file " + filename + ": ");

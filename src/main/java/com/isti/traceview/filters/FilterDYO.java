@@ -234,7 +234,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	 */
 	private JComboBox<Object> getOrderCB() {
 		if (orderCB == null) {
-			orderCB = new JComboBox<Object>();
+			orderCB = new JComboBox<>();
 			orderCB.addItem(1);
 			orderCB.addItem(2);
 			orderCB.addItem(3);

@@ -30,6 +30,6 @@ public class TOC {
     char[] undefined							= new char[3];
     char[] tocEntrries_num						= new char[9];
     
-    List<TOCentry> TOCentries = new ArrayList<TOCentry>();
+    List<TOCentry> TOCentries = new ArrayList<>();
 
 }

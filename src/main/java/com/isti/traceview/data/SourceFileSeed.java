@@ -127,12 +127,12 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 		logicalRecordLength = 1024;
 		physicalRecordLength = 2000000000; // set to impossibly high value
 		logicalRecords = new Vector<LogicalRecord>(8, 8);
-		exportMold = new Vector<Object>(8, 8);
+		exportMold = new Vector<>(8, 8);
 		recordPadding = (byte) 0; // use nulls for padding, although it probably won't be used
 		scriptNesting = new int[8];
 		nestingScore = new int[scriptNesting.length];
 		builderType = "SAC"; // indicate the type of builder we are
-		stationList = new Vector<SacStation>(8, 8); // set up station list vector
+		stationList = new Vector<>(8, 8); // set up station list vector
 	}
 
 	// public methods
@@ -789,7 +789,7 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 		protected String networkCode = null;
 		protected Btime startEffTime = null;
 		protected Btime endEffTime = null;
-		protected Vector<SacChannel> channels = new Vector<SacChannel>(8, 8);
+		protected Vector<SacChannel> channels = new Vector<>(8, 8);
 	}
 
 	/**

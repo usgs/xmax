@@ -14,7 +14,7 @@ import com.isti.traceview.processing.Rotation;
  * This command performs rotation
  */
 public class RotateCommand extends AbstractUndoableCommand {
-	private List<PlotDataProvider> plotDataProviders = new ArrayList<PlotDataProvider>();
+	private List<PlotDataProvider> plotDataProviders = new ArrayList<>();
 	private GraphPanel graphPanel = null; //in order to notify the graph panel to repaint since the data provider was modified.
 	private Rotation rotation = null;
 

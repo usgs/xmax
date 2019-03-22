@@ -86,7 +86,7 @@ public class XMAXDataModule extends DataModule {
 	 */
 	File[] getDataFiles() throws TraceViewException {
 		logger.debug("== Enter\n");
-		List<File> dataFiles = new ArrayList<File>();
+		List<File> dataFiles = new ArrayList<>();
 
 		// -t: Read serialized PlotDataProviders from TEMP_DATA
 		if (TraceView.getConfiguration().getUseTempData()) {

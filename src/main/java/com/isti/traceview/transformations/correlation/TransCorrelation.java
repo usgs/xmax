@@ -42,7 +42,7 @@ public class TransCorrelation implements ITransformation {
 					"Error", JOptionPane.ERROR_MESSAGE);
 		} else {
 			try {
-				List<String> channelNames = new ArrayList<String>();
+				List<String> channelNames = new ArrayList<>();
 				for (PlotDataProvider channel : input) {
 					channelNames.add(channel.getName());
 				}
@@ -76,7 +76,7 @@ public class TransCorrelation implements ITransformation {
 	 */
 	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
 			throws XMAXException {
-		List<double[]> ret = new ArrayList<double[]>();
+		List<double[]> ret = new ArrayList<>();
 		PlotDataProvider channel1 = input.get(0);
 		List<Segment> segments1; 
 		if(channel1.getRotation() != null)

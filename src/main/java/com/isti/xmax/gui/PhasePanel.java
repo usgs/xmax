@@ -87,8 +87,8 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 		this.setPreferredSize(new Dimension(120, 100));
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.add(getSplitter(), null);
-		everSelectedEarthquakes = new HashSet<IEvent>();
-		everSelectedPhases = new HashSet<String>();
+		everSelectedEarthquakes = new HashSet<>();
+		everSelectedPhases = new HashSet<>();
 	}
 
 	/**
@@ -217,11 +217,11 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 			if (e.getSource().equals(earthquakesL)) {
 				refreshAvailablePhases();
 			}
-			Set<IEvent> le = new HashSet<IEvent>();
+			Set<IEvent> le = new HashSet<>();
 			for (Object o: earthquakesL.getSelectedValues()) {
 				le.add((IEvent) o);
 			}
-			Set<String> lp = new HashSet<String>();
+			Set<String> lp = new HashSet<>();
 			for (Object o: phasesL.getSelectedValues()) {
 				lp.add((String) o);
 			}

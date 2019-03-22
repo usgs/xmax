@@ -338,13 +338,13 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 
 	private JComboBox<Object> getConvolveCB() {
 		if (convolveCB == null) {
-			List<String> options = new ArrayList<String>();
+			List<String> options = new ArrayList<>();
 			options.add("None");
 			for (Response resp : TraceView.getDataModule().getLoadedResponses()) {
 				options.add(resp.getLocalFileName());
 			}
-			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
-			convolveCB = new JComboBox<Object>();
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<>(options.toArray());
+			convolveCB = new JComboBox<>();
 			convolveCB.setModel(convolveCBModel);
 			convolveCB.setPreferredSize(new java.awt.Dimension(128, 22));
 			convolveCB.setEnabled(false);
