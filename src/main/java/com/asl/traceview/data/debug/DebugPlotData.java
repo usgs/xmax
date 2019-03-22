@@ -32,7 +32,7 @@ import com.isti.traceview.data.Segment;
 public class DebugPlotData extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	private List<Segment> data = new ArrayList<Segment>(); 
+	private List<Segment> data = new ArrayList<>();
 	private TimeInterval timeInterval;
 	private XYPlot plot = null;
 	private TraceViewChartPanel chartPanel = null;

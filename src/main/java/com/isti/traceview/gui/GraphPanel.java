@@ -103,7 +103,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	private List<ChannelView> selectedChannelShowSet = null;
 	
 	/** The previously selected channels with the level that they were selected */
-	private List<SelectionContainer> previousSelectedChannels = new ArrayList<SelectionContainer>();
+	private List<SelectionContainer> previousSelectedChannels = new ArrayList<>();
 	
 	/** The current level of channel selection */
 	private int selectionLevel = 0; 
@@ -286,8 +286,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		initialize(showTimePanel);
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		selectedEarthquakes = new HashSet<IEvent>();
-		selectedPhases = new HashSet<String>();
+		selectedEarthquakes = new HashSet<>();
+		selectedPhases = new HashSet<>();
 
 		meanState = new MeanModeDisabled();
 		colorMode = new ColorModeBySegment();
@@ -307,7 +307,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			axisFont = new Font(getFont().getName(), getFont().getStyle(), 10);
 		}
 		initialPaint = true;
-		channelShowSet = Collections.synchronizedList(new ArrayList<ChannelView>());
+		channelShowSet = Collections.synchronizedList(new ArrayList<>());
 		unitsShowCount = TraceView.getConfiguration().getUnitsInFrame();
 		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 		this.setLayout(new BorderLayout());
@@ -548,7 +548,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @return Returns List of currently loaded channels.
 	 */
 	public List<PlotDataProvider> getChannelSet() {
-		List<PlotDataProvider> ret = new ArrayList<PlotDataProvider>();
+		List<PlotDataProvider> ret = new ArrayList<>();
 		for (ChannelView cv: getChannelShowSet()) {
 			for (PlotDataProvider channel: cv.getPlotDataProviders()) {
 				ret.add(channel);
@@ -574,7 +574,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @return the current channel show set
 	 */
 	public List<ChannelView> getCurrentChannelShowSet() {
-		List<ChannelView> ret = new ArrayList<ChannelView>();
+		List<ChannelView> ret = new ArrayList<>();
 		Component[] comp = drawAreaPanel.getComponents();
 		for (Component c: comp) {
 			ret.add((ChannelView) c);
@@ -600,7 +600,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *         getSelectedChannelShowSet() while mode selected or overlay enabled.
 	 */
 	public List<ChannelView> getCurrentSelectedChannelShowSet() {
-		List<ChannelView> ret = new ArrayList<ChannelView>();
+		List<ChannelView> ret = new ArrayList<>();
 		for (ChannelView cv: getCurrentChannelShowSet()) {
 			if (cv.isSelected()) {
 				ret.add(cv);
@@ -626,7 +626,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @return Returns List of selected channels, based on screen selection
 	 */
 	public List<PlotDataProvider> getCurrentSelectedChannels() {
-		List<PlotDataProvider> ret = new ArrayList<PlotDataProvider>();
+		List<PlotDataProvider> ret = new ArrayList<>();
 		for (ChannelView cv: getCurrentSelectedChannelShowSet()) {
 			ret.addAll(cv.getPlotDataProviders());
 		}
@@ -655,13 +655,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					//		   creates a graph panel for each channel submitted
 					for (PlotDataProvider channel: channels) {
                         			//logger.debug("== handle channel=" + channel);
-						List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
+						List<PlotDataProvider> toAdd = new ArrayList<>();
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
 					}
 					
 					// Loops through ChannelView objects and loads segment data
-					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> pdpList = new ArrayList<>();
 					TimeInterval ti = null;
 					System.out.println("Loading channel segment data:");
 					long startl = System.nanoTime();
@@ -680,7 +680,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					//logger.debug("Channels are done loading");
 					System.out.println("Channel segment data load time = " + end + " sec\n");
 				} else {
-					List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> toAdd = new ArrayList<>();
 					PlotDataProvider prevChannel = null;
 					for (PlotDataProvider channel: channels) {
 						// This block checks for channels with the same location code
@@ -694,7 +694,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 										.getChannelName().equals(channel.getChannelName()))) {
 							ChannelView cv = channelViewFactory.getChannelView(toAdd);
 							addGraph(cv);
-							toAdd = new ArrayList<PlotDataProvider>();
+							toAdd = new ArrayList<>();
 						}
 						toAdd.add(channel);
 						prevChannel = channel;
@@ -705,7 +705,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// Will add loop for List<ChannelView> channelShowSet to load
 					// channels in List<PlotDataProvider> (see above)
 				}
-				selectedChannelShowSet = Collections.synchronizedList(new UniqueList<ChannelView>());
+				selectedChannelShowSet = Collections.synchronizedList(new UniqueList<>());
 				if (overlay) {
 					overlay = false;
 					getObservable().setChanged();
@@ -1201,7 +1201,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (selected.size() > 0) {
 				overlay = true;
 				drawAreaPanel.removeAll();
-				List<PlotDataProvider> toProcess = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> toProcess = new ArrayList<>();
 				for (ChannelView cv: selected) {
 					toProcess.addAll(cv.getPlotDataProviders());
 				}
@@ -1404,7 +1404,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						System.out.print("Pixelizing channel data...");
 					}
 					
-					final List<String> channelsWithErrors = new ArrayList<String>();
+					final List<String> channelsWithErrors = new ArrayList<>();
 					for (Component component: drawAreaPanel.getComponents()) {
 						ChannelView view = (ChannelView) component;
 						if (view.getHeight() == 0 || view.getWidth() == 0) {

@@ -81,7 +81,7 @@ public class TransModal implements ITransformation {
   private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame)
       throws XMAXException {
 
-    List<Spectra> dataset = new ArrayList<Spectra>();
+    List<Spectra> dataset = new ArrayList<>();
     for (PlotDataProvider channel : input) {
       double sampleRate = 0;
       List<Segment> segments = channel.getRawData(ti);

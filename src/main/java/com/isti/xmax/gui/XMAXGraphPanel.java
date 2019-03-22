@@ -32,7 +32,7 @@ public class XMAXGraphPanel extends GraphPanel {
 	 *         given time range.
 	 */
 	public Object[] getAvailableEarthquakes() {
-		SortedSet<IEvent> ret = new TreeSet<IEvent>();
+		SortedSet<IEvent> ret = new TreeSet<>();
 		for (PlotDataProvider channel: getChannelSet()) {
 			XMAXChannel ch = (XMAXChannel) channel;
 			for (IEvent earthquake: ch.getAvailableEarthquakes(getTimeRange())) {
@@ -47,7 +47,7 @@ public class XMAXGraphPanel extends GraphPanel {
 	 *         earthquakes.
 	 */
 	public Object[] getAvailablePhases(Object[] earthquakes) {
-		SortedSet<String> ret = new TreeSet<String>();
+		SortedSet<String> ret = new TreeSet<>();
 		for (PlotDataProvider channel: getChannelSet()) {
 			XMAXChannel ch = (XMAXChannel) channel;
 			for (String phase: ch.getAvailablePhases(getTimeRange(), earthquakes)) {

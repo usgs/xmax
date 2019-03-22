@@ -87,7 +87,7 @@ public class CommentDialog extends JDialog implements PropertyChangeListener {
 		panel.setLayout(new BorderLayout());
 		panel.add(editorPane, BorderLayout.CENTER);
 		panel.add(editorPane.getToolBar(true), BorderLayout.NORTH);
-		Vector<String> vcMenus = new Vector<String>();
+		Vector<String> vcMenus = new Vector<>();
 		vcMenus.add(EkitCore.KEY_MENU_EDIT);
 		vcMenus.add(EkitCore.KEY_MENU_VIEW);
 		vcMenus.add(EkitCore.KEY_MENU_FONT);

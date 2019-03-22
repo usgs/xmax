@@ -36,7 +36,7 @@ public class PlotData implements Comparable<Object> {
 	 *            This label will be printed on graph
 	 */
 	public PlotData(String label, Color traceColor) {
-		pixels = new ArrayList<PlotDataPoint[]>();
+		pixels = new ArrayList<>();
 		this.label = label;
 		this.traceColor = traceColor;
 	}

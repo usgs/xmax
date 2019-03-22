@@ -528,7 +528,7 @@ public class Segment implements Externalizable, Cloneable {
 	
 	public void addBlockDescription(long startTime, long offset){
 		if(blockMap == null){
-			blockMap = new TreeMap<Long, Long>();
+			blockMap = new TreeMap<>();
 		}
 		blockMap.put(startTime, offset);
 	}

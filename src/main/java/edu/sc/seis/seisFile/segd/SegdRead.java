@@ -28,7 +28,7 @@ public class SegdRead {
 	TOC toc = null;
 
 	protected SegdRead() {
-		records = new ArrayList<SegdRecord>();
+		records = new ArrayList<>();
 	}
 
 	public SegdRead(DataInput inStream) throws IOException {

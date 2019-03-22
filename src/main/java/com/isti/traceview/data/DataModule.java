@@ -46,7 +46,7 @@ public class DataModule extends Observable {
   /**
    * Map of affected stations
    */
-  private static Map<String, Station> stations = new HashMap<String, Station>();
+  private static Map<String, Station> stations = new HashMap<>();
 
   /**
    * List of found files with trace data
@@ -73,10 +73,10 @@ public class DataModule extends Observable {
    */
   public DataModule() {
     allChannelsTI = new TimeInterval();
-    channels = Collections.synchronizedList(new ArrayList<PlotDataProvider>());
+    channels = Collections.synchronizedList(new ArrayList<>());
     markerPosition = 0;
-    dataSources = new ArrayList<ISource>();
-    responses = new ArrayList<Response>();
+    dataSources = new ArrayList<>();
+    responses = new ArrayList<>();
   }
 
   /**
@@ -252,7 +252,7 @@ public class DataModule extends Observable {
    * @return list of loaded stations
    */
   public static SortedSet<Station> getAllStations() {
-    SortedSet<Station> loadedStations = new TreeSet<Station>();
+    SortedSet<Station> loadedStations = new TreeSet<>();
     for (String key : stations.keySet()) {
       loadedStations.add(stations.get(key));
     }
@@ -694,7 +694,7 @@ public class DataModule extends Observable {
 
   public static String getResponseFile(String network, String station,
       String location, String channel) throws TraceViewException {
-    List<String> respFiles = new ArrayList<String>();
+    List<String> respFiles = new ArrayList<>();
     // note that first entry string should always end with "/" as it is a directory location
     addRespFiles(TraceView.getConfiguration().getConfigFileDir(), network, station, location,
         channel, respFiles);
@@ -711,7 +711,7 @@ public class DataModule extends Observable {
   }
 
   public List<String> getAllResponseFiles() throws TraceViewException {
-    List<String> respFiles = new ArrayList<String>();
+    List<String> respFiles = new ArrayList<>();
     addRespFiles(TraceView.getConfiguration().getConfigFileDir(), channels, respFiles);
     addRespFiles("./", channels, respFiles);
     addRespFiles(TraceView.getConfiguration().getResponsePath(), channels, respFiles);

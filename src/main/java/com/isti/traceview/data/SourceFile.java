@@ -160,7 +160,7 @@ public abstract class SourceFile implements ISource {
 	 */
 	public static List<File> getDataFiles(String wildcardedMask) throws TraceViewException {
 		logger.info("Loading data using path: " + wildcardedMask);
-		List<ISource> dataFiles = new ArrayList<ISource>();
+		List<ISource> dataFiles = new ArrayList<>();
 		List<File> listFiles = new Wildcard().getFilesByMask(wildcardedMask);
 		return listFiles;
 	}
@@ -189,7 +189,7 @@ public abstract class SourceFile implements ISource {
 			threadCount = (numProc + 1) / 2;
 		ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multi-thread executor
 		List<Future<ISource>> tasks = new ArrayList<>(filelen);	// list of future tasks
-		List<ISource> dataFileList = new ArrayList<ISource>(filelen);	// main datafiles list
+		List<ISource> dataFileList = new ArrayList<>(filelen);	// main datafiles list
 		try {	
 			long start = System.nanoTime();
 			for (File file: files) {

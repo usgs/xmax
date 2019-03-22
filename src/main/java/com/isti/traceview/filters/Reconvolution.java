@@ -250,9 +250,9 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 
 	private JComboBox<Object> getConvolveCB() {
 		if (convolveCB == null) {
-			convolveCB = new JComboBox<Object>();
+			convolveCB = new JComboBox<>();
 			FontMetrics fontMetrics = convolveCB.getFontMetrics(convolveCB.getFont());
-			List<String> options = new ArrayList<String>();
+			List<String> options = new ArrayList<>();
 			options.add("None");
 			try {
 				for (String respFile : XMAX.getDataModule().getAllResponseFiles()) {
@@ -265,7 +265,7 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 			} catch (TraceViewException e) {
 				logger.error("Can't load response from file: ", e);
 			}
-			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<>(options.toArray());
 			convolveCB.setModel(convolveCBModel);
 			if (respFile != null) {
 				convolveCB.setSelectedItem(respFile);

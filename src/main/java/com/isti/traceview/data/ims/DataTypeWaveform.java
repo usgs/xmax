@@ -18,7 +18,7 @@ public class DataTypeWaveform extends DataType {
 
 	public DataTypeWaveform(long startOffset) {
 		super(startOffset);
-		channels = new ArrayList<BlockSet>();
+		channels = new ArrayList<>();
 	}
 	
 	public List<BlockSet> getBlockSets(){

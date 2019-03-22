@@ -248,7 +248,7 @@ class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemLis
 
 	private JComboBox<Object> getTaperCB() {
 		if (taperCB == null) {
-			List<String> options = new ArrayList<String>();
+			List<String> options = new ArrayList<>();
 			options.add("None");
 			options.add("Hanning");
 			options.add("Hamming");
@@ -257,8 +257,8 @@ class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemLis
 			options.add("Bartlett");
 			options.add("Gauss");
 			options.add("Blackman");
-			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
-			taperCB = new JComboBox<Object>();
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<>(options.toArray());
+			taperCB = new JComboBox<>();
 			taperCB.setModel(convolveCBModel);
 			taperCB.setPreferredSize(new java.awt.Dimension(100, 22));
 			taperCB.setEnabled(true);

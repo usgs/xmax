@@ -83,7 +83,7 @@ public class DAT2 extends Block {
 	}
 
 	private int decodeCSF(int numSamples, String line) throws CanadaException {
-		List<ChannelSubframe> csfList = new ArrayList<ChannelSubframe>();
+		List<ChannelSubframe> csfList = new ArrayList<>();
 		byte[] csfs = Base64.decodeBase64(line);
 		ByteBuffer bb = ByteBuffer.wrap(csfs);
 		while (bb.position() < bb.capacity()) {

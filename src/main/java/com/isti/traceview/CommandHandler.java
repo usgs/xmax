@@ -28,7 +28,7 @@ public class CommandHandler {
 	private static CommandHandler instance = null; 
 
 	private CommandHandler() {
-		history = new LinkedList<ICommand>();
+		history = new LinkedList<>();
 		observable = new Obs();
 	}
 

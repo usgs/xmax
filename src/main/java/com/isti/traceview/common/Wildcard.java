@@ -19,7 +19,7 @@ public class Wildcard {
 	private static final Logger logger = Logger.getLogger(Wildcard.class);
 
 	List<String> path = null;
-	List<File> lst = new ArrayList<File>();
+	List<File> lst = new ArrayList<>();
 
 	/**
 	 * @param pattern
@@ -47,7 +47,7 @@ public class Wildcard {
 		try {
 			if (TraceView.osNameString.contains("Windows")) {
 				String[] as = mask.replaceFirst(":\\\\\\\\", ":\\\\").split("\\\\");
-				path = new ArrayList<String>(Arrays.asList(as));
+				path = new ArrayList<>(Arrays.asList(as));
 				if (path.get(0).contains(":")) {
 					// absolute path
 					explore(path.get(0) + "\\\\", 0);
@@ -61,7 +61,7 @@ public class Wildcard {
 				}
 			} else {
 				String[] as = mask.split(File.separator);
-				path = new ArrayList<String>(Arrays.asList(as));
+				path = new ArrayList<>(Arrays.asList(as));
 				if (path.get(0).equals(".") || path.get(0).equals("..") || path.get(0).equals("~")) {
 					// relative path
 					explore(path.get(0), 0);

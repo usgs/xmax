@@ -594,7 +594,7 @@ public class Configuration extends Observable {
 		if (filtStr == null || filtStr.equals("")) {
 			filterStation = null;
 		} else {
-			filterStation = new HashSet<String>();
+			filterStation = new HashSet<>();
 			fillFilter(filterStation, filtStr);
 		}
 	}
@@ -618,7 +618,7 @@ public class Configuration extends Observable {
 		if (filtStr == null || filtStr.equals("")) {
 			filterNetwork = null;
 		} else {
-			filterNetwork = new HashSet<String>();
+			filterNetwork = new HashSet<>();
 			fillFilter(filterNetwork, filtStr);
 		}
 	}
@@ -642,7 +642,7 @@ public class Configuration extends Observable {
 		if (filtStr == null || filtStr.equals("")) {
 			filterChannel = null;
 		} else {
-			filterChannel = new HashSet<String>();
+			filterChannel = new HashSet<>();
 			fillFilter(filterChannel, filtStr);
 		}
 	}
@@ -666,7 +666,7 @@ public class Configuration extends Observable {
 		if (filtStr == null || filtStr.equals("")) {
 			filterLocation = null;
 		} else {
-			filterLocation = new HashSet<String>();
+			filterLocation = new HashSet<>();
 			fillFilter(filterLocation, filtStr);
 		}
 	}

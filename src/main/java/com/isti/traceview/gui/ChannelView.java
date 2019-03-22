@@ -66,7 +66,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public static final int defaultInfoPanelWidth = 80;
 	protected static int currentSelectionNumber = 0;
 
-	private List<String> channelNames = new ArrayList<String>();
+	private List<String> channelNames = new ArrayList<>();
 	private List<PlotDataProvider> plotDataProviders = null; // @jve:decl-index=0:
 	List<PlotData> graphs = null;
 	int height = 0;
@@ -110,7 +110,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		super();
 		logger.debug("ChannelView created for " + channel.toString());
 		initialize(infoPanelWidth, isDrawSelectionCheckBox, graphAreaBgColor, infoAreaBgColor);
-		List<PlotDataProvider> lst = new ArrayList<PlotDataProvider>();
+		List<PlotDataProvider> lst = new ArrayList<>();
 		lst.add(channel);
 		setPlotDataProviders(lst);
 	}
@@ -124,7 +124,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	}
 
 	public ChannelView() {
-		this(new ArrayList<PlotDataProvider>(), defaultInfoPanelWidth, true, null, null);
+		this(new ArrayList<>(), defaultInfoPanelWidth, true, null, null);
 	}
 	
 	private void initialize(int infoPanelWidth, boolean isDrawSelectionCheckBox, Color graphAreaBgColor, Color infoAreaBgColor) {
@@ -135,7 +135,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		// setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		this.add(getInfoPanel(infoPanelWidth, isDrawSelectionCheckBox, infoAreaBgColor), BorderLayout.WEST);
 		this.add(getGraphAreaPanel(graphAreaBgColor), BorderLayout.CENTER);
-		markPositions = new ArrayList<MarkPosition>();
+		markPositions = new ArrayList<>();
 	}
 	
 	/**
@@ -193,7 +193,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		Set<EventWrapper> eventWrappers = graphAreaPanel.getEvents(x);
 		if (eventWrappers == null)
 			return null;
-		Set<IEvent> ret = new HashSet<IEvent>();
+		Set<IEvent> ret = new HashSet<>();
 		for (EventWrapper eventWrapper: eventWrappers) {
 			ret.add(eventWrapper.getEvent());
 		}
@@ -343,8 +343,8 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		
 		// graphAreaPanel.getInsets().right;
 		logger.debug("Updating data " + this + "Width = " + width);
-		graphs = new ArrayList<PlotData>();
-		List<String> errorChannels = new ArrayList<String>();
+		graphs = new ArrayList<>();
+		List<String> errorChannels = new ArrayList<>();
 		for (PlotDataProvider channel: plotDataProviders) {
 			// lg.debug("processing channel: " + channel);
 			PlotData data = null;
@@ -634,7 +634,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				int i = 0;
 
 				// strokes for previous pixel
-				List<Stroke> yprev = new ArrayList<Stroke>();
+				List<Stroke> yprev = new ArrayList<>();
 				for (PlotDataPoint[] points: data.getPixels()) {
 					int j = 0;
 					for (PlotDataPoint point: points) {
@@ -939,7 +939,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			if (graphs != null) {
 				for (PlotData data: graphs) {
 					if (data.getPointCount() > x) {
-						Set<EventWrapper> ret = new HashSet<EventWrapper>();
+						Set<EventWrapper> ret = new HashSet<>();
 						for (PlotDataPoint dp: data.getPixels().get(x)) {
 							if (dp.getEvents().size() != 0) {
 								ret.addAll(dp.getEvents());

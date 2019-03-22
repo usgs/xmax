@@ -23,7 +23,7 @@ public abstract class AbstractEvent implements IEvent {
 	public AbstractEvent(Date date, long duration) {
 		this.startTime = date;
 		this.duration = duration;
-		parameters = new HashMap<String, Object>();
+		parameters = new HashMap<>();
 	}
 
 	public abstract String getType();

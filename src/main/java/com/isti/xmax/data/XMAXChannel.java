@@ -32,7 +32,7 @@ public class XMAXChannel extends PlotDataProvider {
 
 	public Set<IEvent> getAvailableEarthquakes(TimeInterval ti) {
 		computeArrivals();
-		Set<IEvent> ret = new HashSet<IEvent>();
+		Set<IEvent> ret = new HashSet<>();
 		for (IEvent event: events) {
 			if (event.getType().equals("ARRIVAL") && ti.isContain(event.getStartTime())) {
 				IEvent earthquake = (IEvent) event.getParameterValue("EARTHQUAKE");
@@ -50,7 +50,7 @@ public class XMAXChannel extends PlotDataProvider {
 
 	public Set<String> getAvailablePhases(TimeInterval ti, Object[] earthquakes) {
 		computeArrivals();
-		Set<String> ret = new HashSet<String>();
+		Set<String> ret = new HashSet<>();
 		for (IEvent event: events) {
 			if (event.getType().equals("ARRIVAL")) {
 				Earthquake earthquake = (Earthquake) event.getParameterValue("EARTHQUAKE");

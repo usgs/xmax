@@ -90,7 +90,7 @@ public class XMAXconfiguration extends Configuration {
 	private XMAXconfiguration() throws ConfigurationException, TraceViewException, XMAXException {
 		setDefaultHTMLPattern("<html><head><title>XMAX report</title></head><body><h1>XMAX report</h1> </body></html>");
 		config = new XMLConfiguration(confFileName);
-		userDirectories = new HashMap<String, String>();
+		userDirectories = new HashMap<>();
 		ti = null;
 		try {
 			setUseTempData(false);
@@ -495,9 +495,6 @@ public class XMAXconfiguration extends Configuration {
 				mbf.get(barray);
 				fis.close();	
 				return new String(barray);
-			} catch (FileNotFoundException e) {
-				logger.error("Can't get html pattern: ", e);
-				return getDefaultHTMLPattern();
 			} catch (IOException e) {
 				logger.error("Can't get html pattern: ", e);
 				return getDefaultHTMLPattern();

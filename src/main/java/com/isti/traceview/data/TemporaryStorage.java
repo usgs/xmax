@@ -32,7 +32,7 @@ public class TemporaryStorage {
 	public TemporaryStorage(String tempdir) {
 		File[] dir;
 		this.tempdir = tempdir;
-		files = new HashSet<File>();
+		files = new HashSet<>();
 		File f = new File(tempdir);
 		if (f.isDirectory()) {
 			dir = f.listFiles();
@@ -58,7 +58,7 @@ public class TemporaryStorage {
 	 * @return a Set of strings listing full paths to temp files
 	 */
 	public Set<String> getAllTempFiles() {
-		Set<String> ret = new HashSet<String>();
+		Set<String> ret = new HashSet<>();
 		for (File file: files) {
 			if (SourceFile.matchFilters(getFileNetwork(file), getFileStation(file), getFileLocation(file), getFileChannel(file))) {
 				ret.add(tempdir + File.separator + file.getName());
