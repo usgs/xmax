@@ -21,5 +21,6 @@ doc/
 .settings
 
 #Intellij files
-.idea
+.idea/
 xmax.iml
+out/
