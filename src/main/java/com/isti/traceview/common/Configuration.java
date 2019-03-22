@@ -10,7 +10,6 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 
 import com.isti.traceview.TraceViewException;
-import com.isti.traceview.gui.ColorModeBySegment;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.gui.IScaleModeState;
 import com.isti.traceview.gui.ScaleModeAuto;
