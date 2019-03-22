@@ -95,7 +95,10 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 							 */
 							// correction = correction + (dh.getStartMilliSec() -
 							// Math.round(dh.getStartMilliSec()));
-							if ((!currentChannel.getStation().getName().equals(dh.getStationIdentifier().trim()))
+
+							// to exclude out of order blocks with events, which has 0 data length
+							if (dh.getNumSamples() > 0) {
+								if ((!currentChannel.getStation().getName().equals(dh.getStationIdentifier().trim()))
 									|| (!currentChannel.getChannelName().equals(dh.getChannelIdentifier().trim()))
 									|| (!currentChannel.getNetworkName().equals(dh.getNetworkCode().trim()))
 									|| (!currentChannel.getLocationName().equals(dh.getLocationIdentifier().trim()))) {
@@ -107,14 +110,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 									} else {
 										addSegment(currentChannel, dh, currentOffset, sampleRate, currentChannel.getSegmentCount());
 									}
-
 								}
 								sampleRate = 0.0;
 								// If new channels matches filters
 								if (matchFilters(dh.getNetworkCode(), dh.getStationIdentifier(), dh.getLocationIdentifier(), dh
 										.getChannelIdentifier())) {
 									// Starts new channel
-									// dataModule.addStation();
 									currentChannel = new PlotDataProvider(dh.getChannelIdentifier(), DataModule.getOrAddStation(dh
 											.getStationIdentifier()), dh.getNetworkCode(), dh.getLocationIdentifier());
 									ret.add(currentChannel);
@@ -125,21 +126,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 									skipChannel = true;
 								}
 							}
-							// to exclude out of order blocks with events, which has 0 data length
-							if (dh.getNumSamples() > 0) {
-								// try {
 								if (sampleRate == 0.0) {
 									sampleRate = 1000.0 / dh.getSampleRate();
 								}
-								/*
-								 * } catch (Exception e) {
-								 * lg.error("Can't get Mseed block sample rate. File: " +
-								 * getFile().getName() + "; block #: " + blockNumber); }
-								 */
 								if (blockEndTime != 0) {
 									if (Segment.isDataBreak(blockEndTime, getBlockStartTime(dh), sampleRate)) {
 										// Gap detected, new segment starts
-										// lg.debug("Correction " + correction);
 										if (!skipChannel) {
 											addSegment(currentChannel, dh, currentOffset, sampleRate, currentChannel.getSegmentCount());
 										}
