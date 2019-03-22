@@ -49,7 +49,7 @@ public class SegmentData {
 		int _next = Integer.MAX_VALUE;
 		double startt = Math.max(startTime, start);
 		double endt = Math.min(endTime(), end);
-		double startvalue = new Double((startt - startTime) / sampleRate);
+		double startvalue = (startt - startTime) / sampleRate;
 		int startIndex = 0;
 		if (startvalue > 0.000000001) {
 			startIndex = new Double(startvalue).intValue() + 1;

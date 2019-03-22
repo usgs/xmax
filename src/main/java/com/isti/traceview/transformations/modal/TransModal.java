@@ -136,7 +136,7 @@ public class TransModal implements ITransformation {
   }
 
   private static int getPower2Length(int length) {
-    return new Double(Math.pow(2, new Double(Math.ceil(IstiUtilsMath.log2(length))))).intValue();
+    return new Double(Math.pow(2, Math.ceil(IstiUtilsMath.log2(length)))).intValue();
   }
 
   @Override

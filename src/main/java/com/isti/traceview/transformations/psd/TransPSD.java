@@ -167,7 +167,7 @@ public class TransPSD implements ITransformation {
 																							// 75%
 																							// overlap
 			int smallDataSegmentLimit = new Double(
-					Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1))))).intValue(); // set
+					Math.ceil(Math.pow(2, (Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1)))).intValue(); // set
 																														// smallDataSegment
 																														// limit
 																														// to
@@ -326,7 +326,7 @@ public class TransPSD implements ITransformation {
 	}
 
 	private static int getPower2Length(int length) {
-		return new Double(Math.pow(2, new Double(Math.ceil(IstiUtilsMath.log2(length))))).intValue();
+		return new Double(Math.pow(2, Math.ceil(IstiUtilsMath.log2(length)))).intValue();
 	}
 
 	@Override

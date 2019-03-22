@@ -236,15 +236,15 @@ public class TimeInterval {
 		}
 		if(duration < 86400000) {
 			if (duration < 3600000) {
-				Double sec = new Double(duration) / 1000;
+				Double sec = (double) duration / 1000;
 				ret = ret + sec.toString() + " s";
 			} else {
-				Double h = new Double(duration) / 3600000;
+				Double h = (double) duration / 3600000;
 
 				ret = ret + new DecimalFormat("#######.###").format(h) + " h";
 			}
 		} else {
-			Double days = new Double(duration) / 86400000;
+			Double days = (double) duration / 86400000;
 			ret = ret + new DecimalFormat("#######.###").format(days) + " d";
 		}
 		return ret;
@@ -282,7 +282,7 @@ public class TimeInterval {
 			ret = ret + min + " min";
 		}
 		rest = rest % 60000;
-		double sec = new Double(rest) / 1000;
+		double sec = (double) rest / 1000;
 		if (ret.length() > 1) {
 			ret = ret + ", ";
 		}
