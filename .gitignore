@@ -19,3 +19,8 @@ doc/
 .classpath
 .project
 .settings
+
+#Intellij files
+.idea/
+xmax.iml
+out/
