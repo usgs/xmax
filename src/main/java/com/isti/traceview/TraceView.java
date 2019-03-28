@@ -3,7 +3,6 @@ package com.isti.traceview;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.data.DataModule;
 import com.isti.util.UtilFns;
-import com.isti.xmax.XMAX;
 import java.util.SimpleTimeZone;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -25,15 +24,6 @@ public class TraceView {
 	 */
 	
 	private static final Logger logger = Logger.getLogger(TraceView.class);
-	/**
-	 * Library version label holder
-	 */
-	private static final String version = XMAX.version;
-
-	/**
-	 * Library version date holder
-	 */
-	private static final String releaseDate = XMAX.releaseDate;
 
 	/**
 	 * Library {@link Configuration} class
@@ -136,25 +126,8 @@ public class TraceView {
 		conf = cn;
 	}
 
-	/**
-	 * auxiliary method - prints amount of used and free memory
-	 */
-	public static void dumpMemory() {
-		Runtime r = Runtime.getRuntime();
-		r.gc();
-		logger.debug("Utilized memory: " + (r.totalMemory() - r.freeMemory()) + "; Free memory: " + r.freeMemory() + "; Total memory: " + r.totalMemory());
-	}
-
 	public static String getJavaVersionMessage() {
 		return javaVerString;
-	}
-
-	public static String getVersionMessage() {
-		return version;
-	}
-
-	public static String getReleaseDateMessage() {
-		return releaseDate;
 	}
 
 	public static void setUndoEnabled(boolean ue) {
@@ -167,11 +140,4 @@ public class TraceView {
 		undoAdapter = ul;
 	}
 
-	public static void removeUndoAdapter() {
-		undoAdapter = null;
-	}
-
-	public static void main(String[] args) {
-		System.out.print("TraceView library. Version " + getVersionMessage() + " " + getReleaseDateMessage());
-	}
 }

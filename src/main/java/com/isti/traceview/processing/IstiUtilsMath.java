@@ -428,8 +428,8 @@ public class IstiUtilsMath {
 		int n = indata.length;
 		DoubleFFT_1D fft = new DoubleFFT_1D(n);
 		fft.realForward(indata);
-		Cmplx[] ret = null;	
-		int l = 0;
+		Cmplx[] ret;
+		int l;
 		if(n%2==0){
 			l = n/2;
 			ret = new Cmplx[l+1];
