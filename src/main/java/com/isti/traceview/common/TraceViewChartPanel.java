@@ -1264,34 +1264,47 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 			screenY = this.zoomPoint.getY();
 		}
 
-		if (command.equals(PROPERTIES_COMMAND)) {
-			doEditChartProperties();
-		} else if (command.equals(SAVE_COMMAND)) {
-			try {
-				doSaveAs();
-			} catch (IOException e) {
-				logger.error("IOException:", e);	
-			}
-		} else if (command.equals(PRINT_COMMAND)) {
-			createChartPrintJob();
-		} else if (command.equals(ZOOM_IN_BOTH_COMMAND)) {
-			zoomInBoth(screenX, screenY);
-		} else if (command.equals(ZOOM_IN_DOMAIN_COMMAND)) {
-			zoomInDomain(screenX, screenY);
-		} else if (command.equals(ZOOM_IN_RANGE_COMMAND)) {
-			zoomInRange(screenX, screenY);
-		} else if (command.equals(ZOOM_OUT_BOTH_COMMAND)) {
-			zoomOutBoth(screenX, screenY);
-		} else if (command.equals(ZOOM_OUT_DOMAIN_COMMAND)) {
-			zoomOutDomain(screenX, screenY);
-		} else if (command.equals(ZOOM_OUT_RANGE_COMMAND)) {
-			zoomOutRange(screenX, screenY);
-		} else if (command.equals(ZOOM_RESET_BOTH_COMMAND)) {
-			restoreAutoBounds();
-		} else if (command.equals(ZOOM_RESET_DOMAIN_COMMAND)) {
-			restoreAutoDomainBounds();
-		} else if (command.equals(ZOOM_RESET_RANGE_COMMAND)) {
-			restoreAutoRangeBounds();
+		switch (command) {
+			case PROPERTIES_COMMAND:
+				doEditChartProperties();
+				break;
+			case SAVE_COMMAND:
+				try {
+					doSaveAs();
+				} catch (IOException e) {
+					logger.error("IOException:", e);
+				}
+				break;
+			case PRINT_COMMAND:
+				createChartPrintJob();
+				break;
+			case ZOOM_IN_BOTH_COMMAND:
+				zoomInBoth(screenX, screenY);
+				break;
+			case ZOOM_IN_DOMAIN_COMMAND:
+				zoomInDomain(screenX, screenY);
+				break;
+			case ZOOM_IN_RANGE_COMMAND:
+				zoomInRange(screenX, screenY);
+				break;
+			case ZOOM_OUT_BOTH_COMMAND:
+				zoomOutBoth(screenX, screenY);
+				break;
+			case ZOOM_OUT_DOMAIN_COMMAND:
+				zoomOutDomain(screenX, screenY);
+				break;
+			case ZOOM_OUT_RANGE_COMMAND:
+				zoomOutRange(screenX, screenY);
+				break;
+			case ZOOM_RESET_BOTH_COMMAND:
+				restoreAutoBounds();
+				break;
+			case ZOOM_RESET_DOMAIN_COMMAND:
+				restoreAutoDomainBounds();
+				break;
+			case ZOOM_RESET_RANGE_COMMAND:
+				restoreAutoRangeBounds();
+				break;
 		}
 	}
 

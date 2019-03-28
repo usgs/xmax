@@ -597,13 +597,18 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 	 * Implement export script triggers here.
 	 */
 	protected boolean checkTrigger(String s) throws Exception {
-		if (s.equals("A")) {
-			// set the starting value for data trace end time
-			endTime = new Btime("1900,001,00:00:00.0000");
-		} else if (s.equals("B")) {
-		} else if (s.equals("C")) {
-		} else
-			return false; // no trigger, return false
+		switch (s) {
+			case "A":
+				// set the starting value for data trace end time
+				endTime = new Btime("1900,001,00:00:00.0000");
+				break;
+			case "B":
+				break;
+			case "C":
+				break;
+			default:
+				return false; // no trigger, return false
+		}
 		return true; // we have found a trigger, so return true
 	}
 

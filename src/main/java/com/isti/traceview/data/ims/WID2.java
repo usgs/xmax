@@ -103,14 +103,19 @@ public class WID2 extends Block {
 		channel = getString(35,38);
 		aux_id = getString(39,43);
 		String csft = getString(44,47);
-		if(csft.equals("INT")){
-			csf = Compression.INT;
-		} else if(csft.equals("CM6")){
-			csf = Compression.CM6;			
-		} else if(csft.equals("CM8")){
-			csf = Compression.CM8;			
-		} else if(csft.equals("CSF")){
-			csf = Compression.CSF;			
+		switch (csft) {
+			case "INT":
+				csf = Compression.INT;
+				break;
+			case "CM6":
+				csf = Compression.CM6;
+				break;
+			case "CM8":
+				csf = Compression.CM8;
+				break;
+			case "CSF":
+				csf = Compression.CSF;
+				break;
 		}
 		numSamples = getInt(48,56);
 		sampleRate = getDouble(57,68);

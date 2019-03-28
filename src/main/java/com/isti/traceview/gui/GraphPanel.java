@@ -1416,7 +1416,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 							System.out.print("...");
 						}
 						String errorChannel = view.updateData();
-						if(errorChannel != "")
+						if(!errorChannel.equals(""))
 							channelsWithErrors.add(errorChannel);
 						
 					}
