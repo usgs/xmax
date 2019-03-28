@@ -472,7 +472,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public int compareTo(Object o) {
 		if (o instanceof ChannelView) {
 			ChannelView c = (ChannelView) o;
-			return new Integer(getSelectionNumber()).compareTo(c.getSelectionNumber());
+			return Integer.compare(getSelectionNumber(), c.getSelectionNumber());
 		} else {
 			return 1;
 		}

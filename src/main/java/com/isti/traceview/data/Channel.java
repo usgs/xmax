@@ -56,8 +56,6 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	private static final Logger logger = Logger.getLogger(Channel.class);
 
-	private static Properties propsObj = null;
-
 	private static List<Character> COMPDATA = null;
 
 	/**
@@ -232,7 +230,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	@SuppressWarnings("unused")
 	private void loadProperties() {
-		propsObj = new Properties();// System.getProperties();
+		Properties propsObj = new Properties();// System.getProperties();
 		InputStream inStm = null;
 		try {
 			// open input stream to properites file:

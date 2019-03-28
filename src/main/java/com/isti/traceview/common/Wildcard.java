@@ -92,28 +92,28 @@ public class Wildcard {
 		File[] dir = f.listFiles();
       //System.out.format("== explore(partPath=%s i=%d) File f=%s path=%s (dir.length=%d)\n", partPath, i, f.getName(), f.getPath(), dir.length);
 		if (dir.length > 0) {
-			for (int j = 0; j < dir.length; j++) {
+			for (File file : dir) {
 				if (path.size() > i + 1) {
-					if (Wildcard.matches(path.get(i + 1), dir[j].getName())) {
-						if (dir[j].isDirectory()) {
-							explore(partPath + File.separator + dir[j].getName(), i + 1);
+					if (Wildcard.matches(path.get(i + 1), file.getName())) {
+						if (file.isDirectory()) {
+							explore(partPath + File.separator + file.getName(), i + 1);
 						} else {
-						    //lst.add(dir[j]);
-                       // MTH: This was adding matches *along* the path, not just at the terminus, e.g.,
-                       //      -d 'xs0/seed/*/2012/2012_160*/*seed' was matching xs0/seed/jts.seed
-                       // Added if statement to make sure we only match at the end of the path
-                       // This has not been tested on Windows!
-                            if ((path.size() - i) == 2) {
-                       //System.out.format("== +++ Found matching file=[%s] [path.size()=%d i=%d]\n", dir[j], path.size(), i);
-                                lst.add(dir[j]);
-                            }
+							//lst.add(dir[j]);
+							// MTH: This was adding matches *along* the path, not just at the terminus, e.g.,
+							//      -d 'xs0/seed/*/2012/2012_160*/*seed' was matching xs0/seed/jts.seed
+							// Added if statement to make sure we only match at the end of the path
+							// This has not been tested on Windows!
+							if ((path.size() - i) == 2) {
+								//System.out.format("== +++ Found matching file=[%s] [path.size()=%d i=%d]\n", dir[j], path.size(), i);
+								lst.add(file);
+							}
 						}
 					}
 				} else {
-					if (dir[j].isDirectory()) {
-						explore(partPath + File.separator + dir[j].getName(), i + 1);
+					if (file.isDirectory()) {
+						explore(partPath + File.separator + file.getName(), i + 1);
 					} else {
-                            lst.add(dir[j]);
+						lst.add(file);
 					}
 				}
 			}
@@ -123,26 +123,28 @@ public class Wildcard {
 	public static String wildcardToRegex(String wild) {
 		if (wild == null)
 			return null; 
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		char[] chars = wild.toCharArray();
-		for (int i = 0; i < chars.length; ++i) {
-			if (chars[i] == '*')
+		for (char aChar : chars) {
+			if (aChar == '*') {
 				buffer.append(".*");
-			else if (chars[i] == '?')
+			} else if (aChar == '?') {
 				buffer.append(".");
-			else if (chars[i] == '!')
+			} else if (aChar == '!') {
 				buffer.append("^");
-			else if (chars[i] == '{')
+			} else if (aChar == '{') {
 				buffer.append("(");
-			else if (chars[i] == '}')
+			} else if (aChar == '}') {
 				buffer.append(")");
-			else if (chars[i] == ',')
+			} else if (aChar == ',') {
 				buffer.append("|");
-			else if ("+()^$.|\\".indexOf(chars[i]) != -1)
-				buffer.append('\\').append(chars[i]); // prefix all unused metacharacters with
+			} else if ("+()^$.|\\".indexOf(aChar) != -1) {
+				buffer.append('\\').append(aChar); // prefix all unused metacharacters with
+			}
 			// backslash
-			else
-				buffer.append(chars[i]);
+			else {
+				buffer.append(aChar);
+			}
 		}
 		return buffer.toString();
 	}
