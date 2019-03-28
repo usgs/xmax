@@ -1,7 +1,6 @@
 package com.isti.traceview.commands;
 
 import com.isti.traceview.AbstractUndoableCommand;
-import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.processing.RemoveGain;
 import org.apache.log4j.Logger;
@@ -33,7 +32,7 @@ public class RemoveGainCommand extends AbstractUndoableCommand {
 		graphPanel.setRemoveGainState(gain);
 	}
 
-	public void undo() throws UndoException{
+	public void undo() {
 		super.undo();
 		graphPanel.setRemoveGainState(new RemoveGain(false));
 	}

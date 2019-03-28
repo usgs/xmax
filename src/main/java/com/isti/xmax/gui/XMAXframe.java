@@ -7,7 +7,6 @@ import com.isti.traceview.ICommand;
 import com.isti.traceview.IUndoableCommand;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
-import com.isti.traceview.UndoException;
 import com.isti.traceview.commands.OffsetCommand;
 import com.isti.traceview.commands.OverlayCommand;
 import com.isti.traceview.commands.RemoveGainCommand;
@@ -2184,13 +2183,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ICommand command = history.getLast();
 				if (command instanceof IUndoableCommand) {
 					IUndoableCommand undCommand = (IUndoableCommand) command;
-					try {
-						if (undCommand.canUndo()) {
-							undCommand.undo();
-							history.removeLast();
-						}
-					} catch (UndoException e1) {
-						logger.error("UndoException:", e1);
+					if (undCommand.canUndo()) {
+						undCommand.undo();
+						history.removeLast();
 					}
 				}
 				statusBar.setMessage("");
