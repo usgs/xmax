@@ -127,16 +127,22 @@ public class XMAXconfiguration extends Configuration {
 				}
 			}
 			String state = config.getString("SessionData.Frame.State", "MAXIMIZED_BOTH");
-			if (state.equals("NORMAL")) {
-				frameState = Frame.NORMAL;
-			} else if (state.equals("ICONIFIED")) {
-				frameState = Frame.ICONIFIED;
-			} else if (state.equals("MAXIMIZED_HORIZ")) {
-				frameState = Frame.MAXIMIZED_HORIZ;
-			} else if (state.equals("MAXIMIZED_VERT")) {
-				frameState = Frame.MAXIMIZED_VERT;
-			} else if (state.equals("MAXIMIZED_BOTH")) {
-				frameState = Frame.MAXIMIZED_BOTH;
+			switch (state) {
+				case "NORMAL":
+					frameState = Frame.NORMAL;
+					break;
+				case "ICONIFIED":
+					frameState = Frame.ICONIFIED;
+					break;
+				case "MAXIMIZED_HORIZ":
+					frameState = Frame.MAXIMIZED_HORIZ;
+					break;
+				case "MAXIMIZED_VERT":
+					frameState = Frame.MAXIMIZED_VERT;
+					break;
+				case "MAXIMIZED_BOTH":
+					frameState = Frame.MAXIMIZED_BOTH;
+					break;
 			}
 			framePos[0] = config.getInt("SessionData.Frame.PosX", 0);
 			framePos[1] = config.getInt("SessionData.Frame.PosY", 0);
@@ -198,16 +204,21 @@ public class XMAXconfiguration extends Configuration {
 	}
 	
 	private void setColorModeState(String colorMode, boolean needsave) throws XMAXException{
-		if(colorMode.toUpperCase().equals("SEGMENT")){
-			setColorModeState(new ColorModeBySegment());
-		} else if(colorMode.toUpperCase().equals("GAP")){
-			setColorModeState(new ColorModeBySegment());
-		} else if(colorMode.toUpperCase().equals("BW")){
-			setColorModeState(new ColorModeBySegment());
-		} else if(colorMode.toUpperCase().equals("GRAY")){
-			setColorModeState(new ColorModeBySegment());
-		} else {
-			throw new XMAXException("Illegal color mode marker");
+		switch (colorMode.toUpperCase()) {
+			case "SEGMENT":
+				setColorModeState(new ColorModeBySegment());
+				break;
+			case "GAP":
+				setColorModeState(new ColorModeBySegment());
+				break;
+			case "BW":
+				setColorModeState(new ColorModeBySegment());
+				break;
+			case "GRAY":
+				setColorModeState(new ColorModeBySegment());
+				break;
+			default:
+				throw new XMAXException("Illegal color mode marker");
 		}
 		if(needsave)
 		config.setProperty("Configuration.View.ColorMode", colorMode);

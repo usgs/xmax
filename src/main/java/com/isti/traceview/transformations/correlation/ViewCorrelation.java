@@ -183,22 +183,23 @@ class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemLis
 	}
 
 	private double[] applyWindow(double[] dataToProcess, String windowName) {
-		if (windowName.equals("Hanning")) {
-			return IstiUtilsMath.windowHanning(dataToProcess);
-		} else if (windowName.equals("Hamming")) {
-			return IstiUtilsMath.windowHamming(dataToProcess);
-		} else if (windowName.equals("Cosine")) {
-			return IstiUtilsMath.windowCosine(dataToProcess);
-		} else if (windowName.equals("Triangular")) {
-			return IstiUtilsMath.windowTriangular(dataToProcess);
-		} else if (windowName.equals("Bartlett")) {
-			return IstiUtilsMath.windowBartlett(dataToProcess);
-		} else if (windowName.equals("Gauss")) {
-			return IstiUtilsMath.windowGauss(dataToProcess);
-		} else if (windowName.equals("Blackman")) {
-			return IstiUtilsMath.windowBlackman(dataToProcess);
-		} else {
-			return dataToProcess;
+		switch (windowName) {
+			case "Hanning":
+				return IstiUtilsMath.windowHanning(dataToProcess);
+			case "Hamming":
+				return IstiUtilsMath.windowHamming(dataToProcess);
+			case "Cosine":
+				return IstiUtilsMath.windowCosine(dataToProcess);
+			case "Triangular":
+				return IstiUtilsMath.windowTriangular(dataToProcess);
+			case "Bartlett":
+				return IstiUtilsMath.windowBartlett(dataToProcess);
+			case "Gauss":
+				return IstiUtilsMath.windowGauss(dataToProcess);
+			case "Blackman":
+				return IstiUtilsMath.windowBlackman(dataToProcess);
+			default:
+				return dataToProcess;
 		}
 	}
 

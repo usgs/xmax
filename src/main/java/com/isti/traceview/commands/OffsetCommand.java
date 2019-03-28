@@ -1,7 +1,6 @@
 package com.isti.traceview.commands;
 
 import com.isti.traceview.AbstractUndoableCommand;
-import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.OffsetModeDisabled;
 import com.isti.traceview.gui.OffsetModeEnabled;
@@ -31,7 +30,7 @@ public class OffsetCommand extends AbstractUndoableCommand {
 		graphPanel.getOffsetState().increaseStep();
 	}
 	
-	public void undo() throws UndoException{
+	public void undo() {
 		super.undo();
 		graphPanel.setOffsetState(new OffsetModeDisabled());
 	}

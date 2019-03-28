@@ -32,20 +32,13 @@ import java.nio.ByteBuffer;
 class Canada {
 	/*
 	 * Copyright 1994 Science Applications International Corporation
-	 * 
+	 *
 	 * This software may not be used, copied, modified, or distributed without
 	 * the express written permission of Science Applications International
 	 * Corporation (SAIC). SAIC makes no warranty of any kind with regard to
 	 * this software, including, but not limited to, the implied warranties of
 	 * fitness for a particular purpose.
 	 */
-	private static final int CANCOMP_SUCCESS = 0; /* success */
-	/* number of bytes available in
-	 * compressed data exceeded
-	 * during decompression
-	 */
-	
-	private static boolean dbg = true;
 
 	private static int corrupt = 0;
 
@@ -426,9 +419,12 @@ class Canada {
 			corrupt = 1;
 			break;
 		}
+		/* number of bytes available in
+		 * compressed data exceeded
+		 * during decompression
+		 */
 		if (b.position() != j)
-			if (dbg)
-				System.out.println("J and position misaligned");
+			System.out.println("J and position misaligned");
 		y[offset] = y0;
 		y[offset + 1] = y1;
 		y[offset + 2] = y2;

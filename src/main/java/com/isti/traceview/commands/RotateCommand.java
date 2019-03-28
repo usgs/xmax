@@ -1,21 +1,18 @@
 package com.isti.traceview.commands;
 
 import com.isti.traceview.AbstractUndoableCommand;
-import com.isti.traceview.UndoException;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.GraphPanel;
-import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
 import com.isti.traceview.processing.Rotation;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This command performs rotation
  */
 public class RotateCommand extends AbstractUndoableCommand {
-	private List<PlotDataProvider> plotDataProviders = new ArrayList<>();
-	private GraphPanel graphPanel = null; //in order to notify the graph panel to repaint since the data provider was modified.
-	private Rotation rotation = null;
+	private List<PlotDataProvider> plotDataProviders;
+	private GraphPanel graphPanel; //in order to notify the graph panel to repaint since the data provider was modified.
+	private Rotation rotation;
 
 	/**
 	 * @param gp
@@ -32,13 +29,13 @@ public class RotateCommand extends AbstractUndoableCommand {
 	public void run() {
 		for(PlotDataProvider pdp : plotDataProviders) {
 			pdp.setRotation(rotation);
-			((GraphPanelObservable) graphPanel.getObservable()).setChanged();
-			((GraphPanelObservable) graphPanel.getObservable()).notifyObservers("ROT");
+			graphPanel.getObservable().setChanged();
+			graphPanel.getObservable().notifyObservers("ROT");
 			graphPanel.forceRepaint();
 		}
 	}
 	
-	public void undo() throws UndoException{
+	public void undo() {
 	}
 
 	public boolean canUndo() {

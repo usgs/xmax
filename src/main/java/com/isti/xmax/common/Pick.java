@@ -345,18 +345,26 @@ class SAXHandler extends DefaultHandler {
 				error(new SAXParseException("Wrong Pick attributes count", locator));
 			for (int i = 0; i < len; i++) {
 				String attrName = attrs.getQName(i);
-				if (attrName.equals("time")) {
-					time = TimeInterval.parseDate(attrs.getValue(i), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL);
-				} else if (attrName.equals("network")) {
-					network = attrs.getValue(i);
-				} else if (attrName.equals("station")) {
-					station = DataModule.getStation(attrs.getValue(i));
-				} else if (attrName.equals("location")) {
-					location = attrs.getValue(i);
-				} else if (attrName.equals("channel")) {
-					channel = attrs.getValue(i);
-				} else {
-					error(new SAXParseException("Wrong Pick attributes name: " + attrName, locator));
+				switch (attrName) {
+					case "time":
+						time = TimeInterval
+								.parseDate(attrs.getValue(i), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL);
+						break;
+					case "network":
+						network = attrs.getValue(i);
+						break;
+					case "station":
+						station = DataModule.getStation(attrs.getValue(i));
+						break;
+					case "location":
+						location = attrs.getValue(i);
+						break;
+					case "channel":
+						channel = attrs.getValue(i);
+						break;
+					default:
+						error(new SAXParseException("Wrong Pick attributes name: " + attrName, locator));
+						break;
 				}
 			}
 			if (station != null) {
@@ -400,7 +408,7 @@ class SAXHandler extends DefaultHandler {
 
 	/** Returns a string of the location. */
 	private String getLocationString(SAXParseException ex) {
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 
 		String systemId = ex.getSystemId();
 		if (systemId != null) {

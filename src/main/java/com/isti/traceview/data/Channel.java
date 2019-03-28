@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Properties;
 import org.apache.log4j.Logger;
@@ -56,16 +57,14 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	private static final Logger logger = Logger.getLogger(Channel.class);
 
-	private static Properties propsObj = null;
-
-	private static List<Character> COMPDATA = null;
+	private static List<Character> COMPDATA;
 
 	/**
 	 * The channel name.
 	 */
 	private String channelName;
 
-	private Station station = null;
+	private Station station;
 
 	/**
 	 * The location name.
@@ -202,8 +201,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @return Returns the channel response.
 	 */
 	public Response getResponse() throws TraceViewException {
-		Response resp = TraceView.getDataModule().getResponse(getNetworkName(), getStation().getName(), getLocationName(), getChannelName());
-		return resp;
+		return TraceView.getDataModule().getResponse(getNetworkName(), getStation().getName(), getLocationName(), getChannelName());
 	}
 	
 	public boolean isSelected(){
@@ -232,7 +230,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	@SuppressWarnings("unused")
 	private void loadProperties() {
-		propsObj = new Properties();// System.getProperties();
+		Properties propsObj = new Properties();// System.getProperties();
 		InputStream inStm = null;
 		try {
 			// open input stream to properites file:
@@ -246,15 +244,9 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 			RespUtils.enterDefaultPropValue(propsObj, "org.omg.CORBA.ORBClass", "com.ooc.CORBA.ORB");
 			RespUtils.enterDefaultPropValue(propsObj, "org.omg.CORBA.ORBSingletonClass", "com.ooc.CORBA.ORBSingleton");
 		} catch (FileNotFoundException e) {
-			StringBuilder message = new StringBuilder();
-			message.append("Unable to open FISSURES property file \"" + fissuresPropFileName + "\":");
-			logger.error(message.toString(), e);
-			//throw new RuntimeException(e);
+			logger.error(("Unable to open FISSURES property file \"" + fissuresPropFileName + "\":"), e);
 		} catch (IOException e) {
-			StringBuilder message = new StringBuilder();
-			message.append("Error loading FISSURES property file \"" + fissuresPropFileName + "\":");
-			logger.error(message.toString(), e);
-			//throw new RuntimeException(e);
+			logger.error(("Error loading FISSURES property file \"" + fissuresPropFileName + "\":"), e);
 		} finally {
 			try {
 				inStm.close();
@@ -321,7 +313,9 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @return a hash code value for this station.
 	 */
 	public int hashCode() {
-		return getNetworkName()==null?0:getNetworkName().hashCode() + getStation().getName().hashCode() + getChannelName().hashCode() + getLocationName()==null?0:getLocationName().hashCode();
+		return Objects.hash(getNetworkName(), getStation().getName(), getChannelName(), getLocationName()
+				//getSampleRate()
+		);
 	}
 
 	/**
@@ -333,7 +327,9 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 		if (o instanceof Channel) {
 			Channel c = (Channel) o;
 			return (getNetworkName().equals(c.getNetworkName()) && getStation().getName().equals(c.getStation().getName())
-					&& getChannelName().equals(c.getChannelName()) && getLocationName().equals(c.getLocationName()));
+					&& getChannelName().equals(c.getChannelName()) && getLocationName().equals(c.getLocationName())
+				  //&& (Math.abs(getSampleRate() - c.getSampleRate()) < 0.0001)
+			);
 		} else {
 			return false;
 		}
@@ -417,9 +413,9 @@ class NameComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
 			return (((Channel) o1).getChannelName()).compareTo(((Channel) o2).getChannelName());
-		} else if ((o1 instanceof Channel) && !(o2 instanceof Channel)) {
+		} else if (o1 instanceof Channel) {
 			return 1;
-		} else if (!(o1 instanceof Channel) && (o2 instanceof Channel)) {
+		} else if (o2 instanceof Channel) {
 			return -1;
 		} else {
 			return -1;
@@ -462,9 +458,9 @@ class ChannelComparator implements Comparator<Object> {
 			} else {
 				return ch1.compareTo(ch2);
 			}
-		} else if ((o1 instanceof Channel) && !(o2 instanceof Channel)) {
+		} else if (o1 instanceof Channel) {
 			return 1;
-		} else if (!(o1 instanceof Channel) && (o2 instanceof Channel)) {
+		} else if (o2 instanceof Channel) {
 			return -1;
 		} else {
 			return -1;
@@ -513,9 +509,9 @@ class ChannelTypeComparator implements Comparator<Object> {
 			} else {
 				return Channel.channelTypeCompare(type1, type2);
 			}
-		} else if ((o1 instanceof Channel) && !(o2 instanceof Channel)) {
+		} else if (o1 instanceof Channel) {
 			return 1;
-		} else if (!(o1 instanceof Channel) && (o2 instanceof Channel)) {
+		} else if (o2 instanceof Channel) {
 			return -1;
 		} else {
 			return -1;
@@ -548,33 +544,28 @@ class NetworkStationSamplerateComparator implements Comparator<Object> {
 				if (st1.equals(st2)) {
 					Double sr1 = channel1.getSampleRate();
 					Double sr2 = channel2.getSampleRate();
-					if (sr1.equals(sr2)) {
+					if ((Math.abs(sr1 - sr2) < 0.0001)) {
 						String loc1 = channel1.getLocationName();
 						String loc2 = channel2.getLocationName();
 						if (loc1.equals(loc2)) {
 							char type1 = channel1.getType();
 							char type2 = channel2.getType();
-							int compareChan = Channel.channelTypeCompare(type1, type2);
-							return compareChan;
+							return Channel.channelTypeCompare(type1, type2);
 						} else {
-							int compareLoc = loc1.compareTo(loc2);
-							return compareLoc;
+							return loc1.compareTo(loc2);
 						}
 					} else {
-						int compareSR = sr1.compareTo(sr2);
-						return compareSR;
+						return sr1.compareTo(sr2);
 					}
 				} else {
-					int compareStat = st1.compareTo(st2);
-					return compareStat;
+					return st1.compareTo(st2);
 				}
 			} else {
-				int compareNet = net1.compareTo(net2);
-				return compareNet;
+				return net1.compareTo(net2);
 			}
-		} else if ((o1 instanceof Channel) && !(o2 instanceof Channel)) {
+		} else if (o1 instanceof Channel) {
 			return 1;
-		} else if (!(o1 instanceof Channel) && (o2 instanceof Channel)) {
+		} else if (o2 instanceof Channel) {
 			return -1;
 		} else {
 			return -1;
@@ -582,7 +573,7 @@ class NetworkStationSamplerateComparator implements Comparator<Object> {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof NameComparator) {
+		if (obj instanceof NetworkStationSamplerateComparator) {
 			return super.equals(obj);
 		} else {
 			return false;
@@ -598,9 +589,9 @@ class EventComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
 			return 0;
-		} else if ((o1 instanceof Channel) && !(o2 instanceof Channel)) {
+		} else if (o1 instanceof Channel) {
 			return 1;
-		} else if (!(o1 instanceof Channel) && (o2 instanceof Channel)) {
+		} else if (o2 instanceof Channel) {
 			return -1;
 		} else {
 			return -1;

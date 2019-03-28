@@ -303,75 +303,77 @@ public class ChannelSubframe {
 	 */
 	public int getSamples(int[] samples) throws CanadaException {
 		bdata.position(0);
+		label:
 		switch (transform) {
-		case 0: // no transform, type is done by uncompressed format
-			if (uncompressedFormat.equals("s4")) {
-				for (int i = 0; i < nsamp; i++) {
-					samples[i] = bdata.getInt();
-				}
-				return nsamp;
-			} else if (uncompressedFormat.equals("s3")) {
-				for (int i = 0; i < nsamp; i++) {
-					samples[i] = ((((int) bdata.get()) & 0xff) << 16)
-							| ((((int) bdata.get()) & 0xff) << 8)
-							| (((int) bdata.get()) & 0xff);
-				}
-				return nsamp;
-			} else if (uncompressedFormat.equals("s2")) {
-				for (int i = 0; i < nsamp; i++) {
-					samples[i] = bdata.getShort();
-				}
-				return nsamp;
-			} else if (uncompressedFormat.equals("i4")) {
-				logger.error("Cannot do format " + uncompressedFormat);
-				break;
-			} else if (uncompressedFormat.equals("i2")) {
-				logger.error("Cannot do format " + uncompressedFormat);
-				break;
-			} else if (uncompressedFormat.equals("CD")) {
-				logger.error("Cannot do format " + uncompressedFormat);
-				break;
-			} else {
-				logger.error("Cannot do format " + uncompressedFormat);
-				break;
+			case 0: // no transform, type is done by uncompressed format
+				switch (uncompressedFormat) {
+					case "s4":
+						for (int i = 0; i < nsamp; i++) {
+							samples[i] = bdata.getInt();
+						}
+						return nsamp;
+					case "s3":
+						for (int i = 0; i < nsamp; i++) {
+							samples[i] = ((((int) bdata.get()) & 0xff) << 16)
+									| ((((int) bdata.get()) & 0xff) << 8)
+									| (((int) bdata.get()) & 0xff);
+						}
+						return nsamp;
+					case "s2":
+						for (int i = 0; i < nsamp; i++) {
+							samples[i] = bdata.getShort();
+						}
+						return nsamp;
+					case "i4":
+						logger.error("Cannot do format " + uncompressedFormat);
+						break label;
+					case "i2":
+						logger.error("Cannot do format " + uncompressedFormat);
+						break label;
+					case "CD":
+						logger.error("Cannot do format " + uncompressedFormat);
+						break label;
+					default:
+						logger.error("Cannot do format " + uncompressedFormat);
+						break label;
 
-			}
-		case 1: // Canadian compression applied before signature
-			if (uncompressedFormat.equals("CD")) { // This is the CD1.0
-													// encapsulated data
-				ByteBuffer bb = ByteBuffer.wrap(data);
-				bb.position(0);
-				int len2 = bb.getInt();
-				if (auth != 0) {
-					bb.position(bb.position() + 40); // Skip the auth bytes
 				}
-				double time2 = bb.getDouble();
-				GregorianCalendar g2 = new GregorianCalendar();
-				g2.setTimeInMillis((long) (time2 * 1000.));
-				//int ns = bb.getInt();
-				//int stat2 = bb.getInt();
-				// par.prt("CD : "+station+" len="+len2+" datasize="+dataSize+" time="+time2+" as g ="+Util.ascdate(g2)+" "+Util.asctime2(g2)+" status="+Util.toHex(stat2)+" ns="+ns);
+			case 1: // Canadian compression applied before signature
+				if (uncompressedFormat.equals("CD")) { // This is the CD1.0
+					// encapsulated data
+					ByteBuffer bb = ByteBuffer.wrap(data);
+					bb.position(0);
+					int len2 = bb.getInt();
+					if (auth != 0) {
+						bb.position(bb.position() + 40); // Skip the auth bytes
+					}
+					double time2 = bb.getDouble();
+					GregorianCalendar g2 = new GregorianCalendar();
+					g2.setTimeInMillis((long) (time2 * 1000.));
+					//int ns = bb.getInt();
+					//int stat2 = bb.getInt();
+					// par.prt("CD : "+station+" len="+len2+" datasize="+dataSize+" time="+time2+" as g ="+Util.ascdate(g2)+" "+Util.asctime2(g2)+" status="+Util.toHex(stat2)+" ns="+ns);
 
-				byte[] cddata = new byte[len2 - bb.position() + 4 + 8];
-				bb.get(cddata, 0, len2 - bb.position() + 4);
-				Canada.canada_uncompress(cddata, samples, cddata.length - 8,
-						nsamp);
+					byte[] cddata = new byte[len2 - bb.position() + 4 + 8];
+					bb.get(cddata, 0, len2 - bb.position() + 4);
+					Canada.canada_uncompress(cddata, samples, cddata.length - 8,
+							nsamp);
 
-			} else
+				} else
+					Canada.canada_uncompress(data, samples, dataSize, nsamp);
+				return nsamp;
+			case 2: // Canadian compression applied after signature
 				Canada.canada_uncompress(data, samples, dataSize, nsamp);
-			return nsamp;
-		case 2: // Canadian compression applied after signature
-			Canada.canada_uncompress(data, samples, dataSize, nsamp);
 
-			break;
-		case 3: // Steim compression applied before signature
+				break;
+			case 3: // Steim compression applied before signature
 
-			break;
-		case 4: // Steim compression applied after signature
-			break;
-		default:
-			logger.error("transformation type " + transform
-					+ " is not implemented!");
+				break;
+			case 4: // Steim compression applied after signature
+				break;
+			default:
+				logger.error("transformation type " + transform
+						+ " is not implemented!");
 		}
 		return 0; // if we got here, the decoding failed or is not implemented.
 	}

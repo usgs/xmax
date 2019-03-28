@@ -638,8 +638,4 @@ class CheckFailedException extends Exception {
 		super();
 	}
 
-	public CheckFailedException(String str) {
-		super(str);
-	}
-
 }

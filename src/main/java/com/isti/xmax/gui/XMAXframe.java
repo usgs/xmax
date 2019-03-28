@@ -7,7 +7,6 @@ import com.isti.traceview.ICommand;
 import com.isti.traceview.IUndoableCommand;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
-import com.isti.traceview.UndoException;
 import com.isti.traceview.commands.OffsetCommand;
 import com.isti.traceview.commands.OverlayCommand;
 import com.isti.traceview.commands.RemoveGainCommand;
@@ -2184,13 +2183,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ICommand command = history.getLast();
 				if (command instanceof IUndoableCommand) {
 					IUndoableCommand undCommand = (IUndoableCommand) command;
-					try {
-						if (undCommand.canUndo()) {
-							undCommand.undo();
-							history.removeLast();
-						}
-					} catch (UndoException e1) {
-						logger.error("UndoException:", e1);
+					if (undCommand.canUndo()) {
+						undCommand.undo();
+						history.removeLast();
 					}
 				}
 				statusBar.setMessage("");
@@ -2690,10 +2685,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
-						Iterator<PlotDataProvider> it = selectedChannels.iterator();
-						while (it.hasNext()) {
+						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
-							channel = it.next();
+							channel = selectedChannel;
 							channel.dumpMseed(ds, graphPanel.getTimeRange(), graphPanel.getFilter(),
 									channel.getRotation());
 						}
@@ -2848,10 +2842,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 								+ "\" end = \"" + TimeInterval.formatDate(graphPanel.getTimeRange().getEndTime(),
 										TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 								+ "\">\n");
-						Iterator<PlotDataProvider> it = selectedChannels.iterator();
-						while (it.hasNext()) {
+						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
-							channel = it.next();
+							channel = selectedChannel;
 							channel.dumpXML(fw, graphPanel.getTimeRange(), graphPanel.getFilter(),
 									channel.getRotation());
 						}
@@ -2914,10 +2907,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
-						Iterator<PlotDataProvider> it = selectedChannels.iterator();
-						while (it.hasNext()) {
+						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
-							channel = it.next();
+							channel = selectedChannel;
 							channel.dumpASCII(fw, graphPanel.getTimeRange(), graphPanel.getFilter(),
 									channel.getRotation());
 						}
@@ -3023,13 +3015,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			for (int i = 0; i < getFilterButtonPanel().bg.getButtonCount(); i++) {
 				if (pluginId == null) {
 					getFilterButtonPanel().bg.clearSelection();
-				} else if (pluginId == "LP") {
+				} else if (pluginId.equals("LP")) {
 					getFilterButtonPanel().lowPassButton.setSelected(true);
-				} else if (pluginId == "HP") {
+				} else if (pluginId.equals("HP")) {
 					getFilterButtonPanel().highPassButton.setSelected(true);
-				} else if (pluginId == "BP") {
+				} else if (pluginId.equals("BP")) {
 					getFilterButtonPanel().bandPassButton.setSelected(true);
-				} else if (pluginId == "DYO") {
+				} else if (pluginId.equals("DYO")) {
 					getFilterButtonPanel().dyoFilterButton.setSelected(true);
 				}
 			}
@@ -3644,7 +3636,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			Object src = evt.getSource();
 			Action action = null;
 			if (src == lowPassButton) {
-				if (lowPassButton.isSelected() && filterSelected == FilterLP.NAME) {
+				if (lowPassButton.isSelected() && filterSelected.equals(FilterLP.NAME)) {
 					bg.clearSelection();
 					filterSelected = "";
 				} else {
@@ -3653,7 +3645,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action = actionMap.get(FilterLP.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == bandPassButton) {
-				if (bandPassButton.isSelected() && filterSelected == FilterBP.NAME) {
+				if (bandPassButton.isSelected() && filterSelected.equals(FilterBP.NAME)) {
 					bg.clearSelection();
 					filterSelected = "";
 				} else {
@@ -3662,7 +3654,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action = actionMap.get(FilterBP.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == highPassButton) {
-				if (highPassButton.isSelected() && filterSelected == FilterHP.NAME) {
+				if (highPassButton.isSelected() && filterSelected.equals(FilterHP.NAME)) {
 					bg.clearSelection();
 					filterSelected = "";
 				} else {
@@ -3671,7 +3663,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action = actionMap.get(FilterHP.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == dyoFilterButton) {
-				if (dyoFilterButton.isSelected() && filterSelected == FilterDYO.NAME) {
+				if (dyoFilterButton.isSelected() && filterSelected.equals(FilterDYO.NAME)) {
 					bg.clearSelection();
 					filterSelected = "";
 				} else {

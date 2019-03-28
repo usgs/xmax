@@ -6,7 +6,6 @@ import com.isti.traceview.data.Response;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import java.util.Arrays;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYSeries;
@@ -25,12 +24,7 @@ public class IstiUtilsMath {
 	/**
 	 * \ingroup isti_utils_retVal \brief FAILURE
 	 */
-	public static final int ISTI_UTIL_FAILED = -1;
-
-	/**
-	 * \ingroup isti_utils_param \brief Conversion from nmeters to meters
-	 */
-	public static double ISTI_UTIL_NM2MTR = 1e9;
+	private static final int ISTI_UTIL_FAILED = -1;
 
 	/**
 	 * \ingroup isti_utils_public_functions \brief Function to normalize
@@ -81,13 +75,12 @@ public class IstiUtilsMath {
 	 * @param len
 	 *            the length.
 	 */
-	public static void dispToAccel(double[] spectrum, final double deltaF, final int len) {
+	static void dispToAccel(double[] spectrum, final double deltaF, final int len) {
 		double omega;
 		for (int i = 0; i < len; i++) {
 			omega = 2.0 * StrictMath.PI * deltaF * i;
 			spectrum[i] *= StrictMath.pow(omega, 4.0);
 		}
-		return;
 	}
 
 	/**
@@ -101,13 +94,12 @@ public class IstiUtilsMath {
 	 * @param len
 	 *            the length.
 	 */
-	public static void velToAccel(double[] spectrum, final double deltaF, final int len) {
+	static void velToAccel(double[] spectrum, final double deltaF, final int len) {
 		double omega;
 		for (int i = 0; i < len; i++) {
 			omega = 2.0 * StrictMath.PI * deltaF * i;
 			spectrum[i] *= StrictMath.pow(omega, 2.0);
 		}
-		return;
 	}
 
 	/**
@@ -224,8 +216,9 @@ public class IstiUtilsMath {
 	public static double[] normData(double[] data) {
 		double[] ret = new double[data.length];
 		double sumData = 0.0;
-		for (int i = 0; i < data.length; i++)
-			sumData += data[i];
+		for (double datum : data) {
+			sumData += datum;
+		}
 		final double meanData = sumData / data.length;
 		for (int i = 0; i < data.length; i++)
 			ret[i] = data[i] - meanData;
@@ -235,8 +228,9 @@ public class IstiUtilsMath {
 	public static double[] normData(int[] data) {
 		double[] ret = new double[data.length];
 		double sumData = 0.0;
-		for (int i = 0; i < data.length; i++)
-			sumData += data[i];
+		for (int datum : data) {
+			sumData += datum;
+		}
 		final double meanData = sumData / data.length;
 		for (int i = 0; i < data.length; i++)
 			ret[i] = data[i] - meanData;
@@ -244,32 +238,9 @@ public class IstiUtilsMath {
 	}
 
 	/**
-	 * \ingroup isti_utils_public_functions \brief Function for real numbers
-	 * deconvolution of double array. \note We assume that the length of both
-	 * arays are the same and save the \note output into the data. \note The
-	 * output is saved in the first and second input parameters. Beware!
-	 * 
-	 * @param denom
-	 *            the denominator array.
-	 * @param numer
-	 *            the numerator array.
-	 * @param len
-	 *            the length.
-	 */
-	public static void realDeconvolution(double[] denom, double[] numer, int len) {
-		final double small = 10e-30;
-		for (int i = 0; i < len; i++) {
-			if (numer[i] == 0)
-				denom[i] /= small;
-			else
-				denom[i] /= numer[i];
-		}
-	}
-
-	/**
 	 * Compute complex deconvolution
 	 */
-	public static final Cmplx[] complexDeconvolution(Cmplx[] f, Cmplx[] g) {
+	public static Cmplx[] complexDeconvolution(Cmplx[] f, Cmplx[] g) {
 		if (f.length != g.length)
 			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
 		
@@ -282,7 +253,7 @@ public class IstiUtilsMath {
 	/**
 	 * Compute complex convolution
 	 */
-	public static final Cmplx[] complexConvolution(Cmplx[] f, Cmplx[] g) {
+	public static Cmplx[] complexConvolution(Cmplx[] f, Cmplx[] g) {
 		if (f.length != g.length)
 			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
 		Cmplx[] ret = new Cmplx[f.length];
@@ -294,7 +265,7 @@ public class IstiUtilsMath {
 	/**
 	 * Compute amplitude of complex spectra
 	 */
-	public static final double[] getSpectraAmplitude(Cmplx[] spectra) {
+	public static double[] getSpectraAmplitude(Cmplx[] spectra) {
 		final double[] ret = new double[spectra.length];
 		for (int i = 0; i < spectra.length; i++) {
 			ret[i] = spectra[i].mag();
@@ -305,7 +276,7 @@ public class IstiUtilsMath {
 	/**
 	 * Compute correlation
 	 */
-	public static final double[] correlate(double[] fdata, double[] gdata) {
+	public static double[] correlate(double[] fdata, double[] gdata) {
 		if (fdata.length != gdata.length)
 			throw new IllegalArgumentException("fdata and gdata must have same length. " + fdata.length + " " + gdata.length);
 		int dataLength = fdata.length;
@@ -339,38 +310,6 @@ public class IstiUtilsMath {
 			}
 		}
 		return crosscorr;
-	}
-
-	public static double[] floatToDoubleArray(float[] arr) {
-		double[] ret = new double[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			ret[i] = new Float(arr[i]).doubleValue();
-		}
-		return ret;
-	}
-
-	public static float[] doubleToFloatArray(double[] arr) {
-		float[] ret = new float[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			ret[i] = new Double(arr[i]).floatValue();
-		}
-		return ret;
-	}
-
-	public static float[] intToFloatArray(int[] arr) {
-		float[] ret = new float[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			ret[i] = new Integer(arr[i]).floatValue();
-		}
-		return ret;
-	}
-
-	public static double[] intToDoubleArray(int[] arr) {
-		double[] ret = new double[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			ret[i] = new Integer(arr[i]).doubleValue();
-		}
-		return ret;
 	}
 
 	/**
@@ -428,8 +367,8 @@ public class IstiUtilsMath {
 		int n = indata.length;
 		DoubleFFT_1D fft = new DoubleFFT_1D(n);
 		fft.realForward(indata);
-		Cmplx[] ret = null;	
-		int l = 0;
+		Cmplx[] ret;
+		int l;
 		if(n%2==0){
 			l = n/2;
 			ret = new Cmplx[l+1];
@@ -470,19 +409,6 @@ public class IstiUtilsMath {
 		for (int k = 0; k < outLen; k++) {
 			ret[k] = new Cmplx(indata[k], k == 0 ? 0 : indata[indata.length - k]);
 		}
-		
-		/*
-		final Cmplx[] ret = new Cmplx[indata.length];
-		ret[0] = new Cmplx(indata[0], 0);
-		for (int k = 1; k < indata.length/2; k++) {
-			if (k == (indata.length/2)) {
-				ret[k] = new Cmplx(indata[k], 0);
-			} else {
-				ret[k] = new Cmplx(indata[k], indata[indata.length - k]);
-				ret[indata.length-k] = new Cmplx(indata[k], -indata[indata.length - k]);
-			}
-		}
-		*/
 		return ret;
 	}
 
@@ -493,7 +419,7 @@ public class IstiUtilsMath {
 	 *            spectra to process, count of points must be power of 2
 	 */
 	
-	public static double[] inverseFft(Cmplx[] indata) {
+	private static double[] inverseFft(Cmplx[] indata) {
 		DoubleFFT_1D fft = new DoubleFFT_1D(indata.length * 2-2);
 		double[] dataToProcess = new double[indata.length * 2-2];
 		for (int k = 0; k < indata.length-1; k++) {
@@ -518,19 +444,6 @@ public class IstiUtilsMath {
 			dataToProcess[dataToProcess.length - k - 1] = indata[k].i;
 		}
 		fft.inverse(dataToProcess);
-		/* 
-		ComplexDoubleFFT_Mixed fft = new ComplexDoubleFFT_Mixed(indata.length);
-		double[] dataToProcess = new double[indata.length*2];
-		for (int k = 0; k < indata.length; k++) {
-			dataToProcess[k*2] = indata[k].r;
-			dataToProcess[k*2+1] = indata[k].i;
-		}
-		
-		Cmplx[] ret = new Cmplx[indata.length];
-		for (int k = 0; k < indata.length; k++) {
-			ret[k] = new Cmplx(dataToProcess[k*2], dataToProcess[k*2+1]);
-		}
-		*/
 		return dataToProcess;
 	}
 
@@ -586,33 +499,13 @@ public class IstiUtilsMath {
 		}
 		return ret / (2 * internalRadius + 1);
 	}
-	
-	public static double median(int[] m) {
-		int[] sorted = Arrays.copyOf(m, m.length);
-		Arrays.sort(sorted);
-	    int middle = sorted.length/2;  // subscript of middle element
-	    if (sorted.length%2 == 1) {
-	        // Odd number of elements -- return the middle one.
-	        return sorted[middle];
-	    } else {
-	       // Even number -- return average of middle two
-	       // Must cast the numbers to double before dividing.
-	       return (sorted[middle-1] + sorted[middle]) / 2.0;
-	    }
-	}
 
 	static public int[] padArray(int[] original, int[] toAdd) {
-		// int[] ret = Arrays.copyOf(original, original.length + toAdd.length);
-
 		// so as Mac OSX java doesn't contain Arrays.copyOf method
 		int[] ret = new int[original.length + toAdd.length];
-		for (int i = 0; i < original.length; i++) {
-			ret[i] = original[i];
-		}
+		System.arraycopy(original, 0, ret, 0, original.length);
 		// --------
-		for (int i = 0; i < toAdd.length; i++) {
-			ret[original.length + i] = toAdd[i];
-		}
+		System.arraycopy(toAdd, 0, ret, original.length, toAdd.length);
 		return ret;
 	}
 

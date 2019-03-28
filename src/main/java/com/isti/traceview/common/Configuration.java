@@ -413,12 +413,16 @@ public class Configuration extends Observable {
 	 */
 	public void setScaleMode(String str) {
 		if (str != null) {
-			if (str.equals("AUTO")) {
-				this.scaleMode = new ScaleModeAuto();
-			} else if (str.equals("COM")) {
-				this.scaleMode = new ScaleModeCom();
-			} else if (str.equals("XHAIR")) {
-				this.scaleMode = new ScaleModeXhair();
+			switch (str) {
+				case "AUTO":
+					this.scaleMode = new ScaleModeAuto();
+					break;
+				case "COM":
+					this.scaleMode = new ScaleModeCom();
+					break;
+				case "XHAIR":
+					this.scaleMode = new ScaleModeXhair();
+					break;
 			}
 			setChanged();
 			notifyObservers(this.scaleMode);
@@ -480,36 +484,52 @@ public class Configuration extends Observable {
 	 *             in case of unsupported compression name
 	 */
 	public void setDefaultCompression(String defaultCompressionStr) throws TraceViewException {
-		if (defaultCompressionStr.equals("ASCII")) {
-			setDefaultCompression(B1000Types.ASCII);
-		} else if (defaultCompressionStr.equals("SHORT")) {
-			setDefaultCompression(B1000Types.SHORT);
-		} else if (defaultCompressionStr.equals("INT24")) {
-			setDefaultCompression(B1000Types.INT24);
-		} else if (defaultCompressionStr.equals("INT32")) {
-			setDefaultCompression(B1000Types.INTEGER);
-		} else if (defaultCompressionStr.equals("FLOAT")) {
-			setDefaultCompression(B1000Types.FLOAT);
-		} else if (defaultCompressionStr.equals("DOUBLE")) {
-			setDefaultCompression(B1000Types.DOUBLE);
-		} else if (defaultCompressionStr.equals("STEIM1")) {
-			setDefaultCompression(B1000Types.STEIM1);
-		} else if (defaultCompressionStr.equals("STEIM2")) {
-			setDefaultCompression(B1000Types.STEIM2);
-		} else if (defaultCompressionStr.equals("CDSN")) {
-			setDefaultCompression(B1000Types.CDSN);
-		} else if (defaultCompressionStr.equals("RSTN")) {
-			setDefaultCompression(B1000Types.CDSN);
-		} else if (defaultCompressionStr.equals("DWW")) {
-			setDefaultCompression(B1000Types.DWWSSN);
-		} else if (defaultCompressionStr.equals("SRO")) {
-			setDefaultCompression(B1000Types.SRO);
-		} else if (defaultCompressionStr.equals("ASRO")) {
-			setDefaultCompression(B1000Types.SRO);
-		} else if (defaultCompressionStr.equals("HGLP")) {
-			setDefaultCompression(B1000Types.SRO);
-		} else {
-			throw new TraceViewException("Unsupported compression type: '" + defaultCompressionStr + "'");
+		switch (defaultCompressionStr) {
+			case "ASCII":
+				setDefaultCompression(B1000Types.ASCII);
+				break;
+			case "SHORT":
+				setDefaultCompression(B1000Types.SHORT);
+				break;
+			case "INT24":
+				setDefaultCompression(B1000Types.INT24);
+				break;
+			case "INT32":
+				setDefaultCompression(B1000Types.INTEGER);
+				break;
+			case "FLOAT":
+				setDefaultCompression(B1000Types.FLOAT);
+				break;
+			case "DOUBLE":
+				setDefaultCompression(B1000Types.DOUBLE);
+				break;
+			case "STEIM1":
+				setDefaultCompression(B1000Types.STEIM1);
+				break;
+			case "STEIM2":
+				setDefaultCompression(B1000Types.STEIM2);
+				break;
+			case "CDSN":
+				setDefaultCompression(B1000Types.CDSN);
+				break;
+			case "RSTN":
+				setDefaultCompression(B1000Types.CDSN);
+				break;
+			case "DWW":
+				setDefaultCompression(B1000Types.DWWSSN);
+				break;
+			case "SRO":
+				setDefaultCompression(B1000Types.SRO);
+				break;
+			case "ASRO":
+				setDefaultCompression(B1000Types.SRO);
+				break;
+			case "HGLP":
+				setDefaultCompression(B1000Types.SRO);
+				break;
+			default:
+				throw new TraceViewException(
+						"Unsupported compression type: '" + defaultCompressionStr + "'");
 		}
 
 	}
