@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 	private static final Logger logger = Logger.getLogger(ComplexDoubleFFT.class);
-	static final double PI = Math.PI;
+	private static final double PI = Math.PI;
 
 	public ComplexDoubleFFT_Mixed(int n) {
 		super(n);
@@ -64,7 +64,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
   private double[][][] twiddle;
   private int[] available_factors = {7, 6, 5, 4, 3, 2};
 
-	void setup_wavetable(int n) {
+	private void setup_wavetable(int n) {
 
 		if (n <= 0)
 			throw new Error("length must be positive integer : " + n);
@@ -109,7 +109,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 	 * ______________________________________________________________________
 	 * The main transformation driver
 	 */
-	void transform_internal(double[] data, int i0, int stride, int sign) {
+	private void transform_internal(double[] data, int i0, int stride, int sign) {
 
 		if (n == 1)
 			return; /* FFT of 1 data point is the identity */
@@ -178,7 +178,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_2(int fi, double[] in, int in0, int istride, double[] out,
+	private void pass_2(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -225,7 +225,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_3(int fi, double[] in, int in0, int istride, double[] out,
+	private void pass_3(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -296,7 +296,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_4(int fi, double[] in, int in0, int istride, double[] out,
+	private void pass_4(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -379,7 +379,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_5(int fi, double[] in, int in0, int istride, double[] out,
+	private void pass_5(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -507,7 +507,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_6(int fi, double[] in, int in0, int istride, double[] out,
+	private void pass_6(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 
 		int k, k1;
@@ -649,7 +649,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_7(int fi, double[] in, int in0, int istride, double[] out,
+	private void pass_7(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 
 		int k, k1;
@@ -892,9 +892,9 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_n(int fi, double[] in, int in0, int istride, double[] out,
+	private void pass_n(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int factor, int product) {
-		int i = 0, j = 0;
+		int i, j;
 		int k, k1;
 
 		int m = n / factor;
@@ -980,9 +980,6 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 				idx %= factor;
 			}
 		}
-
-		i = 0;
-		j = 0;
 
 		/* k = 0 */
 		for (k1 = 0; k1 < p_1; k1++) {

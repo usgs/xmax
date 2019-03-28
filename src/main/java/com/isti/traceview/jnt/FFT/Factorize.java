@@ -12,7 +12,7 @@ package com.isti.traceview.jnt.FFT;
  *  <a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>,
  *  this package must also be.
  */
-public class Factorize {
+class Factorize {
 
 	/**
 	 * Return the prime factors of n. The method first extracts any factors in
@@ -68,18 +68,4 @@ public class Factorize {
 		return f;
 	}
 
-	/**
-	 * Return the integer log, base 2, of n, or -1 if n is not an integral power
-	 * of 2.
-	 */
-	public static int log2(int n) {
-		int log = 0;
-
-		for (int k = 1; k < n; k *= 2, log++)
-			;
-
-		if (n != (1 << log))
-			return -1; /* n is not a power of 2 */
-		return log;
-	}
 }
