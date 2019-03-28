@@ -166,21 +166,26 @@ public class GraphUtil {
 		if (fc.showSaveDialog(TraceView.getFrame()) == JFileChooser.APPROVE_OPTION) {
 			selectedFile = fc.getSelectedFile();
 			String filename = selectedFile.getPath();
-			if (fc.getFileFilter().getDescription().equals("PNG Images")) {
-				encFormat = "PNG";
-				if (!filename.toLowerCase().endsWith(".png")) {
-					filename = filename + ".png";
-				}
-			} else if (fc.getFileFilter().getDescription().equals("JPEG Images")) {
-				encFormat = "JPG";
-				if (!(filename.toLowerCase().endsWith(".jpeg") || filename.toLowerCase().endsWith(".jpg"))) {
-					filename = filename + ".jpg";
-				}
-			} else if (fc.getFileFilter().getDescription().equals("BMP Images")) {
-				encFormat = "BMP";
-				if (!filename.toLowerCase().endsWith(".bmp")) {
-					filename = filename + ".bmp";
-				}
+			switch (fc.getFileFilter().getDescription()) {
+				case "PNG Images":
+					encFormat = "PNG";
+					if (!filename.toLowerCase().endsWith(".png")) {
+						filename = filename + ".png";
+					}
+					break;
+				case "JPEG Images":
+					encFormat = "JPG";
+					if (!(filename.toLowerCase().endsWith(".jpeg") || filename.toLowerCase()
+							.endsWith(".jpg"))) {
+						filename = filename + ".jpg";
+					}
+					break;
+				case "BMP Images":
+					encFormat = "BMP";
+					if (!filename.toLowerCase().endsWith(".bmp")) {
+						filename = filename + ".bmp";
+					}
+					break;
 			}
 			GraphUtil.exportGraphics(panel, filename, encFormat, default_compression);
 		}

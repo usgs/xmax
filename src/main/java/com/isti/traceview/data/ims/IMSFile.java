@@ -55,22 +55,26 @@ public class IMSFile {
 				}
 				String[] firstLineParts = line.split("\\s.");
 				String tag = firstLineParts[0].toUpperCase();
-				if (tag.equals("BEGIN")) {
-					imsFile.format_version = firstLineParts[1].trim();
-					imsFile.readMessageHeader(input, filePointer);
-					if (imsFile.msg_type == MessageType.DATA) {
+				switch (tag) {
+					case "BEGIN":
+						imsFile.format_version = firstLineParts[1].trim();
+						imsFile.readMessageHeader(input, filePointer);
+						if (imsFile.msg_type == MessageType.DATA) {
+							imsFile.readDataTypes(parseOnly, input, filePointer);
+						} else if (imsFile.msg_type == MessageType.REQUEST) {
+						} else if (imsFile.msg_type == MessageType.SUBSCRIPTION) {
+						}
+						break;
+					case "DATA_TYPE":
+						input.seek(filePointer);
 						imsFile.readDataTypes(parseOnly, input, filePointer);
-					} else if (imsFile.msg_type == MessageType.REQUEST) {
-          } else if (imsFile.msg_type == MessageType.SUBSCRIPTION) {
-          }
-				} else if (tag.equals("DATA_TYPE")) {
-					input.seek(filePointer);
-					imsFile.readDataTypes(parseOnly, input, filePointer);
-				} else if (tag.equals("WID2")) {
-					input.seek(filePointer);
-					DataType dt = new DataTypeWaveform(filePointer);
-					dt.read(input, parseOnly);
-					imsFile.dataTypes.add(dt);
+						break;
+					case "WID2":
+						input.seek(filePointer);
+						DataType dt = new DataTypeWaveform(filePointer);
+						dt.read(input, parseOnly);
+						imsFile.dataTypes.add(dt);
+						break;
 				}
 			}
 		} catch (EOFException e) {
@@ -91,12 +95,16 @@ public class IMSFile {
 			Matcher m = msgTypePattern.matcher(line);
 			if (m.matches()) {
 				String msg_type_str = m.group(1);
-				if(msg_type_str.equals("DATA")){
-					msg_type = MessageType.DATA;
-				} else if(msg_type_str.equals("REQUEST")){
-					msg_type = MessageType.REQUEST;
-				} else if(msg_type_str.equals("SUBSCRIPTION")){
-					msg_type = MessageType.SUBSCRIPTION;
+				switch (msg_type_str) {
+					case "DATA":
+						msg_type = MessageType.DATA;
+						break;
+					case "REQUEST":
+						msg_type = MessageType.REQUEST;
+						break;
+					case "SUBSCRIPTION":
+						msg_type = MessageType.SUBSCRIPTION;
+						break;
 				}
 				continue;
 			}

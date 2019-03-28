@@ -3015,13 +3015,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			for (int i = 0; i < getFilterButtonPanel().bg.getButtonCount(); i++) {
 				if (pluginId == null) {
 					getFilterButtonPanel().bg.clearSelection();
-				} else if (pluginId == "LP") {
+				} else if (pluginId.equals("LP")) {
 					getFilterButtonPanel().lowPassButton.setSelected(true);
-				} else if (pluginId == "HP") {
+				} else if (pluginId.equals("HP")) {
 					getFilterButtonPanel().highPassButton.setSelected(true);
-				} else if (pluginId == "BP") {
+				} else if (pluginId.equals("BP")) {
 					getFilterButtonPanel().bandPassButton.setSelected(true);
-				} else if (pluginId == "DYO") {
+				} else if (pluginId.equals("DYO")) {
 					getFilterButtonPanel().dyoFilterButton.setSelected(true);
 				}
 			}
@@ -3636,7 +3636,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			Object src = evt.getSource();
 			Action action = null;
 			if (src == lowPassButton) {
-				if (lowPassButton.isSelected() && filterSelected == FilterLP.NAME) {
+				if (lowPassButton.isSelected() && filterSelected.equals(FilterLP.NAME)) {
 					bg.clearSelection();
 					filterSelected = "";
 				} else {
@@ -3645,7 +3645,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action = actionMap.get(FilterLP.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == bandPassButton) {
-				if (bandPassButton.isSelected() && filterSelected == FilterBP.NAME) {
+				if (bandPassButton.isSelected() && filterSelected.equals(FilterBP.NAME)) {
 					bg.clearSelection();
 					filterSelected = "";
 				} else {
@@ -3654,7 +3654,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action = actionMap.get(FilterBP.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == highPassButton) {
-				if (highPassButton.isSelected() && filterSelected == FilterHP.NAME) {
+				if (highPassButton.isSelected() && filterSelected.equals(FilterHP.NAME)) {
 					bg.clearSelection();
 					filterSelected = "";
 				} else {
@@ -3663,7 +3663,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				action = actionMap.get(FilterHP.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == dyoFilterButton) {
-				if (dyoFilterButton.isSelected() && filterSelected == FilterDYO.NAME) {
+				if (dyoFilterButton.isSelected() && filterSelected.equals(FilterDYO.NAME)) {
 					bg.clearSelection();
 					filterSelected = "";
 				} else {

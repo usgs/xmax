@@ -6,7 +6,6 @@ import com.isti.traceview.data.Response;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import java.util.Arrays;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYSeries;
@@ -25,7 +24,7 @@ public class IstiUtilsMath {
 	/**
 	 * \ingroup isti_utils_retVal \brief FAILURE
 	 */
-	public static final int ISTI_UTIL_FAILED = -1;
+	private static final int ISTI_UTIL_FAILED = -1;
 
 	/**
 	 * \ingroup isti_utils_public_functions \brief Function to normalize
@@ -76,13 +75,12 @@ public class IstiUtilsMath {
 	 * @param len
 	 *            the length.
 	 */
-	public static void dispToAccel(double[] spectrum, final double deltaF, final int len) {
+	static void dispToAccel(double[] spectrum, final double deltaF, final int len) {
 		double omega;
 		for (int i = 0; i < len; i++) {
 			omega = 2.0 * StrictMath.PI * deltaF * i;
 			spectrum[i] *= StrictMath.pow(omega, 4.0);
 		}
-		return;
 	}
 
 	/**
@@ -96,13 +94,12 @@ public class IstiUtilsMath {
 	 * @param len
 	 *            the length.
 	 */
-	public static void velToAccel(double[] spectrum, final double deltaF, final int len) {
+	static void velToAccel(double[] spectrum, final double deltaF, final int len) {
 		double omega;
 		for (int i = 0; i < len; i++) {
 			omega = 2.0 * StrictMath.PI * deltaF * i;
 			spectrum[i] *= StrictMath.pow(omega, 2.0);
 		}
-		return;
 	}
 
 	/**
@@ -219,8 +216,9 @@ public class IstiUtilsMath {
 	public static double[] normData(double[] data) {
 		double[] ret = new double[data.length];
 		double sumData = 0.0;
-		for (int i = 0; i < data.length; i++)
-			sumData += data[i];
+		for (double datum : data) {
+			sumData += datum;
+		}
 		final double meanData = sumData / data.length;
 		for (int i = 0; i < data.length; i++)
 			ret[i] = data[i] - meanData;
@@ -230,8 +228,9 @@ public class IstiUtilsMath {
 	public static double[] normData(int[] data) {
 		double[] ret = new double[data.length];
 		double sumData = 0.0;
-		for (int i = 0; i < data.length; i++)
-			sumData += data[i];
+		for (int datum : data) {
+			sumData += datum;
+		}
 		final double meanData = sumData / data.length;
 		for (int i = 0; i < data.length; i++)
 			ret[i] = data[i] - meanData;
@@ -410,19 +409,6 @@ public class IstiUtilsMath {
 		for (int k = 0; k < outLen; k++) {
 			ret[k] = new Cmplx(indata[k], k == 0 ? 0 : indata[indata.length - k]);
 		}
-		
-		/*
-		final Cmplx[] ret = new Cmplx[indata.length];
-		ret[0] = new Cmplx(indata[0], 0);
-		for (int k = 1; k < indata.length/2; k++) {
-			if (k == (indata.length/2)) {
-				ret[k] = new Cmplx(indata[k], 0);
-			} else {
-				ret[k] = new Cmplx(indata[k], indata[indata.length - k]);
-				ret[indata.length-k] = new Cmplx(indata[k], -indata[indata.length - k]);
-			}
-		}
-		*/
 		return ret;
 	}
 
@@ -433,7 +419,7 @@ public class IstiUtilsMath {
 	 *            spectra to process, count of points must be power of 2
 	 */
 	
-	public static double[] inverseFft(Cmplx[] indata) {
+	private static double[] inverseFft(Cmplx[] indata) {
 		DoubleFFT_1D fft = new DoubleFFT_1D(indata.length * 2-2);
 		double[] dataToProcess = new double[indata.length * 2-2];
 		for (int k = 0; k < indata.length-1; k++) {
@@ -458,19 +444,6 @@ public class IstiUtilsMath {
 			dataToProcess[dataToProcess.length - k - 1] = indata[k].i;
 		}
 		fft.inverse(dataToProcess);
-		/* 
-		ComplexDoubleFFT_Mixed fft = new ComplexDoubleFFT_Mixed(indata.length);
-		double[] dataToProcess = new double[indata.length*2];
-		for (int k = 0; k < indata.length; k++) {
-			dataToProcess[k*2] = indata[k].r;
-			dataToProcess[k*2+1] = indata[k].i;
-		}
-		
-		Cmplx[] ret = new Cmplx[indata.length];
-		for (int k = 0; k < indata.length; k++) {
-			ret[k] = new Cmplx(dataToProcess[k*2], dataToProcess[k*2+1]);
-		}
-		*/
 		return dataToProcess;
 	}
 
@@ -528,17 +501,11 @@ public class IstiUtilsMath {
 	}
 
 	static public int[] padArray(int[] original, int[] toAdd) {
-		// int[] ret = Arrays.copyOf(original, original.length + toAdd.length);
-
 		// so as Mac OSX java doesn't contain Arrays.copyOf method
 		int[] ret = new int[original.length + toAdd.length];
-		for (int i = 0; i < original.length; i++) {
-			ret[i] = original[i];
-		}
+		System.arraycopy(original, 0, ret, 0, original.length);
 		// --------
-		for (int i = 0; i < toAdd.length; i++) {
-			ret[original.length + i] = toAdd[i];
-		}
+		System.arraycopy(toAdd, 0, ret, original.length, toAdd.length);
 		return ret;
 	}
 
