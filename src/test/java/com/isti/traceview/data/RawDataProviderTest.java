@@ -1,6 +1,10 @@
 package com.isti.traceview.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
@@ -9,11 +13,9 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.filters.FilterLP;
 import com.isti.traceview.processing.LPFilterException;
 import com.isti.traceview.processing.Rotation;
-import com.isti.xmax.data.XMAXDataModule;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;

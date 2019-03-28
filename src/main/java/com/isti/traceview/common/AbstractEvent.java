@@ -1,10 +1,10 @@
 package com.isti.traceview.common;
 
 import java.awt.Color;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Date;
 
 /**
  * Abstract class implements {@link IEvent} interface, it contains all common behaviors of events.

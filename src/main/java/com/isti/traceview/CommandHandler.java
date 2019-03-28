@@ -3,7 +3,6 @@ package com.isti.traceview;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-
 import org.apache.log4j.Logger;
 
 /**

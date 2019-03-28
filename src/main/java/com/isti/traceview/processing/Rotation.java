@@ -1,6 +1,15 @@
 package com.isti.traceview.processing;
 
+import com.isti.traceview.TraceView;
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.data.PlotData;
+import com.isti.traceview.data.PlotDataPoint;
 import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.RawDataProvider;
+import com.isti.traceview.data.Segment;
+import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.gui.IColorModeState;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -26,15 +35,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import org.apache.log4j.Logger;
-import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.data.PlotData;
-import com.isti.traceview.data.PlotDataPoint;
-import com.isti.traceview.data.RawDataProvider;
-import com.isti.traceview.data.Segment;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.gui.IColorModeState;
 
 /**
  * This class holds all information to describe traces rotation and provides methods to compute

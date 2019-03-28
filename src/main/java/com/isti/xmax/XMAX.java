@@ -1,15 +1,20 @@
 package com.isti.xmax;
 
+import com.isti.traceview.TraceView;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.gui.ColorModeBySegment;
+import com.isti.traceview.transformations.ITransformation;
+import com.isti.xmax.data.XMAXDataModule;
+import com.isti.xmax.gui.XMAXframe;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Objects;
 import java.util.Set;
-
 import java.util.jar.Manifest;
 import javax.swing.JOptionPane;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -21,14 +26,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.reflections.Reflections;
-
-import com.isti.traceview.TraceView;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.gui.ColorModeBySegment;
-import com.isti.traceview.transformations.ITransformation;
-import com.isti.xmax.data.XMAXDataModule;
-import com.isti.xmax.gui.XMAXframe;
 
 /**
  * Main class for XMAX. Keeps command line parsing logic, handles with plugins, initialize data and

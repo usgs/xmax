@@ -1,15 +1,13 @@
 package edu.sc.seis.seisFile.segd;
 
-import org.apache.log4j.Logger;
-
+import com.isti.traceview.common.TimeInterval;
 import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import com.isti.traceview.common.TimeInterval;
+import org.apache.log4j.Logger;
 
 public class Trace {
 	private static final Logger logger = Logger.getLogger(Trace.class);

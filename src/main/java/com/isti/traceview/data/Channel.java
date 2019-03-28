@@ -1,5 +1,10 @@
 package com.isti.traceview.data;
 
+import com.isti.jevalresp.RespUtils;
+import com.isti.traceview.TraceView;
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.Configuration;
+import com.isti.traceview.common.Station;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,14 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Properties;
-
 import org.apache.log4j.Logger;
-
-import com.isti.jevalresp.RespUtils;
-import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.Configuration;
-import com.isti.traceview.common.Station;
 
 /**
  * Base class for channel representation, realize simplest SNCL logic, also holds response

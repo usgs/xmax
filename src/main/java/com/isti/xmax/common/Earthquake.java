@@ -1,5 +1,17 @@
 package com.isti.xmax.common;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.AbstractEvent;
+import com.isti.traceview.common.IEvent;
+import com.isti.traceview.common.Station;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.Wildcard;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.xmax.XMAX;
+import com.isti.xmax.XMAXconfiguration;
+import edu.sc.seis.TauP.TauModelException;
+import edu.sc.seis.TauP.TauP_Time;
+import edu.sc.seis.fissuresUtil.bag.DistAz;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,22 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.AbstractEvent;
-import com.isti.traceview.common.IEvent;
-import com.isti.traceview.common.Station;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.Wildcard;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.xmax.XMAX;
-import com.isti.xmax.XMAXconfiguration;
-
-import edu.sc.seis.TauP.TauModelException;
-import edu.sc.seis.TauP.TauP_Time;
-import edu.sc.seis.fissuresUtil.bag.DistAz;
 
 /**
  * Class holds information about particular earthquake. Also contain 

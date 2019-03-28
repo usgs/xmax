@@ -1,5 +1,6 @@
 package com.isti.traceview.common;
 
+import com.isti.traceview.data.Channel;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,8 +8,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-
-import com.isti.traceview.data.Channel;
 
 /**
  * Defines the station information. Station list is initialized during startup: such information as

@@ -1,5 +1,16 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.IEvent;
+import com.isti.traceview.common.Station;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.gui.ColorModeBySource;
+import com.isti.traceview.gui.IColorModeState;
+import com.isti.traceview.processing.FilterFacade;
+import com.isti.traceview.processing.RemoveGain;
+import com.isti.traceview.processing.RemoveGainException;
+import com.isti.traceview.processing.Rotation;
 import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,20 +28,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.IEvent;
-import com.isti.traceview.common.Station;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.gui.ColorModeBySource;
-import com.isti.traceview.gui.IColorModeState;
-import com.isti.traceview.processing.FilterFacade;
-import com.isti.traceview.processing.RemoveGain;
-import com.isti.traceview.processing.RemoveGainException;
-import com.isti.traceview.processing.Rotation;
 
 /**
  * <p>

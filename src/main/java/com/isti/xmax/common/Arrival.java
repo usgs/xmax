@@ -1,10 +1,9 @@
 package com.isti.xmax.common;
 
-import java.util.Date;
-
-import org.apache.log4j.Logger;
 import com.isti.traceview.common.AbstractEvent;
 import com.isti.traceview.common.IEvent;
+import java.util.Date;
+import org.apache.log4j.Logger;
 
 /**
  * Arrival event, i.e registration time of earthquake's wave on the given instrument. Collection of

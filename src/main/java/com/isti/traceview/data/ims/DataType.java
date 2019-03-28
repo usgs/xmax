@@ -1,7 +1,6 @@
 package com.isti.traceview.data.ims;
 
 import gov.usgs.anss.cd11.CanadaException;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;

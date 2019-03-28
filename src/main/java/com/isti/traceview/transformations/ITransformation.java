@@ -1,12 +1,10 @@
 package com.isti.traceview.transformations;
 
-import java.util.List;
-
-import javax.swing.JFrame;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.IFilter;
+import java.util.List;
+import javax.swing.JFrame;
 
 /**
  * Interface to represent abstract transformation. Transformation accepts list

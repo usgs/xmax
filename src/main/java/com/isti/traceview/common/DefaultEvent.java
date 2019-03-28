@@ -1,8 +1,6 @@
 package com.isti.traceview.common;
 
 import java.util.Date;
-import com.isti.traceview.common.AbstractEvent;
-import com.isti.traceview.common.IEvent;
 
 /**
  * Concrete class for very simple default event

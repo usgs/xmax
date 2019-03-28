@@ -1,5 +1,7 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.TimeInterval;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -7,12 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import java.io.RandomAccessFile;
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.TimeInterval;
 
 /**
  * This is the header for the PASSCAL SEGY trace data. The PASSCAL SEGY trace format is a modified

@@ -1,11 +1,10 @@
 package com.isti.traceview.data;
 
-import java.io.DataInput;
-import java.io.IOException;
-
 import edu.sc.seis.seisFile.mseed.ControlHeader;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.mseed.SeedRecord;
+import java.io.DataInput;
+import java.io.IOException;
 
 /**
  * 

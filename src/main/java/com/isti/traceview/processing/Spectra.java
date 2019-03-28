@@ -1,5 +1,11 @@
 package com.isti.traceview.processing;
 
+import com.isti.jevalresp.OutputGenerator;
+import com.isti.traceview.TraceView;
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.data.Channel;
+import com.isti.traceview.data.Response;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,17 +13,8 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.Date;
-
 import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYSeries;
-
-import com.isti.jevalresp.OutputGenerator;
-import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.data.Channel;
-import com.isti.traceview.data.Response;
-
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 
 /**
  * This class holds all data to plot channel's spectra and psd

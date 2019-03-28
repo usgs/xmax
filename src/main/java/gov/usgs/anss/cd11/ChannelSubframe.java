@@ -22,7 +22,6 @@ package gov.usgs.anss.cd11;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
-
 import org.apache.log4j.Logger;
 
 /**

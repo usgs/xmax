@@ -1,14 +1,13 @@
 package com.isti.traceview.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
 import com.isti.traceview.processing.Rotation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This command performs rotation

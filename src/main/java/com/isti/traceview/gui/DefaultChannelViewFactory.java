@@ -1,8 +1,7 @@
 package com.isti.traceview.gui;
 
-import java.util.List;
-
 import com.isti.traceview.data.PlotDataProvider;
+import java.util.List;
 
 /**
  * Default channel view factory, generates ordinary {@link ChannelView}

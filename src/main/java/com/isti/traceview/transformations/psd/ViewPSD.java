@@ -1,5 +1,21 @@
 package com.isti.traceview.transformations.psd;
 
+import com.isti.jevalresp.OutputGenerator;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.SacTimeSeriesASCII;
+import com.isti.traceview.gui.ChannelView;
+import com.isti.traceview.gui.ColorModeFixed;
+import com.isti.traceview.gui.GraphPanel;
+import com.isti.traceview.gui.GraphUtil;
+import com.isti.traceview.gui.IChannelViewFactory;
+import com.isti.traceview.gui.ScaleModeAuto;
+import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.traceview.processing.Spectra;
+import com.isti.xmax.XMAX;
+import com.isti.xmax.XMAXconfiguration;
+import com.isti.xmax.gui.XMAXframe;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -23,14 +39,12 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.StringTokenizer;
-
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
@@ -48,23 +62,6 @@ import org.jfree.data.Range;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
-import com.isti.jevalresp.OutputGenerator;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.TraceViewChartPanel;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.data.SacTimeSeriesASCII;
-import com.isti.traceview.gui.ChannelView;
-import com.isti.traceview.gui.ColorModeFixed;
-import com.isti.traceview.gui.GraphPanel;
-import com.isti.traceview.gui.GraphUtil;
-import com.isti.traceview.gui.IChannelViewFactory;
-import com.isti.traceview.gui.ScaleModeAuto;
-import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Spectra;
-import com.isti.xmax.XMAX;
-import com.isti.xmax.XMAXconfiguration;
-import com.isti.xmax.gui.XMAXframe;
 
 /**
  * Dialog to view PSD results. Also performs deconvolution, convolution and

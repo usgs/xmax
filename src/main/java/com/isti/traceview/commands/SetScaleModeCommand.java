@@ -1,11 +1,10 @@
 package com.isti.traceview.commands;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.IScaleModeState;
+import org.apache.log4j.Logger;
 
 /**
  * This command sets desired scale mode for graph panel

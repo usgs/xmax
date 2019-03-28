@@ -1,31 +1,25 @@
 package com.isti.xmax.gui;
 
+import com.isti.traceview.common.IEvent;
+import com.isti.xmax.XMAX;
+import com.isti.xmax.common.Earthquake;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.BorderFactory;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import java.awt.Component;
-import java.awt.Dimension;
-
-import javax.swing.JScrollPane;
-
-import com.isti.xmax.XMAX;
-import com.isti.xmax.common.Earthquake;
-import com.isti.traceview.common.IEvent;
-
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.JSplitPane;
-import javax.swing.BoxLayout;
-
 import org.apache.log4j.Logger;
 
 /**

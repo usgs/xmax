@@ -1,32 +1,28 @@
 package com.isti.traceview.filters;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
 import com.isti.traceview.processing.HPFilterException;
 import com.isti.traceview.processing.LPFilterException;
 import com.isti.xmax.gui.XMAXframe;
-
-import org.apache.log4j.Logger;
-
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.BorderFactory;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
+import org.apache.log4j.Logger;
 
 /**
  * Filter with visual dialog in constructor do manually design it. Use HP, BP or

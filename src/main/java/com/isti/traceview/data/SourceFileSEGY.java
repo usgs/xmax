@@ -1,14 +1,12 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.TraceViewException;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceViewException;
 
 /**
  * File SEGY data source

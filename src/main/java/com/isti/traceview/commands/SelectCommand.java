@@ -1,9 +1,8 @@
 package com.isti.traceview.commands;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.gui.GraphPanel;
+import org.apache.log4j.Logger;
 
 /**
  * This command selects chosen channels, i.e hides all unchosen channels on graph panel

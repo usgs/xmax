@@ -1,5 +1,9 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.traceview.processing.RunEvalResp;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -7,14 +11,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Date;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.RunEvalResp;
-
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 
 /**
  * Class to represent response

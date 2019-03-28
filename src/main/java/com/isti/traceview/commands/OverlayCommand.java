@@ -1,8 +1,8 @@
 package com.isti.traceview.commands;
 
-import org.apache.log4j.Logger;
 import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.gui.GraphPanel;
+import org.apache.log4j.Logger;
 
 /**
  * This command changes overlay mode

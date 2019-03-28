@@ -1,15 +1,14 @@
 package com.isti.xmax.gui;
 
-import java.awt.event.MouseEvent;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.ScaleModeXhair;
 import com.isti.xmax.XMAXTimeRangeAdapter;
 import com.isti.xmax.data.XMAXChannel;
+import java.awt.event.MouseEvent;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Customized {@link GraphPanel}

@@ -1,6 +1,6 @@
 package com.isti.xmax.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;

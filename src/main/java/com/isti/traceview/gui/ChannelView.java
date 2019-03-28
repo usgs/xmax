@@ -1,5 +1,14 @@
 package com.isti.traceview.gui;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.IEvent;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.data.EventWrapper;
+import com.isti.traceview.data.PlotData;
+import com.isti.traceview.data.PlotDataPoint;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
+import com.isti.traceview.processing.RemoveGainException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -23,7 +32,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -31,21 +39,10 @@ import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.MouseInputListener;
-
 import org.apache.log4j.Logger;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.RangeType;
 import org.jfree.ui.RectangleEdge;
-
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.IEvent;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.data.EventWrapper;
-import com.isti.traceview.data.PlotData;
-import com.isti.traceview.data.PlotDataPoint;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.data.Segment;
-import com.isti.traceview.processing.RemoveGainException;
 
 /**
  * Graphics panel to plot several traces in the same time and values coordinate axis on a single

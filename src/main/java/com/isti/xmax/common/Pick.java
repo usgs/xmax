@@ -1,5 +1,14 @@
 package com.isti.xmax.common;
 
+import com.isti.traceview.common.AbstractEvent;
+import com.isti.traceview.common.IEvent;
+import com.isti.traceview.common.Station;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.data.DataModule;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.xmax.XMAX;
+import com.isti.xmax.XMAXException;
+import com.isti.xmax.XMAXconfiguration;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,13 +20,10 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -29,16 +35,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.isti.traceview.common.AbstractEvent;
-import com.isti.traceview.common.IEvent;
-import com.isti.traceview.common.Station;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.data.DataModule;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.xmax.XMAX;
-import com.isti.xmax.XMAXException;
-import com.isti.xmax.XMAXconfiguration;
 
 /**
  * Pick mark, manually entered time label which can be shown on the trace and stored in special xml

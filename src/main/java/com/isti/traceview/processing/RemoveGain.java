@@ -1,7 +1,5 @@
 package com.isti.traceview.processing;
 
-import java.io.StringReader;
-
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
@@ -10,6 +8,7 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.IColorModeState;
+import java.io.StringReader;
 
 /**
  * This class holds all information to remove the instrument gain from a trace

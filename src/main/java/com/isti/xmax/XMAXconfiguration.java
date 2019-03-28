@@ -1,5 +1,9 @@
 package com.isti.xmax;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.Configuration;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.gui.ColorModeBySegment;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
@@ -14,19 +18,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-
-import org.apache.log4j.Logger;
-
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
-
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.Configuration;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.gui.ColorModeBySegment;
-import com.isti.xmax.XMAXException;
+import org.apache.log4j.Logger;
 
 /**
  * <p>
