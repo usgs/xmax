@@ -1,17 +1,5 @@
 package com.isti.xmax.gui;
 
-import java.awt.Color;
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.ExecuteCommand;
 import com.isti.traceview.commands.SelectTimeCommand;
 import com.isti.traceview.commands.SelectValueCommand;
@@ -25,6 +13,15 @@ import com.isti.traceview.gui.IScaleModeState;
 import com.isti.traceview.gui.ScaleModeXhair;
 import com.isti.xmax.common.Earthquake;
 import com.isti.xmax.common.Pick;
+import java.awt.Color;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import org.apache.log4j.Logger;
 
 /**
  * Customized {@link ChannelView}

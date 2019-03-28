@@ -1,10 +1,8 @@
 package edu.sc.seis.seisFile.segd;
 
-import org.apache.log4j.Logger;
-
 import java.io.DataInput;
 import java.io.IOException;
-import edu.sc.seis.seisFile.segd.SegdRecord;
+import org.apache.log4j.Logger;
 
 public class ChannelSet {
 	private static final Logger logger = Logger.getLogger(ChannelSet.class);

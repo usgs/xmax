@@ -1,9 +1,8 @@
 package com.isti.xmax.common;
 
-import java.util.Date;
-
 import com.isti.traceview.common.AbstractEvent;
 import com.isti.traceview.common.IEvent;
+import java.util.Date;
 
 /**
  * State of health (SOH) information for a trace.

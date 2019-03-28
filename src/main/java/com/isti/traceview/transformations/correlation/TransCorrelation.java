@@ -1,13 +1,5 @@
 package com.isti.traceview.transformations.correlation;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
@@ -17,6 +9,11 @@ import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.apache.log4j.Logger;
 
 /**
  * Correlation transformation. It only prepares data, correlation itself and

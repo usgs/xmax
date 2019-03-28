@@ -1,9 +1,8 @@
 package edu.sc.seis.seisFile.segd;
 
-import org.apache.log4j.Logger;
-
 import java.io.DataInput;
 import java.io.IOException;
+import org.apache.log4j.Logger;
 
 public class AdditionalGeneralHeader {
 	private static final Logger logger = Logger.getLogger(AdditionalGeneralHeader.class);

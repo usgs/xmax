@@ -1,22 +1,19 @@
 package com.isti.traceview.common;
 
-import com.isti.traceview.gui.ColorModeByGap;
-import java.io.File;
-import java.util.HashSet;
-import java.util.Observable;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceViewException;
+import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.gui.IScaleModeState;
 import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.gui.ScaleModeCom;
 import com.isti.traceview.gui.ScaleModeXhair;
-
 import edu.iris.dmc.seedcodec.B1000Types;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Observable;
+import java.util.Set;
+import java.util.StringTokenizer;
+import org.apache.log4j.Logger;
 
 /**
  * <p>

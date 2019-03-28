@@ -1,21 +1,17 @@
 package com.isti.traceview.gui.controls;
 
-import java.util.Date;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.GridLayout;
-
-import javax.swing.JPanel;
-import javax.swing.JButton;
-
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.GraphUtil;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Date;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 /**
  * Set of navigation buttons to control traces into GraphPanel.

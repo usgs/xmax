@@ -1,19 +1,16 @@
 package com.isti.traceview.processing;
 
-import java.util.Arrays;
-import java.util.Date;
-
-import org.apache.log4j.Logger;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
-
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.util.Arrays;
+import java.util.Date;
+import org.apache.log4j.Logger;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  * ISTI utils math methods.

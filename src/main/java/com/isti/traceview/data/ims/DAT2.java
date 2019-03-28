@@ -2,14 +2,12 @@ package com.isti.traceview.data.ims;
 
 import gov.usgs.anss.cd11.CanadaException;
 import gov.usgs.anss.cd11.ChannelSubframe;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 

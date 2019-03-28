@@ -1,6 +1,23 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.Station;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.Rotation;
+import edu.iris.Fissures.IfNetwork.ChannelId;
+import edu.iris.Fissures.IfNetwork.NetworkId;
+import edu.iris.Fissures.IfTimeSeries.EncodedData;
+import edu.iris.Fissures.Time;
+import edu.iris.Fissures.model.MicroSecondDate;
+import edu.iris.Fissures.model.SamplingImpl;
+import edu.iris.dmc.seedcodec.SteimException;
+import edu.iris.dmc.seedcodec.SteimFrameBlock;
+import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
+import edu.sc.seis.fissuresUtil.mseed.Recompress;
+import edu.sc.seis.seisFile.mseed.DataRecord;
+import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -14,29 +31,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-//import java.util.concurrent.ExecutorService;
-//import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
 
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.Station;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.FilterFacade;
-
-import edu.iris.Fissures.Time;
-import edu.iris.Fissures.IfNetwork.ChannelId;
-import edu.iris.Fissures.IfNetwork.NetworkId;
-import edu.iris.Fissures.IfTimeSeries.EncodedData;
-import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.SamplingImpl;
-import edu.iris.dmc.seedcodec.SteimException;
-import edu.iris.dmc.seedcodec.SteimFrameBlock;
-import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
-import edu.sc.seis.fissuresUtil.mseed.Recompress;
-import edu.sc.seis.seisFile.mseed.DataRecord;
-import edu.sc.seis.seisFile.mseed.SeedFormatException;
+//import java.util.concurrent.ExecutorService;
+//import java.util.concurrent.Executors;
 
 /**
  * Class for trace representation, holds raw trace data and introduces an abstract way to get it.

@@ -1,7 +1,6 @@
 package com.isti.traceview.data.ims;
 
 import gov.usgs.anss.cd11.CanadaException;
-
 import java.io.DataInput;
 import java.io.EOFException;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.log4j.Logger;
 
 public class IMSFile {

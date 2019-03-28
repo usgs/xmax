@@ -1,12 +1,5 @@
 package com.isti.traceview.transformations.psd;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import org.apache.commons.configuration.Configuration;
-import org.apache.log4j.Logger;
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
@@ -22,6 +15,13 @@ import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.apache.commons.configuration.Configuration;
+import org.apache.log4j.Logger;
 
 /**
  * Power spectra density transformation. Prepares data for presentation in

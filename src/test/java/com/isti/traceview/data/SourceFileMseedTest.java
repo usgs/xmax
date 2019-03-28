@@ -1,6 +1,6 @@
 package com.isti.traceview.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;

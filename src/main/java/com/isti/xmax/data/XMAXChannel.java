@@ -1,15 +1,14 @@
 package com.isti.xmax.data;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.common.Earthquake;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Customized {@link com.isti.traceview.data.Channel}

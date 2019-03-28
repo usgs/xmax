@@ -1,10 +1,9 @@
 package com.isti.traceview.commands;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
+import org.apache.log4j.Logger;
 
 /**
  * This command selects values range, i.e sets desired range of Y values on axis

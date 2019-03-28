@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
-
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.renderer.DefaultPolarItemRenderer;

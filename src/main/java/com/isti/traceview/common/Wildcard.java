@@ -1,14 +1,12 @@
 package com.isti.traceview.common;
 
+import com.isti.traceview.TraceView;
+import com.isti.traceview.TraceViewException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
 
 /**
  * this class realize unix command line wildcard syntax

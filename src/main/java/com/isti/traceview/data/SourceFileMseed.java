@@ -1,25 +1,10 @@
 package com.isti.traceview.data;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Arrays;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
-
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
-
 import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
 import edu.sc.seis.seisFile.mseed.Btime;
 import edu.sc.seis.seisFile.mseed.ControlHeader;
@@ -27,6 +12,17 @@ import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.mseed.SeedRecord;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.log4j.Logger;
 
 /**
  * File MSEED data source

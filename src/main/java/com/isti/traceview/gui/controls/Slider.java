@@ -1,28 +1,26 @@
 package com.isti.traceview.gui.controls;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-//import java.awt.Insets;
-import java.awt.event.MouseEvent;
-import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
-import javax.swing.BoxLayout;
-
-import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
-import javax.swing.event.MouseInputListener;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.DataModule;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+import javax.swing.event.MouseInputListener;
+import org.apache.log4j.Logger;
+
+//import java.awt.Insets;
 
 /**
  * Scroll bar to control traces in Graph Panel. 

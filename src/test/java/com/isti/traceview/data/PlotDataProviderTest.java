@@ -1,6 +1,7 @@
 package com.isti.traceview.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
@@ -9,7 +10,6 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.processing.RemoveGainException;
-import com.isti.xmax.data.XMAXDataModule;
 import java.io.File;
 import java.util.List;
 import org.apache.log4j.Level;

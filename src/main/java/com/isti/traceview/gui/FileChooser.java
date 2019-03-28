@@ -1,11 +1,9 @@
 package com.isti.traceview.gui;
 
+import com.isti.traceview.data.SourceFile;
 import java.io.File;
-
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-
-import com.isti.traceview.data.SourceFile;
 
 /**
  * Customized file chooser to select files handled by TraceView

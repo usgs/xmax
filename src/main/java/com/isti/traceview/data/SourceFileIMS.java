@@ -1,15 +1,5 @@
 package com.isti.traceview.data;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.text.ParseException;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.data.ims.BlockSet;
 import com.isti.traceview.data.ims.DAT2;
 import com.isti.traceview.data.ims.DataType;
@@ -18,8 +8,15 @@ import com.isti.traceview.data.ims.IMSFile;
 import com.isti.traceview.data.ims.IMSFormatException;
 import com.isti.traceview.data.ims.STA2;
 import com.isti.traceview.data.ims.WID2;
-
 import gov.usgs.anss.cd11.CanadaException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.log4j.Logger;
 
 public class SourceFileIMS extends SourceFile {
 	private static final long serialVersionUID = 1L;

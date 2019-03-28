@@ -3,7 +3,6 @@ package com.isti.traceview.data.ims;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
-
 import org.apache.log4j.Logger;
 
 public class STA2 extends Block {

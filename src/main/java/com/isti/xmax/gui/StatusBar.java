@@ -1,28 +1,23 @@
 package com.isti.xmax.gui;
 
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.JLabel;
-import javax.swing.BorderFactory;
-import javax.swing.border.BevelBorder;
-
-import java.awt.Dimension;
-
-import javax.swing.BoxLayout;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.gui.IMeanState;
 import com.isti.traceview.gui.IOffsetState;
 import com.isti.traceview.gui.IScaleModeState;
-import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
-
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
+import org.apache.log4j.Logger;
 
 /**
  * <p>

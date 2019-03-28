@@ -1,9 +1,8 @@
 package com.isti.traceview.gui;
 
-import java.util.List;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
+import java.util.List;
 
 /**
  * State pattern realization for scale mode. Scale mode defines method of trace scaling inside each

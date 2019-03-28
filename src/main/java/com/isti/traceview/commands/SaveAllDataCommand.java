@@ -1,11 +1,10 @@
 package com.isti.traceview.commands;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.AbstractCommand;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.PlotDataProvider;
+import org.apache.log4j.Logger;
 
 /**
  * This command dumps all loaded data into temporary storage area

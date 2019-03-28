@@ -1,5 +1,17 @@
 package com.isti.traceview.gui;
 
+import com.isti.traceview.CommandHandler;
+import com.isti.traceview.ITimeRangeAdapter;
+import com.isti.traceview.TraceView;
+import com.isti.traceview.common.IEvent;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.UniqueList;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
+import com.isti.traceview.data.SelectionContainer;
+import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.processing.RemoveGain;
+import com.isti.traceview.processing.Rotation;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -29,7 +41,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.TimeZone;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,7 +49,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.MouseInputListener;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jfree.chart.axis.DateAxis;
@@ -46,19 +56,6 @@ import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-
-import com.isti.traceview.CommandHandler;
-import com.isti.traceview.ITimeRangeAdapter;
-import com.isti.traceview.TraceView;
-import com.isti.traceview.common.IEvent;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.UniqueList;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.data.Segment;
-import com.isti.traceview.data.SelectionContainer;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.RemoveGain;
-import com.isti.traceview.processing.Rotation;
 
 /**
  * This is graphics container; it contains a list of ChannelView(s) (panels) and renders them as a

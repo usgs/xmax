@@ -1,5 +1,6 @@
 package edu.sc.seis.seisFile.segd;
 
+import com.isti.traceview.common.TimeInterval;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
@@ -8,8 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
-
-import com.isti.traceview.common.TimeInterval;
 import org.apache.log4j.Logger;
 
 public class SegdRecord {

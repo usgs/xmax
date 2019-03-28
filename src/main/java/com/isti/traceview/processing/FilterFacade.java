@@ -1,12 +1,11 @@
 package com.isti.traceview.processing;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
+import org.apache.log4j.Logger;
 
 /**
  * Facade to simplify filter operation

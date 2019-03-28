@@ -1,10 +1,8 @@
 package com.isti.xmax.gui;
 
-import java.util.List;
-
-
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.IChannelViewFactory;
+import java.util.List;
 
 /**
  * Factory for customized {@link com.isti.traceview.gui.ChannelView}s
