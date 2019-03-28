@@ -38,14 +38,8 @@ class Canada {
 	 * Corporation (SAIC). SAIC makes no warranty of any kind with regard to
 	 * this software, including, but not limited to, the implied warranties of
 	 * fitness for a particular purpose.
-	 * 
-	 * 
-	 * private static final int CANCOMP_ERR -1 /* unrecoverable error (malloc
-	 * fails)
 	 */
 	private static final int CANCOMP_SUCCESS = 0; /* success */
-	//private static final int CANCOMP_CORRUPT = 2; /* corrupted call */
-	//private static final int CANCOMP_EXCEED = 3; 
 	/* number of bytes available in
 	 * compressed data exceeded
 	 * during decompression
@@ -55,10 +49,6 @@ class Canada {
 
 	private static int corrupt = 0;
 
-	// private static StringBuilder sb = new StringBuilder(100);
-	// public static void clearSB() {if(sb.length() > 0)
-	// sb.delete(0,sb.length());}
-	// public static StringBuilder getSB() {return sb;}
 	/**
 	 * Uncompresses time series data according to the Canadian algorithm.
 	 * 
@@ -70,10 +60,6 @@ class Canada {
 	 *            is the number of bytes in b
 	 * @param m
 	 *            is the number of samples (must be divisible by 4)
-	 * @param v0
-	 *            is the last value, which may be freely disregarded.
-	 * @return status code CANCOMP_SUCCESS=0, other conditions now throw an
-	 *         exception
 	 * @throws CanadaException
 	 *             If found CANCOMP_NOT_20, or CANCOMP_CORRUPT, or
 	 *             CANCOMP_EXCEED note that there are m samples, but m+1
@@ -82,7 +68,7 @@ class Canada {
 	 * 
 	 *             sets *n to number of bytes used and elements of y
 	 */
-	static int canada_uncompress(byte[] b, int[] y, int n, int m, int v0)
+	static void canada_uncompress(byte[] b, int[] y, int n, int m)
 			throws CanadaException {
 		int i, j, k;
 		int x;
@@ -99,7 +85,6 @@ class Canada {
 		 */
 		j = m / 10; // key space at the beginning 2 bytes per 20 samples.
 		bb.position(j); // skip over the keys
-		// first = (b[j] << 24) | (b[j + 1] << 16) | (b[j + 2] << 8) | b[j + 3];
 		first = bb.getInt();
 		j += 4;
 
@@ -121,7 +106,6 @@ class Canada {
 				 * 4,8,12,16,20,24,28 or 32 bits/sample x is index location 0x1c
 				 * is 3-bit mask
 				 */
-				// x = ((b[i] & 0x7f) << 8) | b[i + 1];
 				x = x & 0x7fff;
 				if (py < m)
 					j = unpack(((x >> 10) & 0x1c) + 4, y, py, bb, j); // The if
@@ -145,7 +129,6 @@ class Canada {
 				 * 4,6,8,10,12,14,16 or 18 bits/sample x is index location 0xe
 				 * is 3-bit mask
 				 */
-				// x = (b[i] << 8) | b[i + 1];
 				if (py < m)
 					j = unpack(((x >> 11) & 0xe) + 4, y, py, bb, j);
 				if (py + 4 < m)
@@ -162,8 +145,6 @@ class Canada {
 						"Ran out of decompress buffer before all samples were decoded "
 								+ j + ">" + n + " ns=" + py + " of " + m);
 		}
-		// sb.append("\nUcmp "+first+","); for(i=0; i<m; i++)
-		// sb.append(y[i]+",");sb.append("->");
 		/*
 		 * undo second difference
 		 */
@@ -177,14 +158,11 @@ class Canada {
 		for (k = 0; k < m; k++) {
 			save = y[k];
 			y[k] = first;
-			// sb.append(y[k]+",");
 			first += save;
 		}
-		v0 = first;
 
 		if (corrupt != 0)
 			throw new CanadaException("Buffer being decompressed is corrupt");
-		return CANCOMP_SUCCESS;
 	}
 
 	/*
@@ -227,9 +205,6 @@ class Canada {
 		 */
 		int y0 = 0, y1 = 0, y2 = 0, y3 = 0, ul = 0, vl = 0;
 		long ll;
-		//byte[] ub = new byte[4];
-		//byte[] vb = new byte[4];
-		// sb.append(m+",");
 		b.position(j); // set the buffer position based on j
 		switch (m) { /* switch on bits/sample */
 
