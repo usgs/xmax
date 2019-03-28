@@ -313,9 +313,9 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @return a hash code value for this station.
 	 */
 	public int hashCode() {
-		return (getNetworkName() == null) ? 0
-				: (((getNetworkName().hashCode() + getStation().getName().hashCode() + getChannelName()
-						.hashCode() + getLocationName()) == null) ? 0 : getLocationName().hashCode());
+		return Objects.hash(getNetworkName(), getStation().getName(), getChannelName(), getLocationName()
+				//getSampleRate()
+		);
 	}
 
 	/**
@@ -327,7 +327,9 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 		if (o instanceof Channel) {
 			Channel c = (Channel) o;
 			return (getNetworkName().equals(c.getNetworkName()) && getStation().getName().equals(c.getStation().getName())
-					&& getChannelName().equals(c.getChannelName()) && getLocationName().equals(c.getLocationName()));
+					&& getChannelName().equals(c.getChannelName()) && getLocationName().equals(c.getLocationName())
+				  //&& (Math.abs(getSampleRate() - c.getSampleRate()) < 0.0001)
+			);
 		} else {
 			return false;
 		}
@@ -542,7 +544,7 @@ class NetworkStationSamplerateComparator implements Comparator<Object> {
 				if (st1.equals(st2)) {
 					Double sr1 = channel1.getSampleRate();
 					Double sr2 = channel2.getSampleRate();
-					if (sr1.equals(sr2)) {
+					if ((Math.abs(sr1 - sr2) < 0.0001)) {
 						String loc1 = channel1.getLocationName();
 						String loc2 = channel2.getLocationName();
 						if (loc1.equals(loc2)) {
@@ -571,7 +573,7 @@ class NetworkStationSamplerateComparator implements Comparator<Object> {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof NameComparator) {
+		if (obj instanceof NetworkStationSamplerateComparator) {
 			return super.equals(obj);
 		} else {
 			return false;
