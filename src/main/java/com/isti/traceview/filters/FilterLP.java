@@ -121,7 +121,7 @@ public class FilterLP implements IFilter {
 	 * 
 	 * **NOTE: This will be fixed with mean button fix
 	 */
-	private double demean(double buf[], int n) {
+	private double demean(double[] buf, int n) {
 		double sum = 0.0;
 		for (int i = 0; i < n; i++) {
 			sum = sum + buf[i];

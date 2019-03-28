@@ -1,12 +1,11 @@
 package com.isti.traceview.processing;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
+import org.apache.log4j.Logger;
 
 /**
  * Facade to simplify filter operation
@@ -62,7 +61,7 @@ public class FilterFacade {
 	public int[] filter(int[] data) {
 		double[] toFilt = new double[data.length];
 		for (int i = 0; i < data.length; i++) {
-			toFilt[i] = new Double(data[i]);
+			toFilt[i] = (double) data[i];
 		}
 		try {
 			toFilt = filter.filter(toFilt, toFilt.length);

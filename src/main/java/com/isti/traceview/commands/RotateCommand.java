@@ -1,20 +1,19 @@
 package com.isti.traceview.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
 import com.isti.traceview.processing.Rotation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This command performs rotation
  */
 public class RotateCommand extends AbstractUndoableCommand {
-	private List<PlotDataProvider> plotDataProviders = new ArrayList<PlotDataProvider>();
+	private List<PlotDataProvider> plotDataProviders = new ArrayList<>();
 	private GraphPanel graphPanel = null; //in order to notify the graph panel to repaint since the data provider was modified.
 	private Rotation rotation = null;
 

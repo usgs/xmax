@@ -1,20 +1,17 @@
 package com.isti.traceview.gui.controls;
 
+import com.isti.traceview.TraceView;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.gui.GraphPanel;
+import com.isti.traceview.gui.GraphUtil;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceView;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.gui.GraphPanel;
-import com.isti.traceview.gui.GraphUtil;
 
 /**
  * Set of buttons to zoom in time axis traces into GraphPanel. Has "Zoom", "Unzoom" and auxilary

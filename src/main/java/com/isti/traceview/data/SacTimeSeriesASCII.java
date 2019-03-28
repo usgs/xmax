@@ -1,12 +1,15 @@
 package com.isti.traceview.data;
 
 import static edu.sc.seis.seisFile.sac.SacConstants.FALSE;
-import static edu.sc.seis.seisFile.sac.SacConstants.ITIME;
-import static edu.sc.seis.seisFile.sac.SacConstants.TRUE;
 import static edu.sc.seis.seisFile.sac.SacConstants.IAMPH;
 import static edu.sc.seis.seisFile.sac.SacConstants.IRLIM;
-import static edu.sc.seis.seisFile.sac.SacConstants.IXY;
+import static edu.sc.seis.seisFile.sac.SacConstants.ITIME;
 import static edu.sc.seis.seisFile.sac.SacConstants.IUNKN;
+import static edu.sc.seis.seisFile.sac.SacConstants.IXY;
+import static edu.sc.seis.seisFile.sac.SacConstants.TRUE;
+
+import edu.sc.seis.seisFile.sac.SacHeader;
+import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -14,8 +17,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import edu.sc.seis.seisFile.sac.SacHeader;
-import edu.sc.seis.seisFile.sac.SacTimeSeries;
 
 
 public class SacTimeSeriesASCII extends SacTimeSeries {

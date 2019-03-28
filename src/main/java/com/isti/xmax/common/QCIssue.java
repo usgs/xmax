@@ -3,7 +3,6 @@ package com.isti.xmax.common;
 import com.isti.traceview.common.AbstractEvent;
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.data.PlotDataProvider;
-
 import java.util.Date;
 import java.util.Set;
 

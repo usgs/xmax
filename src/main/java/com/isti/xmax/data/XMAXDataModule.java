@@ -1,23 +1,20 @@
 package com.isti.xmax.data;
 
 import com.isti.traceview.TraceView;
-import com.isti.traceview.data.SourceFile;
-import com.isti.traceview.data.TemporaryStorage;
-import com.isti.xmax.XMAXconfiguration;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.data.DataModule;
+import com.isti.traceview.data.SourceFile;
+import com.isti.traceview.data.TemporaryStorage;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.common.Earthquake;
 import com.isti.xmax.common.Pick;
 import com.isti.xmax.common.QCIssue;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import org.apache.log4j.Logger;
 
 /**
  * <p>
@@ -86,7 +83,7 @@ public class XMAXDataModule extends DataModule {
 	 */
 	File[] getDataFiles() throws TraceViewException {
 		logger.debug("== Enter\n");
-		List<File> dataFiles = new ArrayList<File>();
+		List<File> dataFiles = new ArrayList<>();
 
 		// -t: Read serialized PlotDataProviders from TEMP_DATA
 		if (TraceView.getConfiguration().getUseTempData()) {

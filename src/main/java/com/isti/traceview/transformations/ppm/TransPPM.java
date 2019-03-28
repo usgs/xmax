@@ -1,15 +1,5 @@
 package com.isti.traceview.transformations.ppm;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
@@ -19,6 +9,13 @@ import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  * Particle motion transformation. Prepares data for presentation in
@@ -47,7 +44,7 @@ public class TransPPM implements ITransformation {
 				 * East. For all other channel pairs, they go in the selection
 				 * order: first NS, second EW.
 				 */
-				List<PlotDataProvider> inputRepositioned = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> inputRepositioned = new ArrayList<>();
 				char type1 = input.get(0).getType();
 				char type2 = input.get(1).getType();
 				if (((type2 == 'N' || type2 == '1') && type1 != 'N' && type1 != '1')

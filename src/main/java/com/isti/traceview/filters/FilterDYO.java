@@ -1,32 +1,28 @@
 package com.isti.traceview.filters;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
 import com.isti.traceview.processing.HPFilterException;
 import com.isti.traceview.processing.LPFilterException;
 import com.isti.xmax.gui.XMAXframe;
-
-import org.apache.log4j.Logger;
-
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.BorderFactory;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
+import org.apache.log4j.Logger;
 
 /**
  * Filter with visual dialog in constructor do manually design it. Use HP, BP or
@@ -207,7 +203,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	private JTextField getLowFrequencyTF() {
 		if (lowFrequencyTF == null) {
 			lowFrequencyTF = new JTextField();
-			lowFrequencyTF.setText(new Double(cutLowFrequency).toString());
+			lowFrequencyTF.setText(cutLowFrequency.toString());
 			lowFrequencyTF.setPreferredSize(new Dimension(50, 20));
 		}
 		return lowFrequencyTF;
@@ -221,7 +217,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	private JTextField getHighFrequencyTF() {
 		if (highFrequencyTF == null) {
 			highFrequencyTF = new JTextField();
-			highFrequencyTF.setText(new Double(cutHighFrequency).toString());
+			highFrequencyTF.setText(cutHighFrequency.toString());
 			highFrequencyTF.setPreferredSize(new Dimension(50, 20));
 		}
 		return highFrequencyTF;
@@ -234,7 +230,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	 */
 	private JComboBox<Object> getOrderCB() {
 		if (orderCB == null) {
-			orderCB = new JComboBox<Object>();
+			orderCB = new JComboBox<>();
 			orderCB.addItem(1);
 			orderCB.addItem(2);
 			orderCB.addItem(3);

@@ -12,7 +12,7 @@ public interface ISource extends Serializable {
 	/**
 	 * Enumeration for data source types
 	 */
-	public enum SourceType {
+	enum SourceType {
 		/**
 		 * File source
 		 */
@@ -22,24 +22,24 @@ public interface ISource extends Serializable {
 		 */
 		SOCKET
 
-	};
+	}
 
-	/**
+  /**
 	 * Enumeration for supported source formats
 	 */
-	public enum FormatType {
+	enum FormatType {
 		MSEED, SEED, SAC, SEGY, SEGD, IMS, ASCII
-	};
+	}
 
-	/**
+  /**
 	 * @return Type of this source
 	 */
-	public SourceType getSourceType();
+	SourceType getSourceType();
 
 	/**
 	 * @return Format of this source
 	 */
-	public FormatType getFormatType();
+	FormatType getFormatType();
 
 	/**
 	 * Parse this data source, i.e scans it, determine which traces placed inside, filling metadata
@@ -48,12 +48,12 @@ public interface ISource extends Serializable {
 	 *
 	 * @return list of found traces
 	 */
-	public Set<PlotDataProvider> parse();
+	Set<PlotDataProvider> parse();
 
 	/**
 	 * @return name of this data source
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Load trace data from this data source
@@ -67,7 +67,7 @@ public interface ISource extends Serializable {
 	 * 
 	 * @param segment the segment to load offset and samplecounts are most likely used.
 	 */
-	public void load(Segment segment);
+	void load(Segment segment);
 	
 	/**
 	 * Get text representation of block header for given format
@@ -75,6 +75,6 @@ public interface ISource extends Serializable {
 	 * @param blockStartOffset
 	 *            file pointer position to read block
 	 */
-	public String getBlockHeaderText(long blockStartOffset);
+	String getBlockHeaderText(long blockStartOffset);
 
 }

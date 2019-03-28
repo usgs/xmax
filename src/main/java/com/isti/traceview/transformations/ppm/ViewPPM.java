@@ -1,27 +1,24 @@
 package com.isti.traceview.transformations.ppm;
 
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.filters.IFilter;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.event.ChartChangeEvent;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYDataset;
-
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.TraceViewChartPanel;
-import com.isti.traceview.filters.IFilter;
 
 /**
  * Dialog to view PPM results.

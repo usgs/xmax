@@ -1,10 +1,10 @@
 package com.isti.traceview.common;
 
 import java.awt.Color;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Date;
 
 /**
  * Abstract class implements {@link IEvent} interface, it contains all common behaviors of events.
@@ -23,7 +23,7 @@ public abstract class AbstractEvent implements IEvent {
 	public AbstractEvent(Date date, long duration) {
 		this.startTime = date;
 		this.duration = duration;
-		parameters = new HashMap<String, Object>();
+		parameters = new HashMap<>();
 	}
 
 	public abstract String getType();
@@ -44,16 +44,6 @@ public abstract class AbstractEvent implements IEvent {
 	 */
 	public long getDuration() {
 		return duration;
-	}
-
-	/**
-	 * Setter of the property <tt>duration</tt>
-	 * 
-	 * @param duration
-	 *            The duration to set.
-	 */
-	public void setDuration(long duration) {
-		this.duration = duration;
 	}
 
 	public Color getColor() {
@@ -79,16 +69,6 @@ public abstract class AbstractEvent implements IEvent {
 	 */
 	public Date getStartTime() {
 		return startTime;
-	}
-
-	/**
-	 * Setter of the property <tt>startTime</tt>
-	 * 
-	 * @param startTime
-	 *            The startTime to set.
-	 */
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
 	}
 
 	/**

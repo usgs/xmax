@@ -1,13 +1,5 @@
 package com.isti.traceview.transformations.spectra;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
@@ -19,6 +11,11 @@ import com.isti.traceview.processing.Spectra;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.apache.log4j.Logger;
 
 /**
  * Spectra transformation. Prepares data for presentation in {@link ViewSpectra}
@@ -73,7 +70,7 @@ public class TransSpectra implements ITransformation {
 	 */
 	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval timeInterval,
 			JFrame parentFrame) throws XMAXException {
-		List<Spectra> dataset = new ArrayList<Spectra>();
+		List<Spectra> dataset = new ArrayList<>();
 		for (PlotDataProvider channel : input) {
 			double sampleRate = 0;
 			List<Segment> segments = channel.getRawData(timeInterval);

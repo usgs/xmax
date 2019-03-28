@@ -3,7 +3,6 @@ package com.isti.traceview;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -28,7 +27,7 @@ public class CommandHandler {
 	private static CommandHandler instance = null; 
 
 	private CommandHandler() {
-		history = new LinkedList<ICommand>();
+		history = new LinkedList<>();
 		observable = new Obs();
 	}
 

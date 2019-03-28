@@ -1,22 +1,16 @@
 package com.isti.traceview.transformations.modal;
 
-import com.isti.jevalresp.OutputGenerator;
-import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
-import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.SacTimeSeriesASCII;
 import com.isti.traceview.gui.GraphUtil;
-import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.Spectra;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.gui.XMAXframe;
 import java.awt.BasicStroke;
 import java.awt.Frame;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
@@ -250,8 +244,8 @@ public class ViewModal extends JDialog implements PropertyChangeListener, Change
             fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_"
                 + seriesName.replace("/", "_") + ".SAC";
             ds = new DataOutputStream(new FileOutputStream(new File(fileName)));
-            float ydata[] = new float[dataset.getItemCount(i)];
-            float xdata[] = new float[dataset.getItemCount(i)];
+            float[] ydata = new float[dataset.getItemCount(i)];
+            float[] xdata = new float[dataset.getItemCount(i)];
             for (int j = 0; j < dataset.getItemCount(i); j++) {
               xdata[j] = new Double(dataset.getXValue(i, j)).floatValue();
               ydata[j] = new Double(dataset.getYValue(i, j)).floatValue();

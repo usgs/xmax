@@ -1,14 +1,12 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.TraceViewException;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceViewException;
 
 /**
  * File SEGY data source
@@ -38,9 +36,7 @@ public class SourceFileSEGY extends SourceFile implements Serializable {
 			ret.add(channel);
 			Segment segment = new Segment(this, 0, segy.getTimeRange().getStartTime(), segy.getRateMicroSampPerSec()/1000.0, segy.getNumSamples(), 0);
 			channel.addSegment(segment);
-		} catch (IOException e) {
-			logger.error("IO error: ", e);
-		} catch (TraceViewException e) {
+		} catch (IOException | TraceViewException e) {
 			logger.error("IO error: ", e);
 		}
 		return ret;

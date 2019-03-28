@@ -1,5 +1,10 @@
 package com.asl.traceview.transformations.coherence;
 
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.gui.GraphUtil;
+import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.xmax.XMAX;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ItemEvent;
@@ -16,7 +21,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogarithmicAxis;
@@ -27,12 +31,6 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.TraceViewChartPanel;
-import com.isti.traceview.gui.GraphUtil;
-import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.xmax.XMAX;
 
 /**
  * Dialog to view coherence results. Also performs smoothing.

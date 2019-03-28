@@ -1,13 +1,5 @@
 package com.isti.traceview.transformations.correlation;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
@@ -17,6 +9,11 @@ import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.apache.log4j.Logger;
 
 /**
  * Correlation transformation. It only prepares data, correlation itself and
@@ -42,7 +39,7 @@ public class TransCorrelation implements ITransformation {
 					"Error", JOptionPane.ERROR_MESSAGE);
 		} else {
 			try {
-				List<String> channelNames = new ArrayList<String>();
+				List<String> channelNames = new ArrayList<>();
 				for (PlotDataProvider channel : input) {
 					channelNames.add(channel.getName());
 				}
@@ -76,7 +73,7 @@ public class TransCorrelation implements ITransformation {
 	 */
 	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
 			throws XMAXException {
-		List<double[]> ret = new ArrayList<double[]>();
+		List<double[]> ret = new ArrayList<>();
 		PlotDataProvider channel1 = input.get(0);
 		List<Segment> segments1; 
 		if(channel1.getRotation() != null)

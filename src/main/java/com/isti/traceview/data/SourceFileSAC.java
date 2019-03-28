@@ -1,5 +1,10 @@
 package com.isti.traceview.data;
 
+import static edu.sc.seis.seisFile.sac.SacConstants.data_offset;
+
+import com.isti.traceview.TraceView;
+import edu.iris.Fissures.Time;
+import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -10,14 +15,7 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceView;
-
-import edu.iris.Fissures.Time;
-import edu.sc.seis.seisFile.sac.SacTimeSeries;
-import static edu.sc.seis.seisFile.sac.SacConstants.data_offset;
 
 public class SourceFileSAC extends SourceFile implements Serializable {
 

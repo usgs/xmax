@@ -1,30 +1,27 @@
 package com.isti.traceview.data;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.IColorModeState;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import org.apache.log4j.Logger;
 
 /**
  * This class holds collections of events, stations, traces loaded from configured data sources. It
@@ -46,7 +43,7 @@ public class DataModule extends Observable {
   /**
    * Map of affected stations
    */
-  private static Map<String, Station> stations = new HashMap<String, Station>();
+  private static Map<String, Station> stations = new HashMap<>();
 
   /**
    * List of found files with trace data
@@ -73,10 +70,10 @@ public class DataModule extends Observable {
    */
   public DataModule() {
     allChannelsTI = new TimeInterval();
-    channels = Collections.synchronizedList(new ArrayList<PlotDataProvider>());
+    channels = Collections.synchronizedList(new ArrayList<>());
     markerPosition = 0;
-    dataSources = new ArrayList<ISource>();
-    responses = new ArrayList<Response>();
+    dataSources = new ArrayList<>();
+    responses = new ArrayList<>();
   }
 
   /**
@@ -252,7 +249,7 @@ public class DataModule extends Observable {
    * @return list of loaded stations
    */
   public static SortedSet<Station> getAllStations() {
-    SortedSet<Station> loadedStations = new TreeSet<Station>();
+    SortedSet<Station> loadedStations = new TreeSet<>();
     for (String key : stations.keySet()) {
       loadedStations.add(stations.get(key));
     }
@@ -694,7 +691,7 @@ public class DataModule extends Observable {
 
   public static String getResponseFile(String network, String station,
       String location, String channel) throws TraceViewException {
-    List<String> respFiles = new ArrayList<String>();
+    List<String> respFiles = new ArrayList<>();
     // note that first entry string should always end with "/" as it is a directory location
     addRespFiles(TraceView.getConfiguration().getConfigFileDir(), network, station, location,
         channel, respFiles);
@@ -711,7 +708,7 @@ public class DataModule extends Observable {
   }
 
   public List<String> getAllResponseFiles() throws TraceViewException {
-    List<String> respFiles = new ArrayList<String>();
+    List<String> respFiles = new ArrayList<>();
     addRespFiles(TraceView.getConfiguration().getConfigFileDir(), channels, respFiles);
     addRespFiles("./", channels, respFiles);
     addRespFiles(TraceView.getConfiguration().getResponsePath(), channels, respFiles);

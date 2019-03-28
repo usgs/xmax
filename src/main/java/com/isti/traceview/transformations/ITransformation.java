@@ -1,12 +1,10 @@
 package com.isti.traceview.transformations;
 
-import java.util.List;
-
-import javax.swing.JFrame;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.IFilter;
+import java.util.List;
+import javax.swing.JFrame;
 
 /**
  * Interface to represent abstract transformation. Transformation accepts list
@@ -30,17 +28,18 @@ public interface ITransformation {
 	 * @param parentFrame
 	 *            Host frame
 	 */
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configiration,
-			JFrame parentFrame);
+  void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter,
+      Object configiration,
+      JFrame parentFrame);
 
 	/**
 	 * Sets maximum amount of processed data
 	 */
-	public void setMaxDataLength(int dataLength);
+  void setMaxDataLength(int dataLength);
 
 	/**
 	 * Return name of transformation
 	 */
-	public String getName();
+  String getName();
 
 }

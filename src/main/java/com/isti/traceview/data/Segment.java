@@ -3,6 +3,7 @@
  */
 package com.isti.traceview.data;
 
+import com.isti.traceview.common.TimeInterval;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -13,9 +14,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import org.apache.log4j.Logger;
-import com.isti.traceview.common.TimeInterval;
 
 /**
  * Represent continuous set of raw trace data without gaps belongs to same data source. A Seismic trace
@@ -528,7 +527,7 @@ public class Segment implements Externalizable, Cloneable {
 	
 	public void addBlockDescription(long startTime, long offset){
 		if(blockMap == null){
-			blockMap = new TreeMap<Long, Long>();
+			blockMap = new TreeMap<>();
 		}
 		blockMap.put(startTime, offset);
 	}

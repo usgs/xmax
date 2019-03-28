@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.util.Date;
-
 import org.apache.log4j.Logger;
 
 public class WID2 extends Block {

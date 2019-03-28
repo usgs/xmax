@@ -16,7 +16,7 @@ public interface IFilter {
 	/**
 	 * @return Maximum length of data to filter without warning message
 	 */
-	public int getMaxDataLength();
+  int getMaxDataLength();
 
 	/**
 	 * Filter design routine, filter should be initialized before using
@@ -24,7 +24,7 @@ public interface IFilter {
 	 * @param channel
 	 *            the raw data
 	 */
-	public void init(RawDataProvider channel);
+  void init(RawDataProvider channel);
 
 	/**
 	 * Performs filtering.
@@ -43,15 +43,15 @@ public interface IFilter {
 	 * @throws LPFilterException
 	 *             the LP filter exception
 	 */
-	public double[] filter(double[] data, int length)
+  double[] filter(double[] data, int length)
 			throws TraceViewException, BPFilterException, HPFilterException, LPFilterException;
 
-	public boolean needProcessing();
+	boolean needProcessing();
 
 	/**
 	 * Can be used instead of referencing NAME when used as Generic.
 	 *
 	 * @return the filter's name as stored in static NAME field.
 	 */
-	public String getName();
+  String getName();
 }

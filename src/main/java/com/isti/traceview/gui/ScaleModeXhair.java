@@ -1,11 +1,9 @@
 package com.isti.traceview.gui;
 
-import java.text.DecimalFormat;
-import java.util.List;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
-import com.isti.traceview.gui.ScaleModeAbstract;
+import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  * State pattern realization for scale mode, XHAIR scaling. It means that maximum and minimum values

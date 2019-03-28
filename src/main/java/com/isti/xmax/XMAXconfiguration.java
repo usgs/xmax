@@ -1,11 +1,14 @@
 package com.isti.xmax;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.Configuration;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.gui.ColorModeBySegment;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -15,19 +18,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-
-import org.apache.log4j.Logger;
-
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
-
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.Configuration;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.gui.ColorModeBySegment;
-import com.isti.xmax.XMAXException;
+import org.apache.log4j.Logger;
 
 /**
  * <p>
@@ -90,7 +85,7 @@ public class XMAXconfiguration extends Configuration {
 	private XMAXconfiguration() throws ConfigurationException, TraceViewException, XMAXException {
 		setDefaultHTMLPattern("<html><head><title>XMAX report</title></head><body><h1>XMAX report</h1> </body></html>");
 		config = new XMLConfiguration(confFileName);
-		userDirectories = new HashMap<String, String>();
+		userDirectories = new HashMap<>();
 		ti = null;
 		try {
 			setUseTempData(false);
@@ -495,9 +490,6 @@ public class XMAXconfiguration extends Configuration {
 				mbf.get(barray);
 				fis.close();	
 				return new String(barray);
-			} catch (FileNotFoundException e) {
-				logger.error("Can't get html pattern: ", e);
-				return getDefaultHTMLPattern();
 			} catch (IOException e) {
 				logger.error("Can't get html pattern: ", e);
 				return getDefaultHTMLPattern();

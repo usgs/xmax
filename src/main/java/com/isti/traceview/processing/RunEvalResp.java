@@ -1,16 +1,14 @@
 package com.isti.traceview.processing;
 
-import java.io.Reader;
-import java.util.Date;
-
 import com.isti.jevalresp.ComplexBlk;
 import com.isti.jevalresp.OutputGenerator;
 import com.isti.jevalresp.RespFileParser;
 import com.isti.jevalresp.RunExt;
 import com.isti.traceview.TraceViewException;
-
 import edu.iris.Fissures.IfNetwork.Response;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.io.Reader;
+import java.util.Date;
 
 /**
  * JEvalResp related logic.

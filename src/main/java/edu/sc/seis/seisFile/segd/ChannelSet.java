@@ -1,10 +1,8 @@
 package edu.sc.seis.seisFile.segd;
 
-import org.apache.log4j.Logger;
-
 import java.io.DataInput;
 import java.io.IOException;
-import edu.sc.seis.seisFile.segd.SegdRecord;
+import org.apache.log4j.Logger;
 
 public class ChannelSet {
 	private static final Logger logger = Logger.getLogger(ChannelSet.class);
@@ -21,28 +19,28 @@ public class ChannelSet {
 		SUGNATURE_UNFILTERED,
 		SIGNATURE_FILTERED,
 		AUXILIARY_DATA_TRAILER
-	};
-	
-	public enum GainMode {
+	}
+
+  public enum GainMode {
 		INDIVIDUAL_AGC, 
 		GANGED_AGC, 
 		FIXED_GAIN, 
 		PROGRAMMED_GAIN, 
 		BINARY_GAIN_CONTROL,
 		IFP_GAIN_CONTROL
-	};
-	
-	public enum ArrayForming {
+	}
+
+  public enum ArrayForming {
 		NO_ARRAY_FORMUNG, 
 		SUMMED_2_GROURS_NO_WEIGHTING, 
 		SUMMED_3_GROURS_NO_WEIGHTING, 
 		PROGRAMMED_GAIN, 
 		BINARY_GAIN_CONTROL,
 		IFP_GAIN_CONTROL
-	};
-	
-	
-	private int scanTypeNumber = -1;
+	}
+
+
+  private int scanTypeNumber = -1;
 	private int channelSetNumber = -1;
 	private int startTime = -1;
 	private int endTime = -1;

@@ -1,6 +1,55 @@
 package com.isti.xmax.gui;
 
+import com.asl.traceview.transformations.coherence.TransCoherence;
+import com.isti.traceview.CommandHandler;
+import com.isti.traceview.ExecuteCommand;
+import com.isti.traceview.ICommand;
+import com.isti.traceview.IUndoableCommand;
+import com.isti.traceview.TraceView;
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.UndoException;
+import com.isti.traceview.commands.OffsetCommand;
+import com.isti.traceview.commands.OverlayCommand;
+import com.isti.traceview.commands.RemoveGainCommand;
+import com.isti.traceview.commands.RotateCommand;
+import com.isti.traceview.commands.SaveAllDataCommand;
+import com.isti.traceview.commands.SelectCommand;
+import com.isti.traceview.commands.SelectTimeCommand;
+import com.isti.traceview.commands.SelectValueCommand;
+import com.isti.traceview.commands.SetScaleModeCommand;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.filters.FilterBP;
+import com.isti.traceview.filters.FilterDYO;
+import com.isti.traceview.filters.FilterHP;
+import com.isti.traceview.filters.FilterLP;
+import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.gui.ChannelView;
+import com.isti.traceview.gui.ColorModeBW;
+import com.isti.traceview.gui.ColorModeByGap;
+import com.isti.traceview.gui.ColorModeBySegment;
+import com.isti.traceview.gui.ColorModeGray;
+import com.isti.traceview.gui.FileChooser;
+import com.isti.traceview.gui.GraphUtil;
+import com.isti.traceview.gui.MeanModeDisabled;
+import com.isti.traceview.gui.MeanModeEnabled;
+import com.isti.traceview.gui.OffsetModeDisabled;
+import com.isti.traceview.gui.ScaleModeAuto;
+import com.isti.traceview.gui.ScaleModeCom;
+import com.isti.traceview.gui.ScaleModeXhair;
+import com.isti.traceview.processing.RemoveGain;
+import com.isti.traceview.processing.Rotation;
+import com.isti.traceview.transformations.ITransformation;
+import com.isti.traceview.transformations.correlation.TransCorrelation;
 import com.isti.traceview.transformations.modal.TransModal;
+import com.isti.traceview.transformations.ppm.TransPPM;
+import com.isti.traceview.transformations.psd.TransPSD;
+import com.isti.traceview.transformations.response.TransResp;
+import com.isti.traceview.transformations.spectra.TransSpectra;
+import com.isti.xmax.XMAX;
+import com.isti.xmax.XMAXconfiguration;
+import com.isti.xmax.common.Pick;
+import com.isti.xmax.data.XMAXDataModule;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -61,55 +110,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.MouseInputListener;
 import org.apache.log4j.Logger;
-import com.asl.traceview.transformations.coherence.TransCoherence;
-import com.isti.traceview.CommandHandler;
-import com.isti.traceview.ExecuteCommand;
-import com.isti.traceview.ICommand;
-import com.isti.traceview.IUndoableCommand;
-import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.UndoException;
-import com.isti.traceview.commands.OffsetCommand;
-import com.isti.traceview.commands.OverlayCommand;
-import com.isti.traceview.commands.RemoveGainCommand;
-import com.isti.traceview.commands.RotateCommand;
-import com.isti.traceview.commands.SaveAllDataCommand;
-import com.isti.traceview.commands.SelectCommand;
-import com.isti.traceview.commands.SelectTimeCommand;
-import com.isti.traceview.commands.SelectValueCommand;
-import com.isti.traceview.commands.SetScaleModeCommand;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.filters.FilterBP;
-import com.isti.traceview.filters.FilterDYO;
-import com.isti.traceview.filters.FilterHP;
-import com.isti.traceview.filters.FilterLP;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.gui.ChannelView;
-import com.isti.traceview.gui.ColorModeBW;
-import com.isti.traceview.gui.ColorModeByGap;
-import com.isti.traceview.gui.ColorModeBySegment;
-import com.isti.traceview.gui.ColorModeGray;
-import com.isti.traceview.gui.FileChooser;
-import com.isti.traceview.gui.GraphUtil;
-import com.isti.traceview.gui.MeanModeDisabled;
-import com.isti.traceview.gui.MeanModeEnabled;
-import com.isti.traceview.gui.OffsetModeDisabled;
-import com.isti.traceview.gui.ScaleModeAuto;
-import com.isti.traceview.gui.ScaleModeCom;
-import com.isti.traceview.gui.ScaleModeXhair;
-import com.isti.traceview.processing.RemoveGain;
-import com.isti.traceview.processing.Rotation;
-import com.isti.traceview.transformations.ITransformation;
-import com.isti.traceview.transformations.correlation.TransCorrelation;
-import com.isti.traceview.transformations.ppm.TransPPM;
-import com.isti.traceview.transformations.psd.TransPSD;
-import com.isti.traceview.transformations.response.TransResp;
-import com.isti.traceview.transformations.spectra.TransSpectra;
-import com.isti.xmax.XMAX;
-import com.isti.xmax.XMAXconfiguration;
-import com.isti.xmax.common.Pick;
-import com.isti.xmax.data.XMAXDataModule;
 
 /**
  * <p>
@@ -2215,7 +2215,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransPPM();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2275,7 +2275,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				ITransformation resp = new TransPSD();
 
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				if (selectedViews.size() == 0) {
 					selectedViews = graphPanel.getChannelShowSet();
@@ -2325,7 +2325,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				ITransformation resp = new TransCoherence();
 
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2356,7 +2356,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransSpectra();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				if (selectedViews.size() == 0) {
 					selectedViews = graphPanel.getChannelShowSet();
@@ -2390,7 +2390,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransCorrelation();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2419,7 +2419,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation psd = new TransModal();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2436,7 +2436,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	class RotationAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
-		private List<PlotDataProvider> rotatedChannelsList = new ArrayList<PlotDataProvider>();
+		private List<PlotDataProvider> rotatedChannelsList = new ArrayList<>();
 
 		public RotationAction() {
 			super();
@@ -2450,7 +2450,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
     public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
-				List<PlotDataProvider> pdpsToRotate = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> pdpsToRotate = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for(ChannelView cv : selectedViews){
 					for(PlotDataProvider pdp : cv.getPlotDataProviders())
@@ -2573,7 +2573,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransResp();
-				List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2684,7 +2684,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("MSEED", selectedFile.getParent());
 					ds = new DataOutputStream(new FileOutputStream(selectedFile));
-					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> selectedChannels = new ArrayList<>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2747,7 +2747,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					setWaitCursor(true);
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("SAC", selectedFile.getParent());
-					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> selectedChannels = new ArrayList<>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2836,7 +2836,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("XML", selectedFile.getParent());
 					fw = new FileWriter(selectedFile);
-					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> selectedChannels = new ArrayList<>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2908,7 +2908,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("ASCII", selectedFile.getParent());
 					fw = new FileWriter(selectedFile);
-					List<PlotDataProvider> selectedChannels = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> selectedChannels = new ArrayList<>();
 					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2988,11 +2988,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						filter = null;
 					}
 				}
-			} catch (ClassNotFoundException e1) {
-				logger.error("Can't get " + pluginId + " plugin filter: ", e1);
-			} catch (InstantiationException e1) {
-				logger.error("Can't get " + pluginId + " plugin filter: ", e1);
-			} catch (IllegalAccessException e1) {
+			} catch (ClassNotFoundException | IllegalAccessException | InstantiationException e1) {
 				logger.error("Can't get " + pluginId + " plugin filter: ", e1);
 			} finally {
 				setWaitCursor(false);

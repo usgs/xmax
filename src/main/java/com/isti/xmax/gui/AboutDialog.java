@@ -1,32 +1,26 @@
 package com.isti.xmax.gui;
 
-import javax.swing.JPanel;
-import javax.swing.JDialog;
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-
-import java.awt.Color;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-
-import javax.swing.JLabel;
-
 import com.isti.xmax.XMAX;
-
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import java.awt.Cursor;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 /**

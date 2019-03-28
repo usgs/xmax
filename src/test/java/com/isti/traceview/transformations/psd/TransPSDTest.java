@@ -1,30 +1,21 @@
 package com.isti.traceview.transformations.psd;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.isti.jevalresp.OutputGenerator;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.DataModule;
-import com.isti.traceview.data.PlotData;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.data.RawDataProvider;
-import com.isti.traceview.data.Segment;
-import com.isti.traceview.data.SourceFile;
 import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Spectra;
-import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.XMAXconfiguration;
-import com.isti.xmax.data.XMAXDataModule;
-import com.isti.xmax.gui.XMAXframe;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFrame;
 import org.jfree.data.xy.XYSeries;
 import org.junit.Before;
 import org.junit.Test;

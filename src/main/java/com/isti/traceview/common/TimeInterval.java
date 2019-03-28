@@ -1,15 +1,13 @@
 package com.isti.traceview.common;
 
+import com.isti.traceview.TraceView;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceView;
 
 /**
  * Class to represent interval of time
@@ -37,7 +35,7 @@ public class TimeInterval {
 		 * format yyyy,DDD,HH:mm
 		 */
 		DATE_FORMAT_LONG
-	};
+	}
 
 	private static final Logger logger = Logger.getLogger(TimeInterval.class);
 	public static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD,HH:mm:ss.SSS");
@@ -236,15 +234,15 @@ public class TimeInterval {
 		}
 		if(duration < 86400000) {
 			if (duration < 3600000) {
-				Double sec = new Double(duration) / 1000;
+				Double sec = (double) duration / 1000;
 				ret = ret + sec.toString() + " s";
 			} else {
-				Double h = new Double(duration) / 3600000;
+				Double h = (double) duration / 3600000;
 
 				ret = ret + new DecimalFormat("#######.###").format(h) + " h";
 			}
 		} else {
-			Double days = new Double(duration) / 86400000;
+			Double days = (double) duration / 86400000;
 			ret = ret + new DecimalFormat("#######.###").format(days) + " d";
 		}
 		return ret;
@@ -282,7 +280,7 @@ public class TimeInterval {
 			ret = ret + min + " min";
 		}
 		rest = rest % 60000;
-		double sec = new Double(rest) / 1000;
+		double sec = (double) rest / 1000;
 		if (ret.length() > 1) {
 			ret = ret + ", ";
 		}
@@ -374,7 +372,7 @@ public class TimeInterval {
 			}
 		} catch (ParseException e) {
 			StringBuilder message = new StringBuilder();
-			message.append(String.format("Cant parse date from string " + date));
+			message.append("Cant parse date from string " + date);
 			logger.error(message.toString(), e);
 		}
 		return ret;

@@ -1,20 +1,17 @@
 package com.isti.traceview.gui;
 
+import com.hexidec.ekit.EkitCore;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
-
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import com.hexidec.ekit.EkitCore;
-
-import java.awt.Dimension;
 
 /**
  * Dialog to add comments during HTML report generation. 
@@ -87,7 +84,7 @@ public class CommentDialog extends JDialog implements PropertyChangeListener {
 		panel.setLayout(new BorderLayout());
 		panel.add(editorPane, BorderLayout.CENTER);
 		panel.add(editorPane.getToolBar(true), BorderLayout.NORTH);
-		Vector<String> vcMenus = new Vector<String>();
+		Vector<String> vcMenus = new Vector<>();
 		vcMenus.add(EkitCore.KEY_MENU_EDIT);
 		vcMenus.add(EkitCore.KEY_MENU_VIEW);
 		vcMenus.add(EkitCore.KEY_MENU_FONT);

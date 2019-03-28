@@ -1,14 +1,12 @@
 package com.isti.traceview.data.ims;
 
 import gov.usgs.anss.cd11.CanadaException;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 
 public class DataTypeWaveform extends DataType {
@@ -18,7 +16,7 @@ public class DataTypeWaveform extends DataType {
 
 	public DataTypeWaveform(long startOffset) {
 		super(startOffset);
-		channels = new ArrayList<BlockSet>();
+		channels = new ArrayList<>();
 	}
 	
 	public List<BlockSet> getBlockSets(){

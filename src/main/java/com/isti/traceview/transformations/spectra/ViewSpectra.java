@@ -1,5 +1,13 @@
 package com.isti.traceview.transformations.spectra;
 
+import com.isti.traceview.TraceView;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.data.Response;
+import com.isti.traceview.gui.GraphUtil;
+import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.traceview.processing.Spectra;
+import com.isti.xmax.XMAX;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -10,22 +18,18 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-//import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogarithmicAxis;
@@ -37,14 +41,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import com.isti.traceview.TraceView;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.TraceViewChartPanel;
-import com.isti.traceview.data.Response;
-import com.isti.traceview.gui.GraphUtil;
-import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Spectra;
-import com.isti.xmax.XMAX;
+//import java.text.SimpleDateFormat;
 
 /**
  * Dialog to view Spectra results. Also performs smoothing.
@@ -338,13 +335,13 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 
 	private JComboBox<Object> getConvolveCB() {
 		if (convolveCB == null) {
-			List<String> options = new ArrayList<String>();
+			List<String> options = new ArrayList<>();
 			options.add("None");
 			for (Response resp : TraceView.getDataModule().getLoadedResponses()) {
 				options.add(resp.getLocalFileName());
 			}
-			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
-			convolveCB = new JComboBox<Object>();
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<>(options.toArray());
+			convolveCB = new JComboBox<>();
 			convolveCB.setModel(convolveCBModel);
 			convolveCB.setPreferredSize(new java.awt.Dimension(128, 22));
 			convolveCB.setEnabled(false);

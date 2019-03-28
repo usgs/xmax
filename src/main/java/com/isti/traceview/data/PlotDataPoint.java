@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -125,7 +124,7 @@ public class PlotDataPoint implements Serializable {
 	 */
 	public Set<EventWrapper> getEvents() {
 		if (events == null) {
-			return Collections.synchronizedSortedSet(new TreeSet<EventWrapper>());
+			return Collections.synchronizedSortedSet(new TreeSet<>());
 		} else {
 			return events;
 		}

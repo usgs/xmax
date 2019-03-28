@@ -1,25 +1,10 @@
 package com.isti.traceview.data;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Arrays;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
-
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
-
 import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
 import edu.sc.seis.seisFile.mseed.Btime;
 import edu.sc.seis.seisFile.mseed.ControlHeader;
@@ -27,6 +12,17 @@ import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.mseed.SeedRecord;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.log4j.Logger;
 
 /**
  * File MSEED data source
@@ -68,7 +64,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			PlotDataProvider currentChannel = new PlotDataProvider("", new Station(""), "", "");
 			long blockEndTime = 0;
 			double sampleRate = -1.0;
-			//double correction = 0.0;
 			boolean skipChannel = true;
 
 			segmentSampleCount = 0;
@@ -82,19 +77,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 						blockNumber++;
 						if (sr instanceof DataRecord) {
 							DataHeader dh = (DataHeader)sr.getControlHeader();
-							/*
-							 * lg.debug("Block # " + blockNumber + " is a data record, seq num " +
-							 * dh.getSequenceNum() + ", " + dh.getNetworkCode() + "/" +
-							 * dh.getStationIdentifier() + "/" + dh.getLocationIdentifier() + "/" +
-							 * dh.getChannelIdentifier() + ", starts " + GraphPanel.formatDate(new
-							 * Date(getBlockStartTime(dh)),
-							 * GraphPanel.DateFormatType.DATE_FORMAT_NORMAL) + ", ends " +
-							 * GraphPanel.formatDate(new Date(getBlockEndTime(dh, 1000 /
-							 * dh.getSampleRate())), GraphPanel.DateFormatType.DATE_FORMAT_NORMAL) +
-							 * ", data length " + dh.getNumSamples());
-							 */
-							// correction = correction + (dh.getStartMilliSec() -
-							// Math.round(dh.getStartMilliSec()));
 
 							// to exclude out of order blocks with events, which has 0 data length
 							if (dh.getNumSamples() > 0) {
@@ -166,8 +148,10 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			logger.error("Wrong mseed file format: ", e);
 		} finally {
 			try {
-				endPointer = dis.getFilePointer();
-				dis.close();
+				if (dis != null) {
+					endPointer = dis.getFilePointer();
+					dis.close();
+				}
 			} catch (IOException e) {
 				logger.error("IOException:", e);	
 			}
@@ -186,7 +170,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		RandomAccessFile dis = null;
 		int currentSampleCount = 0; //Counter on the basis of data values
 		int headerSampleCount = 0; //Counter on the basis of header information
-		int drSampleCount = 0;		//Counter on current DataRecord
+		int drSampleCount;		//Counter on current DataRecord
 		int blockNumber = 0;
 		try {
 			logger.debug("source = " + getFile().getCanonicalPath());	
@@ -194,7 +178,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			dis.seek(segment.getStartOffset());
 			logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
 			while (currentSampleCount < segmentSampleCount) {
-				drSampleCount = 0;	// number of samples in current DataRecord
 				long blockStartOffset = dis.getFilePointer();
 				SeedRecord sr = SynchronizedSeedRecord.read(dis, TraceView.getConfiguration().getDefaultBlockLength());
 				blockNumber++;
@@ -204,12 +187,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 					headerSampleCount += drSampleCount;	// total sample count from all headers
 					segment.addBlockDescription(getBlockStartTime(dr.getHeader()),blockStartOffset);
 					if (drSampleCount > 0) {
-						LocalSeismogramImpl lsi = null; // stores seed data as seis id, num samples, sample rate
+						LocalSeismogramImpl lsi; // stores seed data as seis id, num samples, sample rate
 														// channel id, and byte[] data (EncodedData)
 						int[] intData = new int[drSampleCount];	// testing memory usage for normal array[]
 						try {
 							if (dr.getBlockettes(1000).length == 0) {
-								DataRecord dra[] = new DataRecord[1];
+								DataRecord[] dra = new DataRecord[1];
 								dra[0] = dr;
 								int defaultCompression = TraceView.getConfiguration().getDefaultCompression();
 								byte dataCompression = (byte) defaultCompression;
@@ -222,14 +205,15 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								lsi = FissuresConvert.toFissures(dr);	// set LocalSeismogramImpl
 							}
 							//intData = lsi.get_as_longs();	// testing for memory leaks using array[]
-							double[] tempData = new double[drSampleCount];
+							double[] tempData;
 							tempData = lsi.get_as_doubles();
 							for(int i = 0; i < intData.length; i++)
 								intData[i] = (int) tempData[i];
 						} catch (FissuresException fe) {
-							StringBuilder message = new StringBuilder();
-							message.append(String.format("File " + getFile().getName() + ": Can't decompress data of block " + dr.getHeader().getSequenceNum() + ", setting block data to 0: "));
-							logger.error(message.toString(), fe);	
+							logger.error(
+									("File " + getFile().getName() + ": Can't decompress data of block " +
+											dr.getHeader().getSequenceNum() + ", setting block data to 0: "),
+									fe);
 							Arrays.fill(intData, 0);
 						}
 						// Test int[] array for memory leaks
@@ -253,7 +237,10 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 		} catch (IOException e) {
 			StringBuilder message = new StringBuilder();	
 			try{
-				message.append(String.format(this + " " + segment + " Ending position " + dis.getFilePointer() + ", sampleCount read" + currentSampleCount + ", samples from headers " + headerSampleCount + ", blocks read " + blockNumber));
+				message.append(this).append(" ").append(segment).append(" Ending position ")
+						.append(dis != null ? dis.getFilePointer() : 0).append(", sampleCount read").append(currentSampleCount)
+						.append(", samples from headers ").append(headerSampleCount).append(", blocks read ")
+						.append(blockNumber);
 				logger.error(message.toString(), e);			
 			}  catch (IOException eIO) {
 				logger.error("IOException:", eIO);
@@ -264,7 +251,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			System.exit(0);	
 		} finally {
 			try {
-				dis.close();
+				if (dis != null)
+					dis.close();
 			} catch (IOException e) {
 				logger.error("IOException:", e);	
 			}
@@ -288,7 +276,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			dis.seek(blockStartOffset);
 			//FileInputStream d = null;
 			SeedRecord sr = SynchronizedSeedRecord.read(dis, TraceView.getConfiguration().getDefaultBlockLength());
-			ControlHeader ch = null;
+			ControlHeader ch;
 			ch = sr.getControlHeader();
 			//ret = ret + "<br><i>Query time: </i> " + TimeInterval.formatDate(new Date(time), TimeInterval.DateFormatType.DATE_FORMAT_MIDDLE);
 			ret = ret + "<br><i>Seq number:</i> " + ch.getSequenceNum()
@@ -319,7 +307,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 			ret = ret + "<br>Header block text is unavailable";
 		} finally {
 			try {
-				dis.close();
+				if (dis != null)
+					dis.close();
 			} catch (IOException e) {
 				logger.error("IOException:", e);	
 			}
@@ -334,7 +323,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 	}
 
 	private static long getBlockEndTime(DataHeader dh, double sampleRate) {
-		long time = new Double((sampleRate * (dh.getNumSamples() - 1))).longValue();
+		long time = (long) (sampleRate * (dh.getNumSamples() - 1));
 		long blockStart = getBlockStartTime(dh);
 		// lg.debug("getBlockEndTime: sampleRate " + sampleRate + ", numSamples " +
 		// dh.getNumSamples() + ": return " + (blockStart + time));

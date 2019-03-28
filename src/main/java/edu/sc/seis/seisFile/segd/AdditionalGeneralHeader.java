@@ -1,21 +1,20 @@
 package edu.sc.seis.seisFile.segd;
 
-import org.apache.log4j.Logger;
-
 import java.io.DataInput;
 import java.io.IOException;
+import org.apache.log4j.Logger;
 
 public class AdditionalGeneralHeader {
 	private static final Logger logger = Logger.getLogger(AdditionalGeneralHeader.class);
 
 	public enum PhaseControl {
 		NOT_RECORDED, BASEPLATE_ACCELEROMETER, REACTION_MASS, WEIGHTED_SUM, DIRECT_FORCE_MEASUREMENT
-	};
-	
+	}
+
 	public enum VibratorType {
 		NOT_RECORDED, P_WAVE, SHEAR_WAVE, MARINE
-	};
-	
+	}
+
 	int fileNumber = -1;
 	int sourceLineNumberInteger = -1;
 	int sourceLineNumberFraction = -1;

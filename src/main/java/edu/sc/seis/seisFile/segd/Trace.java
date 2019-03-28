@@ -1,15 +1,13 @@
 package edu.sc.seis.seisFile.segd;
 
-import org.apache.log4j.Logger;
-
+import com.isti.traceview.common.TimeInterval;
 import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import com.isti.traceview.common.TimeInterval;
+import org.apache.log4j.Logger;
 
 public class Trace {
 	private static final Logger logger = Logger.getLogger(Trace.class);
@@ -19,8 +17,8 @@ public class Trace {
 		DEAD_CHANNEL, 
 		INTENTIONALLY_ZEROED, 
 		EDITED
-	};
-	
+	}
+
 	public enum SensorType {
 		NOT_DEFINED, 
 		PRESSURE, 
@@ -32,8 +30,8 @@ public class Trace {
 		ACCELERATION_HORIZONTAL_INLINE, 
 		ACCELERATION_HORIZONTAL_CROSSLINE, 
 		ACCELERATION_HORIZONTAL_OTHER
-	};
-	
+	}
+
 	private SegdRecord record = null;
 	private int fileNumber = -1;
 	private int scanTypeNumber = -1;

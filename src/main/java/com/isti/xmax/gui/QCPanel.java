@@ -1,13 +1,13 @@
 package com.isti.xmax.gui;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.JTree;
-import javax.swing.JScrollPane;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.border.EtchedBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * Side-panel for quality control issues

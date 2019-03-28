@@ -1,5 +1,12 @@
 package com.isti.traceview.filters;
 
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.data.RawDataProvider;
+import com.isti.traceview.data.Response;
+import com.isti.traceview.processing.IstiUtilsMath;
+import com.isti.xmax.XMAX;
+import com.isti.xmax.gui.XMAXframe;
+import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,7 +18,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -21,18 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.data.DataModule;
-import com.isti.traceview.data.RawDataProvider;
-import com.isti.traceview.data.Response;
-import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.xmax.XMAX;
-import com.isti.xmax.gui.XMAXframe;
-
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 
 public class Reconvolution extends JDialog implements IFilter, PropertyChangeListener {
 
@@ -250,9 +245,9 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 
 	private JComboBox<Object> getConvolveCB() {
 		if (convolveCB == null) {
-			convolveCB = new JComboBox<Object>();
+			convolveCB = new JComboBox<>();
 			FontMetrics fontMetrics = convolveCB.getFontMetrics(convolveCB.getFont());
-			List<String> options = new ArrayList<String>();
+			List<String> options = new ArrayList<>();
 			options.add("None");
 			try {
 				for (String respFile : XMAX.getDataModule().getAllResponseFiles()) {
@@ -265,7 +260,7 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 			} catch (TraceViewException e) {
 				logger.error("Can't load response from file: ", e);
 			}
-			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<>(options.toArray());
 			convolveCB.setModel(convolveCBModel);
 			if (respFile != null) {
 				convolveCB.setSelectedItem(respFile);

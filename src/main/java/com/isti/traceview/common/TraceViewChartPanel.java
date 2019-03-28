@@ -165,9 +165,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.EventListener;
 import java.util.ResourceBundle;
-
-import org.apache.log4j.Logger;
-
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -177,7 +174,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.EventListenerList;
-
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartRenderingInfo;

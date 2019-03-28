@@ -1,5 +1,16 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.TraceView;
+import com.isti.traceview.TraceViewException;
+import com.isti.traceview.common.Configuration;
+import com.isti.traceview.common.Wildcard;
+import edu.iris.Fissures.seed.builder.SeedObjectBuilder;
+import edu.iris.Fissures.seed.director.SeedImportDirector;
+import edu.sc.seis.seisFile.mseed.DataRecord;
+import edu.sc.seis.seisFile.mseed.SeedFormatException;
+import edu.sc.seis.seisFile.mseed.SeedRecord;
+import edu.sc.seis.seisFile.segd.SegdException;
+import edu.sc.seis.seisFile.segd.SegdRecord;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -12,35 +23,18 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RejectedExecutionException;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.Configuration;
-import com.isti.traceview.common.Wildcard;
-
-import edu.iris.Fissures.seed.builder.SeedObjectBuilder;
-import edu.iris.Fissures.seed.director.SeedImportDirector;
-import edu.sc.seis.seisFile.mseed.DataRecord;
-import edu.sc.seis.seisFile.mseed.SeedFormatException;
-import edu.sc.seis.seisFile.mseed.SeedRecord;
-import edu.sc.seis.seisFile.segd.SegdException;
-import edu.sc.seis.seisFile.segd.SegdRecord;
 
 /**
  * Data source, data placed in the file
@@ -160,7 +154,7 @@ public abstract class SourceFile implements ISource {
 	 */
 	public static List<File> getDataFiles(String wildcardedMask) throws TraceViewException {
 		logger.info("Loading data using path: " + wildcardedMask);
-		List<ISource> dataFiles = new ArrayList<ISource>();
+		List<ISource> dataFiles = new ArrayList<>();
 		List<File> listFiles = new Wildcard().getFilesByMask(wildcardedMask);
 		return listFiles;
 	}
@@ -189,7 +183,7 @@ public abstract class SourceFile implements ISource {
 			threadCount = (numProc + 1) / 2;
 		ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multi-thread executor
 		List<Future<ISource>> tasks = new ArrayList<>(filelen);	// list of future tasks
-		List<ISource> dataFileList = new ArrayList<ISource>(filelen);	// main datafiles list
+		List<ISource> dataFileList = new ArrayList<>(filelen);	// main datafiles list
 		try {	
 			long start = System.nanoTime();
 			for (File file: files) {

@@ -1,23 +1,20 @@
 package com.isti.traceview.transformations.response;
 
+import com.isti.traceview.common.TraceViewChartPanel;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
-
-import com.isti.traceview.common.TraceViewChartPanel;
 
 class ViewResp extends JDialog implements PropertyChangeListener {
 

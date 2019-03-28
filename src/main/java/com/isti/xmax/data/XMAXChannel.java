@@ -1,15 +1,14 @@
 package com.isti.xmax.data;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.common.Earthquake;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Customized {@link com.isti.traceview.data.Channel}
@@ -32,7 +31,7 @@ public class XMAXChannel extends PlotDataProvider {
 
 	public Set<IEvent> getAvailableEarthquakes(TimeInterval ti) {
 		computeArrivals();
-		Set<IEvent> ret = new HashSet<IEvent>();
+		Set<IEvent> ret = new HashSet<>();
 		for (IEvent event: events) {
 			if (event.getType().equals("ARRIVAL") && ti.isContain(event.getStartTime())) {
 				IEvent earthquake = (IEvent) event.getParameterValue("EARTHQUAKE");
@@ -50,7 +49,7 @@ public class XMAXChannel extends PlotDataProvider {
 
 	public Set<String> getAvailablePhases(TimeInterval ti, Object[] earthquakes) {
 		computeArrivals();
-		Set<String> ret = new HashSet<String>();
+		Set<String> ret = new HashSet<>();
 		for (IEvent event: events) {
 			if (event.getType().equals("ARRIVAL")) {
 				Earthquake earthquake = (Earthquake) event.getParameterValue("EARTHQUAKE");

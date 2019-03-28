@@ -1,17 +1,15 @@
 package com.isti.traceview.data;
 
+import edu.sc.seis.seisFile.segd.ChannelSet;
+import edu.sc.seis.seisFile.segd.ScanType;
+import edu.sc.seis.seisFile.segd.SegdRecord;
+import edu.sc.seis.seisFile.segd.Trace;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-
-import edu.sc.seis.seisFile.segd.ChannelSet;
-import edu.sc.seis.seisFile.segd.ScanType;
-import edu.sc.seis.seisFile.segd.SegdRecord;
-import edu.sc.seis.seisFile.segd.Trace;
 
 
 public class SourceFileSEGD extends SourceFile implements Serializable {

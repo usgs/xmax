@@ -1,23 +1,19 @@
 package com.isti.traceview.common;
 
-import com.isti.traceview.gui.ColorModeByGap;
-import java.io.File;
-import java.util.HashSet;
-import java.util.Observable;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.TraceViewException;
-import com.isti.traceview.gui.ColorModeBySegment;
+import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.gui.IScaleModeState;
 import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.gui.ScaleModeCom;
 import com.isti.traceview.gui.ScaleModeXhair;
-
 import edu.iris.dmc.seedcodec.B1000Types;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Observable;
+import java.util.Set;
+import java.util.StringTokenizer;
+import org.apache.log4j.Logger;
 
 /**
  * <p>
@@ -594,7 +590,7 @@ public class Configuration extends Observable {
 		if (filtStr == null || filtStr.equals("")) {
 			filterStation = null;
 		} else {
-			filterStation = new HashSet<String>();
+			filterStation = new HashSet<>();
 			fillFilter(filterStation, filtStr);
 		}
 	}
@@ -618,7 +614,7 @@ public class Configuration extends Observable {
 		if (filtStr == null || filtStr.equals("")) {
 			filterNetwork = null;
 		} else {
-			filterNetwork = new HashSet<String>();
+			filterNetwork = new HashSet<>();
 			fillFilter(filterNetwork, filtStr);
 		}
 	}
@@ -642,7 +638,7 @@ public class Configuration extends Observable {
 		if (filtStr == null || filtStr.equals("")) {
 			filterChannel = null;
 		} else {
-			filterChannel = new HashSet<String>();
+			filterChannel = new HashSet<>();
 			fillFilter(filterChannel, filtStr);
 		}
 	}
@@ -666,7 +662,7 @@ public class Configuration extends Observable {
 		if (filtStr == null || filtStr.equals("")) {
 			filterLocation = null;
 		} else {
-			filterLocation = new HashSet<String>();
+			filterLocation = new HashSet<>();
 			fillFilter(filterLocation, filtStr);
 		}
 	}

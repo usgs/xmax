@@ -1,9 +1,8 @@
 package com.isti.traceview.gui;
 
-import java.util.List;
-
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
+import java.util.List;
 
 /**
  * State pattern realization for scale mode. Scale mode defines method of trace scaling inside each
@@ -24,34 +23,35 @@ public interface IScaleModeState {
 	 * @param height
 	 *            height of current view, in pixels
 	 */
-	public void init(List<PlotData> graphs, List<ChannelView> allViews, TimeInterval timeRange, IMeanState meanState, int height);
+  void init(List<PlotData> graphs, List<ChannelView> allViews, TimeInterval timeRange,
+      IMeanState meanState, int height);
 
 	/**
 	 * @param value
 	 *            trace value
 	 * @return Y screen panel coordinate to draw
 	 */
-	public int getY(double value);
+  int getY(double value);
 
 	/**
 	 * @param y
 	 *            Y screen panel coordinate
 	 * @return trace value
 	 */
-	public double getValue(int y);
+  double getValue(int y);
 
 	/**
 	 * @return name of state
 	 */
-	public String getStateName();
+  String getStateName();
 
 	/**
 	 * @return max value for all traces in current ChannelView
 	 */
-	public double getMaxValue();
+  double getMaxValue();
 
 	/**
 	 * @return min value for all traces in current ChannelView
 	 */
-	public double getMinValue();
+  double getMinValue();
 }

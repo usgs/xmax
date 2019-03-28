@@ -1,15 +1,14 @@
 package com.isti.xmax.gui;
 
-import java.awt.event.MouseEvent;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.ScaleModeXhair;
 import com.isti.xmax.XMAXTimeRangeAdapter;
 import com.isti.xmax.data.XMAXChannel;
+import java.awt.event.MouseEvent;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Customized {@link GraphPanel}
@@ -32,7 +31,7 @@ public class XMAXGraphPanel extends GraphPanel {
 	 *         given time range.
 	 */
 	public Object[] getAvailableEarthquakes() {
-		SortedSet<IEvent> ret = new TreeSet<IEvent>();
+		SortedSet<IEvent> ret = new TreeSet<>();
 		for (PlotDataProvider channel: getChannelSet()) {
 			XMAXChannel ch = (XMAXChannel) channel;
 			for (IEvent earthquake: ch.getAvailableEarthquakes(getTimeRange())) {
@@ -47,7 +46,7 @@ public class XMAXGraphPanel extends GraphPanel {
 	 *         earthquakes.
 	 */
 	public Object[] getAvailablePhases(Object[] earthquakes) {
-		SortedSet<String> ret = new TreeSet<String>();
+		SortedSet<String> ret = new TreeSet<>();
 		for (PlotDataProvider channel: getChannelSet()) {
 			XMAXChannel ch = (XMAXChannel) channel;
 			for (String phase: ch.getAvailablePhases(getTimeRange(), earthquakes)) {

@@ -1,7 +1,6 @@
 package com.isti.traceview.data.ims;
 
 import gov.usgs.anss.cd11.CanadaException;
-
 import java.io.DataInput;
 import java.io.EOFException;
 import java.io.IOException;
@@ -11,16 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.log4j.Logger;
 
 public class IMSFile {
 
 	public enum MessageType {
 		DATA, REQUEST, SUBSCRIPTION
-	};
+	}
 
-	private static final Logger logger = Logger.getLogger(IMSFile.class);
+  private static final Logger logger = Logger.getLogger(IMSFile.class);
 	//private static Pattern wid2Pattern = Pattern.compile("(\\w.)\\s.(\\S.)\\s.(\\S.)\\s.");
 	private static Pattern msgTypePattern = Pattern.compile("^MSG_TYPE\\s+(\\S+)$");
 	private static Pattern msgIdPattern = Pattern.compile("^MSG_ID\\s+(\\S+\\.*)$");
@@ -35,7 +33,7 @@ public class IMSFile {
 	private String ref_id = null; // msg_id of referenced message
 	@SuppressWarnings("unused")	
 	private String prod_id = null;
-	private List<DataType> dataTypes = new ArrayList<DataType>();
+	private List<DataType> dataTypes = new ArrayList<>();
 
 	private IMSFile() {
 
@@ -63,10 +61,8 @@ public class IMSFile {
 					if (imsFile.msg_type == MessageType.DATA) {
 						imsFile.readDataTypes(parseOnly, input, filePointer);
 					} else if (imsFile.msg_type == MessageType.REQUEST) {
-						;
-					} else if (imsFile.msg_type == MessageType.SUBSCRIPTION) {
-						;
-					}
+          } else if (imsFile.msg_type == MessageType.SUBSCRIPTION) {
+          }
 				} else if (tag.equals("DATA_TYPE")) {
 					input.seek(filePointer);
 					imsFile.readDataTypes(parseOnly, input, filePointer);

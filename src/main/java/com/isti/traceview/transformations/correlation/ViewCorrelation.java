@@ -1,5 +1,8 @@
 package com.isti.traceview.transformations.correlation;
 
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.processing.IstiUtilsMath;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -12,7 +15,6 @@ import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -22,9 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-
 import org.apache.log4j.Logger;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -33,10 +33,6 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.TraceViewChartPanel;
-import com.isti.traceview.processing.IstiUtilsMath;
 
 /**
  * Dialog to view correlation results. Also performs correlation itself and
@@ -248,7 +244,7 @@ class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemLis
 
 	private JComboBox<Object> getTaperCB() {
 		if (taperCB == null) {
-			List<String> options = new ArrayList<String>();
+			List<String> options = new ArrayList<>();
 			options.add("None");
 			options.add("Hanning");
 			options.add("Hamming");
@@ -257,8 +253,8 @@ class ViewCorrelation extends JDialog implements PropertyChangeListener, ItemLis
 			options.add("Bartlett");
 			options.add("Gauss");
 			options.add("Blackman");
-			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<Object>(options.toArray());
-			taperCB = new JComboBox<Object>();
+			ComboBoxModel<Object> convolveCBModel = new DefaultComboBoxModel<>(options.toArray());
+			taperCB = new JComboBox<>();
 			taperCB.setModel(convolveCBModel);
 			taperCB.setPreferredSize(new java.awt.Dimension(100, 22));
 			taperCB.setEnabled(true);

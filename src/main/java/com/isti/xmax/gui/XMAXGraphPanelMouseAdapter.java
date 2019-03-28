@@ -1,10 +1,8 @@
 package com.isti.xmax.gui;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.JPanel;
-
 import com.isti.traceview.gui.IMouseAdapter;
+import java.awt.event.ActionEvent;
+import javax.swing.JPanel;
 
 public class XMAXGraphPanelMouseAdapter implements IMouseAdapter {
 

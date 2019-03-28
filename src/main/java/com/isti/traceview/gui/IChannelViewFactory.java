@@ -1,8 +1,7 @@
 package com.isti.traceview.gui;
 
-import java.util.List;
-
 import com.isti.traceview.data.PlotDataProvider;
+import java.util.List;
 
 /**
  * Factory for {@link ChannelView}. Library users can create factory for their own, customized
@@ -11,10 +10,10 @@ import com.isti.traceview.data.PlotDataProvider;
  * @author Max Kokoulin
  */
 public interface IChannelViewFactory {
-	public int getInfoAreaWidth();
+	int getInfoAreaWidth();
 	
-	public ChannelView getChannelView(List<PlotDataProvider> channels);
+	ChannelView getChannelView(List<PlotDataProvider> channels);
 
-	public ChannelView getChannelView(PlotDataProvider channel);
+	ChannelView getChannelView(PlotDataProvider channel);
 
 }

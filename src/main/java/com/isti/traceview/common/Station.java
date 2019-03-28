@@ -1,5 +1,6 @@
 package com.isti.traceview.common;
 
+import com.isti.traceview.data.Channel;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,8 +8,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-
-import com.isti.traceview.data.Channel;
 
 /**
  * Defines the station information. Station list is initialized during startup: such information as
@@ -76,7 +75,7 @@ public class Station implements Comparable<Object>, Serializable {
 	 *            the station name.
 	 */
 	public Station(String stationName) {
-		this(stationName, null, null, 0.0, 0.0, 0.0, 0.0, new HashSet<Channel>());
+		this(stationName, null, null, 0.0, 0.0, 0.0, 0.0, new HashSet<>());
 	}
 
 	/**
@@ -292,6 +291,6 @@ public class Station implements Comparable<Object>, Serializable {
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
-		channels = new TreeSet<Channel>();
+		channels = new TreeSet<>();
 	}
 }

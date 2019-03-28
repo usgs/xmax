@@ -1,14 +1,12 @@
 package com.isti.traceview.common;
 
+import com.isti.traceview.TraceView;
+import com.isti.traceview.TraceViewException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
 
 /**
  * this class realize unix command line wildcard syntax
@@ -19,7 +17,7 @@ public class Wildcard {
 	private static final Logger logger = Logger.getLogger(Wildcard.class);
 
 	List<String> path = null;
-	List<File> lst = new ArrayList<File>();
+	List<File> lst = new ArrayList<>();
 
 	/**
 	 * @param pattern
@@ -47,7 +45,7 @@ public class Wildcard {
 		try {
 			if (TraceView.osNameString.contains("Windows")) {
 				String[] as = mask.replaceFirst(":\\\\\\\\", ":\\\\").split("\\\\");
-				path = new ArrayList<String>(Arrays.asList(as));
+				path = new ArrayList<>(Arrays.asList(as));
 				if (path.get(0).contains(":")) {
 					// absolute path
 					explore(path.get(0) + "\\\\", 0);
@@ -61,7 +59,7 @@ public class Wildcard {
 				}
 			} else {
 				String[] as = mask.split(File.separator);
-				path = new ArrayList<String>(Arrays.asList(as));
+				path = new ArrayList<>(Arrays.asList(as));
 				if (path.get(0).equals(".") || path.get(0).equals("..") || path.get(0).equals("~")) {
 					// relative path
 					explore(path.get(0), 0);
@@ -76,7 +74,7 @@ public class Wildcard {
 			}
 		} catch (Exception e) {
 			StringBuilder message = new StringBuilder();
-			message.append(String.format("Can't parse wildcarded path: '" + mask + "'" + e.toString()));
+			message.append("Can't parse wildcarded path: '" + mask + "'" + e.toString());
 			throw new TraceViewException(message.toString());
 		}
 		return lst;

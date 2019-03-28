@@ -1,17 +1,14 @@
 package com.isti.traceview;
 
-import java.util.SimpleTimeZone;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.data.DataModule;
 import com.isti.util.UtilFns;
 import com.isti.xmax.XMAX;
+import java.util.SimpleTimeZone;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
 
 /**
  * The main class of library, it should be created first to use lib. 

@@ -1,11 +1,10 @@
 package com.isti.traceview.commands;
 
-import org.apache.log4j.Logger;
-
 import com.isti.traceview.AbstractUndoableCommand;
 import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.processing.RemoveGain;
+import org.apache.log4j.Logger;
 
 /**
  * This command that removes the gain

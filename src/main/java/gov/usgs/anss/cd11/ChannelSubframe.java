@@ -22,7 +22,6 @@ package gov.usgs.anss.cd11;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -356,13 +355,13 @@ public class ChannelSubframe {
 				byte[] cddata = new byte[len2 - bb.position() + 4 + 8];
 				bb.get(cddata, 0, len2 - bb.position() + 4);
 				Canada.canada_uncompress(cddata, samples, cddata.length - 8,
-						nsamp, 0);
+						nsamp);
 
 			} else
-				Canada.canada_uncompress(data, samples, dataSize, nsamp, 0);
+				Canada.canada_uncompress(data, samples, dataSize, nsamp);
 			return nsamp;
 		case 2: // Canadian compression applied after signature
-			Canada.canada_uncompress(data, samples, dataSize, nsamp, 0);
+			Canada.canada_uncompress(data, samples, dataSize, nsamp);
 
 			break;
 		case 3: // Steim compression applied before signature

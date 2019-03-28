@@ -1,12 +1,5 @@
 package com.isti.traceview.transformations.psd;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import org.apache.commons.configuration.Configuration;
-import org.apache.log4j.Logger;
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
@@ -22,6 +15,13 @@ import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.apache.commons.configuration.Configuration;
+import org.apache.log4j.Logger;
 
 /**
  * Power spectra density transformation. Prepares data for presentation in
@@ -86,7 +86,7 @@ public class TransPSD implements ITransformation {
 
 	public List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame)
 			throws TraceViewException, XMAXException {
-		List<Spectra> dataset = new ArrayList<Spectra>();
+		List<Spectra> dataset = new ArrayList<>();
 		ListIterator<PlotDataProvider> li = input.listIterator();
 		String respNotFound = "";
 		while (li.hasNext()) {
@@ -167,7 +167,7 @@ public class TransPSD implements ITransformation {
 																							// 75%
 																							// overlap
 			int smallDataSegmentLimit = new Double(
-					Math.ceil(Math.pow(2, (new Double(Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1))))).intValue(); // set
+					Math.ceil(Math.pow(2, (Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1)))).intValue(); // set
 																														// smallDataSegment
 																														// limit
 																														// to
@@ -326,7 +326,7 @@ public class TransPSD implements ITransformation {
 	}
 
 	private static int getPower2Length(int length) {
-		return new Double(Math.pow(2, new Double(Math.ceil(IstiUtilsMath.log2(length))))).intValue();
+		return new Double(Math.pow(2, Math.ceil(IstiUtilsMath.log2(length)))).intValue();
 	}
 
 	@Override

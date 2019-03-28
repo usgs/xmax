@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 	private static final Logger logger = Logger.getLogger(ComplexDoubleFFT.class);
-	static final double PI = Math.PI;
+	private static final double PI = Math.PI;
 
 	public ComplexDoubleFFT_Mixed(int n) {
 		super(n);
@@ -35,7 +35,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 		}
 	}
 
-	public void transform(double data[], int i0, int stride) {
+	public void transform(double[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 			transform_internal(data, i0, stride, -1);
@@ -44,7 +44,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 		}
 	}
 
-	public void backtransform(double data[], int i0, int stride) {
+	public void backtransform(double[] data, int i0, int stride) {
 		try {
 			checkData(data, i0, stride);
 			transform_internal(data, i0, stride, +1);
@@ -58,13 +58,13 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 	 * Setting up the Wavetable
 	 */
 
-	private int factors[];
-	// Reversed the last 2 levels of the twiddle array compared to what the C
-	// version had.
-	private double twiddle[][][];
-	private int available_factors[] = { 7, 6, 5, 4, 3, 2 };
+  private int[] factors;
+  // Reversed the last 2 levels of the twiddle array compared to what the C
+  // version had.
+  private double[][][] twiddle;
+  private int[] available_factors = {7, 6, 5, 4, 3, 2};
 
-	void setup_wavetable(int n) {
+	private void setup_wavetable(int n) {
 
 		if (n <= 0)
 			throw new Error("length must be positive integer : " + n);
@@ -86,7 +86,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 			int q = n / product;
 
 			twiddle[i] = new double[q + 1][2 * (factor - 1)];
-			double twid[][] = twiddle[i];
+      double[][] twid = twiddle[i];
 			for (int j = 1; j < factor; j++) {
 				twid[0][2 * (j - 1)] = 1.0;
 				twid[0][2 * (j - 1) + 1] = 0.0;
@@ -109,16 +109,17 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 	 * ______________________________________________________________________
 	 * The main transformation driver
 	 */
-	void transform_internal(double data[], int i0, int stride, int sign) {
+	private void transform_internal(double[] data, int i0, int stride, int sign) {
 
 		if (n == 1)
 			return; /* FFT of 1 data point is the identity */
 
-		double scratch[] = new double[2 * n];
+    double[] scratch = new double[2 * n];
 		int product = 1;
 		int state = 0;
-		double in[], out[];
-		int istride, ostride;
+    double[] in;
+    double[] out;
+    int istride, ostride;
 		int in0, out0;
 
 		for (int i = 0; i < factors.length; i++) {
@@ -177,7 +178,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_2(int fi, double in[], int in0, int istride, double out[],
+	private void pass_2(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -191,7 +192,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 		int i = in0, j = out0;
 		double x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			double twids[] = twiddle[fi][k];
+      double[] twids = twiddle[fi][k];
 			double w_real = twids[0];
 			double w_imag = -sign * twids[1];
 
@@ -224,7 +225,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_3(int fi, double in[], int in0, int istride, double out[],
+	private void pass_3(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -240,7 +241,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 		int i = in0, j = out0;
 		double x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			double twids[] = twiddle[fi][k];
+      double[] twids = twiddle[fi][k];
 			double w1_real = twids[0];
 			double w1_imag = -sign * twids[1];
 			double w2_real = twids[2];
@@ -295,7 +296,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_4(int fi, double in[], int in0, int istride, double out[],
+	private void pass_4(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -309,7 +310,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 		int dj = ostride * p_1;
 		double x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			double twids[] = twiddle[fi][k];
+      double[] twids = twiddle[fi][k];
 			double w1_real = twids[0];
 			double w1_imag = -sign * twids[1];
 			double w2_real = twids[2];
@@ -378,7 +379,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_5(int fi, double in[], int in0, int istride, double out[],
+	private void pass_5(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 		int k, k1;
 
@@ -395,7 +396,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 		int dj = ostride * p_1;
 		double x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			double twids[] = twiddle[fi][k];
+      double[] twids = twiddle[fi][k];
 			double w1_real = twids[0];
 			double w1_imag = -sign * twids[1];
 			double w2_real = twids[2];
@@ -506,7 +507,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_6(int fi, double in[], int in0, int istride, double out[],
+	private void pass_6(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 
 		int k, k1;
@@ -522,7 +523,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 		int dj = ostride * p_1;
 		double x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			double twids[] = twiddle[fi][k];
+      double[] twids = twiddle[fi][k];
 			double w1_real = twids[0];
 			double w1_imag = -sign * twids[1];
 			double w2_real = twids[2];
@@ -648,7 +649,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_7(int fi, double in[], int in0, int istride, double out[],
+	private void pass_7(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int product) {
 
 		int k, k1;
@@ -670,7 +671,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 		int dj = ostride * p_1;
 		double x_real, x_imag;
 		for (k = 0; k < q; k++) {
-			double twids[] = twiddle[fi][k];
+      double[] twids = twiddle[fi][k];
 			double w1_real = twids[0];
 			double w1_imag = -sign * twids[1];
 			double w2_real = twids[2];
@@ -891,9 +892,9 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 
 	/* ______________________________________________________________________ */
 
-	void pass_n(int fi, double in[], int in0, int istride, double out[],
+	private void pass_n(int fi, double[] in, int in0, int istride, double[] out,
 			int out0, int ostride, int sign, int factor, int product) {
-		int i = 0, j = 0;
+		int i, j;
 		int k, k1;
 
 		int m = n / factor;
@@ -937,7 +938,7 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 			}
 		}
 
-		double twiddl[] = twiddle[fi][q];
+    double[] twiddl = twiddle[fi][q];
 
 		for (e = 1; e < (factor - 1) / 2 + 1; e++) {
 			int idx = e;
@@ -979,9 +980,6 @@ public class ComplexDoubleFFT_Mixed extends ComplexDoubleFFT {
 				idx %= factor;
 			}
 		}
-
-		i = 0;
-		j = 0;
 
 		/* k = 0 */
 		for (k1 = 0; k1 < p_1; k1++) {

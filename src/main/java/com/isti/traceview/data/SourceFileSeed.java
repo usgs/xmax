@@ -1,5 +1,18 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.TraceView;
+import edu.iris.Fissures.seed.app.Jseedr;
+import edu.iris.Fissures.seed.builder.ExportBuilder;
+import edu.iris.Fissures.seed.container.Blockette;
+import edu.iris.Fissures.seed.container.Btime;
+import edu.iris.Fissures.seed.container.SeedObject;
+import edu.iris.Fissures.seed.container.Waveform;
+import edu.iris.Fissures.seed.director.ExportDirector;
+import edu.iris.Fissures.seed.director.ExportTemplate;
+import edu.iris.Fissures.seed.director.SeedExportDirector;
+import edu.iris.Fissures.seed.exception.BuilderException;
+import edu.iris.Fissures.seed.exception.SeedException;
+import edu.iris.Fissures.seed.util.Utility;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,24 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
 import org.apache.log4j.Logger;
-
-import com.isti.traceview.TraceView;
-import com.isti.traceview.data.TraceViewSacExportBuilder;
-
-import edu.iris.Fissures.seed.app.Jseedr;
-import edu.iris.Fissures.seed.builder.ExportBuilder;
-import edu.iris.Fissures.seed.container.Blockette;
-import edu.iris.Fissures.seed.container.Btime;
-import edu.iris.Fissures.seed.container.SeedObject;
-import edu.iris.Fissures.seed.container.Waveform;
-import edu.iris.Fissures.seed.director.ExportDirector;
-import edu.iris.Fissures.seed.director.ExportTemplate;
-import edu.iris.Fissures.seed.director.SeedExportDirector;
-import edu.iris.Fissures.seed.exception.BuilderException;
-import edu.iris.Fissures.seed.exception.SeedException;
-import edu.iris.Fissures.seed.util.Utility;
 
 /**
  * During parse phase seed is decoded, SAC file create in TMP data area for every found segment. After that we
@@ -127,12 +123,12 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 		logicalRecordLength = 1024;
 		physicalRecordLength = 2000000000; // set to impossibly high value
 		logicalRecords = new Vector<LogicalRecord>(8, 8);
-		exportMold = new Vector<Object>(8, 8);
+		exportMold = new Vector<>(8, 8);
 		recordPadding = (byte) 0; // use nulls for padding, although it probably won't be used
 		scriptNesting = new int[8];
 		nestingScore = new int[scriptNesting.length];
 		builderType = "SAC"; // indicate the type of builder we are
-		stationList = new Vector<SacStation>(8, 8); // set up station list vector
+		stationList = new Vector<>(8, 8); // set up station list vector
 	}
 
 	// public methods
@@ -789,7 +785,7 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 		protected String networkCode = null;
 		protected Btime startEffTime = null;
 		protected Btime endEffTime = null;
-		protected Vector<SacChannel> channels = new Vector<SacChannel>(8, 8);
+		protected Vector<SacChannel> channels = new Vector<>(8, 8);
 	}
 
 	/**

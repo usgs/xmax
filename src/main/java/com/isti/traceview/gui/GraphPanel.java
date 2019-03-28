@@ -1,5 +1,17 @@
 package com.isti.traceview.gui;
 
+import com.isti.traceview.CommandHandler;
+import com.isti.traceview.ITimeRangeAdapter;
+import com.isti.traceview.TraceView;
+import com.isti.traceview.common.IEvent;
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.UniqueList;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
+import com.isti.traceview.data.SelectionContainer;
+import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.processing.RemoveGain;
+import com.isti.traceview.processing.Rotation;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -29,7 +41,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.TimeZone;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,7 +49,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.MouseInputListener;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jfree.chart.axis.DateAxis;
@@ -46,19 +56,6 @@ import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-
-import com.isti.traceview.CommandHandler;
-import com.isti.traceview.ITimeRangeAdapter;
-import com.isti.traceview.TraceView;
-import com.isti.traceview.common.IEvent;
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.UniqueList;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.data.Segment;
-import com.isti.traceview.data.SelectionContainer;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.RemoveGain;
-import com.isti.traceview.processing.Rotation;
 
 /**
  * This is graphics container; it contains a list of ChannelView(s) (panels) and renders them as a
@@ -103,7 +100,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	private List<ChannelView> selectedChannelShowSet = null;
 	
 	/** The previously selected channels with the level that they were selected */
-	private List<SelectionContainer> previousSelectedChannels = new ArrayList<SelectionContainer>();
+	private List<SelectionContainer> previousSelectedChannels = new ArrayList<>();
 	
 	/** The current level of channel selection */
 	private int selectionLevel = 0; 
@@ -286,8 +283,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		initialize(showTimePanel);
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		selectedEarthquakes = new HashSet<IEvent>();
-		selectedPhases = new HashSet<String>();
+		selectedEarthquakes = new HashSet<>();
+		selectedPhases = new HashSet<>();
 
 		meanState = new MeanModeDisabled();
 		colorMode = new ColorModeBySegment();
@@ -307,7 +304,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			axisFont = new Font(getFont().getName(), getFont().getStyle(), 10);
 		}
 		initialPaint = true;
-		channelShowSet = Collections.synchronizedList(new ArrayList<ChannelView>());
+		channelShowSet = Collections.synchronizedList(new ArrayList<>());
 		unitsShowCount = TraceView.getConfiguration().getUnitsInFrame();
 		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 		this.setLayout(new BorderLayout());
@@ -548,7 +545,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @return Returns List of currently loaded channels.
 	 */
 	public List<PlotDataProvider> getChannelSet() {
-		List<PlotDataProvider> ret = new ArrayList<PlotDataProvider>();
+		List<PlotDataProvider> ret = new ArrayList<>();
 		for (ChannelView cv: getChannelShowSet()) {
 			for (PlotDataProvider channel: cv.getPlotDataProviders()) {
 				ret.add(channel);
@@ -574,7 +571,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @return the current channel show set
 	 */
 	public List<ChannelView> getCurrentChannelShowSet() {
-		List<ChannelView> ret = new ArrayList<ChannelView>();
+		List<ChannelView> ret = new ArrayList<>();
 		Component[] comp = drawAreaPanel.getComponents();
 		for (Component c: comp) {
 			ret.add((ChannelView) c);
@@ -600,7 +597,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *         getSelectedChannelShowSet() while mode selected or overlay enabled.
 	 */
 	public List<ChannelView> getCurrentSelectedChannelShowSet() {
-		List<ChannelView> ret = new ArrayList<ChannelView>();
+		List<ChannelView> ret = new ArrayList<>();
 		for (ChannelView cv: getCurrentChannelShowSet()) {
 			if (cv.isSelected()) {
 				ret.add(cv);
@@ -626,7 +623,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @return Returns List of selected channels, based on screen selection
 	 */
 	public List<PlotDataProvider> getCurrentSelectedChannels() {
-		List<PlotDataProvider> ret = new ArrayList<PlotDataProvider>();
+		List<PlotDataProvider> ret = new ArrayList<>();
 		for (ChannelView cv: getCurrentSelectedChannelShowSet()) {
 			ret.addAll(cv.getPlotDataProviders());
 		}
@@ -655,13 +652,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					//		   creates a graph panel for each channel submitted
 					for (PlotDataProvider channel: channels) {
                         			//logger.debug("== handle channel=" + channel);
-						List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
+						List<PlotDataProvider> toAdd = new ArrayList<>();
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
 					}
 					
 					// Loops through ChannelView objects and loads segment data
-					List<PlotDataProvider> pdpList = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> pdpList = new ArrayList<>();
 					TimeInterval ti = null;
 					System.out.println("Loading channel segment data:");
 					long startl = System.nanoTime();
@@ -680,7 +677,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					//logger.debug("Channels are done loading");
 					System.out.println("Channel segment data load time = " + end + " sec\n");
 				} else {
-					List<PlotDataProvider> toAdd = new ArrayList<PlotDataProvider>();
+					List<PlotDataProvider> toAdd = new ArrayList<>();
 					PlotDataProvider prevChannel = null;
 					for (PlotDataProvider channel: channels) {
 						// This block checks for channels with the same location code
@@ -694,7 +691,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 										.getChannelName().equals(channel.getChannelName()))) {
 							ChannelView cv = channelViewFactory.getChannelView(toAdd);
 							addGraph(cv);
-							toAdd = new ArrayList<PlotDataProvider>();
+							toAdd = new ArrayList<>();
 						}
 						toAdd.add(channel);
 						prevChannel = channel;
@@ -705,7 +702,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// Will add loop for List<ChannelView> channelShowSet to load
 					// channels in List<PlotDataProvider> (see above)
 				}
-				selectedChannelShowSet = Collections.synchronizedList(new UniqueList<ChannelView>());
+				selectedChannelShowSet = Collections.synchronizedList(new UniqueList<>());
 				if (overlay) {
 					overlay = false;
 					getObservable().setChanged();
@@ -1201,7 +1198,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (selected.size() > 0) {
 				overlay = true;
 				drawAreaPanel.removeAll();
-				List<PlotDataProvider> toProcess = new ArrayList<PlotDataProvider>();
+				List<PlotDataProvider> toProcess = new ArrayList<>();
 				for (ChannelView cv: selected) {
 					toProcess.addAll(cv.getPlotDataProviders());
 				}
@@ -1404,7 +1401,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						System.out.print("Pixelizing channel data...");
 					}
 					
-					final List<String> channelsWithErrors = new ArrayList<String>();
+					final List<String> channelsWithErrors = new ArrayList<>();
 					for (Component component: drawAreaPanel.getComponents()) {
 						ChannelView view = (ChannelView) component;
 						if (view.getHeight() == 0 || view.getWidth() == 0) {
@@ -1579,7 +1576,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public long getTime(int x) {
 		// lg.debug("GraphPanel getTime: " + x);
 		Insets i = getInsets();
-		double sr = new Double(getTimeRange().getDuration()) / (getWidth() - i.left - i.right - channelViewFactory.getInfoAreaWidth());
+		double sr = (double) getTimeRange().getDuration() / (getWidth() - i.left - i.right - channelViewFactory.getInfoAreaWidth());
 		return new Double(getTimeRange().getStart() + x * sr).longValue();
 	}
 
@@ -1594,7 +1591,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			return Integer.MAX_VALUE;
 		else
 			return new Double((getWidth() - channelViewFactory.getInfoAreaWidth() - getInsets().left - getInsets().right)
-					* new Double((date - getTimeRange().getStart())) / new Double(getTimeRange().getDuration())).intValue();
+					* (double) (date - getTimeRange().getStart()) / (double) getTimeRange().getDuration()).intValue();
 	}
 
 	/**
@@ -1792,7 +1789,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 		Graphics2D g2 = (Graphics2D) pg;
 		g2.translate(pf.getImageableX(), pf.getImageableY());
-		g2.scale(g2.getClipBounds().width / new Double(this.getWidth()), g2.getClipBounds().height / new Double(this.getHeight()));
+		g2.scale(g2.getClipBounds().width / (double) this
+				.getWidth(), g2.getClipBounds().height / (double) this
+				.getHeight());
 		this.paint(g2);
 		return Printable.PAGE_EXISTS;
 	}

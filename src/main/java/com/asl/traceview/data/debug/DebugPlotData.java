@@ -1,14 +1,15 @@
 package com.asl.traceview.data.debug;
 
+import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.data.Segment;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -19,10 +20,6 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.common.TraceViewChartPanel;
-import com.isti.traceview.data.Segment;
-
 /**
  * This class is used for debugging purposes. It provides a variety of ways to quickly plot data 
  * @author nfalco
@@ -32,7 +29,7 @@ import com.isti.traceview.data.Segment;
 public class DebugPlotData extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	private List<Segment> data = new ArrayList<Segment>(); 
+	private List<Segment> data = new ArrayList<>();
 	private TimeInterval timeInterval;
 	private XYPlot plot = null;
 	private TraceViewChartPanel chartPanel = null;
