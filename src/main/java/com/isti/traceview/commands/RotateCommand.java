@@ -1,7 +1,6 @@
 package com.isti.traceview.commands;
 
 import com.isti.traceview.AbstractUndoableCommand;
-import com.isti.traceview.UndoException;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
@@ -38,7 +37,7 @@ public class RotateCommand extends AbstractUndoableCommand {
 		}
 	}
 	
-	public void undo() throws UndoException{
+	public void undo() {
 	}
 
 	public boolean canUndo() {

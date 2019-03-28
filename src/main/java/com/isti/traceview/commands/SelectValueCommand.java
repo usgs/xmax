@@ -1,7 +1,6 @@
 package com.isti.traceview.commands;
 
 import com.isti.traceview.AbstractUndoableCommand;
-import com.isti.traceview.UndoException;
 import com.isti.traceview.gui.GraphPanel;
 import org.apache.log4j.Logger;
 
@@ -45,15 +44,10 @@ public class SelectValueCommand extends AbstractUndoableCommand {
 		}
 	}
 
-	public void undo() throws UndoException {
-		try {
-			super.undo();
-			graphPanel.setManualValueMax(previousMax);
-			graphPanel.setManualValueMin(previousMin);
-		} catch (UndoException e) {
-			// do nothing
-			logger.error("UndoException:", e);	
-		}
+	public void undo() {
+		super.undo();
+		graphPanel.setManualValueMax(previousMax);
+		graphPanel.setManualValueMin(previousMin);
 	}
 
 	public boolean canUndo() {

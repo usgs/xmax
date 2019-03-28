@@ -135,10 +135,6 @@ public class TransModal implements ITransformation {
     return dataset;
   }
 
-  private static int getPower2Length(int length) {
-    return new Double(Math.pow(2, Math.ceil(IstiUtilsMath.log2(length)))).intValue();
-  }
-
   @Override
   public String getName() {
     return TransModal.NAME;
