@@ -163,15 +163,7 @@ public class PlotData implements Comparable<Object> {
 	public int compareTo(Object o) {
 		if ((o instanceof PlotData)) {
 			PlotData pd = (PlotData) o;
-			if (this.getMeanAmpValue() == pd.getMeanAmpValue()) {
-				return 0;
-			} else {
-				if (this.getMeanAmpValue() < pd.getMeanAmpValue()) {
-					return 1;
-				} else {
-					return -1;
-				}
-			}
+			return Double.compare(pd.getMeanAmpValue(), this.getMeanAmpValue());
 		} else {
 			return -1;
 		}

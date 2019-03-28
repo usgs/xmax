@@ -2685,10 +2685,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
-						Iterator<PlotDataProvider> it = selectedChannels.iterator();
-						while (it.hasNext()) {
+						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
-							channel = it.next();
+							channel = selectedChannel;
 							channel.dumpMseed(ds, graphPanel.getTimeRange(), graphPanel.getFilter(),
 									channel.getRotation());
 						}
@@ -2843,10 +2842,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 								+ "\" end = \"" + TimeInterval.formatDate(graphPanel.getTimeRange().getEndTime(),
 										TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 								+ "\">\n");
-						Iterator<PlotDataProvider> it = selectedChannels.iterator();
-						while (it.hasNext()) {
+						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
-							channel = it.next();
+							channel = selectedChannel;
 							channel.dumpXML(fw, graphPanel.getTimeRange(), graphPanel.getFilter(),
 									channel.getRotation());
 						}
@@ -2909,10 +2907,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
 					if (selectedChannels.size() > 0) {
-						Iterator<PlotDataProvider> it = selectedChannels.iterator();
-						while (it.hasNext()) {
+						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
-							channel = it.next();
+							channel = selectedChannel;
 							channel.dumpASCII(fw, graphPanel.getTimeRange(), graphPanel.getFilter(),
 									channel.getRotation());
 						}

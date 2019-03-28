@@ -289,7 +289,7 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 		XYSeries ret = new XYSeries(series1.getKey() + "-" + series2.getKey());
 		for (int i = 0; i < series1.getItemCount(); i++) {
 			double val = getValue(series2, series1.getX(i).doubleValue());
-			if (val != Double.NaN) {
+			if (!Double.isNaN(val)) {
 				ret.add(series1.getX(i), series1.getY(i).doubleValue() - val);
 			}
 		}

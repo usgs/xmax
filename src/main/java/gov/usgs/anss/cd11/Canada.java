@@ -40,12 +40,6 @@ class Canada {
 	 * fitness for a particular purpose.
 	 */
 
-	/* number of bytes available in
-	 * compressed data exceeded
-	 * during decompression
-	 */
-		private static boolean dbg = true;
-
 	private static int corrupt = 0;
 
 	/**
@@ -425,9 +419,12 @@ class Canada {
 			corrupt = 1;
 			break;
 		}
+		/* number of bytes available in
+		 * compressed data exceeded
+		 * during decompression
+		 */
 		if (b.position() != j)
-			if (dbg)
-				System.out.println("J and position misaligned");
+			System.out.println("J and position misaligned");
 		y[offset] = y0;
 		y[offset + 1] = y1;
 		y[offset + 2] = y2;

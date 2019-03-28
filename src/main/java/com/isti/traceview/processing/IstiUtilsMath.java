@@ -28,11 +28,6 @@ public class IstiUtilsMath {
 	public static final int ISTI_UTIL_FAILED = -1;
 
 	/**
-	 * \ingroup isti_utils_param \brief Conversion from nmeters to meters
-	 */
-	public static double ISTI_UTIL_NM2MTR = 1e9;
-
-	/**
 	 * \ingroup isti_utils_public_functions \brief Function to normalize
 	 * response function using calib and calper. \note Modifies the first
 	 * argument.
@@ -244,32 +239,9 @@ public class IstiUtilsMath {
 	}
 
 	/**
-	 * \ingroup isti_utils_public_functions \brief Function for real numbers
-	 * deconvolution of double array. \note We assume that the length of both
-	 * arays are the same and save the \note output into the data. \note The
-	 * output is saved in the first and second input parameters. Beware!
-	 * 
-	 * @param denom
-	 *            the denominator array.
-	 * @param numer
-	 *            the numerator array.
-	 * @param len
-	 *            the length.
-	 */
-	public static void realDeconvolution(double[] denom, double[] numer, int len) {
-		final double small = 10e-30;
-		for (int i = 0; i < len; i++) {
-			if (numer[i] == 0)
-				denom[i] /= small;
-			else
-				denom[i] /= numer[i];
-		}
-	}
-
-	/**
 	 * Compute complex deconvolution
 	 */
-	public static final Cmplx[] complexDeconvolution(Cmplx[] f, Cmplx[] g) {
+	public static Cmplx[] complexDeconvolution(Cmplx[] f, Cmplx[] g) {
 		if (f.length != g.length)
 			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
 		
@@ -282,7 +254,7 @@ public class IstiUtilsMath {
 	/**
 	 * Compute complex convolution
 	 */
-	public static final Cmplx[] complexConvolution(Cmplx[] f, Cmplx[] g) {
+	public static Cmplx[] complexConvolution(Cmplx[] f, Cmplx[] g) {
 		if (f.length != g.length)
 			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
 		Cmplx[] ret = new Cmplx[f.length];
@@ -294,7 +266,7 @@ public class IstiUtilsMath {
 	/**
 	 * Compute amplitude of complex spectra
 	 */
-	public static final double[] getSpectraAmplitude(Cmplx[] spectra) {
+	public static double[] getSpectraAmplitude(Cmplx[] spectra) {
 		final double[] ret = new double[spectra.length];
 		for (int i = 0; i < spectra.length; i++) {
 			ret[i] = spectra[i].mag();
@@ -305,7 +277,7 @@ public class IstiUtilsMath {
 	/**
 	 * Compute correlation
 	 */
-	public static final double[] correlate(double[] fdata, double[] gdata) {
+	public static double[] correlate(double[] fdata, double[] gdata) {
 		if (fdata.length != gdata.length)
 			throw new IllegalArgumentException("fdata and gdata must have same length. " + fdata.length + " " + gdata.length);
 		int dataLength = fdata.length;
@@ -339,38 +311,6 @@ public class IstiUtilsMath {
 			}
 		}
 		return crosscorr;
-	}
-
-	public static double[] floatToDoubleArray(float[] arr) {
-		double[] ret = new double[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			ret[i] = new Float(arr[i]).doubleValue();
-		}
-		return ret;
-	}
-
-	public static float[] doubleToFloatArray(double[] arr) {
-		float[] ret = new float[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			ret[i] = new Double(arr[i]).floatValue();
-		}
-		return ret;
-	}
-
-	public static float[] intToFloatArray(int[] arr) {
-		float[] ret = new float[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			ret[i] = new Integer(arr[i]).floatValue();
-		}
-		return ret;
-	}
-
-	public static double[] intToDoubleArray(int[] arr) {
-		double[] ret = new double[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			ret[i] = new Integer(arr[i]).doubleValue();
-		}
-		return ret;
 	}
 
 	/**
@@ -585,20 +525,6 @@ public class IstiUtilsMath {
 			ret = ret + (series.getY(pos)).doubleValue();
 		}
 		return ret / (2 * internalRadius + 1);
-	}
-	
-	public static double median(int[] m) {
-		int[] sorted = Arrays.copyOf(m, m.length);
-		Arrays.sort(sorted);
-	    int middle = sorted.length/2;  // subscript of middle element
-	    if (sorted.length%2 == 1) {
-	        // Odd number of elements -- return the middle one.
-	        return sorted[middle];
-	    } else {
-	       // Even number -- return average of middle two
-	       // Must cast the numbers to double before dividing.
-	       return (sorted[middle-1] + sorted[middle]) / 2.0;
-	    }
 	}
 
 	static public int[] padArray(int[] original, int[] toAdd) {
