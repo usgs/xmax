@@ -11,7 +11,7 @@ package com.isti.traceview.jnt.FFT;
  */
 
 public class RealDoubleFFT_Even extends RealDoubleFFT {
-	ComplexDoubleFFT fft;
+	private ComplexDoubleFFT fft;
 
 	/** Create an FFT for transforming n points of real, double precision data. */
 	public RealDoubleFFT_Even(int n) {
@@ -28,28 +28,6 @@ public class RealDoubleFFT_Even extends RealDoubleFFT {
 	}
 
 	/**
-	 * Return data in wraparound order. i0 and stride are used to traverse data;
-	 * the new array is in packed (i0=0, stride=1) format.
-	 * 
-	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
-	 */
-	public double[] toWraparoundOrder(double[] data) {
-    double[] newdata = new double[2 * n];
-		int nh = n / 2;
-		newdata[0] = data[0];
-		newdata[1] = 0.0;
-		newdata[n] = data[1];
-		newdata[n + 1] = 0.0;
-		for (int i = 1; i < nh; i++) {
-			newdata[2 * i] = data[2 * i];
-			newdata[2 * i + 1] = data[2 * i + 1];
-			newdata[2 * (n - i)] = data[2 * i];
-			newdata[2 * (n - i) + 1] = -data[2 * i + 1];
-		}
-		return newdata;
-	}
-
-	/**
 	 * Return data in wraparound order.
 	 * 
 	 * @see <a href="package-summary.html#wraparound">wraparound format</A>
@@ -59,7 +37,7 @@ public class RealDoubleFFT_Even extends RealDoubleFFT {
 	}
 
 	/** Compute the (unnomalized) inverse FFT of data, leaving it in place. */
-	public void backtransform(double[] data) {
+	private void backtransform(double[] data) {
 		shuffle(data, -1);
 		fft.backtransform(data);
 	}
@@ -120,7 +98,7 @@ public class RealDoubleFFT_Even extends RealDoubleFFT {
 	 * Return the normalization factor. Multiply the elements of the
 	 * backtransform'ed data to get the normalized inverse.
 	 */
-	public double normalization() {
+	double normalization() {
 		return 2.0 / ((double) n);
 	}
 
