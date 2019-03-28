@@ -91,6 +91,9 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 		COMPDATA.add('E');
 		COMPDATA.add('1');
 		COMPDATA.add('2');
+		COMPDATA.add('U');
+		COMPDATA.add('V');
+		COMPDATA.add('W');
 	}
 
 	/**
@@ -313,9 +316,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @return a hash code value for this station.
 	 */
 	public int hashCode() {
-		return Objects.hash(getNetworkName(), getStation().getName(), getChannelName(), getLocationName()
-				//getSampleRate()
-		);
+		return Objects.hash(getNetworkName(), getStation().getName(), getChannelName(), getLocationName());
 	}
 
 	/**
@@ -327,9 +328,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 		if (o instanceof Channel) {
 			Channel c = (Channel) o;
 			return (getNetworkName().equals(c.getNetworkName()) && getStation().getName().equals(c.getStation().getName())
-					&& getChannelName().equals(c.getChannelName()) && getLocationName().equals(c.getLocationName())
-				  //&& (Math.abs(getSampleRate() - c.getSampleRate()) < 0.0001)
-			);
+					&& getChannelName().equals(c.getChannelName()) && getLocationName().equals(c.getLocationName()));
 		} else {
 			return false;
 		}
@@ -367,13 +366,16 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 *            second type 
 	 * @return compare result: a negative integer, zero, or a positive integer 
 	 */
-	static int channelTypeCompare(char type1, char type2) {
+	static int channelTypeCompare(Character type1, Character type2) {
 		if (type1 == type2) {
 			return 0;
 		} else {
 			int type1pos = COMPDATA.indexOf(type1);
 			int type2pos = COMPDATA.indexOf(type2);
-			if (type1pos > type2pos) {
+			if (type1pos < 0 || type2pos < 0 ){
+				return type1.compareTo(type2);
+			}
+			else if (type1pos > type2pos) {
 				return 1;
 			} else {
 				return -1;
@@ -544,7 +546,7 @@ class NetworkStationSamplerateComparator implements Comparator<Object> {
 				if (st1.equals(st2)) {
 					Double sr1 = channel1.getSampleRate();
 					Double sr2 = channel2.getSampleRate();
-					if ((Math.abs(sr1 - sr2) < 0.0001)) {
+					if ((Math.abs(sr1 - sr2) < 0.000001)) {
 						String loc1 = channel1.getLocationName();
 						String loc2 = channel2.getLocationName();
 						if (loc1.equals(loc2)) {
