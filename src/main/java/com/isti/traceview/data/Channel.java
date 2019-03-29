@@ -400,8 +400,6 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 			return new ChannelTypeComparator();
 		case NETWORK_STATION_SAMPLERATE:
 			return new NetworkStationSamplerateComparator();
-		case EVENT:
-			return new EventComparator();
 		default:
 			return null;
 		}
@@ -414,7 +412,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 class NameComparator implements Comparator<Object> {
 	public int compare(Object o1, Object o2) {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
-			return (((Channel) o1).getChannelName()).compareTo(((Channel) o2).getChannelName());
+			return (((Channel) o1).getName()).compareTo(((Channel) o2).getName());
 		} else if (o1 instanceof Channel) {
 			return 1;
 		} else if (o2 instanceof Channel) {
@@ -441,8 +439,8 @@ class ChannelComparator implements Comparator<Object> {
 		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
 			Channel channel1 = (Channel) o1;
 			Channel channel2 = (Channel) o2;
-			String ch1 = channel1.getName();
-			String ch2 = channel2.getName();
+			String ch1 = channel1.getChannelName();
+			String ch2 = channel2.getChannelName();
 			if (ch1.equals(ch2)) {
 				String net1 = channel1.getNetworkName();
 				String net2 = channel2.getNetworkName();
@@ -489,8 +487,8 @@ class ChannelTypeComparator implements Comparator<Object> {
 			char type1 = channel1.getType();
 			char type2 = channel2.getType();
 			if (type1 == type2) {
-				String s1 = channel1.getName().substring(0, channel1.getName().length() - 1);
-				String s2 = channel2.getName().substring(0, channel2.getName().length() - 1);
+				String s1 = channel1.getChannelName().substring(0, channel1.getChannelName().length() - 1);
+				String s2 = channel2.getChannelName().substring(0, channel2.getChannelName().length() - 1);
 				if (s1.equals(s2)) {
 					String net1 = channel1.getNetworkName();
 					String net2 = channel2.getNetworkName();
@@ -576,32 +574,6 @@ class NetworkStationSamplerateComparator implements Comparator<Object> {
 
 	public boolean equals(Object obj) {
 		if (obj instanceof NetworkStationSamplerateComparator) {
-			return super.equals(obj);
-		} else {
-			return false;
-		}
-	}
-}
-
-/**
- * Comparator by events
- */
-class EventComparator implements Comparator<Object> {
-	// ToDo EventComparator
-	public int compare(Object o1, Object o2) {
-		if ((o1 instanceof Channel) && (o2 instanceof Channel)) {
-			return 0;
-		} else if (o1 instanceof Channel) {
-			return 1;
-		} else if (o2 instanceof Channel) {
-			return -1;
-		} else {
-			return -1;
-		}
-	}
-
-	public boolean equals(Object obj) {
-		if (obj instanceof EventComparator) {
 			return super.equals(obj);
 		} else {
 			return false;
