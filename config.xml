@@ -62,9 +62,8 @@
 		<!-- Panel order: 
 			0 - trace name, currently network/station/location/channel; 
 			1 - Network/station/sample rate/channel type/location; 
-			2 - Channel/network/station/location,;
-			3 - Channel type/channel/network/station;
-			4 - event 
+			2 - Channel/network/station/location;
+			3 - Channel type/channel/network/station
 		-->
 		<PanelOrder>2</PanelOrder>
 
