@@ -99,13 +99,7 @@ public class Configuration extends Observable {
 		 * channel - network - station order.
 		 * @see com.isti.traceview.data.ChannelTypeComparator
 		 */
-		CHANNEL_TYPE,
-
-		/**
-		 * Sorting by channel's events See
-		 * {@link com.isti.traceview.data.EventComparator} for details
-		 */
-		EVENT
+		CHANNEL_TYPE
 	}
 
 	/**
