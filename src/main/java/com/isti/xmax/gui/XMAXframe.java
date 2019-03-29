@@ -2271,10 +2271,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation resp = new TransPSD();
 
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
-				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-				if (selectedViews.size() == 0) {
-					selectedViews = graphPanel.getChannelShowSet();
-				}
+
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2352,10 +2351,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			try {
 				ITransformation resp = new TransSpectra();
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
-				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
-				if (selectedViews.size() == 0) {
-					selectedViews = graphPanel.getChannelShowSet();
-				}
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2386,7 +2382,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			try {
 				ITransformation resp = new TransCorrelation();
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
-				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2415,7 +2411,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			try {
 				ITransformation psd = new TransModal();
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
-				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2442,7 +2438,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				List<PlotDataProvider> pdpsToRotate = new ArrayList<>();
@@ -2471,11 +2467,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 				}
 				if (pdpsToRotate.size() > 0) {
-					if(pdpsToRotate.size() == 2) {
-						if(Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1))) {
-							for(PlotDataProvider pdp : pdpsToRotate)
+					if (pdpsToRotate.size() == 2) {
+						if (Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1))) {
+							for (PlotDataProvider pdp : pdpsToRotate)
 								rotatedChannelsList.add(pdp);
-							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, new Rotation(XMAX.getFrame(), 2));
+							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel,
+									new Rotation(XMAX.getFrame(), 2));
 							// Create ExecuteCommand obj for executing Runnable
 							ExecuteCommand executor = new ExecuteCommand(rotateTask);
 							executor.initialize();
@@ -2483,44 +2480,46 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 							executor.shutdown();
 						} else {
 							SwingUtilities.invokeLater(new Runnable() {
-							    @Override
-                  public void run() {
-									JOptionPane.showMessageDialog(TraceView.getFrame(), "The selected channels are not complementary",
+								@Override
+								public void run() {
+									JOptionPane.showMessageDialog(TraceView.getFrame(),
+											"The selected channels are not complementary",
 											"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE);
-							    }
-							  });
+								}
+							});
 						}
-					}
-					else if (pdpsToRotate.size() == 3) {
-						if(Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1), pdpsToRotate.get(2))) {
-							for(PlotDataProvider pdp : pdpsToRotate)
-								rotatedChannelsList.add(pdp);
-							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, new Rotation(XMAX.getFrame(), 3));
+					} else if (pdpsToRotate.size() == 3) {
+						if (Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1),
+								pdpsToRotate.get(2))) {
+							rotatedChannelsList.addAll(pdpsToRotate);
+							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel,
+									new Rotation(XMAX.getFrame(), 3));
 							// Create ExecuteCommand obj for executing Runnable
 							ExecuteCommand executor = new ExecuteCommand(rotateTask);
 							executor.initialize();
 							executor.start();
 							executor.shutdown();
-						}  else {
+						} else {
 							SwingUtilities.invokeLater(new Runnable() {
-							    @Override
-                  public void run() {
-									JOptionPane.showMessageDialog(TraceView.getFrame(), "The selected channels are not complementary",
+								@Override
+								public void run() {
+									JOptionPane.showMessageDialog(TraceView.getFrame(),
+											"The selected channels are not complementary",
 											"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE);
-							    }
-							  });
+								}
+							});
 						}
 					}
-					else {
-						SwingUtilities.invokeLater(new Runnable() {
-						    @Override
-                public void run() {
-								JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for the complementary "
-										+ "channels that you wish to rotate",
-										"Invalid Selection", JOptionPane.WARNING_MESSAGE);
-						    }
-						  });
-					}
+				} else {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							JOptionPane.showMessageDialog(TraceView.getFrame(),
+									"Please click check-boxes for the complementary "
+											+ "channels that you wish to rotate",
+									"Invalid Selection", JOptionPane.WARNING_MESSAGE);
+						}
+					});
 				}
 			} finally {
 				statusBar.setMessage("");
@@ -2569,7 +2568,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			try {
 				ITransformation resp = new TransResp();
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
-				List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2680,7 +2679,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					XMAX.getConfiguration().setUserDir("MSEED", selectedFile.getParent());
 					ds = new DataOutputStream(new FileOutputStream(selectedFile));
 					List<PlotDataProvider> selectedChannels = new ArrayList<>();
-					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+					List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
@@ -2742,7 +2741,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					File selectedFile = fc.getSelectedFile();
 					XMAX.getConfiguration().setUserDir("SAC", selectedFile.getParent());
 					List<PlotDataProvider> selectedChannels = new ArrayList<>();
-					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+					List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
@@ -2831,7 +2830,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					XMAX.getConfiguration().setUserDir("XML", selectedFile.getParent());
 					fw = new FileWriter(selectedFile);
 					List<PlotDataProvider> selectedChannels = new ArrayList<>();
-					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+					List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
@@ -2902,7 +2901,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					XMAX.getConfiguration().setUserDir("ASCII", selectedFile.getParent());
 					fw = new FileWriter(selectedFile);
 					List<PlotDataProvider> selectedChannels = new ArrayList<>();
-					List<ChannelView> selectedViews = graphPanel.getSelectedChannelShowSet();
+					List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
 					for (ChannelView channelView : selectedViews) {
 						selectedChannels.addAll(channelView.getPlotDataProviders());
 					}
