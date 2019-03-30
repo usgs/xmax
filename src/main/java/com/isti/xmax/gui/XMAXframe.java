@@ -173,8 +173,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JRadioButtonMenuItem scaleModeComMenuRadioBt = null;
 	private JRadioButtonMenuItem scaleModeXHairMenuRadioBt = null;
 
-	private JMenu colorMenu = null;
-	private ButtonGroup colorBG = null;
+	private JMenu colorMenu;
 	private JRadioButtonMenuItem bySegmentMenuRadioBt = null;
 	private JRadioButtonMenuItem byGapMenuRadioBt = null;
 	private JRadioButtonMenuItem BWMenuRadioBt = null;
@@ -216,7 +215,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	private JMenuItem aboutMenuItem = null;
 
-	private ActionMap actionMap = null;
+	private ActionMap actionMap;
 
 	static {
 		ToolTipManager.sharedInstance().setInitialDelay(500);
@@ -226,7 +225,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	/**
 	 * This is the default constructor
 	 */
-	public XMAXframe() {
+	private XMAXframe() {
 		super("XMAX version " + XMAX.getVersionMessage());
 		logger.debug("Creating XMAXframe");
 		setLocation(XMAX.getConfiguration().getFramePos());
@@ -248,7 +247,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				setSize(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
 			}
 		}
-		Action action = null;
+		Action action;
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		actionMap = new ActionMap();
 		action = new NextAction();
@@ -643,7 +642,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	/**
 	 * Sets flag if we see waiting cursor
 	 */
-	public void setWaitCursor(boolean state) {
+	private void setWaitCursor(boolean state) {
 		if (state) {
 			this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		} else {
@@ -1044,7 +1043,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			colorMenu = new JMenu();
 			colorMenu.setText("Color");
 			colorMenu.setMnemonic(KeyEvent.VK_C);
-			colorBG = new ButtonGroup();
+			ButtonGroup colorBG = new ButtonGroup();
 			colorBG.add(getBySegmentMenuRadioBt());
 			colorMenu.add(getBySegmentMenuRadioBt());
 			colorBG.add(getGrayMenuRadioBt());
@@ -1502,7 +1501,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public NextAction() {
+		NextAction() {
 			super();
 			putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK));
 			putValue(Action.NAME, "Next");
@@ -1554,7 +1553,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public PreviousAction() {
+		PreviousAction() {
 			super();
 			putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.ALT_MASK));
 			putValue(Action.NAME, "Previous");
@@ -1597,7 +1596,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public SaveAllAction() {
+		SaveAllAction() {
 			super();
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
 			putValue(Action.NAME, "Dump all to Internal");
@@ -1626,7 +1625,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public PhasesAction() {
+		PhasesAction() {
 			super();
 			putValue(Action.NAME, "Phases");
 			putValue(Action.SHORT_DESCRIPTION, "phases");
@@ -1665,7 +1664,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public QCAction() {
+		QCAction() {
 			super();
 			putValue(Action.NAME, "Quality Control");
 			putValue(Action.SHORT_DESCRIPTION, "qc");
@@ -1703,7 +1702,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public OverlayAction() {
+		OverlayAction() {
 			super();
 			putValue(Action.NAME, "Overlay");
 			putValue(Action.SHORT_DESCRIPTION, "ovr");
@@ -1734,7 +1733,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public SelectChannelsAction() {
+		SelectChannelsAction() {
 			super();
 			putValue(Action.NAME, "Select");
 			putValue(Action.SHORT_DESCRIPTION, "Sel");
@@ -1768,7 +1767,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public DeselectAllAction() {
+		DeselectAllAction() {
 			super();
 			putValue(Action.NAME, "Deselect All");
 			putValue(Action.SHORT_DESCRIPTION, "Deselect All");
@@ -1786,7 +1785,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ScaleModeAutoAction() {
+		ScaleModeAutoAction() {
 			super();
 			putValue(Action.NAME, "Scale auto");
 			putValue(Action.SHORT_DESCRIPTION, "auto");
@@ -1819,7 +1818,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ScaleModeComAction() {
+		ScaleModeComAction() {
 			super();
 			putValue(Action.NAME, "Scale com");
 			putValue(Action.SHORT_DESCRIPTION, "com");
@@ -1852,7 +1851,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ScaleModeXHairAction() {
+		ScaleModeXHairAction() {
 			super();
 			putValue(Action.NAME, "Scale Xhair");
 			putValue(Action.SHORT_DESCRIPTION, "Crosshair");
@@ -1885,7 +1884,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public RemoveGainAction() {
+		RemoveGainAction() {
 			super();
 			putValue(Action.NAME, "Remove gain");
 			putValue(Action.SHORT_DESCRIPTION, "RG");
@@ -1909,7 +1908,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					executor.shutdown();
 				}
 			} finally {
-				if (graphPanel.getRemoveGain().removestate == true)
+				if (graphPanel.getRemoveGain().removestate)
 					statusBar.setMessage("Removed Gain");
 				else
 					statusBar.setMessage("");
@@ -1922,7 +1921,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ShowBigCursorAction() {
+		ShowBigCursorAction() {
 			super();
 			putValue(Action.NAME, "Show crosshair");
 			putValue(Action.SHORT_DESCRIPTION, "Show crosshair");
@@ -1941,7 +1940,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public SetColorModeBySegmentAction() {
+		SetColorModeBySegmentAction() {
 			super();
 			putValue(Action.NAME, "Color mode by segment");
 			putValue(Action.SHORT_DESCRIPTION, "by segment");
@@ -1961,7 +1960,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public SetColorModeBWAction() {
+		SetColorModeBWAction() {
 			super();
 			putValue(Action.NAME, "Color mode BW");
 			putValue(Action.SHORT_DESCRIPTION, "BW");
@@ -1981,7 +1980,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public SetColorModeGrayAction() {
+		SetColorModeGrayAction() {
 			super();
 			putValue(Action.NAME, "Color mode gray");
 			putValue(Action.SHORT_DESCRIPTION, "Gray");
@@ -2001,7 +2000,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public SetColorModeByGapAction() {
+		SetColorModeByGapAction() {
 			super();
 			putValue(Action.NAME, "Color mode by gap");
 			putValue(Action.SHORT_DESCRIPTION, "by gap");
@@ -2022,7 +2021,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public SwitchColorModeAction() {
+		SwitchColorModeAction() {
 			super();
 			putValue(Action.NAME, "Color mode");
 			putValue(Action.SHORT_DESCRIPTION, "Switch color");
@@ -2057,7 +2056,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public DemeanAction() {
+		DemeanAction() {
 			super();
 			putValue(Action.NAME, "Demean");
 			putValue(Action.SHORT_DESCRIPTION, "mean");
@@ -2082,7 +2081,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ShowStatusBarAction() {
+		ShowStatusBarAction() {
 			super();
 			putValue(Action.NAME, "Show status bar");
 			putValue(Action.SHORT_DESCRIPTION, "Show status bar");
@@ -2102,7 +2101,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ShowCommandButtonsAction() {
+		ShowCommandButtonsAction() {
 			super();
 			putValue(Action.NAME, "Show buttons panel");
 			putValue(Action.SHORT_DESCRIPTION, "Show command buttons panel");
@@ -2122,7 +2121,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ShowCommandButtonsTopAction() {
+		ShowCommandButtonsTopAction() {
 			super();
 			putValue(Action.NAME, "Show buttons top");
 			putValue(Action.SHORT_DESCRIPTION, "Show command buttons top");
@@ -2145,7 +2144,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ShowCommandButtonsBottomAction() {
+		ShowCommandButtonsBottomAction() {
 			super();
 			putValue(Action.NAME, "Show buttons bottom");
 			putValue(Action.SHORT_DESCRIPTION, "Show command buttons bottom");
@@ -2197,7 +2196,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ParticleMotionAction() {
+		ParticleMotionAction() {
 			super();
 			putValue(Action.NAME, TransPPM.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "PPM");
@@ -2255,7 +2254,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public PowerSpectraDensityAction() {
+		PowerSpectraDensityAction() {
 			super();
 			putValue(Action.NAME, TransPSD.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "PSD");
@@ -2304,7 +2303,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public CoherenceAction() {
+		CoherenceAction() {
 			super();
 			putValue(Action.NAME, TransCoherence.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "Coherence");
@@ -2337,7 +2336,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public SpectraAction() {
+		SpectraAction() {
 			super();
 			putValue(Action.NAME, TransSpectra.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "SPECTRA");
@@ -2368,7 +2367,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public CorrelationAction() {
+		CorrelationAction() {
 			super();
 			putValue(Action.NAME, TransCorrelation.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "CORR");
@@ -2397,7 +2396,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	class ModalAction extends AbstractAction implements Action {
 
-		public ModalAction() {
+		ModalAction() {
 			super();
 			putValue(Action.NAME, TransModal.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "N.MODES");
@@ -2427,9 +2426,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	class RotationAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
-		private List<PlotDataProvider> rotatedChannelsList = new ArrayList<>();
+		private final List<PlotDataProvider> rotatedChannelsList = new ArrayList<>();
 
-		public RotationAction() {
+		RotationAction() {
 			super();
 			putValue(Action.NAME, "Rotation");
 			putValue(Action.SHORT_DESCRIPTION, "ROT");
@@ -2469,8 +2468,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				if (pdpsToRotate.size() > 0) {
 					if (pdpsToRotate.size() == 2) {
 						if (Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1))) {
-							for (PlotDataProvider pdp : pdpsToRotate)
-								rotatedChannelsList.add(pdp);
+							rotatedChannelsList.addAll(pdpsToRotate);
 							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel,
 									new Rotation(XMAX.getFrame(), 2));
 							// Create ExecuteCommand obj for executing Runnable
@@ -2479,14 +2477,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 							executor.start();
 							executor.shutdown();
 						} else {
-							SwingUtilities.invokeLater(new Runnable() {
-								@Override
-								public void run() {
-									JOptionPane.showMessageDialog(TraceView.getFrame(),
-											"The selected channels are not complementary",
-											"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE);
-								}
-							});
+							SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
+									"The selected channels are not complementary",
+									"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE));
 						}
 					} else if (pdpsToRotate.size() == 3) {
 						if (Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1),
@@ -2500,26 +2493,16 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 							executor.start();
 							executor.shutdown();
 						} else {
-							SwingUtilities.invokeLater(new Runnable() {
-								@Override
-								public void run() {
-									JOptionPane.showMessageDialog(TraceView.getFrame(),
-											"The selected channels are not complementary",
-											"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE);
-								}
-							});
+							SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
+									"The selected channels are not complementary",
+									"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE));
 						}
 					}
 				} else {
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							JOptionPane.showMessageDialog(TraceView.getFrame(),
-									"Please click check-boxes for the complementary "
-											+ "channels that you wish to rotate",
-									"Invalid Selection", JOptionPane.WARNING_MESSAGE);
-						}
-					});
+					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
+							"Please click check-boxes for the complementary "
+									+ "channels that you wish to rotate",
+							"Invalid Selection", JOptionPane.WARNING_MESSAGE));
 				}
 			} finally {
 				statusBar.setMessage("");
@@ -2554,7 +2537,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ResponseAction() {
+		ResponseAction() {
 			super();
 			putValue(Action.NAME, TransResp.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "RESP");
@@ -2584,7 +2567,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public OffsetAction() {
+		OffsetAction() {
 			super();
 			putValue(Action.NAME, "Offset Segments");
 			putValue(Action.SHORT_DESCRIPTION, "offset");
@@ -2608,7 +2591,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public MarkPickAction() {
+		MarkPickAction() {
 			super();
 			putValue(Action.NAME, "Mark pick");
 			putValue(Action.SHORT_DESCRIPTION, "ttpick");
@@ -2634,7 +2617,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public DelPickAction() {
+		DelPickAction() {
 			super();
 			putValue(Action.NAME, "Delete pick");
 			putValue(Action.SHORT_DESCRIPTION, "delpick");
@@ -2655,7 +2638,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public DumpMSeedAction() {
+		DumpMSeedAction() {
 			super();
 			putValue(Action.NAME, "Dump to MSEED");
 			putValue(Action.SHORT_DESCRIPTION, "MSEED");
@@ -2719,7 +2702,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public DumpSACAction() {
+		DumpSACAction() {
 			super();
 			putValue(Action.NAME, "Dump to SAC");
 			putValue(Action.SHORT_DESCRIPTION, "SAC");
@@ -2753,7 +2736,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 							channel = it.next();
 							DataOutputStream ds = null;
 							try {
-								String exportFileName = "";
+								String exportFileName;
 								if (selectedChannels.size() == 1) {
 									exportFileName = selectedFile.getName();
 								} else {
@@ -2806,7 +2789,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public DumpXMLAction() {
+		DumpXMLAction() {
 			super();
 			putValue(Action.NAME, "Dump to XML");
 			putValue(Action.SHORT_DESCRIPTION, "XML");
@@ -2877,7 +2860,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public DumpASCIIAction() {
+		DumpASCIIAction() {
 			super();
 			putValue(Action.NAME, "Dump to ASCII");
 			putValue(Action.SHORT_DESCRIPTION, "ASCII");
@@ -2941,7 +2924,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public FilterAction(String pluginId, String description) {
+		FilterAction(String pluginId, String description) {
 			super();
 			putValue(Action.NAME, pluginId);
 			putValue(Action.SHORT_DESCRIPTION, pluginId);
@@ -2976,7 +2959,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						setFilterMenuItem(null);
 						setFilterButton(null);
 						filterBG.clearSelection();
-						filter = null;
 					}
 				}
 			} catch (ClassNotFoundException | IllegalAccessException | InstantiationException e1) {
@@ -3032,7 +3014,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public LimXAction() {
+		LimXAction() {
 			super();
 			putValue(Action.NAME, "X limits");
 			putValue(Action.SHORT_DESCRIPTION, "xlim");
@@ -3065,7 +3047,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public LimYAction() {
+		LimYAction() {
 			super();
 			putValue(Action.NAME, "Y limits");
 			putValue(Action.SHORT_DESCRIPTION, "ylim");
@@ -3112,7 +3094,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public PrintAction() {
+		PrintAction() {
 			super();
 			putValue(Action.NAME, "Print");
 			putValue(Action.SHORT_DESCRIPTION, "hardcopy");
@@ -3161,7 +3143,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ExpGRAPHAction() {
+		ExpGRAPHAction() {
 			super();
 			putValue(Action.NAME, "Export to GRAPH");
 			putValue(Action.SHORT_DESCRIPTION, "GRAPH");
@@ -3185,7 +3167,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ExpHTMLAction() {
+		ExpHTMLAction() {
 			super();
 			putValue(Action.NAME, "Export to HTML");
 			putValue(Action.SHORT_DESCRIPTION, "HTML");
@@ -3209,7 +3191,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ViewHeadersAction() {
+		ViewHeadersAction() {
 			super();
 			putValue(Action.NAME, "View headers");
 			putValue(Action.SHORT_DESCRIPTION, "header");
@@ -3228,7 +3210,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ReLoadAction() {
+		ReLoadAction() {
 			super();
 			putValue(Action.NAME, "Reload data");
 			putValue(Action.SHORT_DESCRIPTION, "Reload");
@@ -3266,7 +3248,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public AboutAction() {
+		AboutAction() {
 			super();
 			putValue(Action.NAME, "About");
 			putValue(Action.SHORT_DESCRIPTION, "about");
@@ -3285,7 +3267,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private static final long serialVersionUID = 1L;
 
-		public ExitAction() {
+		ExitAction() {
 			super();
 			putValue(Action.NAME, "Exit");
 			putValue(Action.SHORT_DESCRIPTION, "exit");
@@ -3312,7 +3294,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton nextButton = null;
 		private JButton undoButton = null;
 
-		public NavigationButtonPanel() {
+		NavigationButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 0);
 			setLayout(gridLayout);
@@ -3351,7 +3333,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		@Override
     public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
-			Action action = null;
+			Action action;
 			if (src == nextButton) {
 				action = actionMap.get("Next");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
@@ -3377,7 +3359,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton offsetButton = null;
 		private JButton colormodeButton = null;
 
-		public SelectionButtonPanel() {
+		SelectionButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 2);
 			setLayout(gridLayout);
@@ -3443,7 +3425,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		@Override
     public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
-			Action action = null;
+			Action action;
 			if (src == selectButton) {
 				action = actionMap.get("Select");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
@@ -3478,7 +3460,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton ylimScaleButton = null;
 		private JToggleButton removeGainButton = null;
 
-		public ScalingButtonPanel() {
+		ScalingButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 2);
 			setLayout(gridLayout);
@@ -3545,7 +3527,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		@Override
     public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
-			Action action = null;
+			Action action;
 			if (src == commonScaleButton) {
 				action = actionMap.get("Scale com");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
@@ -3573,14 +3555,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 */
 	class FilterButtonPanel extends JPanel implements ActionListener {
 		private static final long serialVersionUID = 1L;
-		private ButtonGroup bg = null;
+		private final ButtonGroup bg;
 		private JToggleButton lowPassButton = null;
 		private JToggleButton bandPassButton = null;
 		private JToggleButton highPassButton = null;
 		private JToggleButton dyoFilterButton = null;
 		private String filterSelected = "";
 
-		public FilterButtonPanel() {
+		FilterButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(3, 2);
 			setLayout(gridLayout);
@@ -3633,7 +3615,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		@Override
     public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
-			Action action = null;
+			Action action;
 			if (src == lowPassButton) {
 				if (lowPassButton.isSelected() && filterSelected.equals(FilterLP.NAME)) {
 					bg.clearSelection();
@@ -3688,7 +3670,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private JButton correlationButton = null;
 		private JButton modalButton = null; // for normal mode overlay plot
 
-		public AnalysisButtonPanel() {
+		AnalysisButtonPanel() {
 			super();
 			GridLayout gridLayout = new GridLayout(4, 2);
 			setLayout(gridLayout);
@@ -3772,7 +3754,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		@Override
     public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
-			Action action = null;
+			Action action;
 			if (src == PSDButton) {
 				action = actionMap.get(TransPSD.NAME);
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
