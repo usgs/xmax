@@ -2211,6 +2211,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation resp = new TransPPM();
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2272,14 +2273,21 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+				// because we can do this action on arbitrarily many traces, we will
+				// use the current selection if no channels are actively selected
+				if (selectedViews.size() == 0) {
+					selectedViews = graphPanel.getChannelShowSet();
+				}
 
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
 				boolean hasRotatedData = false;
 				for(PlotDataProvider pdp : selectedChannels) {
-					if(pdp.isRotated())
+					if(pdp.isRotated()) {
 						hasRotatedData = true;
+						break;
+					}
 				}
 				if(hasRotatedData) {
 							JOptionPane.showMessageDialog(TraceView.getFrame(),
@@ -2351,6 +2359,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation resp = new TransSpectra();
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+				// because we can do this action on arbitrarily many traces, we will
+				// use the current selection if no channels are actively selected
+				if (selectedViews.size() == 0) {
+					selectedViews = graphPanel.getChannelShowSet();
+				}
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2400,7 +2413,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			super();
 			putValue(Action.NAME, TransModal.NAME);
 			putValue(Action.SHORT_DESCRIPTION, "N.MODES");
-			putValue(Action.LONG_DESCRIPTION, "Show normal mode Overlays");
+			putValue(Action.LONG_DESCRIPTION, "Show normal mode overlays");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
 		}
 
@@ -2411,6 +2424,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation psd = new TransModal();
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+				// because we can do this action on arbitrarily many traces, we will
+				// use the current selection if no channels are actively selected
+				if (selectedViews.size() == 0) {
+					selectedViews = graphPanel.getChannelShowSet();
+				}
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
@@ -2478,7 +2496,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 							executor.shutdown();
 						} else {
 							SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
-									"The selected channels are not complementary",
+									"The selected channels are not complementary.",
 									"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE));
 						}
 					} else if (pdpsToRotate.size() == 3) {
@@ -2494,9 +2512,16 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 							executor.shutdown();
 						} else {
 							SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
-									"The selected channels are not complementary",
+									"The selected channels are not complementary.",
 									"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE));
 						}
+					} else {
+						SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
+								"You have selected an invalid number of channels.\n"
+										+ "Please select only  two channels for horizontal rotation,"
+										+ "or three channels for vertical rotation.\n"
+										+ "Each rotation action must be done separately.",
+								"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE));
 					}
 				} else {
 					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
@@ -2552,6 +2577,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				ITransformation resp = new TransResp();
 				List<PlotDataProvider> selectedChannels = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+				// because we can do this action on arbitrarily many traces, we will
+				// use the current selection if no channels are actively selected
+				if (selectedViews.size() == 0) {
+					selectedViews = graphPanel.getChannelShowSet();
+				}
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
 				}
