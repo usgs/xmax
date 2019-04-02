@@ -692,19 +692,30 @@ public class DataModule extends Observable {
   public static String getResponseFile(String network, String station,
       String location, String channel) throws TraceViewException {
     List<String> respFiles = new ArrayList<>();
-    // note that first entry string should always end with "/" as it is a directory location
-    addRespFiles(TraceView.getConfiguration().getConfigFileDir(), network, station, location,
-        channel, respFiles);
-    if (respFiles.size() > 0) {
-      return respFiles.get(0);
+
+    // these are the locations we intend to search -- first, where the config is,
+    // then the current working directory, then the response path defined in the config
+    String[] pathsToSearch = new String[]{TraceView.getConfiguration().getConfigFileDir(),
+        "./", TraceView.getConfiguration().getResponsePath()};
+
+    for (String path : pathsToSearch) {
+      addRespFiles(path, network, station, location, channel, respFiles);
+      if (respFiles.size() > 0) {
+        return respFiles.get(0);
+      }
     }
-    addRespFiles("./", network, station, location, channel, respFiles);
-    if (respFiles.size() > 0) {
-      return respFiles.get(0);
+
+    // now that we have done looking at root of all directories, let's do a sub-search if we
+    // still haven't found a valid response
+    for (String path : pathsToSearch) {
+      addRespFilesSubdirFallback(path, network, station, location, channel, respFiles);
+      if (respFiles.size() > 0) {
+        return respFiles.get(0);
+      }
     }
-    addRespFiles(TraceView.getConfiguration().getResponsePath(), network, station, location,
-        channel, respFiles);
-    return respFiles.size() == 0 ? null : respFiles.get(0);
+
+    // if there STILL isn't a valid response to find, then just return a null object instead
+    return null;
   }
 
   public List<String> getAllResponseFiles() throws TraceViewException {
@@ -729,9 +740,15 @@ public class DataModule extends Observable {
     File file = new File(dirname + File.separator + respFileName);
     if (file.exists()) {
       whereToAdd.add(file.getAbsolutePath());
-      return;
     }
 
+  }
+
+  private static void addRespFilesSubdirFallback(String dirname, String network,
+      String station, String location, String channel,
+      List<String> whereToAdd) throws TraceViewException {
+
+    File path = new File(dirname);
 
     // our acceptance criterion is whether or not a file is a directory
     // this is slightly odd syntax for older Java developers; we're basically using a lambda here
