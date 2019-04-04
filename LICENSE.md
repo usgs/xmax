@@ -19,7 +19,7 @@ License
 	Website:		http://www.seis.sc.edu/fissures/geninfo.html
 
 ###### JEvalResp
-	Source:			xmax/lib/JEvalResp.jar
+	Jar File:		xmax/lib/JEvalResp.jar
 	Author:			Instrumental Software Technologies, Inc. (ISTI)
 	License:		Not explicitly stated, but inferred GPL 2.0 (Bundled with FissuresIDL)
 	Website:		http://www.isti.com/JEvalResp/
