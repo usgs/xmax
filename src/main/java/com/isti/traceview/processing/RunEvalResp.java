@@ -7,7 +7,10 @@ import com.isti.jevalresp.RunExt;
 import com.isti.traceview.TraceViewException;
 import edu.iris.Fissures.IfNetwork.Response;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 /**
@@ -66,7 +69,7 @@ public class RunEvalResp extends RunExt {
 	 *            response reader.
 	 * @return an array of amplitude values.
 	 */
-	public Cmplx[] generateResponse(double minFreqValue, double maxFreqValue, int numberFreqs, Date date, Reader respReader)
+	public Cmplx[] generateResponse(double minFreqValue, double maxFreqValue, int numberFreqs, Date date, String respReader)
 			throws TraceViewException {
 		Cmplx[] spectra = null;
 		String[] staArr = null;
@@ -79,7 +82,14 @@ public class RunEvalResp extends RunExt {
 		if (checkGenerateFreqArray()) // check/generate frequencies array
 		{
 			final String inFName = "(reader)";
-			final RespFileParser parserObj = new RespFileParser(respReader, inFName);
+			final RespFileParser parserObj;
+			try {
+				parserObj = new RespFileParser(new ByteArrayInputStream(respReader.getBytes("UTF-8")), inFName);
+			} catch (UnsupportedEncodingException e) {
+				TraceViewException e2 =  new TraceViewException(e.getLocalizedMessage());
+				e2.addSuppressed(e);
+				throw e2;
+			}
 			if (parserObj.getErrorFlag()) {
 				// error creating parser object;
 				throw new TraceViewException("Error in 'stdin' data:  " + parserObj.getErrorMessage());
