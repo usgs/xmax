@@ -1,6 +1,8 @@
 #Standard files
 *.swp
 
+lib/JEvalResp.jar
+
 #Build files
 build/
 *.class
