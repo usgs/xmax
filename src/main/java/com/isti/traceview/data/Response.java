@@ -97,14 +97,13 @@ public class Response {
 	public Cmplx[] getResp(Date date, double minFreqValue, double maxFreqValue,
 			int len) throws TraceViewException {
 		RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
-		
-		return evalResp.generateResponse(minFreqValue, maxFreqValue, len, date,
-				new StringReader(getContent()));
+
+		return evalResp.generateResponse(minFreqValue, maxFreqValue, len, date, getContent());
 	}
 
 	public double[] getRespAmp(Date date, double minFreqValue, double maxFreqValue, int len) throws TraceViewException {
 		RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
-		double[] respAmp = IstiUtilsMath.getSpectraAmplitude(evalResp.generateResponse(minFreqValue, maxFreqValue, len, date, new StringReader(getContent())));
+		double[] respAmp = IstiUtilsMath.getSpectraAmplitude(evalResp.generateResponse(minFreqValue, maxFreqValue, len, date, getContent()));
 		if (respAmp.length != len) {
 			throw new TraceViewException(getLocalFileName() + ": The length of the RESPONSE AMPLITUDE (" + respAmp.length + ") does not match the number of frequencies ("
 					+ len + ")");

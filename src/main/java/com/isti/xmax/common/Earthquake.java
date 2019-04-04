@@ -236,13 +236,13 @@ public class Earthquake extends AbstractEvent implements IEvent {
 						station.getLatitude(), station.getLongitude());
 				double angle = da.getDelta();
 				timeTool.calculate(angle);
-				edu.sc.seis.TauP.Arrival[] arrivals = timeTool.getArrivals();
-				for (int i = 0; i < arrivals.length; i++) {
+				List<edu.sc.seis.TauP.Arrival> arrivals = timeTool.getArrivals();
+				for (edu.sc.seis.TauP.Arrival arrival : arrivals){
 					ret.add(new Arrival(new Date(earthquake.getStartTime()
 							.getTime() 
-							+ new Double(arrivals[i].getTime() * 1000)
-									.longValue()), (Earthquake) earthquake, 
-							arrivals[i].getName(), angle, da.getAz(), da
+							+ new Double(arrival.getTime() * 1000)
+									.longValue()), (Earthquake) earthquake,
+							arrival.getName(), angle, da.getAz(), da
 									.getBaz(), DistAz
 									.degreesToKilometers(angle)));
 				}
