@@ -291,7 +291,6 @@ public class SegyTimeSeries { /* Offset Description */
 		bigEndian = (tyear < 1900 || tyear > 3000 || tday < 0 || tday > 366 || thour < 0 || thour > 23 ||
 				tmin < 0 || tmin > 59 || tsec < 0 || tsec > 59);
 		dis.seek(pointer);
-		return;
 	}
 
 	/**
@@ -657,7 +656,6 @@ public class SegyTimeSeries { /* Offset Description */
 		 * if (!(channel_name.trim().equals(""))) oChannel = channel_name; else oChannel =
 		 * Integer.toString(channel_number);
 		 */
-		return;
 	}
 
 	/**
