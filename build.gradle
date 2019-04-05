@@ -42,7 +42,10 @@ dependencies {
 
     //FissureIDL is bundled in jevalresp
     //compile group: 'edu.sc.seis', name: 'fissuresIDL', version: '1.0'
-    compile group: 'edu.sc.seis', name: 'fissuresUtil', version: '1.1.5'
+    compile (group: 'edu.sc.seis', name: 'fissuresUtil', version: '1.1.5'){
+        exclude group: 'jfreechart', module: 'jcommon'
+        exclude group: 'jfreechart', module: 'jfreechart'
+    }
     compile group: 'xerces', name: 'xml-apis', version: '2.10.0'
 
     compile files('./lib/JEvalResp.jar', './lib/ekit-1.4.jar')
