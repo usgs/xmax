@@ -535,10 +535,7 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 			}
 			float[] dataValues;
 			try {
-				dataValues = thisWaveform.getDecodedFloats(lastSampleValue); // using
-																				// lastSampleValue
-																				// as bias for
-																				// decoding
+				dataValues = thisWaveform.getDecodedFloats();
 			} catch (SeedException e) {
 				// SeedException is thrown if we cannot decode using the listed
 				// data encoding type.
@@ -549,10 +546,7 @@ class TraceViewSacExportBuilder extends ExportBuilder {
 				message.append("proceeding using default encoding " + defaultEncoding);
 				logger.error(message.toString(), e);	
 				thisWaveform.setEncoding(defaultEncoding);
-				dataValues = thisWaveform.getDecodedFloats(lastSampleValue); // using
-																				// lastSampleValue
-																				// as bias for
-																				// decoding
+				dataValues = thisWaveform.getDecodedFloats();
 			}
 			//
 			// transcribe float values to a byte array four times as large
