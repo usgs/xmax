@@ -464,21 +464,27 @@ public class IstiUtilsMath {
 	 */
 	public static XYSeriesCollection varismooth(XYSeriesCollection toSmooth) {
 		XYSeriesCollection ret = new XYSeriesCollection();
+
 		for (int i = 0; i < toSmooth.getSeriesCount(); i++) {
 			XYSeries toSmoothSeries = toSmooth.getSeries(i);
 			XYSeries smoothed = new XYSeries(toSmooth.getSeriesKey(i));
-			int ntail = new Double(0.9 * toSmoothSeries.getItemCount()).intValue();
-			int radius = new Double(0.01 * toSmoothSeries.getItemCount()).intValue();
+
+			// get period difference and then invert to get frequency difference between points
+			double freqDiff = (1./toSmoothSeries.getMaxX() - 1./toSmoothSeries.getMinX()) /
+					toSmoothSeries.getItemCount(); // frequency range / num. points = delta of frequency
+
 			for (int j = 0; j < toSmoothSeries.getItemCount(); j++) {
-				if (toSmoothSeries.getItemCount() < 1024) {
-					smoothed.add(toSmoothSeries.getX(j), getMovingAverage(toSmoothSeries, j, 3));
-				} else {
-					if (j < ntail) {
-						smoothed.add(toSmoothSeries.getX(j), getMovingAverage(toSmoothSeries, j, radius));
-					} else {
-						smoothed.add(toSmoothSeries.getX(j), getMovingAverage(toSmoothSeries, j, 9));
-					}
-				}
+
+				// x-axis is typically period, so invert to get actual frequency
+				// this is the frequency associated with the PSD value under analysis currently
+				double sampleFreq = 1. / (double) toSmoothSeries.getX(j);
+
+				// use a sampling range of 1/16 of the octave at the frequency in question
+				// which means half of that -- smoothing *radius* -- is 1/32 of the octave
+				double freqOffset = sampleFreq * Math.pow(2., 1/32.);
+				// System.out.println(sampleFreq + ", " + freqOffset);
+				int radius = (int) Math.abs((freqOffset - sampleFreq) / (freqDiff));
+				smoothed.add(toSmoothSeries.getX(j), getMovingAverage(toSmoothSeries, j, radius));
 			}
 			ret.addSeries(smoothed);
 		}
