@@ -3259,10 +3259,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				try {
 					graphPanel.setChannelShowSet(dm.getNextChannelSet());
 				} catch (TraceViewException ex) {
-					JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the last set", "Information",
+					JOptionPane.showMessageDialog(XMAX.getFrame(), ex.getMessage(), "Information",
 							JOptionPane.INFORMATION_MESSAGE);
 					getGraphPanel().forceRepaint();
 				}
+
 				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
 						dm.getAllChannels().size());
 			} catch (TraceViewException e1) {
