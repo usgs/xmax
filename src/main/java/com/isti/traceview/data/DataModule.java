@@ -124,9 +124,6 @@ public class DataModule extends Observable {
     windowSize = 0;
     from = 0;
     to = 0;
-    channels.clear();
-    dataSources.clear();
-    stations.clear();
   }
 
   /**
