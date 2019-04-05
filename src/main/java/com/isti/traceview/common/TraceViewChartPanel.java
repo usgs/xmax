@@ -152,7 +152,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -209,65 +208,62 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	/** For serialization. */
 	private static final long serialVersionUID = 6046366297214274674L;
 
-	/** Default setting for buffer usage. */
-	public static final boolean DEFAULT_BUFFER_USED = false;
-
 	/** The default panel width. */
-	public static final int DEFAULT_WIDTH = 680;
+	private static final int DEFAULT_WIDTH = 680;
 
 	/** The default panel height. */
-	public static final int DEFAULT_HEIGHT = 420;
+	private static final int DEFAULT_HEIGHT = 420;
 
 	/** The default limit below which chart scaling kicks in. */
-	public static final int DEFAULT_MINIMUM_DRAW_WIDTH = 300;
+	private static final int DEFAULT_MINIMUM_DRAW_WIDTH = 300;
 
 	/** The default limit below which chart scaling kicks in. */
-	public static final int DEFAULT_MINIMUM_DRAW_HEIGHT = 200;
+	private static final int DEFAULT_MINIMUM_DRAW_HEIGHT = 200;
 
 	/** The default limit below which chart scaling kicks in. */
-	public static final int DEFAULT_MAXIMUM_DRAW_WIDTH = 800;
+	private static final int DEFAULT_MAXIMUM_DRAW_WIDTH = 800;
 
 	/** The default limit below which chart scaling kicks in. */
-	public static final int DEFAULT_MAXIMUM_DRAW_HEIGHT = 600;
+	private static final int DEFAULT_MAXIMUM_DRAW_HEIGHT = 600;
 
 	/** The minimum size required to perform a zoom on a rectangle */
-	public static final int DEFAULT_ZOOM_TRIGGER_DISTANCE = 10;
+	private static final int DEFAULT_ZOOM_TRIGGER_DISTANCE = 10;
 
 	/** Properties action command. */
-	public static final String PROPERTIES_COMMAND = "PROPERTIES";
+	private static final String PROPERTIES_COMMAND = "PROPERTIES";
 
 	/** Save action command. */
-	public static final String SAVE_COMMAND = "SAVE";
+	private static final String SAVE_COMMAND = "SAVE";
 
 	/** Print action command. */
-	public static final String PRINT_COMMAND = "PRINT";
+	private static final String PRINT_COMMAND = "PRINT";
 
 	/** Zoom in (both axes) action command. */
-	public static final String ZOOM_IN_BOTH_COMMAND = "ZOOM_IN_BOTH";
+	private static final String ZOOM_IN_BOTH_COMMAND = "ZOOM_IN_BOTH";
 
 	/** Zoom in (domain axis only) action command. */
-	public static final String ZOOM_IN_DOMAIN_COMMAND = "ZOOM_IN_DOMAIN";
+	private static final String ZOOM_IN_DOMAIN_COMMAND = "ZOOM_IN_DOMAIN";
 
 	/** Zoom in (range axis only) action command. */
-	public static final String ZOOM_IN_RANGE_COMMAND = "ZOOM_IN_RANGE";
+	private static final String ZOOM_IN_RANGE_COMMAND = "ZOOM_IN_RANGE";
 
 	/** Zoom out (both axes) action command. */
-	public static final String ZOOM_OUT_BOTH_COMMAND = "ZOOM_OUT_BOTH";
+	private static final String ZOOM_OUT_BOTH_COMMAND = "ZOOM_OUT_BOTH";
 
 	/** Zoom out (domain axis only) action command. */
-	public static final String ZOOM_OUT_DOMAIN_COMMAND = "ZOOM_DOMAIN_BOTH";
+	private static final String ZOOM_OUT_DOMAIN_COMMAND = "ZOOM_DOMAIN_BOTH";
 
 	/** Zoom out (range axis only) action command. */
-	public static final String ZOOM_OUT_RANGE_COMMAND = "ZOOM_RANGE_BOTH";
+	private static final String ZOOM_OUT_RANGE_COMMAND = "ZOOM_RANGE_BOTH";
 
 	/** Zoom reset (both axes) action command. */
-	public static final String ZOOM_RESET_BOTH_COMMAND = "ZOOM_RESET_BOTH";
+	private static final String ZOOM_RESET_BOTH_COMMAND = "ZOOM_RESET_BOTH";
 
 	/** Zoom reset (domain axis only) action command. */
-	public static final String ZOOM_RESET_DOMAIN_COMMAND = "ZOOM_RESET_DOMAIN";
+	private static final String ZOOM_RESET_DOMAIN_COMMAND = "ZOOM_RESET_DOMAIN";
 
 	/** Zoom reset (range axis only) action command. */
-	public static final String ZOOM_RESET_RANGE_COMMAND = "ZOOM_RESET_RANGE";
+	private static final String ZOOM_RESET_RANGE_COMMAND = "ZOOM_RESET_RANGE";
 
 	/** The chart that is displayed in the panel. */
 	private JFreeChart chart;
@@ -343,23 +339,8 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	/** The zoom rectangle (selected by the user with the mouse). */
 	private transient Rectangle2D zoomRectangle = null;
 
-	/** Controls if the zoom rectangle is drawn as an outline or filled. */
-	private boolean fillZoomRectangle = false;
-
 	/** The minimum distance required to drag the mouse to trigger a zoom. */
 	private int zoomTriggerDistance;
-
-	/** A flag that controls whether or not horizontal tracing is enabled. */
-	private boolean horizontalAxisTrace = false;
-
-	/** A flag that controls whether or not vertical tracing is enabled. */
-	private boolean verticalAxisTrace = false;
-
-	/** A vertical trace line. */
-	private transient Line2D verticalTraceLine;
-
-	/** A horizontal trace line. */
-	private transient Line2D horizontalTraceLine;
 
 	/** Menu item for zooming in on a chart (both axes). */
 	private JMenuItem zoomInBothMenuItem;
@@ -419,23 +400,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	private double zoomOutFactor = 2.0;
 
 	/** The resourceBundle for the localization. */
-	protected static ResourceBundle localizationResources = ResourceBundle.getBundle("org.jfree.chart.LocalizationBundle");
-
-	/**
-	 * Constructs a panel that displays the specified chart.
-	 * 
-	 * @param chart
-	 *            the chart.
-	 */
-	public TraceViewChartPanel(JFreeChart chart) {
-		this(chart, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_MINIMUM_DRAW_WIDTH, DEFAULT_MINIMUM_DRAW_HEIGHT, DEFAULT_MAXIMUM_DRAW_WIDTH,
-				DEFAULT_MAXIMUM_DRAW_HEIGHT, DEFAULT_BUFFER_USED, true, // properties
-				true, // save
-				true, // print
-				true, // zoom
-				true // tooltips
-		);
-	}
+	private static ResourceBundle localizationResources = ResourceBundle.getBundle("org.jfree.chart.LocalizationBundle");
 
 	/**
 	 * Constructs a panel containing a chart.
@@ -453,30 +418,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 				true, // zoom
 				true // tooltips
 		);
-	}
-
-	/**
-	 * Constructs a JFreeChart panel.
-	 * 
-	 * @param chart
-	 *            the chart.
-	 * @param properties
-	 *            a flag indicating whether or not the chart property editor should be available via
-	 *            the popup menu.
-	 * @param save
-	 *            a flag indicating whether or not save options should be available via the popup
-	 *            menu.
-	 * @param print
-	 *            a flag indicating whether or not the print option should be available via the
-	 *            popup menu.
-	 * @param zoom
-	 *            a flag indicating whether or not zoom options should be added to the popup menu.
-	 * @param tooltips
-	 *            a flag indicating whether or not tooltips should be enabled for the chart.
-	 */
-	public TraceViewChartPanel(JFreeChart chart, boolean properties, boolean save, boolean print, boolean zoom, boolean tooltips) {
-		this(chart, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_MINIMUM_DRAW_WIDTH, DEFAULT_MINIMUM_DRAW_HEIGHT, DEFAULT_MAXIMUM_DRAW_WIDTH,
-				DEFAULT_MAXIMUM_DRAW_HEIGHT, DEFAULT_BUFFER_USED, properties, save, print, zoom, tooltips);
 	}
 
 	/**
@@ -513,8 +454,10 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param tooltips
 	 *            a flag indicating whether or not tooltips should be enabled for the chart.
 	 */
-	public TraceViewChartPanel(JFreeChart chart, int width, int height, int minimumDrawWidth, int minimumDrawHeight, int maximumDrawWidth,
-			int maximumDrawHeight, boolean useBuffer, boolean properties, boolean save, boolean print, boolean zoom, boolean tooltips) {
+	private TraceViewChartPanel(JFreeChart chart, int width, int height, int minimumDrawWidth,
+			int minimumDrawHeight, int maximumDrawWidth,
+			int maximumDrawHeight, boolean useBuffer, boolean properties, boolean save, boolean print,
+			boolean zoom, boolean tooltips) {
 		
 		this.setChart(chart);
 		this.chartMouseListeners = new EventListenerList();
@@ -597,114 +540,11 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	}
 
 	/**
-	 * Returns the minimum drawing width for charts.
-	 * <P>
-	 * If the width available on the panel is less than this, then the chart is drawn at the minimum
-	 * width then scaled down to fit.
-	 * 
-	 * @return The minimum drawing width.
-	 */
-	public int getMinimumDrawWidth() {
-		return this.minimumDrawWidth;
-	}
-
-	/**
-	 * Sets the minimum drawing width for the chart on this panel.
-	 * <P>
-	 * At the time the chart is drawn on the panel, if the available width is less than this amount,
-	 * the chart will be drawn using the minimum width then scaled down to fit the available space.
-	 * 
-	 * @param width
-	 *            The width.
-	 */
-	public void setMinimumDrawWidth(int width) {
-		this.minimumDrawWidth = width;
-	}
-
-	/**
-	 * Returns the maximum drawing width for charts.
-	 * <P>
-	 * If the width available on the panel is greater than this, then the chart is drawn at the
-	 * maximum width then scaled up to fit.
-	 * 
-	 * @return The maximum drawing width.
-	 */
-	public int getMaximumDrawWidth() {
-		return this.maximumDrawWidth;
-	}
-
-	/**
-	 * Sets the maximum drawing width for the chart on this panel.
-	 * <P>
-	 * At the time the chart is drawn on the panel, if the available width is greater than this
-	 * amount, the chart will be drawn using the maximum width then scaled up to fit the available
-	 * space.
-	 * 
-	 * @param width
-	 *            The width.
-	 */
-	public void setMaximumDrawWidth(int width) {
-		this.maximumDrawWidth = width;
-	}
-
-	/**
-	 * Returns the minimum drawing height for charts.
-	 * <P>
-	 * If the height available on the panel is less than this, then the chart is drawn at the
-	 * minimum height then scaled down to fit.
-	 * 
-	 * @return The minimum drawing height.
-	 */
-	public int getMinimumDrawHeight() {
-		return this.minimumDrawHeight;
-	}
-
-	/**
-	 * Sets the minimum drawing height for the chart on this panel.
-	 * <P>
-	 * At the time the chart is drawn on the panel, if the available height is less than this
-	 * amount, the chart will be drawn using the minimum height then scaled down to fit the
-	 * available space.
-	 * 
-	 * @param height
-	 *            The height.
-	 */
-	public void setMinimumDrawHeight(int height) {
-		this.minimumDrawHeight = height;
-	}
-
-	/**
-	 * Returns the maximum drawing height for charts.
-	 * <P>
-	 * If the height available on the panel is greater than this, then the chart is drawn at the
-	 * maximum height then scaled up to fit.
-	 * 
-	 * @return The maximum drawing height.
-	 */
-	public int getMaximumDrawHeight() {
-		return this.maximumDrawHeight;
-	}
-
-	/**
-	 * Sets the maximum drawing height for the chart on this panel.
-	 * <P>
-	 * At the time the chart is drawn on the panel, if the available height is greater than this
-	 * amount, the chart will be drawn using the maximum height then scaled up to fit the available
-	 * space.
-	 * 
-	 * @param height
-	 *            The height.
-	 */
-	public void setMaximumDrawHeight(int height) {
-		this.maximumDrawHeight = height;
-	}
-
-	/**
 	 * Returns the X scale factor for the chart. This will be 1.0 if no scaling has been used.
 	 * 
 	 * @return The scale factor.
 	 */
-	public double getScaleX() {
+	private double getScaleX() {
 		return this.scaleX;
 	}
 
@@ -713,256 +553,8 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * 
 	 * @return The scale factor.
 	 */
-	public double getScaleY() {
+	private double getScaleY() {
 		return this.scaleY;
-	}
-
-	/**
-	 * Returns the anchor point.
-	 * 
-	 * @return The anchor point (possibly <code>null</code>).
-	 */
-	public Point2D getAnchor() {
-		return this.anchor;
-	}
-
-	/**
-	 * Sets the anchor point. This method is provided for the use of subclasses, not end users.
-	 * 
-	 * @param anchor
-	 *            the anchor point (<code>null</code> permitted).
-	 */
-	protected void setAnchor(Point2D anchor) {
-		this.anchor = anchor;
-	}
-
-	/**
-	 * Returns the popup menu.
-	 * 
-	 * @return The popup menu.
-	 */
-	public JPopupMenu getPopupMenu() {
-		return this.popup;
-	}
-
-	/**
-	 * Sets the popup menu for the panel.
-	 * 
-	 * @param popup
-	 *            the popup menu (<code>null</code> permitted).
-	 */
-	public void setPopupMenu(JPopupMenu popup) {
-		this.popup = popup;
-	}
-
-	/**
-	 * Returns the chart rendering info from the most recent chart redraw.
-	 * 
-	 * @return The chart rendering info.
-	 */
-	public ChartRenderingInfo getChartRenderingInfo() {
-		return this.info;
-	}
-
-	/**
-	 * A convenience method that switches on mouse-based zooming.
-	 * 
-	 * @param flag
-	 *            <code>true</code> enables zooming and rectangle fill on zoom.
-	 */
-	public void setMouseZoomable(boolean flag) {
-		setMouseZoomable(flag, true);
-	}
-
-	/**
-	 * A convenience method that switches on mouse-based zooming.
-	 * 
-	 * @param flag
-	 *            <code>true</code> if zooming enabled
-	 * @param fillRectangle
-	 *            <code>true</code> if zoom rectangle is filled, false if rectangle is shown as
-	 *            outline only.
-	 */
-	public void setMouseZoomable(boolean flag, boolean fillRectangle) {
-		setDomainZoomable(flag);
-		setRangeZoomable(flag);
-		setFillZoomRectangle(fillRectangle);
-	}
-
-	/**
-	 * Returns the flag that determines whether or not zooming is enabled for the domain axis.
-	 * 
-	 * @return A boolean.
-	 */
-	public boolean isDomainZoomable() {
-		return this.domainZoomable;
-	}
-
-	/**
-	 * Sets the flag that controls whether or not zooming is enable for the domain axis. A check is
-	 * made to ensure that the current plot supports zooming for the domain values.
-	 * 
-	 * @param flag
-	 *            <code>true</code> enables zooming if possible.
-	 */
-	public void setDomainZoomable(boolean flag) {
-		if (flag) {
-			Plot plot = this.chart.getPlot();
-			if (plot instanceof Zoomable) {
-				Zoomable z = (Zoomable) plot;
-				this.domainZoomable = flag && (z.isDomainZoomable());
-			}
-		} else {
-			this.domainZoomable = false;
-		}
-	}
-
-	/**
-	 * Returns the flag that determines whether or not zooming is enabled for the range axis.
-	 * 
-	 * @return A boolean.
-	 */
-	public boolean isRangeZoomable() {
-		return this.rangeZoomable;
-	}
-
-	/**
-	 * A flag that controls mouse-based zooming on the vertical axis.
-	 * 
-	 * @param flag
-	 *            <code>true</code> enables zooming.
-	 */
-	public void setRangeZoomable(boolean flag) {
-		if (flag) {
-			Plot plot = this.chart.getPlot();
-			if (plot instanceof Zoomable) {
-				Zoomable z = (Zoomable) plot;
-				this.rangeZoomable = flag && (z.isRangeZoomable());
-			}
-		} else {
-			this.rangeZoomable = false;
-		}
-	}
-
-	/**
-	 * Returns the flag that controls whether or not the zoom rectangle is filled when drawn.
-	 * 
-	 * @return A boolean.
-	 */
-	public boolean getFillZoomRectangle() {
-		return this.fillZoomRectangle;
-	}
-
-	/**
-	 * A flag that controls how the zoom rectangle is drawn.
-	 * 
-	 * @param flag
-	 *            <code>true</code> instructs to fill the rectangle on zoom, otherwise it will be
-	 *            outlined.
-	 */
-	public void setFillZoomRectangle(boolean flag) {
-		this.fillZoomRectangle = flag;
-	}
-
-	/**
-	 * Returns the zoom trigger distance. This controls how far the mouse must move before a zoom
-	 * action is triggered.
-	 * 
-	 * @return The distance (in Java2D units).
-	 */
-	public int getZoomTriggerDistance() {
-		return this.zoomTriggerDistance;
-	}
-
-	/**
-	 * Sets the zoom trigger distance. This controls how far the mouse must move before a zoom
-	 * action is triggered.
-	 * 
-	 * @param distance
-	 *            the distance (in Java2D units).
-	 */
-	public void setZoomTriggerDistance(int distance) {
-		this.zoomTriggerDistance = distance;
-	}
-
-	/**
-	 * Returns the flag that controls whether or not a horizontal axis trace line is drawn over the
-	 * plot area at the current mouse location.
-	 * 
-	 * @return A boolean.
-	 */
-	public boolean getHorizontalAxisTrace() {
-		return this.horizontalAxisTrace;
-	}
-
-	/**
-	 * A flag that controls trace lines on the horizontal axis.
-	 * 
-	 * @param flag
-	 *            <code>true</code> enables trace lines for the mouse pointer on the horizontal
-	 *            axis.
-	 */
-	public void setHorizontalAxisTrace(boolean flag) {
-		this.horizontalAxisTrace = flag;
-	}
-
-	/**
-	 * Returns the horizontal trace line.
-	 * 
-	 * @return The horizontal trace line (possibly <code>null</code>).
-	 */
-	protected Line2D getHorizontalTraceLine() {
-		return this.horizontalTraceLine;
-	}
-
-	/**
-	 * Sets the horizontal trace line.
-	 * 
-	 * @param line
-	 *            the line (<code>null</code> permitted).
-	 */
-	protected void setHorizontalTraceLine(Line2D line) {
-		this.horizontalTraceLine = line;
-	}
-
-	/**
-	 * Returns the flag that controls whether or not a vertical axis trace line is drawn over the
-	 * plot area at the current mouse location.
-	 * 
-	 * @return A boolean.
-	 */
-	public boolean getVerticalAxisTrace() {
-		return this.verticalAxisTrace;
-	}
-
-	/**
-	 * A flag that controls trace lines on the vertical axis.
-	 * 
-	 * @param flag
-	 *            <code>true</code> enables trace lines for the mouse pointer on the vertical
-	 *            axis.
-	 */
-	public void setVerticalAxisTrace(boolean flag) {
-		this.verticalAxisTrace = flag;
-	}
-
-	/**
-	 * Returns the vertical trace line.
-	 * 
-	 * @return The vertical trace line (possibly <code>null</code>).
-	 */
-	protected Line2D getVerticalTraceLine() {
-		return this.verticalTraceLine;
-	}
-
-	/**
-	 * Sets the vertical trace line.
-	 * 
-	 * @param line
-	 *            the line (<code>null</code> permitted).
-	 */
-	protected void setVerticalTraceLine(Line2D line) {
-		this.verticalTraceLine = line;
 	}
 
 	/**
@@ -971,18 +563,8 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * 
 	 * @return The flag.
 	 */
-	public boolean isEnforceFileExtensions() {
+	private boolean isEnforceFileExtensions() {
 		return this.enforceFileExtensions;
-	}
-
-	/**
-	 * Sets a flag that controls whether or not file extensions are enforced.
-	 * 
-	 * @param enforce
-	 *            the new flag value.
-	 */
-	public void setEnforceFileExtensions(boolean enforce) {
-		this.enforceFileExtensions = enforce;
 	}
 
 	/**
@@ -992,7 +574,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param flag
 	 *            <code>true</code> to enable tooltips, <code>false</code> to disable tooltips.
 	 */
-	public void setDisplayToolTips(boolean flag) {
+	private void setDisplayToolTips(boolean flag) {
 		if (flag) {
 			ToolTipManager.sharedInstance().registerComponent(this);
 		} else {
@@ -1024,27 +606,13 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	}
 
 	/**
-	 * Translates a Java2D point on the chart to a screen location.
-	 * 
-	 * @param java2DPoint
-	 *            the Java2D point.
-	 * @return The screen location.
-	 */
-	public Point translateJava2DToScreen(Point2D java2DPoint) {
-		Insets insets = getInsets();
-		int x = (int) (java2DPoint.getX() * this.scaleX + insets.left);
-		int y = (int) (java2DPoint.getY() * this.scaleY + insets.top);
-		return new Point(x, y);
-	}
-
-	/**
 	 * Translates a screen location to a Java2D point.
 	 * 
 	 * @param screenPoint
 	 *            the screen location.
 	 * @return The Java2D coordinates.
 	 */
-	public Point2D translateScreenToJava2D(Point screenPoint) {
+	private Point2D translateScreenToJava2D(Point screenPoint) {
 		Insets insets = getInsets();
 		double x = (screenPoint.getX() - insets.left) / this.scaleX;
 		double y = (screenPoint.getY() - insets.top) / this.scaleY;
@@ -1058,46 +626,13 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the rectangle.
 	 * @return A new scaled rectangle.
 	 */
-	public Rectangle2D scale(Rectangle2D rect) {
+	private Rectangle2D scale(Rectangle2D rect) {
 		Insets insets = getInsets();
 		double x = rect.getX() * getScaleX() + insets.left;
 		double y = rect.getY() * this.getScaleY() + insets.top;
 		double w = rect.getWidth() * this.getScaleX();
 		double h = rect.getHeight() * this.getScaleY();
 		return new Rectangle2D.Double(x, y, w, h);
-	}
-
-	/**
-	 * Returns the chart entity at a given point.
-	 * <P>
-	 * This method will return null if there is (a) no entity at the given point, or (b) no entity
-	 * collection has been generated.
-	 * 
-	 * @param viewX
-	 *            the x-coordinate.
-	 * @param viewY
-	 *            the y-coordinate.
-	 * @return The chart entity (possibly <code>null</code>).
-	 */
-	public ChartEntity getEntityForPoint(int viewX, int viewY) {
-		ChartEntity result = null;
-		if (this.info != null) {
-			Insets insets = getInsets();
-			double x = (viewX - insets.left) / this.scaleX;
-			double y = (viewY - insets.top) / this.scaleY;
-			EntityCollection entities = this.info.getEntityCollection();
-			result = entities != null ? entities.getEntity(x, y) : null;
-		}
-		return result;
-	}
-
-	/**
-	 * Returns the flag that controls whether or not the offscreen buffer needs to be refreshed.
-	 * 
-	 * @return A boolean.
-	 */
-	public boolean getRefreshBuffer() {
-		return this.refreshBuffer;
 	}
 
 	/**
@@ -1168,11 +703,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 				this.chartBufferWidth = (int) available.getWidth();
 				this.chartBufferHeight = (int) available.getHeight();
 				this.chartBuffer = new BufferedImage(this.chartBufferWidth, this.chartBufferHeight, BufferedImage.TYPE_INT_RGB);
-				//this.chartBuffer = createImage(this.chartBufferWidth, this.chartBufferHeight);  -by Max
-				// GraphicsConfiguration gc = g2.getDeviceConfiguration();
-				// this.chartBuffer = gc.createCompatibleImage(
-				// this.chartBufferWidth, this.chartBufferHeight,
-				// Transparency.TRANSLUCENT);
 				this.refreshBuffer = true;
 			}
 
@@ -1215,8 +745,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 
 		g2.dispose();
 		this.anchor = null;
-		this.verticalTraceLine = null;
-		this.horizontalTraceLine = null;
 	}
 
 	/**
@@ -1413,8 +941,8 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		// Erase the previous zoom rectangle (if any)...
 		drawZoomRectangle(g2);
 
-		boolean hZoom = false;
-		boolean vZoom = false;
+		boolean hZoom;
+		boolean vZoom;
 		if (this.orientation == PlotOrientation.HORIZONTAL) {
 			hZoom = this.rangeZoomable;
 			vZoom = this.domainZoomable;
@@ -1453,8 +981,8 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 */
 	public void mouseReleased(MouseEvent e) {
 		if (this.zoomRectangle != null) {
-			boolean hZoom = false;
-			boolean vZoom = false;
+			boolean hZoom;
+			boolean vZoom;
 			if (this.orientation == PlotOrientation.HORIZONTAL) {
 				hZoom = this.rangeZoomable;
 				vZoom = this.domainZoomable;
@@ -1556,12 +1084,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 */
 	public void mouseMoved(MouseEvent e) {
 		Graphics2D g2 = (Graphics2D) getGraphics();
-		if (this.horizontalAxisTrace) {
-			drawHorizontalAxisTrace(g2, e.getX());
-		}
-		if (this.verticalAxisTrace) {
-			drawVerticalAxisTrace(g2, e.getY());
-		}
 		g2.dispose();
 
 		Object[] listeners = this.chartMouseListeners.getListeners(ChartMouseListener.class);
@@ -1599,7 +1121,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param y
 	 *            the y value (in screen coordinates).
 	 */
-	public void zoomInBoth(double x, double y) {
+	private void zoomInBoth(double x, double y) {
 		zoomInDomain(x, y);
 		zoomInRange(x, y);
 	}
@@ -1613,7 +1135,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param y
 	 *            the y-coordinate (in screen coordinates).
 	 */
-	public void zoomInDomain(double x, double y) {
+	private void zoomInDomain(double x, double y) {
 		Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable) {
 			Zoomable plot = (Zoomable) p;
@@ -1630,7 +1152,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param y
 	 *            the y coordinate (in screen coordinates).
 	 */
-	public void zoomInRange(double x, double y) {
+	private void zoomInRange(double x, double y) {
 		Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable) {
 			Zoomable z = (Zoomable) p;
@@ -1646,7 +1168,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param y
 	 *            the y value (in screen coordinates).
 	 */
-	public void zoomOutBoth(double x, double y) {
+	private void zoomOutBoth(double x, double y) {
 		zoomOutDomain(x, y);
 		zoomOutRange(x, y);
 	}
@@ -1660,7 +1182,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param y
 	 *            the y-coordinate (in screen coordinates).
 	 */
-	public void zoomOutDomain(double x, double y) {
+	private void zoomOutDomain(double x, double y) {
 		Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable) {
 			Zoomable z = (Zoomable) p;
@@ -1677,7 +1199,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param y
 	 *            the y-coordinate (in screen coordinates).
 	 */
-	public void zoomOutRange(double x, double y) {
+	private void zoomOutRange(double x, double y) {
 		Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable) {
 			Zoomable z = (Zoomable) p;
@@ -1691,7 +1213,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param selection
 	 *            the selected region.
 	 */
-	public void zoom(Rectangle2D selection) {
+	private void zoom(Rectangle2D selection) {
 
 		// get the origin of the zoom selection in the Java2D space used for
 		// drawing the chart (that is, before any scaling to fit the panel)
@@ -1722,7 +1244,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	/**
 	 * Restores the auto-range calculation on both axes.
 	 */
-	public void restoreAutoBounds() {
+	private void restoreAutoBounds() {
 		restoreAutoDomainBounds();
 		restoreAutoRangeBounds();
 	}
@@ -1730,7 +1252,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	/**
 	 * Restores the auto-range calculation on the domain axis.
 	 */
-	public void restoreAutoDomainBounds() {
+	private void restoreAutoDomainBounds() {
 		Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable) {
 			Zoomable z = (Zoomable) p;
@@ -1743,7 +1265,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	/**
 	 * Restores the auto-range calculation on the range axis.
 	 */
-	public void restoreAutoRangeBounds() {
+	private void restoreAutoRangeBounds() {
 		Plot p = this.chart.getPlot();
 		if (p instanceof Zoomable) {
 			Zoomable z = (Zoomable) p;
@@ -1759,7 +1281,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * 
 	 * @return The scaled data area.
 	 */
-	public Rectangle2D getScreenDataArea() {
+	private Rectangle2D getScreenDataArea() {
 		Rectangle2D dataArea = this.info.getPlotInfo().getDataArea();
 		Insets insets = getInsets();
 		double x = dataArea.getX() * this.scaleX + insets.left;
@@ -1779,7 +1301,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the y-coordinate (for subplot selection).
 	 * @return The scaled data area.
 	 */
-	public Rectangle2D getScreenDataArea(int x, int y) {
+	private Rectangle2D getScreenDataArea(int x, int y) {
 		PlotRenderingInfo plotInfo = this.info.getPlotInfo();
 		Rectangle2D result;
 		if (plotInfo.getSubplotCount() == 0) {
@@ -1798,113 +1320,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	}
 
 	/**
-	 * Returns the initial tooltip delay value used inside this chart panel.
-	 * 
-	 * @return An integer representing the initial delay value, in milliseconds.
-	 * @see javax.swing.ToolTipManager#getInitialDelay()
-	 */
-	public int getInitialDelay() {
-		return this.ownToolTipInitialDelay;
-	}
-
-	/**
-	 * Returns the reshow tooltip delay value used inside this chart panel.
-	 * 
-	 * @return An integer representing the reshow delay value, in milliseconds.
-	 * @see javax.swing.ToolTipManager#getReshowDelay()
-	 */
-	public int getReshowDelay() {
-		return this.ownToolTipReshowDelay;
-	}
-
-	/**
-	 * Returns the dismissal tooltip delay value used inside this chart panel.
-	 * 
-	 * @return An integer representing the dismissal delay value, in milliseconds.
-	 * @see javax.swing.ToolTipManager#getDismissDelay()
-	 */
-	public int getDismissDelay() {
-		return this.ownToolTipDismissDelay;
-	}
-
-	/**
-	 * Specifies the initial delay value for this chart panel.
-	 * 
-	 * @param delay
-	 *            the number of milliseconds to delay (after the cursor has paused) before
-	 *            displaying.
-	 * @see javax.swing.ToolTipManager#setInitialDelay(int)
-	 */
-	public void setInitialDelay(int delay) {
-		this.ownToolTipInitialDelay = delay;
-	}
-
-	/**
-	 * Specifies the amount of time before the user has to wait initialDelay milliseconds before a
-	 * tooltip will be shown.
-	 * 
-	 * @param delay
-	 *            time in milliseconds
-	 * @see javax.swing.ToolTipManager#setReshowDelay(int)
-	 */
-	public void setReshowDelay(int delay) {
-		this.ownToolTipReshowDelay = delay;
-	}
-
-	/**
-	 * Specifies the dismissal delay value for this chart panel.
-	 * 
-	 * @param delay
-	 *            the number of milliseconds to delay before taking away the tooltip
-	 * @see javax.swing.ToolTipManager#setDismissDelay(int)
-	 */
-	public void setDismissDelay(int delay) {
-		this.ownToolTipDismissDelay = delay;
-	}
-
-	/**
-	 * Returns the zoom in factor.
-	 * 
-	 * @return The zoom in factor.
-	 * @see #setZoomInFactor(double)
-	 */
-	public double getZoomInFactor() {
-		return this.zoomInFactor;
-	}
-
-	/**
-	 * Sets the zoom in factor.
-	 * 
-	 * @param factor
-	 *            the factor.
-	 * @see #getZoomInFactor()
-	 */
-	public void setZoomInFactor(double factor) {
-		this.zoomInFactor = factor;
-	}
-
-	/**
-	 * Returns the zoom out factor.
-	 * 
-	 * @return The zoom out factor.
-	 * @see #setZoomOutFactor(double)
-	 */
-	public double getZoomOutFactor() {
-		return this.zoomOutFactor;
-	}
-
-	/**
-	 * Sets the zoom out factor.
-	 * 
-	 * @param factor
-	 *            the factor.
-	 * @see #getZoomOutFactor()
-	 */
-	public void setZoomOutFactor(double factor) {
-		this.zoomOutFactor = factor;
-	}
-
-	/**
 	 * Draws zoom rectangle (if present). The drawing is performed in XOR mode, therefore when this
 	 * method is called twice in a row, the second call will completely restore the state of the
 	 * canvas.
@@ -1916,66 +1331,9 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		// Set XOR mode to draw the zoom rectangle
 		g2.setXORMode(Color.gray);
 		if (this.zoomRectangle != null) {
-			if (this.fillZoomRectangle) {
-				g2.fill(this.zoomRectangle);
-			} else {
-				g2.draw(this.zoomRectangle);
-			}
+			/* Controls if the zoom rectangle is drawn as an outline or filled. */
+			g2.draw(this.zoomRectangle);
 		}
-		// Reset to the default 'overwrite' mode
-		g2.setPaintMode();
-	}
-
-	/**
-	 * Draws a vertical line used to trace the mouse position to the horizontal axis.
-	 * 
-	 * @param g2
-	 *            the graphics device.
-	 * @param x
-	 *            the x-coordinate of the trace line.
-	 */
-	private void drawHorizontalAxisTrace(Graphics2D g2, int x) {
-		Rectangle2D dataArea = getScreenDataArea();
-
-		g2.setXORMode(Color.orange);
-		if (((int) dataArea.getMinX() < x) && (x < (int) dataArea.getMaxX())) {
-
-			if (this.verticalTraceLine != null) {
-				g2.draw(this.verticalTraceLine);
-				this.verticalTraceLine.setLine(x, (int) dataArea.getMinY(), x, (int) dataArea.getMaxY());
-			} else {
-				this.verticalTraceLine = new Line2D.Float(x, (int) dataArea.getMinY(), x, (int) dataArea.getMaxY());
-			}
-			g2.draw(this.verticalTraceLine);
-		}
-
-		// Reset to the default 'overwrite' mode
-		g2.setPaintMode();
-	}
-
-	/**
-	 * Draws a horizontal line used to trace the mouse position to the vertical axis.
-	 * 
-	 * @param g2
-	 *            the graphics device.
-	 * @param y
-	 *            the y-coordinate of the trace line.
-	 */
-	private void drawVerticalAxisTrace(Graphics2D g2, int y) {
-		Rectangle2D dataArea = getScreenDataArea();
-
-		g2.setXORMode(Color.orange);
-		if (((int) dataArea.getMinY() < y) && (y < (int) dataArea.getMaxY())) {
-
-			if (this.horizontalTraceLine != null) {
-				g2.draw(this.horizontalTraceLine);
-				this.horizontalTraceLine.setLine((int) dataArea.getMinX(), y, (int) dataArea.getMaxX(), y);
-			} else {
-				this.horizontalTraceLine = new Line2D.Float((int) dataArea.getMinX(), y, (int) dataArea.getMaxX(), y);
-			}
-			g2.draw(this.horizontalTraceLine);
-		}
-
 		// Reset to the default 'overwrite' mode
 		g2.setPaintMode();
 	}
@@ -1985,14 +1343,13 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * 
 	 * @since 1.0.3
 	 */
-	public void doEditChartProperties() {
+	private void doEditChartProperties() {
 		ChartEditor editor = ChartEditorManager.getChartEditor(this.chart);
 		int result = JOptionPane.showConfirmDialog(this, editor, localizationResources.getString("Chart_Properties"), JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE);
 		if (result == JOptionPane.OK_OPTION) {
 			editor.updateChart(this.chart);
 		}
-
 	}
 
 	/**
@@ -2001,7 +1358,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @throws IOException
 	 *             if there is an I/O error.
 	 */
-	public void doSaveAs() throws IOException {
+	private void doSaveAs() throws IOException {
 
 		JFileChooser fileChooser = new JFileChooser();
 		ExtensionFileFilter filter = new ExtensionFileFilter(localizationResources.getString("PNG_Image_Files"), ".png");
@@ -2066,29 +1423,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	}
 
 	/**
-	 * Adds a listener to the list of objects listening for chart mouse events.
-	 * 
-	 * @param listener
-	 *            the listener (<code>null</code> not permitted).
-	 */
-	public void addChartMouseListener(ChartMouseListener listener) {
-		if (listener == null) {
-			throw new IllegalArgumentException("Null 'listener' argument.");
-		}
-		this.chartMouseListeners.add(ChartMouseListener.class, listener);
-	}
-
-	/**
-	 * Removes a listener from the list of objects listening for chart mouse events.
-	 * 
-	 * @param listener
-	 *            the listener.
-	 */
-	public void removeChartMouseListener(ChartMouseListener listener) {
-		this.chartMouseListeners.remove(ChartMouseListener.class, listener);
-	}
-
-	/**
 	 * Returns an array of the listeners of the given type registered with the panel.
 	 * 
 	 * @param listenerType
@@ -2118,7 +1452,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            include menu items for zooming.
 	 * @return The popup menu.
 	 */
-	protected JPopupMenu createPopupMenu(boolean properties, boolean save, boolean print, boolean zoom) {
+	private JPopupMenu createPopupMenu(boolean properties, boolean save, boolean print, boolean zoom) {
 
 		JPopupMenu result = new JPopupMenu("Chart:");
 		boolean separator = false;
@@ -2134,7 +1468,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		if (save) {
 			if (separator) {
 				result.addSeparator();
-				separator = false;
 			}
 			JMenuItem saveItem = new JMenuItem(localizationResources.getString("Save_as..."));
 			saveItem.setActionCommand(SAVE_COMMAND);
@@ -2146,7 +1479,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		if (print) {
 			if (separator) {
 				result.addSeparator();
-				separator = false;
 			}
 			JMenuItem printItem = new JMenuItem(localizationResources.getString("Print..."));
 			printItem.setActionCommand(PRINT_COMMAND);
@@ -2158,7 +1490,6 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 		if (zoom) {
 			if (separator) {
 				result.addSeparator();
-				separator = false;
 			}
 
 			JMenu zoomInMenu = new JMenu(localizationResources.getString("Zoom_In"));
@@ -2237,7 +1568,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 * @param y
 	 *            vertical position of the popup.
 	 */
-	protected void displayPopupMenu(int x, int y) {
+	private void displayPopupMenu(int x, int y) {
 
 		if (this.popup != null) {
 
