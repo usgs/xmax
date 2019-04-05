@@ -245,7 +245,7 @@ public class XMAX extends TraceView {
 
 			try {
 				if (Objects.equals(curClass.getField("NAME").get(null), id)) {
-					IFilter filter = (IFilter) curClass.newInstance();
+					IFilter filter = curClass.newInstance();
 					return filter;
 				}
 			} catch (NoSuchFieldException | SecurityException e) {
@@ -272,7 +272,7 @@ public class XMAX extends TraceView {
 		for (Class<? extends ITransformation> curClass : transformations) {
 			try {
 				if (Objects.equals(curClass.getField("NAME").get(null), id)) {
-					ITransformation transform = (ITransformation) curClass.newInstance();
+					ITransformation transform = curClass.newInstance();
 					return transform;
 				}
 			} catch (IllegalArgumentException | NoSuchFieldException | SecurityException e) {

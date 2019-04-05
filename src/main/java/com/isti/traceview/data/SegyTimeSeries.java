@@ -291,7 +291,6 @@ public class SegyTimeSeries { /* Offset Description */
 		bigEndian = (tyear < 1900 || tyear > 3000 || tday < 0 || tday > 366 || thour < 0 || thour > 23 ||
 				tmin < 0 || tmin > 59 || tsec < 0 || tsec > 59);
 		dis.seek(pointer);
-		return;
 	}
 
 	/**
@@ -657,7 +656,6 @@ public class SegyTimeSeries { /* Offset Description */
 		 * if (!(channel_name.trim().equals(""))) oChannel = channel_name; else oChannel =
 		 * Integer.toString(channel_number);
 		 */
-		return;
 	}
 
 	/**
@@ -699,35 +697,9 @@ public class SegyTimeSeries { /* Offset Description */
 	/**
 	 * writes this object out as a segy file.
 	 */
-	public void write(String filename) throws FileNotFoundException, IOException {
+	public void write(String filename) throws IOException {
 		DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
 		dos.close();
 		throw new IOException("SEGY write not yet implmented");
-	}
-
-	/**
-	 * just for testing. Reads the filename given as the argument and writes it back out as
-	 * "tempsegyfile".
-	 */
-	public static void main(String[] args) {
-		SegyTimeSeries data = new SegyTimeSeries();
-		if (args.length != 1) {
-			//System.out.println("Usage: java SegyTimeSeries sourcefile ");
-			logger.error("Usage: java SegyTimeSeries sourcefile ");	
-			System.exit(1);
-		}
-		try {
-			data.read(args[0]);
-			//System.out.println("Done reading");
-			logger.info("Done reading");	
-		} catch (FileNotFoundException e) {
-			StringBuilder message = new StringBuilder();
-			message.append("File " + args[0] + " doesnt exist.");
-			logger.error(message.toString(), e);
-		} catch (IOException e) {
-			logger.error("IOException:", e);	
-		} catch (TraceViewException e) {
-			logger.error("TraceViewException:", e);	
-		}
 	}
 }

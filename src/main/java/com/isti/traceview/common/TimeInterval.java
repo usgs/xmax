@@ -212,15 +212,6 @@ public class TimeInterval {
 	}
 
 	/**
-	 * String representation of this time interval's duration
-	 * 
-	 * @see TimeInterval#getStringDiffDDHHMMSS
-	 */
-	public String convertDDHHMMSS() {
-		return TimeInterval.getStringDiffDDHHMMSS(getDuration());
-	}
-
-	/**
 	 * String representation of duration in seconds (if duration less then hour), hours (if duration less then day) or decimal days
 	 */
 	public static String getStringDiff(long duration) {
@@ -234,8 +225,8 @@ public class TimeInterval {
 		}
 		if(duration < 86400000) {
 			if (duration < 3600000) {
-				Double sec = (double) duration / 1000;
-				ret = ret + sec.toString() + " s";
+				double sec = (double) duration / 1000;
+				ret = ret + sec + " s";
 			} else {
 				Double h = (double) duration / 3600000;
 
@@ -245,46 +236,6 @@ public class TimeInterval {
 			Double days = (double) duration / 86400000;
 			ret = ret + new DecimalFormat("#######.###").format(days) + " d";
 		}
-		return ret;
-	}
-
-	/**
-	 * String representation of duration in the form +-##days ##hours ##min ##.## s
-	 */
-	public static String getStringDiffDDHHMMSS(long duration) {
-		logger.debug("duration = " + duration);	
-		String ret = "";
-		if (duration < 0) {
-			duration = -duration;
-			ret = "-";
-		}
-		long days = duration / 86400000;
-		if (days > 0) {
-			ret = ret + days + " days";
-		}
-		long rest = duration % 86400000;
-
-		long hour = rest / 3600000;
-		if (hour > 0) {
-			if (ret.length() > 1) {
-				ret = ret + ", ";
-			}
-			ret = ret + hour + " hours";
-		}
-		rest = rest % 3600000;
-		long min = rest / 60000;
-		if (min > 0) {
-			if (ret.length() > 1) {
-				ret = ret + ", ";
-			}
-			ret = ret + min + " min";
-		}
-		rest = rest % 60000;
-		double sec = (double) rest / 1000;
-		if (ret.length() > 1) {
-			ret = ret + ", ";
-		}
-		ret = ret + sec + " s";
 		return ret;
 	}
 
