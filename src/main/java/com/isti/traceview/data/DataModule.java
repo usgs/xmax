@@ -157,7 +157,7 @@ public class DataModule extends Observable {
           System.exit(1);
         }
       } else {
-        Boolean success = dir.mkdirs();
+        boolean success = dir.mkdirs();
         if (!success) {
           logger
               .error(String.format("unable to create directory dataTempPath=[%s]\n", dataTempPath));
