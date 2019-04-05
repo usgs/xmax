@@ -8,9 +8,7 @@ import com.isti.traceview.TraceViewException;
 import edu.iris.Fissures.IfNetwork.Response;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
@@ -83,13 +81,8 @@ public class RunEvalResp extends RunExt {
 		{
 			final String inFName = "(reader)";
 			final RespFileParser parserObj;
-			try {
-				parserObj = new RespFileParser(new ByteArrayInputStream(respReader.getBytes("UTF-8")), inFName);
-			} catch (UnsupportedEncodingException e) {
-				TraceViewException e2 =  new TraceViewException(e.getLocalizedMessage());
-				e2.addSuppressed(e);
-				throw e2;
-			}
+			parserObj = new RespFileParser(new ByteArrayInputStream(respReader.getBytes(
+					StandardCharsets.UTF_8)), inFName);
 			if (parserObj.getErrorFlag()) {
 				// error creating parser object;
 				throw new TraceViewException("Error in 'stdin' data:  " + parserObj.getErrorMessage());

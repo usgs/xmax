@@ -224,13 +224,6 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		dialog.dispose();
 	}
 
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.setVisible(true);
-		showDialog(frame);
-
-	}
-
 	// Method from ActionListener interface
 
 	public void actionPerformed(ActionEvent event) {

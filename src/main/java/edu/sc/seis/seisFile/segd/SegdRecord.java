@@ -609,26 +609,6 @@ public class SegdRecord {
 				+"\nSequence number: " + sequence_number
 				+additionalHeadersStr + extHeadersStr + scanTypesStr ;
 	}
-
-	public static void main(String[] args) {
-		if (args.length != 1) {
-			System.out.println("Usage: java SegdRecord [file_name]");
-			System.exit(1);
-		}
-		try {
-			File file = new File(args[0]);
-			SegdRecord rec = new SegdRecord(file);
-			rec.readHeaders();
-			System.out.println(rec.toString());
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			logger.error("FileNotFoundException:", e);	
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("IOException:", e);	
-		}
-	}
-
 }
 
 class CheckFailedException extends Exception {

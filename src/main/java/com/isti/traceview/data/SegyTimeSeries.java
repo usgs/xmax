@@ -699,35 +699,9 @@ public class SegyTimeSeries { /* Offset Description */
 	/**
 	 * writes this object out as a segy file.
 	 */
-	public void write(String filename) throws FileNotFoundException, IOException {
+	public void write(String filename) throws IOException {
 		DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
 		dos.close();
 		throw new IOException("SEGY write not yet implmented");
-	}
-
-	/**
-	 * just for testing. Reads the filename given as the argument and writes it back out as
-	 * "tempsegyfile".
-	 */
-	public static void main(String[] args) {
-		SegyTimeSeries data = new SegyTimeSeries();
-		if (args.length != 1) {
-			//System.out.println("Usage: java SegyTimeSeries sourcefile ");
-			logger.error("Usage: java SegyTimeSeries sourcefile ");	
-			System.exit(1);
-		}
-		try {
-			data.read(args[0]);
-			//System.out.println("Done reading");
-			logger.info("Done reading");	
-		} catch (FileNotFoundException e) {
-			StringBuilder message = new StringBuilder();
-			message.append("File " + args[0] + " doesnt exist.");
-			logger.error(message.toString(), e);
-		} catch (IOException e) {
-			logger.error("IOException:", e);	
-		} catch (TraceViewException e) {
-			logger.error("TraceViewException:", e);	
-		}
 	}
 }
