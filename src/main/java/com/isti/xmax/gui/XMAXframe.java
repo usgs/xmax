@@ -2276,7 +2276,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				// because we can do this action on arbitrarily many traces, we will
 				// use the current selection if no channels are actively selected
 				if (selectedViews.size() == 0) {
-					selectedViews = graphPanel.getChannelShowSet();
+					selectedViews = graphPanel.getCurrentChannelShowSet();
 				}
 
 				for (ChannelView channelView : selectedViews) {
@@ -2362,7 +2362,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				// because we can do this action on arbitrarily many traces, we will
 				// use the current selection if no channels are actively selected
 				if (selectedViews.size() == 0) {
-					selectedViews = graphPanel.getChannelShowSet();
+					selectedViews = graphPanel.getCurrentChannelShowSet();
 				}
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2427,7 +2427,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				// because we can do this action on arbitrarily many traces, we will
 				// use the current selection if no channels are actively selected
 				if (selectedViews.size() == 0) {
-					selectedViews = graphPanel.getChannelShowSet();
+					selectedViews = graphPanel.getCurrentChannelShowSet();
 				}
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
@@ -2580,7 +2580,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				// because we can do this action on arbitrarily many traces, we will
 				// use the current selection if no channels are actively selected
 				if (selectedViews.size() == 0) {
-					selectedViews = graphPanel.getChannelShowSet();
+					selectedViews = graphPanel.getCurrentChannelShowSet();
 				}
 				for (ChannelView channelView : selectedViews) {
 					selectedChannels.addAll(channelView.getPlotDataProviders());
