@@ -45,6 +45,7 @@ dependencies {
     compile (group: 'edu.sc.seis', name: 'fissuresUtil', version: '1.1.5'){
         exclude group: 'jfreechart', module: 'jcommon'
         exclude group: 'jfreechart', module: 'jfreechart'
+        exclude group: 'edu.sc.seis', module: 'fissuresIDL'
     }
     compile group: 'xerces', name: 'xml-apis', version: '2.10.0'
 
