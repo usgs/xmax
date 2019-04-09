@@ -106,9 +106,8 @@ class ViewCoherence extends JDialog implements PropertyChangeListener, ItemListe
 	/** Listens to the check box. */
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		if (e.getSource().equals(getSmoothRB())) {
-			//do nothing.
-		} 
+		// the only possible event source is going to be the radio buttons choosing smooth vs. not
+		// which is checked in filterData method
 		plot.setDataset(filterData(data));
 	}
 
@@ -151,8 +150,9 @@ class ViewCoherence extends JDialog implements PropertyChangeListener, ItemListe
 	private XYDataset filterData(XYSeriesCollection series) {
 		XYSeriesCollection ret = new XYSeriesCollection();
 		if (getSmoothRB().isSelected()) {
-			ret = series; 
+			ret = series;
 			ret = IstiUtilsMath.varismooth(ret);
+			ret.getSeries(0).setKey("smoothed series");
 		}
 		else if (getRawAndSmoothRB().isSelected()){
 			XYSeries smoothedSeries =  IstiUtilsMath.varismooth(series).getSeries(0);
