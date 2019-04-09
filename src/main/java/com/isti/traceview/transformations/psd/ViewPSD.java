@@ -78,20 +78,20 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
   private static final Logger logger = Logger.getLogger(ViewPSD.class);
   private static final String huttFreqsFile = "hutt_freqs";
   private static final String huttPeriodsKey = "HuttPeriods";
-  private static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
-  private static DecimalFormat huttFormat = new DecimalFormat("#####.##");
-  private static DecimalFormat psnFormat1 = new DecimalFormat("0.00000E00");
-  private static DecimalFormat psnFormat2 = new DecimalFormat("#####.####");
-  private static DecimalFormat screenDataFormat = new DecimalFormat("#####.####");
+  private static final SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
+  private static final DecimalFormat huttFormat = new DecimalFormat("#####.##");
+  private static final DecimalFormat psnFormat1 = new DecimalFormat("0.00000E00");
+  private static final DecimalFormat psnFormat2 = new DecimalFormat("#####.####");
+  private static final DecimalFormat screenDataFormat = new DecimalFormat("#####.####");
   private JLabel crosshairPositionL = null;
   private JFreeChart chart = null;
 
-  private JOptionPane optionPane;
-  private MyOptionPane chartPanel = null;
-  private XYSeriesCollection dataset = null;
-  private TimeInterval ti = null;
-  private List<Spectra> data = null;
-  private Configuration configuration = null;
+  private final JOptionPane optionPane;
+  private final MyOptionPane chartPanel;
+  private final XYSeriesCollection dataset;
+  private final TimeInterval ti;
+  private final List<Spectra> data;
+  private final Configuration configuration;
   private boolean showWaves = false;
 
   private JRadioButton smoothRB, rawRB, rawAndSmoothRB;
@@ -111,7 +111,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     optionPane = new JOptionPane();
     optionPane.setVisible(false);
     optionPane.setMessageType(JOptionPane.PLAIN_MESSAGE);
-    optionPane.setOptionType(JOptionPane.CLOSED_OPTION);
+    optionPane.setOptionType(JOptionPane.DEFAULT_OPTION);
     optionPane.setIcon(null);
     optionPane.setOptions(options);
     optionPane.setInitialValue(options[0]);
@@ -145,16 +145,6 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     for (int i = 0; i < dataset.getSeriesCount(); ++i) {
       ret.addSeries(dataset.getSeries(i));
     }
-    return ret;
-  }
-
-  private JPanel createChartPanelWithOptions(List<Spectra> data, List<PlotDataProvider> input) {
-    JPanel ret = new JPanel();
-    BoxLayout retLayout = new BoxLayout(ret, javax.swing.BoxLayout.Y_AXIS);
-    ret.setLayout(retLayout);
-    // now actually build the initial dataset to populate the chart with (unsmoothed data)?
-
-    ret.add(chartPanel);
     return ret;
   }
 
@@ -231,7 +221,8 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
                 "Can't write file " + fileName + "; " + e1, "Error", JOptionPane.ERROR_MESSAGE);
           } finally {
             try {
-              stream.close();
+              if (stream != null)
+                stream.close();
             } catch (IOException e1) {
               // do nothing
               logger.error("Can't close buffered output stream");
@@ -265,7 +256,8 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
                 "Can't write file " + fileName + "; " + e1, "Error", JOptionPane.ERROR_MESSAGE);
           } finally {
             try {
-              ds.close();
+              if (ds != null)
+                ds.close();
             } catch (Exception e1) {
               // do nothing
               logger.error("Can't close data output stream");
@@ -304,7 +296,8 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
               "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
           try {
-            stream.close();
+            if (stream != null)
+              stream.close();
           } catch (IOException e1) {
             // do nothing
             logger.error("Cannot close the data stream");
@@ -372,8 +365,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
       }
       return huttPeriods;
     } else {
-      double[] huttPeriods = {0.2, 1.0, 20.5, 109.2};
-      return huttPeriods;
+      return new double[]{0.2, 1.0, 20.5, 109.2};
     }
   }
 
@@ -385,11 +377,11 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
   public void setHuttPeriods(double[] periods) {
     configuration.clearProperty(huttPeriodsKey);
     if (periods.length > 0) {
-      String toSave = "";
+      StringBuilder toSave = new StringBuilder();
       for (int i = 0; i < periods.length; i++) {
-        toSave = toSave + (i == 0 ? "" : ",") + new Double(periods[i]).toString();
+        toSave.append(i == 0 ? "" : ",").append(new Double(periods[i]));
       }
-      configuration.addProperty(huttPeriodsKey, toSave);
+      configuration.addProperty(huttPeriodsKey, toSave.toString());
     }
     XMAXconfiguration.getInstance().save();
   }
@@ -422,7 +414,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     ret = filterData(ret);
     // Adding head of noise models, between 0.1 s and psd graph beginning
     int i = 2;
-    double period = 0.0;
+    double period;
     while ((period = 1 / (i * freqArr[freqArr.length - 1])) > 0.1) {
       double lowModel = NoiseModel.fnlnm(period);
       if (lowModel != 0.0) {
@@ -437,7 +429,6 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     // Adding tail of noise models, besides psd graph ending, and 1000 s
     // value
     i = 2;
-    period = 0.0;
     while ((period = i / (freqArr[1])) < 1000) {
       double lowModel = NoiseModel.fnlnm(period);
       if (lowModel != 0.0) {
@@ -576,9 +567,9 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
   private class MyOptionPane extends JPanel implements Printable {
 
     private static final long serialVersionUID = 1L;
-    private TraceViewChartPanel cp = null;
+    private final TraceViewChartPanel cp;
     private JPanel waveP = null;
-    private List<PlotDataProvider> input;
+    private final List<PlotDataProvider> input;
 
     private MyOptionPane(TraceViewChartPanel cp, List<PlotDataProvider> input) {
       this.cp = cp;
@@ -595,7 +586,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
       setVisibleItems();
     }
 
-    public JPanel getWavePanel() {
+    JPanel getWavePanel() {
       if (waveP == null) {
         waveP = new JPanel();
         BoxLayout oLayout = new BoxLayout(waveP, javax.swing.BoxLayout.Y_AXIS);
@@ -623,7 +614,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     }
 
     @Override
-    public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
+    public int print(Graphics g, PageFormat pf, int pageIndex) {
       if (pageIndex != 0) {
         return NO_SUCH_PAGE;
       }
