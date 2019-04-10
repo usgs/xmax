@@ -140,6 +140,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
   }
 
   private XYSeriesCollection filterData(XYSeriesCollection dataset) {
+    // plot the smoothed data first so it shows up on top
     XYSeriesCollection ret = IstiUtilsMath.varismooth(dataset);
     // now add the unsmoothed data
     for (int i = 0; i < dataset.getSeriesCount(); ++i) {
@@ -330,6 +331,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
   }
 
   private void setVisibleItems() {
+    // controls whether to show or hide the smoothed/unsmoothed data
     XYItemRenderer renderer = chart.getXYPlot().getRenderer();
     for (int i = 0; i < dataset.getSeriesCount(); ++i) {
       boolean isSmoothed = ((String) dataset.getSeriesKey(i)).contains("smoothed");
@@ -391,11 +393,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     for (Spectra spectra : ds) {
       ret.addSeries(spectra.getPSDSeries(OutputGenerator.VELOCITY_UNIT_CONV));
     }
-    // MTH: later versions of XYCollection do NOT allow you to add more than
-    // 1 series with
-    // a given key=name! --> name must be unique
-    // XYSeries lowNoiseModelSeries = new XYSeries("MODEL");
-    // XYSeries highNoiseModelSeries = new XYSeries("MODEL");
+
     XYSeries lowNoiseModelSeries = new XYSeries("NLNM");
     XYSeries highNoiseModelSeries = new XYSeries("NHNM");
 
@@ -404,11 +402,11 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
       double period = 1.0 / freqArr[i];
       double lowModel = NoiseModel.fnlnm(period);
       if (lowModel != 0.0) {
-        lowNoiseModelSeries.add(/* Math.log10( */period/* ) */, lowModel);
+        lowNoiseModelSeries.add(period, lowModel);
       }
       double highModel = NoiseModel.fnhnm(period);
       if (highModel != 0) {
-        highNoiseModelSeries.add(/* Math.log10( */period/* ) */, highModel);
+        highNoiseModelSeries.add(period, highModel);
       }
     }
     ret = filterData(ret);
@@ -432,11 +430,11 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     while ((period = i / (freqArr[1])) < 1000) {
       double lowModel = NoiseModel.fnlnm(period);
       if (lowModel != 0.0) {
-        lowNoiseModelSeries.add(/* Math.log10( */period/* ) */, lowModel);
+        lowNoiseModelSeries.add(period, lowModel);
       }
       double highModel = NoiseModel.fnhnm(period);
       if (highModel != 0) {
-        highNoiseModelSeries.add(/* Math.log10( */period/* ) */, highModel);
+        highNoiseModelSeries.add(period, highModel);
       }
       i++;
     }
@@ -490,8 +488,6 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     }
     if (chart != null) {
       XYPlot plot = (XYPlot) chart.getPlot();
-      // XYDataset dataset = plot.getDataset();
-      // Comparable seriesKey = dataset.getSeriesKey(0);
       double xx = plot.getDomainCrosshairValue();
       double yy = plot.getRangeCrosshairValue();
       // update the screen...
@@ -599,13 +595,6 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
         gp.setBackground(Color.WHITE);
         gp.setChannelShowSet(input);
         gp.setTimeRange(ti);
-				/*
-				PSDItemRenderer ir = (PSDItemRenderer) cp.getChart().getXYPlot().getRenderer();
-				for (int i = 0; i < input.size(); i++) {
-					PlotDataProvider channel = input.get(i);
-					channel.setColor((Color) ir.lookupSeriesPaint(i));
-				}
-				*/
         waveP.add(gp);
         waveP.setMaximumSize(new java.awt.Dimension(32767, 100));
         waveP.setPreferredSize(new java.awt.Dimension(this.getWidth(), 100));
@@ -636,15 +625,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
             (pf.getImageableHeight() * (1 - factor)) / waveP.getHeight());
         waveP.paint(g2);
       }
-      // double imageHeight = pf.getImageableHeight() * (1-factor);
-      // BufferedImage image = new BufferedImage(new Double(w).intValue(),
-      // new Double(imageHeight).intValue(), BufferedImage.TYPE_INT_RGB);
-      // Graphics2D g2image = image.createGraphics();
-      // g2image.scale(w / new Double(optionP.getWidth()), imageHeight /
-      // new Double(optionP.getHeight()));
-      // optionP.paint(g2image);
-      // g2.drawImage(image, new Double(x).intValue(), new
-      // Double(y).intValue(), null, null);
+      
       return PAGE_EXISTS;
     }
   }
