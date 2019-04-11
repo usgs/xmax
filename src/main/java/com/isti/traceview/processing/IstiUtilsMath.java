@@ -26,6 +26,8 @@ public class IstiUtilsMath {
 	 */
 	private static final int ISTI_UTIL_FAILED = -1;
 
+	public static final double SMOOTHING_FACTOR = 8;
+
 	/**
 	 * \ingroup isti_utils_public_functions \brief Function to normalize
 	 * response function using calib and calper. \note Modifies the first
@@ -467,7 +469,7 @@ public class IstiUtilsMath {
 
 		for (int i = 0; i < toSmooth.getSeriesCount(); i++) {
 			XYSeries toSmoothSeries = toSmooth.getSeries(i);
-			XYSeries smoothed = new XYSeries(toSmooth.getSeriesKey(i) + " (1/8 oct. rad. smoothed)");
+			XYSeries smoothed = new XYSeries(toSmooth.getSeriesKey(i) + " (smoothed)");
 
 			// since x-axis is period, invert max/min period to get freq. range
 			double freqDiff = (1./toSmoothSeries.getMaxX() - 1./toSmoothSeries.getMinX()) /
@@ -481,7 +483,7 @@ public class IstiUtilsMath {
 
 				// use a sampling range of 1/4 of the octave at the frequency in question
 				// which means half of that -- smoothing *radius* -- is 1/8
-				double freqOffset = sampleFreq * Math.pow(2., 1/8.);
+				double freqOffset = sampleFreq * Math.pow(2., 1./SMOOTHING_FACTOR);
 				// System.out.println(sampleFreq + ", " + freqOffset);
 				int radius = (int) Math.abs((freqOffset - sampleFreq) / (freqDiff));
 				smoothed.add(toSmoothSeries.getX(j), getMovingAverage(toSmoothSeries, j, radius));
