@@ -17,6 +17,7 @@ import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.gui.XMAXframe;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -55,16 +56,19 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.block.GridArrangement;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.Range;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleAnchor;
 
 /**
  * Dialog to view PSD results. Also performs deconvolution, convolution and smoothing.
@@ -557,6 +561,17 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     buttonPanel.add(getSmoothRB());
     buttonPanel.add(getRawRB());
     buttonPanel.add(getRawAndSmoothRB());
+
+    JLabel smoothingDetail = new JLabel();
+    smoothingDetail.setText("(Smoothing parameter is 1/" +
+        (int) IstiUtilsMath.SMOOTHING_FACTOR +  " of octave per-point)");
+    smoothingDetail.setMaximumSize(smoothingDetail.getMinimumSize());
+    buttonPanel.add(smoothingDetail);
+
+
+    buttonPanel.setMaximumSize(buttonPanel.getMinimumSize());
+    buttonPanel.setPreferredSize(buttonPanel.getMinimumSize());
+
     return buttonPanel;
   }
 
@@ -569,6 +584,9 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
 
     private MyOptionPane(TraceViewChartPanel cp, List<PlotDataProvider> input) {
       this.cp = cp;
+      Dimension d = cp.getPreferredSize();
+      int maxDim = (int) Math.max(d.getHeight(), d.getWidth());
+      cp.setPreferredSize(new Dimension(maxDim, maxDim));
       this.input = input;
       BoxLayout mLayout = new BoxLayout(this, javax.swing.BoxLayout.Y_AXIS);
       setLayout(mLayout);
