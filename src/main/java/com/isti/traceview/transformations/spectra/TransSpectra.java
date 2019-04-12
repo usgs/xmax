@@ -27,7 +27,7 @@ public class TransSpectra implements ITransformation {
 	private static final boolean verboseDebug = false;
 	public static final String NAME = "Spectra";
 
-	private int maxDataLength = 32768;
+	private static final int maxDataLength = 2^30;
 
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval timeInterval, IFilter filter, Object configuration,
@@ -47,11 +47,6 @@ public class TransSpectra implements ITransformation {
 			}
 		}
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
-	}
-
-	@Override
-	public void setMaxDataLength(int dataLength) {
-		this.maxDataLength = dataLength;
 	}
 
 	/**
@@ -96,30 +91,13 @@ public class TransSpectra implements ITransformation {
 			}
 			int dataSize;
 			if (intData.length > maxDataLength) {
-				dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(maxDataLength)).intValue())).intValue();
+				dataSize = maxDataLength; // maxDataLength is set to be 2^30, a power of two
 				((XMAXframe) parentFrame).getStatusBar().setMessage(
 						"Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
 			} else {
-				dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(intData.length)).intValue()))
-						.intValue();
+				dataSize = (int) Math.pow(2, (int) IstiUtilsMath.log2(intData.length));
 			}
-			/*
-			 * // this code shows pop-up if point count is exceeded int ds = new
-			 * Double(Math.pow(2, new
-			 * Double(IstiUtilsMath.log2(intData.length)).intValue())).intValue(
-			 * ); if (ds > maxDataLength && userAnswer == -1) { Object[] options
-			 * = { "Proceed with ALL points", "Proceed with first " +
-			 * maxDataLength + " points", "Cancel" }; userAnswer =
-			 * JOptionPane.showOptionDialog(parentFrame,
-			 * "Too many points. Computation could be slow.", "Too many points",
-			 * JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-			 * null, options, options[1]); } if (userAnswer != -1) { if
-			 * (userAnswer == JOptionPane.NO_OPTION) { if (ds > maxDataLength) {
-			 * ds = new Double(Math.pow(2, new
-			 * Double(IstiUtilsMath.log2(maxDataLength)).intValue())).intValue()
-			 * ; } } else if (userAnswer == JOptionPane.CANCEL_OPTION) { throw
-			 * new XMAXException("Operation cancelled"); } }
-			 */
+
 			logger.debug("data size = " + dataSize);
 			int[] data = new int[dataSize];
 			for (int i = 0; i < dataSize; i++) {
