@@ -33,11 +33,6 @@ public interface ITransformation {
       JFrame parentFrame);
 
 	/**
-	 * Sets maximum amount of processed data
-	 */
-  void setMaxDataLength(int dataLength);
-
-	/**
 	 * Return name of transformation
 	 */
   String getName();

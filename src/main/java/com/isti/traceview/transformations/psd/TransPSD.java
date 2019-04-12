@@ -33,7 +33,7 @@ public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
 	public static final String NAME = "Power spectra density";
 
-	private int maxDataLength = 1048576;
+	private static final int maxDataLength = 2^30;
 	private int effectiveLength = 0;
 
 	@Override
@@ -62,11 +62,6 @@ public class TransPSD implements ITransformation {
 			}
 		}
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
-	}
-
-	@Override
-	public void setMaxDataLength(int dataLength) {
-		this.maxDataLength = dataLength;
 	}
 
 	/**
@@ -122,7 +117,7 @@ public class TransPSD implements ITransformation {
 			}
 			int ds;
 			if (intData.length > maxDataLength) {
-				ds = getPower2Length(maxDataLength);
+				ds = maxDataLength; // maxDataLength is already a power of two
 				int[] tempIntData = new int[ds];
 				for (int i = 0; i < maxDataLength; i++)
 					tempIntData[i] = intData[i];
@@ -135,21 +130,7 @@ public class TransPSD implements ITransformation {
 			if (ds > effectiveLength) {
 				effectiveLength = ds;
 			}
-			/*
-			 * // this code shows pop-up if point count is exceeded if (ds >
-			 * maxDataLength && userAnswer == -1) { Object[] options = {
-			 * "Proceed with ALL points", "Proceed with first
-			 * " + maxDataLength + " points", "Cancel" }; userAnswer =
-			 * JOptionPane.showOptionDialog(parentFrame, "Too many points.
-			 * Computation could be slow.", "Too many points",
-			 * JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-			 * null, options, options[1]); } if (userAnswer != -1) { if
-			 * (userAnswer == JOptionPane.NO_OPTION) { if (ds > maxDataLength) {
-			 * ds = new Double(Math.pow(2, new
-			 * Double(IstiUtilsMath.log2(maxDataLength)).intValue())).intValue()
-			 * ; } } else if (userAnswer == JOptionPane.CANCEL_OPTION) { throw
-			 * new XMAXException("Operation cancelled"); } }
-			 */
+
 			logger.debug("data size = " + ds);
 
 			/*
@@ -167,42 +148,15 @@ public class TransPSD implements ITransformation {
 																							// 75%
 																							// overlap
 			int smallDataSegmentLimit = new Double(
-					Math.ceil(Math.pow(2, (Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1)))).intValue(); // set
-																														// smallDataSegment
-																														// limit
-																														// to
-																														// be
-																														// one
-																														// power
-																														// of
-																														// 2
-																														// less
-																														// than
-																														// the
-																														// dsDataSegment
-																														// length
+					Math.ceil(Math.pow(2, (Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1)))).intValue();
+			// set smallDataSegment limit to be one power of 2 less than the dsDataSegment length
 
 			int[] data = new int[smallDataSegmentLimit]; // array containing
 															// data values in
 															// the time domain
-			Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; // array
-																		// containing
-																		// the
-																		// fft
-																		// of
-																		// the
-																		// current
-																		// segment
-			Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit / 2) + 1]; // array
-																						// containing
-																						// the
-																						// cumulative
-																						// sum
-																						// of
-																						// the
-																						// each
-																						// segments
-																						// fft.
+			Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; // array w/ current segment FFT
+			Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit / 2) + 1];
+			// array containing the cumulative sum of each segment's FFT
 
 			// initialize the finalNoiseSpectraData array to all zeros since we
 			// will be taking a cumulative sum of the data.
@@ -211,12 +165,10 @@ public class TransPSD implements ITransformation {
 			}
 
 			// loop indexes
-			int dsDataSegmentLimit = dsDataSegment; // keeps track of where a
-													// segment ends in the data
-													// array
+			int dsDataSegmentLimit = dsDataSegment;
+			// keeps track of where a segment ends in the data array
 			int cnt = 0; // keeps track where in the intData array the index is
-			int segIndex = 0; // keeps track of where the index is within an
-								// individual segment
+			int segIndex = 0; // keeps track of where the index is within an individual segment
 
 			// Perform windowing and compute the FFT of each segment. The
 			// finalNoiseSpectraData array contains the sum of the FFTs for all
@@ -255,21 +207,14 @@ public class TransPSD implements ITransformation {
 
 					// move cursors
 					segIndex = 0;
-					if (cnt + smallDataSegmentLimit > intData.length) // correction
-																		// for
-																		// last
-																		// segment
+					if (cnt + smallDataSegmentLimit > intData.length) // correction for last segment
 					{
 						cnt = intData.length - smallDataSegmentLimit;
 						dsDataSegmentLimit = intData.length;
 					} else {
-						cnt = cnt - ((smallDataSegmentLimit * 3) / 4); // move window
-																// backwards 75%
-						dsDataSegmentLimit = dsDataSegmentLimit + (smallDataSegmentLimit / 4); // increase
-																						// new
-																						// dsDataSegmentLimit
-																						// by
-																						// 25%
+						cnt = cnt - ((smallDataSegmentLimit * 3) / 4); // move window backwards 75%
+						dsDataSegmentLimit = dsDataSegmentLimit + (smallDataSegmentLimit / 4);
+						// increase new dsDataSegmentLimit by 25%
 						numsegs++;
 					}
 
@@ -289,14 +234,8 @@ public class TransPSD implements ITransformation {
 					1000.0 / channel.getSampleRate());
 			final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
 
-			Cmplx[] resp = null;
-			try {
-				resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq,
+			Cmplx[] resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq,
 						Math.max(finalNoiseSpectraData.length, fp.numFreq));
-
-			} catch (Exception e) {
-
-			}
 
 			Spectra spectra = new Spectra(ti.getStartTime(), finalNoiseSpectraData, frequenciesArray, resp, fp.sampFreq,
 					channel, "");
@@ -325,9 +264,6 @@ public class TransPSD implements ITransformation {
 		return dataset;
 	}
 
-	private static int getPower2Length(int length) {
-		return new Double(Math.pow(2, Math.ceil(IstiUtilsMath.log2(length)))).intValue();
-	}
 
 	@Override
 	public String getName() {
