@@ -40,11 +40,6 @@ public class TransResp implements ITransformation {
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
 
-	@Override
-	public void setMaxDataLength(int dataLength) {
-
-	}
-
 	/**
 	 * Creates a dataset, consisting of two series of cartesian data.
 	 * 

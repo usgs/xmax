@@ -29,7 +29,7 @@ public class TransModal implements ITransformation {
   public static final String NAME = "Normal mode PSD overlay";
   private static final boolean verboseDebug = false;
 
-  private int maxDataLength = 1048576;
+  private static final int maxDataLength = 2^30;
   private int effectiveLength = 0;
 
   @Override
@@ -56,11 +56,6 @@ public class TransModal implements ITransformation {
       }
     }
     ((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
-  }
-
-  @Override
-  public void setMaxDataLength(int dataLength) {
-    this.maxDataLength = dataLength;
   }
 
   /**
