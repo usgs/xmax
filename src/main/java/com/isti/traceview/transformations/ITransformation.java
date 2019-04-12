@@ -16,6 +16,8 @@ import javax.swing.JFrame;
 
 public interface ITransformation {
 
+  int maxDataLength = (int) Math.pow(2, 30);
+
 	/**
 	 * Performs transformations
 	 * 

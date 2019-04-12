@@ -27,8 +27,6 @@ public class TransSpectra implements ITransformation {
 	private static final boolean verboseDebug = false;
 	public static final String NAME = "Spectra";
 
-	private static final int maxDataLength = 2^30;
-
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval timeInterval, IFilter filter, Object configuration,
 			JFrame parentFrame) {

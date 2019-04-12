@@ -29,7 +29,6 @@ public class TransModal implements ITransformation {
   public static final String NAME = "Normal mode PSD overlay";
   private static final boolean verboseDebug = false;
 
-  private static final int maxDataLength = 2^30;
   private int effectiveLength = 0;
 
   @Override

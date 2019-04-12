@@ -33,7 +33,6 @@ public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
 	public static final String NAME = "Power spectra density";
 
-	private static final int maxDataLength = 2^30;
 	private int effectiveLength = 0;
 
 	@Override
@@ -116,6 +115,7 @@ public class TransPSD implements ITransformation {
 				throw new XMAXException("You have no data for channel " + channel.getName());
 			}
 			int ds;
+			System.out.println(intData.length +","+maxDataLength);
 			if (intData.length > maxDataLength) {
 				ds = maxDataLength; // maxDataLength is already a power of two
 				int[] tempIntData = new int[ds];
