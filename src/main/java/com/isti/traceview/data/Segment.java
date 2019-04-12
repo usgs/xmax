@@ -187,7 +187,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * @return segment data end time
 	 */
 	public Date getEndTime() {
-		long time = new Double((sampleRate * sampleCount)).longValue();
+		long time = (long) sampleRate * sampleCount;
 		return new Date(getStartTime().getTime() + time);
 	}
 

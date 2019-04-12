@@ -244,7 +244,7 @@ public class RawDataProvider extends Channel {
         }
 
         // trim off the part duplicated (go one sample after the segment in the list)
-        long newStart = testSegment.getEndTime().getTime() + sampleRate;
+        long newStart = testSegment.getEndTime().getTime();
         segment = new Segment(segment, newStart, segment.getEndTime().getTime());
 
       } else {
@@ -266,8 +266,8 @@ public class RawDataProvider extends Channel {
         if (expectedIndex > 0) {
           Segment previousInList = rawData.get(expectedIndex-1).getSegment();
           if (!segment.getStartTime().after(previousInList.getEndTime())) {
-            // start at next sample after the previous segment has ended
-            long newStart = previousInList.getStartTime().getTime() + sampleRate;
+            // start at the end of the current list of data
+            long newStart = previousInList.getEndTime().getTime();
             // trim off the data that's already duplicated -- i.e., get a new Segment
             segment = new Segment(segment, newStart, segment.getEndTime().getTime());
           }
@@ -287,8 +287,7 @@ public class RawDataProvider extends Channel {
           addSegment(trimmedSegment);
         }
         // now our range of analysis is for the points after the given segment
-        long afterExisting = rawData.get(expectedIndex).getSegment().getEndTime().getTime() +
-            (long) segment.getSampleRate();
+        long afterExisting = rawData.get(expectedIndex).getSegment().getEndTime().getTime();
         segment = new Segment(segment, afterExisting, segment.getEndTime().getTime());
       }
 
