@@ -222,11 +222,12 @@ public class RawDataProvider extends Channel {
     // now go through the data we're merging in and see if they overlap/duplicate
     outerLoop:
     for (Segment segment : segments) {
-      // sample rate is in units of milliHz (i.e., Hz * 1000) -- number of samples in 1 ms
-      // to get period in ms we go to units of Hz (divide sample rate by 1000), divide by 1 to
-      // get period in seconds, and then multiply by 1000 to go from s to ms
-      // or more simply, just multiply 1/rate time 1,000,000
-      long sampleRate = (long) (1000000. / segment.getSampleRate());
+
+      // end time of data refers to the point at which the next sample would be taken
+      // so if a segment ends at the same time that another one begins, they represent a continuous
+      // trace over that length of time. as a result we can perform trim operations by setting
+      // the data-to-merge's start and end times to the end and start of data between gaps
+
       Collections.sort(rawData); // sort segment cache by start time to speed up search step
       SegmentCache cache = new SegmentCache(segment);
       // binary search for the new index (requires list to be sorted)
@@ -277,8 +278,7 @@ public class RawDataProvider extends Channel {
         // now this segment must also have range between that segment and the next one
         // so let's get that range and add it to the segment list
         // gap ends the sample before the next point in the list
-        long gapEnd = rawData.get(expectedIndex).getSegment().getStartTime().getTime() -
-            sampleRate;
+        long gapEnd = rawData.get(expectedIndex).getSegment().getStartTime().getTime();
         // just make sure that this segment doesn't overlap the data either
         gapEnd = Math.min(gapEnd, segment.getEndTime().getTime());
         Segment trimmedSegment = new Segment(segment, segment.getStartTime().getTime(), gapEnd);
@@ -303,14 +303,14 @@ public class RawDataProvider extends Channel {
         long existingDataEnd = rawData.get(i).getSegment().getEndTime().getTime();
         // there is a gap here between the end of the previous point
         // which the segment currently has accounted for in its present start point
-        long gapEnd = existingDataStart - sampleRate;
+        long gapEnd = existingDataStart;
         Segment fillingPossibleGap =
             new Segment(segment, segment.getStartTime().getTime(), gapEnd);
         if (fillingPossibleGap.getSampleCount() > 0) {
           addSegment(fillingPossibleGap);
         }
         // now it's time to trim the segment again
-        long newSegmentStart = existingDataEnd + sampleRate;
+        long newSegmentStart = existingDataEnd;
         segment = new Segment(segment, newSegmentStart, segment.getEndTime().getTime());
       } // end of loop over rest of rawData
 
