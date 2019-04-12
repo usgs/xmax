@@ -65,7 +65,7 @@ public class TransPPM implements ITransformation {
 		}
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
-	
+
 	/**
 	 * @param input
 	 *            List of traces to process
