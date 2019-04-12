@@ -27,7 +27,7 @@ public class TransCorrelation implements ITransformation {
 
 	public static final String NAME = "Correlation";
 
-	private int maxDataLength = 131072;
+	private static final int maxDataLength = 2^30;
 	private double sampleRate = 0;
 
 	@Override
@@ -51,11 +51,6 @@ public class TransCorrelation implements ITransformation {
 			}
 		}
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
-	}
-
-	@Override
-	public void setMaxDataLength(int dataLength) {
-		this.maxDataLength = dataLength;
 	}
 
 	/**

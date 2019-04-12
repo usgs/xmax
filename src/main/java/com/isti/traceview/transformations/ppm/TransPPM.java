@@ -26,7 +26,7 @@ public class TransPPM implements ITransformation {
 
 	public static final String NAME = "Particle motion";
 
-	private int maxDataLength = 8192;
+	private static final int maxDataLength = 2^30;
 
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
@@ -65,12 +65,7 @@ public class TransPPM implements ITransformation {
 		}
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
 	}
-
-	@Override
-	public void setMaxDataLength(int dataLength) {
-		this.maxDataLength = dataLength;
-	}
-
+	
 	/**
 	 * @param input
 	 *            List of traces to process
