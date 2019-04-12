@@ -266,7 +266,7 @@ public class RawDataProvider extends Channel {
         if (expectedIndex > 0) {
           Segment previousInList = rawData.get(expectedIndex-1).getSegment();
           if (!segment.getStartTime().after(previousInList.getEndTime())) {
-            // start at the end of the current list of data
+            // start at the end of the found segment's end time -- don't overwrite existing data
             long newStart = previousInList.getEndTime().getTime();
             // trim off the data that's already duplicated -- i.e., get a new Segment
             segment = new Segment(segment, newStart, segment.getEndTime().getTime());
