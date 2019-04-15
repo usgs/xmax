@@ -27,7 +27,6 @@ public class TransCorrelation implements ITransformation {
 
 	public static final String NAME = "Correlation";
 
-	private static final int maxDataLength = 2^30;
 	private double sampleRate = 0;
 
 	@Override
