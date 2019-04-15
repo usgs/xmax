@@ -26,7 +26,6 @@ public class TransPPM implements ITransformation {
 
 	public static final String NAME = "Particle motion";
 
-	private static final int maxDataLength = 2^30;
 
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
