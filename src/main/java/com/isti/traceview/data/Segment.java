@@ -197,8 +197,9 @@ public class Segment implements Externalizable, Cloneable {
 	 * @return segment data end time
 	 */
 	public Date getEndTime() {
-		// sample rate is in Hz. go from units of Hz to ms
-		long time = (long) (1000L *  sampleCount / sampleRate);
+		// sampleRate is really interval in ms (i.e., millseconds per sample)
+		// then (ms / sample) * samples = millisecond length of data
+		long time = (long) (sampleCount * sampleRate);
 		return new Date(getStartTime().getTime() + time);
 	}
 

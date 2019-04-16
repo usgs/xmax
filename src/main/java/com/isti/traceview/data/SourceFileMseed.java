@@ -109,7 +109,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 								}
 							}
 								if (sampleRate == 0.0) {
-									sampleRate = 1000.0 / dh.getSampleRate();
+									sampleRate = 1000.0 / dh.calcSampleRateFromMultipilerFactor();
 								}
 								if (blockEndTime != 0) {
 									if (Segment.isDataBreak(blockEndTime, getBlockStartTime(dh), sampleRate)) {

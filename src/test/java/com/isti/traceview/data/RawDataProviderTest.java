@@ -45,11 +45,11 @@ public class RawDataProviderTest {
   @Test
   public void testSegmentCacheComparator() {
     int[] dataArray = new int[]{1,2,3,4,5};
-    double sampleRate = 1.;
+    double sampleRate = 1000L; // 1Hz data -- 1000 ms sampling interval
     long startTime = (long) sampleRate * dataArray.length;
     List<SegmentCache> cache = new ArrayList<>();
     for (int i = 0; i < 10; ++i) {
-      cache.add(new SegmentCache(new Segment(dataArray, i * 1000L * startTime, sampleRate)));
+      cache.add(new SegmentCache(new Segment(dataArray, i * startTime, sampleRate)));
     }
     Collections.sort(cache);
     for (int i = 1; i < cache.size(); ++i) {
@@ -181,7 +181,8 @@ public class RawDataProviderTest {
       unfilteredExpected[i] = segments.get(0).getData().data[i];
     }
     double[] filteredExpected = lowPass.filter(unfilteredExpected, sampleCount);
-
+    System.out.println("How much filtered data? " + filteredExpected.length);
+    System.out.println("What's the sample rate? " + data.getSampleRate());
     for (int i = 0; i < filteredExpected.length; ++i) {
       assertNotEquals(segments.get(0).getData().data[i], filteredExpected[i]);
     }
