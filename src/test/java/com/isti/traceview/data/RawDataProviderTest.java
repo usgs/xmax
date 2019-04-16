@@ -18,6 +18,8 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -41,6 +43,28 @@ public class RawDataProviderTest {
   }
 
   @Test
+  public void testSegmentCacheComparator() {
+    int[] dataArray = new int[]{1,2,3,4,5};
+    double sampleRate = 1.;
+    long startTime = (long) sampleRate * dataArray.length;
+    List<SegmentCache> cache = new ArrayList<>();
+    for (int i = 0; i < 10; ++i) {
+      cache.add(new SegmentCache(new Segment(dataArray, i * 1000L * startTime, sampleRate)));
+    }
+    Collections.sort(cache);
+    for (int i = 1; i < cache.size(); ++i) {
+      // assert that new segment starts when previous segment ends
+      // and that segments are strictly increasing by start time
+      // (so technically this also tests that segment end times are calculated correctly)
+      assertEquals(cache.get(i).getSegment().getStartTime().getTime(),
+          cache.get(i-1).getSegment().getEndTime().getTime());
+      assertTrue(cache.get(i).getSegment().getStartTime().getTime() >
+          cache.get(i-1).getSegment().getStartTime().getTime());
+    }
+
+  }
+
+  @Test
   public void testLoad() throws IOException {
     DataModule dm = new DataModule();
 
@@ -57,6 +81,7 @@ public class RawDataProviderTest {
     List<Segment> segments = data.getRawData();
     assertEquals(1, segments.size());
     for (Segment segment : segments) {
+      assertEquals(segment.getSampleRate(), 1000., 0.1);
       assertEquals(86400, segment.getSampleCount());
       assertNotNull(segment.getData().data);
     }
