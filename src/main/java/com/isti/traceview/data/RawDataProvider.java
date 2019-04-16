@@ -71,6 +71,7 @@ public class RawDataProvider extends Channel {
 
   /**
    * Convenience method for loading in the raw data from a segment
+   *
    * @param index Index of data to load in from list of segments
    * @return Array of ints representing raw timeseries data from trace
    */
@@ -218,7 +219,7 @@ public class RawDataProvider extends Channel {
       return;
     }
 
-    synchronized(rawData) {
+    synchronized (rawData) {
       List<Segment> segments = mergeIn.getRawData();
       // now go through the data we're merging in and see if they overlap/duplicate
       outerLoop:
@@ -248,7 +249,7 @@ public class RawDataProvider extends Channel {
           // trim off the part duplicated (go one sample after the segment in the list)
           long newStart = testSegment.getEndTime().getTime();
           segment = new Segment(segment, newStart, segment.getEndTime().getTime());
-
+          // we will add any data in this segment that doesn't overlap what exists soon
         } else {
 
           // if index < 0
@@ -266,7 +267,7 @@ public class RawDataProvider extends Channel {
           // only need to check the one, because anything else can't collide with it
           // (otherwise the binary search would return a different index)
           if (expectedIndex > 0) {
-            Segment previousInList = rawData.get(expectedIndex-1).getSegment();
+            Segment previousInList = rawData.get(expectedIndex - 1).getSegment();
             if (!segment.getStartTime().after(previousInList.getEndTime())) {
               // start at the end of the found segment's end time -- don't overwrite existing data
               long newStart = previousInList.getEndTime().getTime();
@@ -300,18 +301,16 @@ public class RawDataProvider extends Channel {
             continue outerLoop; // segment is now empty, so go on to the next one
           }
 
-          long existingDataStart = rawData.get(i).getSegment().getStartTime().getTime();
-          long existingDataEnd = rawData.get(i).getSegment().getEndTime().getTime();
           // there is a gap here between the end of the previous point
           // which the segment currently has accounted for in its present start point
-          long gapEnd = existingDataStart;
+          long gapEnd = rawData.get(i).getSegment().getStartTime().getTime();
           Segment fillingPossibleGap =
               new Segment(segment, segment.getStartTime().getTime(), gapEnd);
           if (fillingPossibleGap.getSampleCount() > 0) {
             addSegment(fillingPossibleGap);
           }
           // now it's time to trim the segment again
-          long newSegmentStart = existingDataEnd;
+          long newSegmentStart = rawData.get(i).getSegment().getEndTime().getTime();
           segment = new Segment(segment, newSegmentStart, segment.getEndTime().getTime());
         } // end of loop over rest of rawData
 
@@ -753,12 +752,13 @@ public class RawDataProvider extends Channel {
     }
     logger.debug("== EXIT");
   }
+}
 
   /**
    * internal class to hold original segment (cache(0)) and it's images processed by filters. Also
    * may define caching policy.
    */
-  private class SegmentCache implements Serializable, Comparable<Object> {
+  class SegmentCache implements Serializable, Comparable<Object> {
 
     /**
      *
@@ -766,7 +766,7 @@ public class RawDataProvider extends Channel {
     private static final long serialVersionUID = 1L;
     private Segment initialData;
 
-    public SegmentCache(Segment segment) {
+    SegmentCache(Segment segment) {
       initialData = segment;
     }
 
@@ -822,4 +822,3 @@ public class RawDataProvider extends Channel {
       }
     }
   }
-}
