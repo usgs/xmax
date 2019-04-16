@@ -2,12 +2,14 @@ package com.isti.traceview.transformations.modal;
 
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.data.FileOutputUtils;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.SacTimeSeriesASCII;
 import com.isti.traceview.gui.GraphUtil;
 import com.isti.traceview.processing.Spectra;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
+import com.isti.xmax.gui.XMAXGraphPanel;
 import com.isti.xmax.gui.XMAXframe;
 import java.awt.BasicStroke;
 import java.awt.Frame;
@@ -43,6 +45,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.data.Range;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.TextAnchor;
@@ -95,7 +98,7 @@ public class ViewModal extends JDialog implements PropertyChangeListener, Change
     chartAndSpinner.add(createChartPanel(createDataset(), ti));
     chartAndSpinner.add(spinnerPanel);
 
-    Object[] options = {"Close", "Print", "Export PSD", "Export SAC", "Export GRAPH"};
+    Object[] options = {"Close", "Print", "Export PSD (ASCII)", "Export SAC", "Export GRAPH"};
     // Create the JOptionPane.
     optionPane = new JOptionPane(chartAndSpinner, JOptionPane.PLAIN_MESSAGE,
         JOptionPane.CLOSED_OPTION, null, options, options[0]);
@@ -205,21 +208,28 @@ public class ViewModal extends JDialog implements PropertyChangeListener, Change
             }
           }
         }
-      } else if (value.equals("Export PSD")) {
+      } else if (value.equals("Export PSD (ASCII)")) {
         XYSeriesCollection dataset = createDataset();
         for (int i = 0; i < dataset.getSeriesCount(); ++i) {
           BufferedOutputStream stream = null;
           String fileName = null;
           try {
             String seriesName = (String) dataset.getSeriesKey(i);
-            fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_"
-                + seriesName.replace("/", "_");
-            stream = new BufferedOutputStream(new FileOutputStream(fileName, false));
+            fileName = "MODES_" + TimeInterval.formatDate(ti.getStartTime(),
+                TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+                + seriesName.replace("/", "_") + ".txt";
+
+            File outFile = FileOutputUtils.getOutputFromConfigOrUser(fileName, this);
+            if (outFile == null) {
+              JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+                  "Output operation cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+            }
+            stream = new BufferedOutputStream(new FileOutputStream(outFile, false));
             for (int j = 0; j < dataset.getItemCount(i); j++) {
               stream.write((psnFormat1.format(dataset.getXValue(i, j)) + "  "
                   + psnFormat2.format(dataset.getYValue(i, j)) + "\n").getBytes());
             }
-          } catch (IOException e1) {
+          } catch (IOException | AssertionError e1) {
             JOptionPane.showMessageDialog(XMAXframe.getInstance(),
                 "Can't write file " + fileName + "; " + e1, "Error", JOptionPane.ERROR_MESSAGE);
           } finally {
@@ -241,9 +251,18 @@ public class ViewModal extends JDialog implements PropertyChangeListener, Change
           for (int i = 0; i < dataset.getSeriesCount(); ++i) {
             // note that we do not have the noise models here so iterate through entire dataset
             String seriesName = (String) dataset.getSeriesKey(i);
-            fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_"
+            fileName =
+                "MODES_" + TimeInterval.formatDate(ti.getStartTime(),
+                    TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
                 + seriesName.replace("/", "_") + ".SAC";
-            ds = new DataOutputStream(new FileOutputStream(new File(fileName)));
+
+            File outFile = FileOutputUtils.getOutputFromConfigOrUser(fileName, this);
+
+            if (outFile == null) {
+              JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+                  "Output operation cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+            }
+            ds = new DataOutputStream(new FileOutputStream(outFile));
             float[] ydata = new float[dataset.getItemCount(i)];
             float[] xdata = new float[dataset.getItemCount(i)];
             for (int j = 0; j < dataset.getItemCount(i); j++) {
@@ -311,7 +330,8 @@ public class ViewModal extends JDialog implements PropertyChangeListener, Change
 
     if (sourceWasSpinner) {
       // redraw chart with new values, and reset the spinners
-      chartPanel.setChart(createChart(createDataset(), ti));
+      chartPanel.getChart().getXYPlot().getDomainAxis().setRange(
+          new Range((int) minSpinner.getValue(), (int) maxSpinner.getValue()));
       minSpinner.addChangeListener(this);
       maxSpinner.addChangeListener(this);
     }
