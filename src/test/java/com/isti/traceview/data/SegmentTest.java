@@ -14,9 +14,9 @@ public class SegmentTest {
   public void testBasicSegmentCreatedCorrectly() {
 
     int[] dataArray = new int[]{1,2,3,4,5};
-    double sampleRate = 1.;
+    double sampleRate = 1000. / 1.;
     long startTime = (long) sampleRate * dataArray.length;
-    Segment test = new Segment(dataArray, 1000L * startTime, sampleRate);
+    Segment test = new Segment(dataArray, startTime, sampleRate);
 
     assertEquals(5000L, test.getStartTime().getTime());
     assertEquals(10000L, test.getEndTime().getTime());
