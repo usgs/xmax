@@ -808,39 +808,7 @@ public class DataModule extends Observable {
     } catch (TraceViewException e) {
       logger.error("TraceViewException:", e);
     }
-    // try to load from network
-    /*
-     * ByteArrayOutputStream stream = new ByteArrayOutputStream(); boolean
-     * multiOutFlag = false; // true for multi-output boolean headerFlag =
-     * false; // true for header in output file boolean verboseFlag = true;
-     * // true for verbose output boolean debugFlag = true; // true for
-     * debug messages boolean logSpacingFlag = false; // non-logarithmic
-     * spacing // load properites object with system properties: if
-     * (propsObj == null) { loadProperties(); } File outputDirectory = null;
-     * // output directory String[] staArr =
-     * getArray(getStation().getName()); String[] chaArr =
-     * getArray(getChannelName()); String[] netArr =
-     * getArray(getNetworkName()); String[] siteArr =
-     * getArray(getLocationName()); double[] freqArr = null; RespNetProc
-     * respNetProcObj = null; try { // generate array of frequency values:
-     * if ((freqArr = RespUtils.generateFreqArray(1, 10, 1000,
-     * logSpacingFlag)) == null) { throw new
-     * Exception("Error generating frequency array"); } respNetProcObj = new
-     * RespNetProc(propsObj, multiOutFlag, headerFlag, debugFlag,
-     * outputDirectory); if (respNetProcObj.getErrorFlag()) { throw new
-     * Exception(respNetProcObj.getErrorMessage()); } CallbackProcWrite
-     * callback = new CallbackProcWrite(OutputGenerator.DEFAULT_UNIT_CONV,
-     * freqArr, logSpacingFlag, verboseFlag, 0, 0, // all // stage //
-     * sequence // numbers // are // used 0, // response output type false,
-     * // file output new PrintStream(stream));
-     * callback.setRespProcObj(respNetProcObj); // set object to use // find
-     * responses if (!respNetProcObj.findNetResponses(staArr, chaArr,
-     * netArr, siteArr, getTimeRange().getStartTime(),
-     * getTimeRange().getEndTime(), verboseFlag, callback)) { throw new
-     * Exception(respNetProcObj.getErrorMessage()); } } catch (Exception e)
-     * { lg.warn("Can't retrieve response for " + toString() + " - " + e); }
-     * finally { respNetProcObj.destroyORB(); // deallocate ORB resources }
-     */
+
     return null;
 
   }
