@@ -218,103 +218,105 @@ public class RawDataProvider extends Channel {
       return;
     }
 
-    List<Segment> segments = mergeIn.getRawData();
-    // now go through the data we're merging in and see if they overlap/duplicate
-    outerLoop:
-    for (Segment segment : segments) {
+    synchronized(rawData) {
+      List<Segment> segments = mergeIn.getRawData();
+      // now go through the data we're merging in and see if they overlap/duplicate
+      outerLoop:
+      for (Segment segment : segments) {
 
-      // end time of data refers to the point at which the next sample would be taken
-      // so if a segment ends at the same time that another one begins, they represent a continuous
-      // trace over that length of time. as a result we can perform trim operations by setting
-      // the data-to-merge's start and end times to the end and start of data between gaps
+        // end time of data refers to the point at which the next sample would be taken
+        // so if a segment ends at the same time that another one begins, they represent a continuous
+        // trace over that length of time. as a result we can perform trim operations by setting
+        // the data-to-merge's start and end times to the end and start of data between gaps
 
-      Collections.sort(rawData); // sort segment cache by start time to speed up search step
-      SegmentCache cache = new SegmentCache(segment);
-      // binary search for the new index (requires list to be sorted)
+        Collections.sort(rawData); // sort segment cache by start time to speed up search step
+        SegmentCache cache = new SegmentCache(segment);
+        // binary search for the new index (requires list to be sorted)
 
-      int expectedIndex = Collections.binarySearch(rawData, cache);
-      if (expectedIndex >= 0) {
+        int expectedIndex = Collections.binarySearch(rawData, cache);
+        if (expectedIndex >= 0) {
 
-        // if index >= 0, a segment with the given start time already exists
-        Segment testSegment = rawData.get(expectedIndex).getSegment();
+          // if index >= 0, a segment with the given start time already exists
+          Segment testSegment = rawData.get(expectedIndex).getSegment();
 
-        if (segment.getEndTime().getTime() <= testSegment.getEndTime().getTime()) {
-          // start times must match for index to be positive; in this case either segment is
-          // the exact same length or shorter than the data already there, so we skip over it
-          continue; // nothing else to do here -- just go on to the next segment
-        }
-
-        // trim off the part duplicated (go one sample after the segment in the list)
-        long newStart = testSegment.getEndTime().getTime();
-        segment = new Segment(segment, newStart, segment.getEndTime().getTime());
-
-      } else {
-
-        // if index < 0
-        // first we will manipulate the data to get the location where the segment SHOULD be
-        // the returned value is (expectedInsertionPoint - 1) * -1, so just invert that
-        expectedIndex = -1 * (expectedIndex + 1);
-        if (expectedIndex == rawData.size()) {
-          // this might happen if the data is past any existing segments
-          addSegment(segment); // no conflicts with existing data
-          continue; // we've added everything in this segment, so move to the next one
-        }
-
-        // if this isn't going to be in the first place in the list, we need to prevent collision
-        // with whatever value came before it
-        // only need to check the one, because anything else can't collide with it
-        // (otherwise the binary search would return a different index)
-        if (expectedIndex > 0) {
-          Segment previousInList = rawData.get(expectedIndex-1).getSegment();
-          if (!segment.getStartTime().after(previousInList.getEndTime())) {
-            // start at the end of the found segment's end time -- don't overwrite existing data
-            long newStart = previousInList.getEndTime().getTime();
-            // trim off the data that's already duplicated -- i.e., get a new Segment
-            segment = new Segment(segment, newStart, segment.getEndTime().getTime());
+          if (segment.getEndTime().getTime() <= testSegment.getEndTime().getTime()) {
+            // start times must match for index to be positive; in this case either segment is
+            // the exact same length or shorter than the data already there, so we skip over it
+            continue; // nothing else to do here -- just go on to the next segment
           }
-        }
-        // now that we've accounted for any possible previous overlap, time to fill in the gap
-        // between the next data point's start and the current data we're examining
-        // now this segment must also have range between that segment and the next one
-        // so let's get that range and add it to the segment list
-        // gap ends the sample before the next point in the list
-        long gapEnd = rawData.get(expectedIndex).getSegment().getStartTime().getTime();
-        // just make sure that this segment doesn't overlap the data either
-        gapEnd = Math.min(gapEnd, segment.getEndTime().getTime());
-        Segment trimmedSegment = new Segment(segment, segment.getStartTime().getTime(), gapEnd);
-        if (trimmedSegment.getSampleCount() > 0) {
-          // this is almost certainly guaranteed to be true, admittedly
-          addSegment(trimmedSegment);
-        }
-        // now our range of analysis is for the points after the given segment
-        long afterExisting = rawData.get(expectedIndex).getSegment().getEndTime().getTime();
-        segment = new Segment(segment, afterExisting, segment.getEndTime().getTime());
-      }
 
-      // now keep going through the list of existing data until this segment doesn't overlap
-      for (int i = expectedIndex; i < rawData.size(); ++i) {
+          // trim off the part duplicated (go one sample after the segment in the list)
+          long newStart = testSegment.getEndTime().getTime();
+          segment = new Segment(segment, newStart, segment.getEndTime().getTime());
 
-        // make sure there's still data in the list
-        if (segment.getSampleCount() == 0) {
-          continue outerLoop; // segment is now empty, so go on to the next one
+        } else {
+
+          // if index < 0
+          // first we will manipulate the data to get the location where the segment SHOULD be
+          // the returned value is (expectedInsertionPoint - 1) * -1, so just invert that
+          expectedIndex = -1 * (expectedIndex + 1);
+          if (expectedIndex == rawData.size()) {
+            // this might happen if the data is past any existing segments
+            addSegment(segment); // no conflicts with existing data
+            continue; // we've added everything in this segment, so move to the next one
+          }
+
+          // if this isn't going to be in the first place in the list, we need to prevent collision
+          // with whatever value came before it
+          // only need to check the one, because anything else can't collide with it
+          // (otherwise the binary search would return a different index)
+          if (expectedIndex > 0) {
+            Segment previousInList = rawData.get(expectedIndex-1).getSegment();
+            if (!segment.getStartTime().after(previousInList.getEndTime())) {
+              // start at the end of the found segment's end time -- don't overwrite existing data
+              long newStart = previousInList.getEndTime().getTime();
+              // trim off the data that's already duplicated -- i.e., get a new Segment
+              segment = new Segment(segment, newStart, segment.getEndTime().getTime());
+            }
+          }
+          // now that we've accounted for any possible previous overlap, time to fill in the gap
+          // between the next data point's start and the current data we're examining
+          // now this segment must also have range between that segment and the next one
+          // so let's get that range and add it to the segment list
+          // gap ends the sample before the next point in the list
+          long gapEnd = rawData.get(expectedIndex).getSegment().getStartTime().getTime();
+          // just make sure that this segment doesn't overlap the data either
+          gapEnd = Math.min(gapEnd, segment.getEndTime().getTime());
+          Segment trimmedSegment = new Segment(segment, segment.getStartTime().getTime(), gapEnd);
+          if (trimmedSegment.getSampleCount() > 0) {
+            // this is almost certainly guaranteed to be true, admittedly
+            addSegment(trimmedSegment);
+          }
+          // now our range of analysis is for the points after the given segment
+          long afterExisting = rawData.get(expectedIndex).getSegment().getEndTime().getTime();
+          segment = new Segment(segment, afterExisting, segment.getEndTime().getTime());
         }
 
-        long existingDataStart = rawData.get(i).getSegment().getStartTime().getTime();
-        long existingDataEnd = rawData.get(i).getSegment().getEndTime().getTime();
-        // there is a gap here between the end of the previous point
-        // which the segment currently has accounted for in its present start point
-        long gapEnd = existingDataStart;
-        Segment fillingPossibleGap =
-            new Segment(segment, segment.getStartTime().getTime(), gapEnd);
-        if (fillingPossibleGap.getSampleCount() > 0) {
-          addSegment(fillingPossibleGap);
-        }
-        // now it's time to trim the segment again
-        long newSegmentStart = existingDataEnd;
-        segment = new Segment(segment, newSegmentStart, segment.getEndTime().getTime());
-      } // end of loop over rest of rawData
+        // now keep going through the list of existing data until this segment doesn't overlap
+        for (int i = expectedIndex; i < rawData.size(); ++i) {
 
-    } // end of loop over merged-in segments
+          // make sure there's still data in the list
+          if (segment.getSampleCount() == 0) {
+            continue outerLoop; // segment is now empty, so go on to the next one
+          }
+
+          long existingDataStart = rawData.get(i).getSegment().getStartTime().getTime();
+          long existingDataEnd = rawData.get(i).getSegment().getEndTime().getTime();
+          // there is a gap here between the end of the previous point
+          // which the segment currently has accounted for in its present start point
+          long gapEnd = existingDataStart;
+          Segment fillingPossibleGap =
+              new Segment(segment, segment.getStartTime().getTime(), gapEnd);
+          if (fillingPossibleGap.getSampleCount() > 0) {
+            addSegment(fillingPossibleGap);
+          }
+          // now it's time to trim the segment again
+          long newSegmentStart = existingDataEnd;
+          segment = new Segment(segment, newSegmentStart, segment.getEndTime().getTime());
+        } // end of loop over rest of rawData
+
+      } // end of loop over merged-in segments
+    }
 
   }
 
