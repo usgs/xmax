@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYSeries;
@@ -143,7 +144,7 @@ public class Spectra {
 	 * @return amplitude of complex spectra
 	 */
 	public double[] getSpectraAmp(boolean isDeconvolve, String respToConvolve) {
-		Cmplx[] processed = copyOf(spectra, spectra.length, spectra.getClass());
+		Cmplx[] processed = Arrays.copyOf(spectra, spectra.length, spectra.getClass());
 		if (isDeconvolve && resp != null) {
 			try {	
 				processed = IstiUtilsMath.complexDeconvolution(spectra, resp);
@@ -237,8 +238,8 @@ public class Spectra {
 
 	public void printout() {
 		try {
-			PrintStream pStr = null;
-			pStr = new PrintStream(new BufferedOutputStream(new FileOutputStream("OutFile.txt")));
+			PrintStream pStr =
+					new PrintStream(new BufferedOutputStream(new FileOutputStream("OutFile.txt")));
 			for (int i = 0; i < spectra.length; i++) {
 				pStr.println("freq=" + frequenciesArray[i] + ", r=" + spectra[i].r + ", i=" + spectra[i].i + ", mag=" + spectra[i].mag());
 			}
@@ -252,21 +253,10 @@ public class Spectra {
 		System.out.println("-----------------------------------------------------------------------");
 		System.out.println(name);
 		System.out.println("-----------------------------------------------------------------------");
-		for (int i = 0; i < spectra.length; i++) {
-			System.out.println(/*"r=" + spectra[i].r + ", i=" + spectra[i].i + ", mag=" + */spectra[i].mag());
+		for (Cmplx aSpectra : spectra) {
+			System.out
+					.println(/*"r=" + spectra[i].r + ", i=" + spectra[i].i + ", mag=" + */aSpectra.mag());
 		}
-	}
-
-	/**
-	 * This code was copied from Java 6 Arrays class sources. In Java 5 this class has not such
-	 * method.
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T, U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {
-		T[] copy = ((Object) newType == (Object) Object[].class) ? (T[]) new Object[newLength] : (T[]) Array.newInstance(newType.getComponentType(),
-				newLength);
-		System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));
-		return copy;
 	}
 
 	public XYSeries getSpectraSeriesTruncated(boolean isDeconvolve, double lowPeriod, double highPeriod) {

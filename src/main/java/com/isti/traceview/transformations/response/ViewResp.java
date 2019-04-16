@@ -84,12 +84,4 @@ class ViewResp extends JDialog implements PropertyChangeListener {
 		plot.setRangeCrosshairVisible(true);
 		return new TraceViewChartPanel(chart, true);
 	}
-
-	// public static void main(String[] args) {
-	// JFrame frame = new JFrame();
-	// frame.setVisible(true);
-	// ViewResp vr = new ViewResp(frame);
-	// vr.setVisible(true);
-	//
-	// }
 }

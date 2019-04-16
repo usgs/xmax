@@ -3,6 +3,7 @@ package com.isti.traceview.transformations.psd;
 import com.isti.jevalresp.OutputGenerator;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
+import com.isti.traceview.data.FileOutputUtils;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.SacTimeSeriesASCII;
 import com.isti.traceview.gui.ChannelView;
@@ -80,7 +81,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
 
   private static final long serialVersionUID = 1L;
   private static final Logger logger = Logger.getLogger(ViewPSD.class);
-  private static final String huttFreqsFile = "hutt_freqs";
+  private static final String huttFreqsFile = "hutt_freqs.txt";
   private static final String huttPeriodsKey = "HuttPeriods";
   private static final SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD");
   private static final DecimalFormat huttFormat = new DecimalFormat("#####.##");
@@ -208,14 +209,20 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
             }
           }
         }
-      } else if (value.equals("Export PSD")) {
+      } else if (value.equals("Export PSD (ASCII)")) {
         for (int i = 0; i < dataset.getSeriesCount() - 2; i++) {
           BufferedOutputStream stream = null;
-          String fileName = null;
+          String seriesName = (String) dataset.getSeriesKey(i);
+          String fileName = "PSD_" + TimeInterval.formatDate(ti.getStartTime(),
+              TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+              + seriesName.replace("/", "_") + ".txt";
+
+          File outFile = FileOutputUtils.getOutputFromConfigOrUser(fileName, this);
+          if (outFile == null) {
+            JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+                "Output operation cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+          }
           try {
-            String seriesName = (String) dataset.getSeriesKey(i);
-            fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_"
-                + seriesName.replace("/", "_");
             stream = new BufferedOutputStream(new FileOutputStream(fileName, false));
             for (int j = 0; j < dataset.getItemCount(i); j++) {
               stream.write((psnFormat1.format(dataset.getXValue(i, j)) + "  "
@@ -240,11 +247,19 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
       } else if (value.equals("Export SAC")) {
         for (int i = 0; i < dataset.getSeriesCount() - 2; i++) {
           DataOutputStream ds = null;
-          String fileName = null;
+
+          String seriesName = (String) dataset.getSeriesKey(i);
+          String fileName = "PSD_" + TimeInterval.formatDate(ti.getStartTime(),
+              TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+              + seriesName.replace("/", "_") + ".SAC";
+
+          File outFile = FileOutputUtils.getOutputFromConfigOrUser(fileName, this);
+          if (outFile == null) {
+            JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+                "Output operation cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+          }
+
           try {
-            String seriesName = (String) dataset.getSeriesKey(i);
-            fileName = XMAXconfiguration.getInstance().getOutputPath() + File.separator + "PSD_"
-                + seriesName.replace("/", "_") + ".SAC";
             ds = new DataOutputStream(new FileOutputStream(new File(fileName)));
             float[] ydata = new float[dataset.getItemCount(i)];
             float[] xdata = new float[dataset.getItemCount(i)];
@@ -274,10 +289,17 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
                 JOptionPane.INFORMATION_MESSAGE);
       } else if (value.equals("Dump Freqs")) {
         BufferedOutputStream stream = null;
+
+        String fileName = huttFreqsFile;
+
+        File outFile = FileOutputUtils.getOutputFromConfigOrUser(fileName, this);
+        if (outFile == null) {
+          JOptionPane.showMessageDialog(XMAXframe.getInstance(),
+              "Output operation cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+        }
+
         try {
-          File file = new File(
-              XMAXconfiguration.getInstance().getOutputPath() + File.separator + huttFreqsFile);
-          stream = new BufferedOutputStream(new FileOutputStream(file, true));
+          stream = new BufferedOutputStream(new FileOutputStream(outFile, true));
           for (int i = 0; i < dataset.getSeriesCount() - 2; i++) {
             String seriesName = (String) dataset.getSeriesKey(i);
             stream.write((seriesName + ":").getBytes());
