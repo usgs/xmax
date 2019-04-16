@@ -36,7 +36,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	private long startTime;
 
-	private double sampleRate;
+	private double sampleRate; // sample rate is in cycles
 
 	/**
 	 * Quantity of data values in the segment
@@ -166,6 +166,16 @@ public class Segment implements Externalizable, Cloneable {
 	}
 
 	/**
+	 * Constructor for testing purposes
+	 */
+	Segment(int[] newData, long startTime, double sampleRate) {
+		this.data = newData;
+		this.startTime = startTime;
+		this.sampleRate = sampleRate;
+		this.sampleCount = newData.length;
+	}
+
+	/**
 	 * Constructor to work during deserialization
 	 */
 	public Segment() {
@@ -187,7 +197,8 @@ public class Segment implements Externalizable, Cloneable {
 	 * @return segment data end time
 	 */
 	public Date getEndTime() {
-		long time = (long) sampleRate * sampleCount;
+		// sample rate is in Hz. go from units of Hz to ms
+		long time = (long) (1000L *  sampleCount / sampleRate);
 		return new Date(getStartTime().getTime() + time);
 	}
 
