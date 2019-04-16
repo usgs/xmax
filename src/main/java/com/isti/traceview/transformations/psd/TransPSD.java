@@ -115,7 +115,6 @@ public class TransPSD implements ITransformation {
 				throw new XMAXException("You have no data for channel " + channel.getName());
 			}
 			int ds;
-			System.out.println(intData.length +","+maxDataLength);
 			if (intData.length > maxDataLength) {
 				ds = maxDataLength; // maxDataLength is already a power of two
 				int[] tempIntData = new int[ds];

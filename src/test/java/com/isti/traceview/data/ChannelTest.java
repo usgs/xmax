@@ -62,7 +62,7 @@ public class ChannelTest {
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     // LHZ = 1Hz data, or 1 sample every 1000 ms
-    assertEquals(1000, dataProvider.getSampleRate(), 1E-5);
+    assertEquals(1000., dataProvider.getSampleRate(), 1E-5);
   }
 
   @Test
