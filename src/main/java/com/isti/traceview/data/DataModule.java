@@ -98,7 +98,7 @@ public class DataModule extends Observable {
       try {
         logger.info("Loading in " + file.getCanonicalPath());
       } catch (IOException e) {
-        e.printStackTrace();
+        logger.error(e);
       }
       ISource fileParser = SourceFile.getDataFile(file);
       addDataSource(fileParser);
