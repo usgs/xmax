@@ -219,15 +219,19 @@ public class RawDataProvider extends Channel {
     logger.debug(segment + " added to " + this);
   }
 
-  public void mergeData(RawDataProvider mergeIn, File fileIn) {
+  /**
+   * Add in segments from a RawDataProvider in order to handle possible gaps in current data.
+   * This prevents issues caused by loading a multi-day SEED file over an file with the same data,
+   * or other cases where existing data might overlap with what is being loaded in
+   * @param mergeIn New seed file to load in
+   */
+  public void mergeData(RawDataProvider mergeIn) {
     if (!mergeIn.equals(this)) {
       // if the channels don't have the same SNCL, then don't try to merge them
       return;
     }
 
-
     synchronized (rawData) {
-      
       List<Segment> segments = mergeIn.getRawData();
       // now go through the data we're merging in and see if they overlap/duplicate
       Collections.sort(rawData); // sort segment cache by start time to speed up search step
