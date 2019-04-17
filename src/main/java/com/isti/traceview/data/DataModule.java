@@ -108,7 +108,7 @@ public class DataModule extends Observable {
         getOrAddStation(station);
         // merge in the new data into any channel that may already exist
         getOrAddChannel(channel.getChannelName(), channel.getStation(),
-            channel.getNetworkName(), channel.getLocationName()).mergeData(channel, file);
+            channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
         channel.load();
       }
     }
