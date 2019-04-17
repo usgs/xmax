@@ -182,8 +182,6 @@ public class RawDataProviderTest {
       unfilteredExpected[i] = segments.get(0).getData().data[i];
     }
     double[] filteredExpected = lowPass.filter(unfilteredExpected, sampleCount);
-    System.out.println("How much filtered data? " + filteredExpected.length);
-    System.out.println("What's the sample rate? " + data.getSampleRate());
     for (int i = 0; i < filteredExpected.length; ++i) {
       assertNotEquals(segments.get(0).getData().data[i], filteredExpected[i]);
     }
