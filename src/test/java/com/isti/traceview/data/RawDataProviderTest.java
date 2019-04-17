@@ -2,6 +2,7 @@ package com.isti.traceview.data;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -267,6 +268,36 @@ public class RawDataProviderTest {
     assertArrayEquals(dataFromFirstFile, dataFromSecondFile);
     assertEquals(end-start, secondEnd-secondStart);
     assertEquals(start, secondStart); // small correction for leap-seconds?
+  }
+
+  @Test
+  public void mergeOverlappingData() {
+    String folderStructure = "src/test/resources/overlaps/";
+
+    DataModule dm = new DataModule();
+    String day91FName = folderStructure + "91.00_LH1.512.seed";
+    String day92FName = folderStructure + "92.00_LH1.512.seed";
+    String day93FName = folderStructure + "93.00_LH1.512.seed";
+    String day91And92Fname = folderStructure + "cat.00_LH1.512.seed";
+
+    File day91File = new File(day91FName);
+    File day92File = new File(day92FName);
+    File day93File = new File(day93FName);
+    File concattedFile = new File(day91And92Fname);
+
+    // day 92's data will be loaded in from concatted file in gap between 91 and 93
+    dm.loadNewDataFromSources(day91File, day93File, concattedFile, day92File);
+
+    RawDataProvider data = dm.getAllChannels().get(0);
+
+    List<Segment> segments = data.getRawData();
+    double sampleInterval = segments.get(0).getSampleRate();
+    for (int i = 1; i < segments.size(); ++i) {
+      long previousEnd = segments.get(i-1).getEndTime().getTime();
+      long thisStart = segments.get(i).getStartTime().getTime();
+      assertFalse(Segment.isDataBreak(previousEnd, thisStart, sampleInterval));
+    }
+
   }
 
   @Test
