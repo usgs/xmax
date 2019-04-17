@@ -19,6 +19,7 @@ import edu.sc.seis.fissuresUtil.mseed.Recompress;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -205,32 +206,39 @@ public class RawDataProvider extends Channel {
    * @param segment to add
    */
   public void addSegment(Segment segment) {
+    if (segment.getSampleCount() < 1) {
+      logger.warn("Segment has no usable data!");
+      return;
+    }
     synchronized (rawData) {
       rawData.add(new SegmentCache(segment));
       segment.setRawDataProvider(this);
+      Collections.sort(rawData);
     }
     setSampleRate(segment.getSampleRate());
     logger.debug(segment + " added to " + this);
   }
 
-  public void mergeData(RawDataProvider mergeIn) {
+  public void mergeData(RawDataProvider mergeIn, File fileIn) {
     if (!mergeIn.equals(this)) {
       // if the channels don't have the same SNCL, then don't try to merge them
       return;
     }
 
+
     synchronized (rawData) {
+      
       List<Segment> segments = mergeIn.getRawData();
       // now go through the data we're merging in and see if they overlap/duplicate
+      Collections.sort(rawData); // sort segment cache by start time to speed up search step
+      // i.e., this allows us to do binary search operations on the data
       outerLoop:
       for (Segment segment : segments) {
-
         // end time of data refers to the point at which the next sample would be taken
         // so if a segment ends at the same time that another one begins, they represent a continuous
         // trace over that length of time. as a result we can perform trim operations by setting
         // the data-to-merge's start and end times to the end and start of data between gaps
 
-        Collections.sort(rawData); // sort segment cache by start time to speed up search step
         SegmentCache cache = new SegmentCache(segment);
         // binary search for the new index (requires list to be sorted)
 
@@ -251,11 +259,13 @@ public class RawDataProvider extends Channel {
           segment = new Segment(segment, newStart, segment.getEndTime().getTime());
           // we will add any data in this segment that doesn't overlap what exists soon
         } else {
-
+          System.out.println("Found new data going in a gap");
           // if index < 0
           // first we will manipulate the data to get the location where the segment SHOULD be
           // the returned value is (expectedInsertionPoint - 1) * -1, so just invert that
           expectedIndex = -1 * (expectedIndex + 1);
+          System.out.println("We expect this data to go to index " + expectedIndex);
+          System.out.println("Note that we have " + rawData.size() + " points loaded in");
           if (expectedIndex == rawData.size()) {
             // this might happen if the data is past any existing segments
             addSegment(segment); // no conflicts with existing data
@@ -267,10 +277,14 @@ public class RawDataProvider extends Channel {
           // only need to check the one, because anything else can't collide with it
           // (otherwise the binary search would return a different index)
           if (expectedIndex > 0) {
+            System.out.println("Which is preceded by existing data loaded in");
             Segment previousInList = rawData.get(expectedIndex - 1).getSegment();
             if (!segment.getStartTime().after(previousInList.getEndTime())) {
+              System.out.println("And the end time of that data is at or before this new data");
               // start at the end of the found segment's end time -- don't overwrite existing data
               long newStart = previousInList.getEndTime().getTime();
+              System.out.println("The specific end time of that data is: " + newStart);
+              System.out.println("Whereas this new data's start time is: " + segment.getStartTime().getTime());
               // trim off the data that's already duplicated -- i.e., get a new Segment
               segment = new Segment(segment, newStart, segment.getEndTime().getTime());
             }
@@ -280,7 +294,10 @@ public class RawDataProvider extends Channel {
           // now this segment must also have range between that segment and the next one
           // so let's get that range and add it to the segment list
           // gap ends the sample before the next point in the list
+          System.out.println("Current start time: " + segment.getStartTime().getTime());
           long gapEnd = rawData.get(expectedIndex).getSegment().getStartTime().getTime();
+          System.out.println("When the gap ends: " + gapEnd);
+          System.out.println("When the data loading in ends: " + segment.getEndTime().getTime());
           // just make sure that this segment doesn't overlap the data either
           gapEnd = Math.min(gapEnd, segment.getEndTime().getTime());
           Segment trimmedSegment = new Segment(segment, segment.getStartTime().getTime(), gapEnd);
