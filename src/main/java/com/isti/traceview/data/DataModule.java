@@ -95,6 +95,11 @@ public class DataModule extends Observable {
   public void loadNewDataFromSources(File... files) {
     // TODO: probably need to find a way to parallelize this?
     for (File file : files) {
+      try {
+        logger.info("Loading in " + file.getCanonicalPath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       ISource fileParser = SourceFile.getDataFile(file);
       addDataSource(fileParser);
       Set<PlotDataProvider> dataSet = fileParser.parse();
@@ -103,7 +108,7 @@ public class DataModule extends Observable {
         getOrAddStation(station);
         // merge in the new data into any channel that may already exist
         getOrAddChannel(channel.getChannelName(), channel.getStation(),
-            channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
+            channel.getNetworkName(), channel.getLocationName()).mergeData(channel, file);
         channel.load();
       }
     }
