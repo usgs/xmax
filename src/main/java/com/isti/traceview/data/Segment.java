@@ -5,6 +5,8 @@ package com.isti.traceview.data;
 
 import com.isti.traceview.common.TimeInterval;
 import java.io.Externalizable;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -33,6 +35,9 @@ public class Segment implements Externalizable, Cloneable {
 	private int[] data = null;
 
 	private int currentPos = 0;
+
+	// used to skip over data points which are overlapping
+	private int trimStart;
 
 	private long startTime;
 
@@ -111,6 +116,7 @@ public class Segment implements Externalizable, Cloneable {
 		this.startOffset = startOffset;
 		this.startTime = startTime.getTime();
 		this.sampleCount = sampleCount;
+		this.trimStart = 0;
 		this.sampleRate = sampleRate;
 		this.sourceSerialNumber = RDPserialNumber;
 		this.maxValue = Integer.MIN_VALUE;
@@ -132,27 +138,28 @@ public class Segment implements Externalizable, Cloneable {
 	 * @param newEndPoint epoch millisecond to end data at
 	 */
 	public Segment(Segment segment, long newStartPoint, long newEndPoint) {
-
 		// can't start before existing segment's start point
 		newStartPoint = Math.max(segment.getStartTime().getTime(), newStartPoint);
 		// can't end after existing segment's end point
-		newEndPoint = Math.min(segment.getStartTime().getTime(), newEndPoint);
+		newEndPoint = Math.min(segment.getEndTime().getTime(), newEndPoint);
+
+		this.currentPos = 0;
+		this.data = null;
+
 		this.dataSource = segment.getDataSource();
 		this.startOffset = segment.getStartOffset();
 		this.sampleRate = segment.getSampleRate();
+		this.sampleCount = segment.getSampleCount();
 		this.sourceSerialNumber = segment.getSourceSerialNumber();
-		// TODO: verify that sample rates are in units of Hz
-		this.sampleCount = (int) ((newEndPoint - newStartPoint) / sampleRate);
-		if (sampleCount > 0) {
-			long millisecondOffset = (long) (sampleRate * sampleCount * 1000);
-			long untrimmedStartMilli = segment.getStartTime().getTime();
-			this.startTime = untrimmedStartMilli + millisecondOffset;
 
-			int firstStartPoint = (int) ((untrimmedStartMilli - startTime) / sampleRate);
-			int lastEndPoint = firstStartPoint + sampleCount;
-			this.data = Arrays.copyOfRange(segment.data, firstStartPoint, lastEndPoint);
-			logger.debug("Created trimmed segment: " + this);
-		} else {
+		long untrimmedStartMilli = segment.getStartTime().getTime();
+		// first sample to take of given data
+		this.trimStart = (int) ((newStartPoint - untrimmedStartMilli) / sampleRate);
+		// quantized start time, i.e., when the first untrimmed sample actually occurs
+		this.startTime = untrimmedStartMilli + (int) (trimStart * sampleRate);
+		this.sampleCount = (int) ((newEndPoint - newStartPoint) / sampleRate);
+
+		if (sampleCount <= 0) {
 			// if newStartPoint is set to be after the newEndPoint, we must enforce 0 length
 			// this happens if we try to see if the segment has data after another segment that might
 			// have ended already -- in which case there wouldn't be any data to add
@@ -162,7 +169,6 @@ public class Segment implements Externalizable, Cloneable {
 			data = new int[]{};
 		}
 
-		currentPos = data.length;
 	}
 
 	/**
@@ -288,7 +294,7 @@ public class Segment implements Externalizable, Cloneable {
 			}
             // Copy into this Segment's int[] data:
             data = new int[sampleCount];
-            System.arraycopy(ret, 0, data, 0, sampleCount);
+            System.arraycopy(ret, trimStart, data, 0, sampleCount);
 		}
 	    return ret;
 	}
