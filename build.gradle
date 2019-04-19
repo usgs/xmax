@@ -30,6 +30,7 @@ dependencies {
     compile group: 'edu.emory.mathcs', name: 'JTransforms', version: '2.4'
     compile group: 'log4j', name: 'log4j', version: '1.2.16'
     compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
     compile group: 'edu.iris.dmc', name: 'java-seed', version: '3.8.5'
 
