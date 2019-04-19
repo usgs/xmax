@@ -32,14 +32,29 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 	private static PPMPolarItemRenderer renderer = new PPMPolarItemRenderer();
 	private static TraceViewChartPanel cp = null;
     private static JPanel ret = null;
-    private double altAngle = 180;
+    private double altAngle;
 
-	ViewPPM(Frame owner, XYDataset dataset, TimeInterval ti, String annotation, IFilter filter) {
+	ViewPPM(Frame owner, XYDataset dataset, TimeInterval ti, String annotation, IFilter filter,
+			double estimatedBackAzimuth) {
+
 		super(owner, "Particle Motion", true);
+
+		altAngle = estimatedBackAzimuth;
+
 		Object[] options = { "Close", "Print", "Enter Angle", "+1", "+5", "+30", "-1", "-5", "-30" };
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createChartPanel(dataset, ti, annotation, filter), JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.CLOSED_OPTION, null, options, options[0]);
+		optionPane = new JOptionPane(createChartPanel(dataset, ti, annotation, filter),
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options, options[0]);
+
+		// add back azimuth estimation, include ruler
+		double bAzimuth = estimatedBackAzimuth;
+		while (bAzimuth >= 180) {
+			bAzimuth = bAzimuth-180;
+		}
+		renderer.setRulerAngle(bAzimuth);
+		TextTitle subTitle = new TextTitle("Back Azimuth Est.: " + bAzimuth + "\u00b0", ret.getFont());
+		cp.getChart().addSubtitle(1, subTitle);
+
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
@@ -129,7 +144,7 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 			
 			TextTitle subTitle = new TextTitle("Angle: " + renderer.getRulerAngle() + "\u00b0/" + altAngle + "\u00b0", ret.getFont());
 			cp.getChart().removeSubtitle(cp.getChart().getSubtitle(0));
-			cp.getChart().addSubtitle(subTitle);
+			cp.getChart().addSubtitle(0, subTitle);
 			cp.chartChanged(new ChartChangeEvent(cp.getChart()));
 		}
 	}
@@ -140,7 +155,8 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 		return ret;
 	}
 	
-	private static JPanel createChartPanel(XYDataset dataset, TimeInterval ti, String annotation, IFilter filter) {
+	private static JPanel createChartPanel(XYDataset dataset, TimeInterval ti,
+			String annotation, IFilter filter) {
 		ret = new JPanel();
 		BoxLayout retLayout = new BoxLayout(ret, javax.swing.BoxLayout.Y_AXIS);
 		ret.setLayout(retLayout);
@@ -158,7 +174,9 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 				+ ", Duration: " + ti.convert() + ". Filter: " + filterName + ".", ret.getFont());
 		chart.setTitle(title);
-		TextTitle subTitle = new TextTitle("Angle: 0\u00b0/180\u00b0", ret.getFont());
+
+
+		TextTitle subTitle = new TextTitle("Ruler Angle: 0\u00b0/180\u00b0", ret.getFont());
 		chart.addSubtitle(0, subTitle);
 		PolarPlot plot = (PolarPlot) chart.getPlot();
 		plot.setRenderer(renderer);

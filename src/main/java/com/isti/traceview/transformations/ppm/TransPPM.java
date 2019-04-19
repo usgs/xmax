@@ -7,12 +7,14 @@ import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
+import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -54,10 +56,22 @@ public class TransPPM implements ITransformation {
 					inputRepositioned.add(input.get(0));
 					inputRepositioned.add(input.get(1));
 				}
+
+				// first index of outer array is north data, second is east
+				// (inner data is, of course, the actual data associated with the trace & filters)
+				int[][] bothData = createDataset(inputRepositioned, filter, ti);
+
+				XYDataset dataset = populateDataset(bothData[0], bothData[1],
+						inputRepositioned.get(0).getName()
+								+ " " + inputRepositioned.get(1).getName());
+
+				// OK, also make sure to calculate the expected orientation of the data
+				double backAzimuth = estimateBackAzimuth(bothData[0], bothData[1]);
+
 				@SuppressWarnings("unused")
-				ViewPPM vr = new ViewPPM(parentFrame, createDataset(inputRepositioned, filter, ti), ti,
+				ViewPPM vr = new ViewPPM(parentFrame, dataset, ti,
 						"N:" + inputRepositioned.get(0).getName() + "  E:" + inputRepositioned.get(1).getName(),
-						filter);
+						filter, backAzimuth);
 			} catch (XMAXException e) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
@@ -72,25 +86,25 @@ public class TransPPM implements ITransformation {
 	 *            Filter applied to traces before correlation
 	 * @param ti
 	 *            Time interval to define processed range
-	 * @return jFreeChart dataset of trace data in polar coordinates
+	 * @return int[][] 2-D array of format {xData, yData} (xData and yData are the int arrays holding
+	 * the raw data from the traces being analyzed)
 	 * @throws XMAXException
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	private XYDataset createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
+	int[][] createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
 			throws XMAXException {
-		XYSeriesCollection dataset = new XYSeriesCollection();
+
 		PlotDataProvider channel1 = input.get(0); // N/S
 		PlotDataProvider channel2 = input.get(1); // E/W
 		if (channel1.getSampleRate() != channel2.getSampleRate())
 			throw new XMAXException("Channels have different sample rate");
-		XYSeries series = new XYSeries(channel1.getName() + " " + channel2.getName(), false);
 		double sampleRate;
 		List<Segment> segments1;
-		if(channel1.getRotation() != null && channel1.isRotated()) {
-			segments1 = channel1.getRawData(channel1.getRotation(), ti);				
+		if (channel1.getRotation() != null && channel1.isRotated()) {
+			segments1 = channel1.getRawData(channel1.getRotation(), ti);
 		} else
-			segments1 = channel1.getRawData(ti);	
+			segments1 = channel1.getRawData(ti);
 
 		int[] intData1 = new int[0];
 		if (segments1.size() > 0) {
@@ -102,7 +116,8 @@ public class TransPPM implements ITransformation {
 							"You have data with different sample rate for channel " + channel1.getName());
 				}
 				if (segment_end_time != 0
-						&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
+						&& Segment
+						.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
 					throw new XMAXException("You have gap in the data for channel " + channel1.getName());
 				}
 				segment_end_time = segment.getEndTime().getTime();
@@ -113,10 +128,10 @@ public class TransPPM implements ITransformation {
 			throw new XMAXException("You have no data for channel " + channel1.getName());
 		}
 		List<Segment> segments2;
-		if(channel2.getRotation() != null && channel2.isRotated())
-			segments2 = channel2.getRawData(channel2.getRotation(), ti);				
+		if (channel2.getRotation() != null && channel2.isRotated())
+			segments2 = channel2.getRawData(channel2.getRotation(), ti);
 		else
-			segments2 = channel2.getRawData(ti);	
+			segments2 = channel2.getRawData(ti);
 		int[] intData2 = new int[0];
 		if (segments2.size() > 0) {
 			long segment_end_time = 0;
@@ -126,7 +141,8 @@ public class TransPPM implements ITransformation {
 							+ " have different sample rates: " + sampleRate + " and " + segment.getSampleRate());
 				}
 				if (segment_end_time != 0
-						&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
+						&& Segment
+						.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
 					throw new XMAXException("You have gap in the data for channel " + channel2.getName());
 				}
 				segment_end_time = segment.getEndTime().getTime();
@@ -140,6 +156,14 @@ public class TransPPM implements ITransformation {
 			intData1 = new FilterFacade(filter, channel1).filter(intData1);
 			intData2 = new FilterFacade(filter, channel2).filter(intData2);
 		}
+
+		return new int[][]{intData1, intData2};
+	}
+
+	XYDataset populateDataset(int[] intData1, int[] intData2, String seriesName) throws XMAXException {
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		XYSeries series = new XYSeries(seriesName, false);
+
 		int dataSize = Math.min(intData1.length, intData2.length);
 		if (dataSize > maxDataLength) {
 			throw new XMAXException("Too many datapoints are selected.");
@@ -155,6 +179,18 @@ public class TransPPM implements ITransformation {
 		}
 		dataset.addSeries(series);
 		return dataset;
+	}
+
+	double estimateBackAzimuth (int[] north, int[] east) {
+		// we don'fintt care a but the intercept, only the slope
+		SimpleRegression slopeCalculation = new SimpleRegression(false);
+		for (int i = 0; i < north.length; ++i) {
+			slopeCalculation.addData(east[i], north[i]);
+		}
+		double backAzimuth = Math.atan(1. / slopeCalculation.getSlope());
+		backAzimuth = 360 + Math.toDegrees(backAzimuth);
+
+		return backAzimuth;
 	}
 
 	private class ArrayValues {

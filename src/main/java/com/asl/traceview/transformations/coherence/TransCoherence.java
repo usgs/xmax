@@ -24,45 +24,55 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class TransCoherence implements ITransformation{
 
 	public static final String NAME = "Coherence";
-	
-	private int maxDataLength = 1048576;
+
 	private int effectiveLength = 0;
+	private double sampleRate;
 	
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
 			JFrame parentFrame) {
+
 		if (input.size() != 2) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select 2 channels", "Coherence computation warning",
 					JOptionPane.WARNING_MESSAGE);
+			return;
 		}
-		else if (input.get(0).getSampleRate() != input.get(1).getSampleRate()){
+
+		if (input.get(0).getDataLength(ti) < 32) {
+			JOptionPane.showMessageDialog(parentFrame, "One or more of the traces that you selected does not contain enough datapoints (<32). Please select a longer dataset.", "Coherence computation warning",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		// sample rate is interval in ms -- larger sample rate is the lower-frequency data
+		// and if they don't match up we should downsample to the lower frequency rate
+		sampleRate = Math.max(input.get(0).getSampleRate(), input.get(1).getSampleRate());
+
+		if (input.get(0).getSampleRate() != input.get(1).getSampleRate()){
 			JOptionPane.showMessageDialog(parentFrame, "Channel sample rates do not match. ("+input.get(0).getLocationName()+"/"
-					+input.get(0).getChannelName()+"= "+input.get(0).getSampleRate()+", " +input.get(1).getLocationName()+"/"
-					+input.get(1).getChannelName()+"= "+input.get(1).getSampleRate()+")",
+							+input.get(0).getChannelName()+"= "+input.get(0).getSampleRate()+", " +input.get(1).getLocationName()+"/"
+							+input.get(1).getChannelName()+"= "+input.get(1).getSampleRate()+")",
 					"Coherence computation warning",
 					JOptionPane.WARNING_MESSAGE);
 		}
-		else if (input.get(0).getDataLength(ti) < 32) {
-			JOptionPane.showMessageDialog(parentFrame, "One or more of the traces that you selected does not contain enough datapoints (<32). Please select a longer dataset.", "Coherence computation warning",
-					JOptionPane.WARNING_MESSAGE);
-		}
-		else {
-			try {
-				XYSeriesCollection plotSeries = createData(input, filter, ti, parentFrame);
-				TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
-						ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
-				@SuppressWarnings("unused")				
-				ViewCoherence vc = new ViewCoherence(parentFrame, plotSeries, effectiveInterval);
-			} catch (XMAXException e) {
-				if (!e.getMessage().equals("Operation cancelled")) {
-					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
-				}
-			} catch (TraceViewException e) {
+
+
+		try {
+			XYSeriesCollection plotSeries = createData(input, filter, ti, parentFrame);
+			TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
+					ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
+			@SuppressWarnings("unused")
+			ViewCoherence vc = new ViewCoherence(parentFrame, plotSeries, effectiveInterval);
+		} catch (XMAXException e) {
+			if (!e.getMessage().equals("Operation cancelled")) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
+		} catch (TraceViewException e) {
+			JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 		}
+
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
-		
+
 	}
 	
 	/**
