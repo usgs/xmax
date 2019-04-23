@@ -10,6 +10,7 @@ import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
+import com.isti.traceview.transformations.TransformationUtils;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
@@ -26,7 +27,6 @@ public class TransCoherence implements ITransformation{
 	public static final String NAME = "Coherence";
 
 	private int effectiveLength = 0;
-	private double sampleRate;
 	
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
@@ -46,19 +46,21 @@ public class TransCoherence implements ITransformation{
 
 		// sample rate is interval in ms -- larger sample rate is the lower-frequency data
 		// and if they don't match up we should downsample to the lower frequency rate
-		sampleRate = Math.max(input.get(0).getSampleRate(), input.get(1).getSampleRate());
+		double sampleRate = Math.max(input.get(0).getSampleRate(), input.get(1).getSampleRate());
 
 		if (input.get(0).getSampleRate() != input.get(1).getSampleRate()){
 			JOptionPane.showMessageDialog(parentFrame, "Channel sample rates do not match. ("+input.get(0).getLocationName()+"/"
 							+input.get(0).getChannelName()+"= "+input.get(0).getSampleRate()+", " +input.get(1).getLocationName()+"/"
-							+input.get(1).getChannelName()+"= "+input.get(1).getSampleRate()+")",
+							+input.get(1).getChannelName()+"= "+input.get(1).getSampleRate()+")\n"+
+					"Downsampling will be done on the higher-frequency data.",
 					"Coherence computation warning",
 					JOptionPane.WARNING_MESSAGE);
 		}
 
 
+
 		try {
-			XYSeriesCollection plotSeries = createData(input, filter, ti, parentFrame);
+			XYSeriesCollection plotSeries = createData(input, filter, ti, sampleRate, parentFrame);
 			TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
 					ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
 			@SuppressWarnings("unused")
@@ -90,7 +92,7 @@ public class TransCoherence implements ITransformation{
 	 *             channel
 	 */
 
-	private XYSeriesCollection createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame) 
+	private XYSeriesCollection createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, double downsampleInterval, JFrame parentFrame)
 			throws TraceViewException, XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		ListIterator<PlotDataProvider> li = input.listIterator();
@@ -126,6 +128,9 @@ public class TransCoherence implements ITransformation{
 						segment_end_time = segment.getEndTime().getTime();
 						intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
 					}
+					// now that we have data, time to perform downsampling
+					intData =
+							TransformationUtils.decimate(intData, (long) samplerate, (long) downsampleInterval);
 				} else {
 					throw new XMAXException("You have no data for channel " + channel.getName());
 				}
