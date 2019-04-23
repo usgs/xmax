@@ -7,6 +7,7 @@ import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
+import com.isti.traceview.transformations.TransformationUtils;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ public class TransCorrelation implements ITransformation {
 
 	public static final String NAME = "Correlation";
 
-	private double sampleRate = 0;
 
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
@@ -42,8 +42,17 @@ public class TransCorrelation implements ITransformation {
 				for (PlotDataProvider channel : input) {
 					channelNames.add(channel.getName());
 				}
+
+				// sample rate is interval in ms -- larger sample rate is the lower-frequency data
+				// and if they don't match up we should downsample to the lower frequency rate
+
+				double sampleRate = input.get(0).getSampleRate();
+				if (input.size() == 2) {
+					sampleRate = Math.max(input.get(0).getSampleRate(), input.get(1).getSampleRate());
+				}
+
 				@SuppressWarnings("unused")
-				ViewCorrelation vc = new ViewCorrelation(parentFrame, createData(input, filter, ti), channelNames,
+				ViewCorrelation vc = new ViewCorrelation(parentFrame, createData(input, filter, ti, sampleRate), channelNames,
 						sampleRate, ti);
 			} catch (XMAXException e) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
@@ -59,13 +68,16 @@ public class TransCorrelation implements ITransformation {
 	 *            Filter applied to traces before correlation
 	 * @param ti
 	 *            Time interval to define processed range
+	 * @param sampleRate
+	 * 						Sampling interval of data (in milliseconds)
 	 * @return list of arrays - double raw data for selected traces and time
 	 *         ranges
 	 * @throws XMAXException
 	 *             if sample rates differ, gaps in the data, no data, or the
 	 *             data is too long.
 	 */
-	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
+	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti,
+			double sampleRate)
 			throws XMAXException {
 		List<double[]> ret = new ArrayList<>();
 		PlotDataProvider channel1 = input.get(0);
@@ -78,9 +90,9 @@ public class TransCorrelation implements ITransformation {
 		int[] intData1 = new int[0];
 		if (segments1.size() > 0) {
 			long segment_end_time = 0;
-			sampleRate = segments1.get(0).getSampleRate();
+			double firstSampleRate = segments1.get(0).getSampleRate();
 			for (Segment segment : segments1) {
-				if (segment.getSampleRate() != sampleRate) {
+				if (segment.getSampleRate() != firstSampleRate) {
 					throw new XMAXException(
 							"You have data with different sample rate for channel " + channel1.getName());
 				}
@@ -90,6 +102,10 @@ public class TransCorrelation implements ITransformation {
 				}
 				segment_end_time = segment.getEndTime().getTime();
 				intData1 = IstiUtilsMath.padArray(intData1, segment.getData(ti).data);
+			}
+			if (firstSampleRate < sampleRate) {
+				intData1 =
+						TransformationUtils.decimate(intData1, (long) firstSampleRate, (long) sampleRate);
 			}
 
 		} else {
@@ -131,6 +147,11 @@ public class TransCorrelation implements ITransformation {
 					}
 					segment_end_time = segment.getEndTime().getTime();
 					intData2 = IstiUtilsMath.padArray(intData2, segment.getData(ti).data);
+				}
+				if (segments2.get(0).getSampleRate() < sampleRate) {
+					intData2 =
+							TransformationUtils.decimate(intData2,
+									(long) segments2.get(0).getSampleRate(), (long) sampleRate);
 				}
 
 			} else {
