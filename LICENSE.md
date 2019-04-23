@@ -85,3 +85,8 @@ License
 ###### Xerces (including xml-apis)
 	License:		Apache License,	Version 2.0
 	Website:		http://xerces.apache.org/xml-commons/
+
+###### IIRJ 
+	Author: Bernd Porr
+	License: Apache License, Version 2.0
+	Website: https://github.com/berndporr/iirj
