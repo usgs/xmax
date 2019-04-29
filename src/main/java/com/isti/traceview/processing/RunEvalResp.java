@@ -67,7 +67,7 @@ public class RunEvalResp extends RunExt {
 	 *            response reader.
 	 * @return an array of amplitude values.
 	 */
-	public Cmplx[] generateResponse(double minFreqValue, double maxFreqValue, int numberFreqs, Date date, String respReader)
+		public Cmplx[] generateResponse(double minFreqValue, double maxFreqValue, int numberFreqs, Date date, String respReader)
 			throws TraceViewException {
 		Cmplx[] spectra = null;
 		String[] staArr = null;
@@ -131,4 +131,6 @@ public class RunEvalResp extends RunExt {
 		}
 		return spectra;
 	}
+
+
 }
