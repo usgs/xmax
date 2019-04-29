@@ -84,7 +84,7 @@ public class Response {
     this.azimuthMap = azimuthMap;
   }
 
-  public Double getAzimuth(Date date) {
+  public Double getEpochStartAzimuth(Date date) {
     if (azimuthMap == null) {
       return null;
     }
@@ -98,7 +98,7 @@ public class Response {
    * @return Azimuth value for the channel in question if it exists, or null if no azimuth data
    * exists or the date comes before any specified epochs in the parsed metadata
    */
-  public Double getClosestAzimuth(Date date) {
+  public Double getEnclosingEpochAzimuth(Date date) {
     List<Date> epochStartDates = new ArrayList<>(azimuthMap.keySet());
     Collections.sort(epochStartDates);
     int location = Collections.binarySearch(epochStartDates, date);
@@ -112,6 +112,10 @@ public class Response {
       return azimuthMap.get(epochStartDates.get(location));
     }
     return null;
+  }
+
+  public Map<Date, Double> getAzimuthMap() {
+    return azimuthMap;
   }
 
   public String getNetwork() {
@@ -153,8 +157,8 @@ public class Response {
    * @param maxFreqValue maximum requested frequency
    * @param len length of generated response array
    * @return response as array of complex numbers
-   * @throws TraceViewException if thrown in {@link com.isti.traceview.processing.RunEvalResp#generateResponse(double,
-   * double, int, Date, Reader)}
+   * @throws TraceViewException if thrown in {@link
+   * com.isti.traceview.processing.RunEvalResp#generateResponse(double, double, int, Date, String)}
    */
   public Cmplx[] getResp(Date date, double minFreqValue, double maxFreqValue,
       int len) throws TraceViewException {
@@ -197,6 +201,10 @@ public class Response {
     } else {
       return false;
     }
+  }
+
+  public void setAzimuthMap(Map<Date, Double> azimuthMap) {
+    this.azimuthMap = azimuthMap;
   }
 
   /**
