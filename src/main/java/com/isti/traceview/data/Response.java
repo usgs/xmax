@@ -1,15 +1,24 @@
 package com.isti.traceview.data;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.RunEvalResp;
+import edu.iris.dmc.fdsn.station.model.Network;
+import edu.iris.dmc.service.ServiceUtil;
+import edu.iris.dmc.ws.util.RespUtil;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.Date;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
@@ -175,9 +184,7 @@ public class Response {
 			respReader.read(cbuf, 0, len);
 			resp = new Response(network, station, location, channel, new String(cbuf), file.getCanonicalPath());
 		} catch (Exception ex) {
-			StringBuilder message = new StringBuilder();
-			message.append("Could not open file: " + file.getName());
-			logger.error(message.toString(), ex);	
+			logger.error(("Could not open file: " + file.getName()), ex);
 		} finally {
 			try {
 				respReader.close();
@@ -186,6 +193,35 @@ public class Response {
 			}
 		}
 		return resp;
+	}
+
+	/**
+	 * Gets response data from a given FDSN StationXML file. Network, station, location, and channel
+	 * are all specified as paramters rather than extracted from the filename.
+	 * @param network Network code (IU, CU, etc.)
+	 * @param station 4- or 5-letter station code
+	 * @param location Location for the relevant channel (i.e., 00, 10)
+	 * @param channel Channel name (i.e., LH1, BHZ)
+	 * @param xmlFilename Name of stationXML file to parse to get response data from. Ideally
+	 * @return New response object using the data taken from the stationXML
+	 */
+	public static Response getResponseFromXML(String network, String station, String location,
+			String channel, String xmlFilename) {
+		// TODO: probably need to add some sort of call to get an XML folder param from data
+		List<Network> networks;
+		try {
+			networks = ServiceUtil
+					.getInstance().getStationService().load(new FileInputStream(xmlFilename));
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			RespUtil.write(new PrintWriter(output), networks);
+			String respData = new String(output.toByteArray(), US_ASCII);
+			output.close();
+			return new Response(network, station, location, channel, respData, xmlFilename);
+		} catch (IOException ex) {
+			logger.error(("Could not open file: " + xmlFilename), ex);
+		}
+
+		return null;
 	}
 	
 	/**
