@@ -112,6 +112,16 @@ public class Configuration extends Observable {
 	 */
 	private String dataPath = "";
 
+	/**
+	 * Folder in which stationXML files of format NET.STA.LOC.CHA.xml can be found
+	 */
+	private String stationXMLPath = null;
+
+	/**
+	 * True when station XML should be loaded with priority over response files
+	 */
+	private boolean stationXMLPreferred = false;
+
 	private PanelCountUnit panelCountUnit;
 
 	/**
@@ -194,6 +204,14 @@ public class Configuration extends Observable {
 
 	private Set<String> filterLocation = null;
 
+	public void setStationXMLPreferred(boolean preferred) {
+		this.stationXMLPreferred = preferred;
+	}
+
+	public boolean stationXMLPreferred() {
+		return stationXMLPreferred;
+	}
+
 	/**
 	 * Getter of the property <tt>dataPath</tt>
 	 * 
@@ -225,6 +243,18 @@ public class Configuration extends Observable {
 	 */
 	public String getDataTempPath() {
 		return dataTempPath.replace("." + File.separator, getConfigFileDir());
+	}
+
+	public void setStationXMLPath(String stationXMLPath) {
+		this.stationXMLPath = stationXMLPath;
+	}
+
+	public String getStationXMLPath() {
+		if (stationXMLPath == null) {
+			return null;
+		}
+		return stationXMLPath.replace("." + File.separator, getConfigFileDir());
+
 	}
 
 	/**

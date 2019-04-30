@@ -129,7 +129,17 @@ public class Rotation {
     * @param numberOfChannels The total number of channels that are ultimately rotated (2 for horizontal, 3 for standard)
     */
    public Rotation(JFrame frame, int numberOfChannels) {
-     RotationDialog dialog = new RotationDialog(frame, numberOfChannels);
+     this(frame, numberOfChannels, 0.);
+   }
+
+  /**
+   * Constructor with visual query dialog to describe rotation
+   * @param frame JFrame for rotation menu prompt
+   * @param numberOfChannels The total number of channels that are ultimately rotated (2 for horizontal, 3 for standard)
+   * @param rotationInitialization Value to set initial rotation angle to for horizontal data
+   */
+   public Rotation(JFrame frame, int numberOfChannels, double rotationInitialization) {
+     RotationDialog dialog = new RotationDialog(frame, numberOfChannels, rotationInitialization);
      type = dialog.type;
      if(type==null){
        dialog.dispose();
@@ -615,11 +625,11 @@ public class Rotation {
      private JLabel standardRotationL;
      private int numberOfChannels; //used to determine what rotation types you can perform based on the number of channels selected
 
-     public RotationDialog(JFrame frame, int numberOfChannels) {
+     public RotationDialog(JFrame frame, int numberOfChannels, double initialAngle) {
        super(frame, "Rotation options", true);
        this.frame = frame;
        this.numberOfChannels = numberOfChannels;
-       this.horizontalAng = 0.0;
+       this.horizontalAng = initialAngle;
        Object[] options = { "OK", "Close" };
        if(numberOfChannels == 2)
          type = RotationType.HORIZONTAL;
@@ -811,6 +821,7 @@ public class Rotation {
          horizontalAngField = new JTextField();
          horizontalAngField.setSize(80, 22);
          horizontalAngField.setPreferredSize(new java.awt.Dimension(80, 22));
+         horizontalAngField.setText("" + horizontalAng);
        }
        return horizontalAngField;
      }

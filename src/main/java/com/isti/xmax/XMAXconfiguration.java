@@ -89,6 +89,10 @@ public class XMAXconfiguration extends Configuration {
 		ti = null;
 		try {
 			setUseTempData(false);
+
+			setStationXMLPath(config.getString("Configuration.Data.XMLPath", null));
+
+			setStationXMLPreferred(config.getBoolean("Configuration.Data.StationXMLPreferred", false));
 			setLogFile(config.getString("Configuration.LogFile", "XMAX.log"));
 			setPanelCountUnit(PanelCountUnit.values()[config.getInt("Configuration.PanelCountUnit", 0)]);
 			setUnitsInFrame(config.getInt("Configuration.UnitsInFrame", 1));

@@ -6,6 +6,7 @@ import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.IColorModeState;
+import com.isti.xmax.XMAXconfiguration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -798,6 +799,28 @@ public class DataModule extends Observable {
    */
   public Response getResponse(String network, String station, String location, String channel) {
     Response resp = new Response(network, station, location, channel, null, null);
+
+    if (TraceView.getConfiguration() != null) {
+      Configuration config = TraceView.getConfiguration();
+      if (config.stationXMLPreferred()) {
+        logger.info("Attempting to get XML metadata based on user preferences.");
+        if (config.getStationXMLPath() != null) {
+          String xmlFilename = network + "." + station + "." + location + "." + channel + ".xml";
+          logger.info("Attempting to read response from file: " + xmlFilename);
+          resp = Response.getResponseFromXML(network, station, location, channel, xmlFilename);
+          if (resp != null) {
+            return resp;
+          }
+        }
+
+        logger.info("Attempting to download response data from FDSN web services.");
+        resp = Response.getResponseFromWeb(network, station, location, channel);
+        if (resp != null) {
+          return resp;
+        }
+
+      }
+    }
 
     // try to load from files
     try {
