@@ -36,7 +36,9 @@
 			<EventFileMask>resources/*.ndk</EventFileMask>
 			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
 			<ResponsePath>./resources/Responses/</ResponsePath>
+			<!--XMLPath>./resources/StationXML</XMLPath-->
 			<AllowMultiplexedData>true</AllowMultiplexedData>
+			<StationXMLPreferred>true</StationXMLPreferred>
 
 			<!-- Picks directory. Recovers by -p option -->
 			<PickPath>resources/Picks</PickPath>
