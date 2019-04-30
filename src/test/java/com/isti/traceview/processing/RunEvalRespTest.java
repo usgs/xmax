@@ -13,6 +13,8 @@ import org.junit.Test;
 
 public class RunEvalRespTest {
 
+  private static final String XML_SERVICE = "https://service.iris.edu/fdsnws/station/1/query";
+
   @Test
   public void testLoadStationXMLToRespValues() throws TraceViewException {
     String folderName = "src/test/resources/";
@@ -36,7 +38,7 @@ public class RunEvalRespTest {
     String respFilename = folderName + "RESP.IU.ANMO.00.LH1";
     LocalDate localDate = LocalDate.of(2014, 12, 18);
 
-    Response respXML = Response.getResponseFromWeb("IU", "ANMO", "00","LH1");
+    Response respXML = Response.getResponseFromWeb("IU", "ANMO", "00","LH1", XML_SERVICE);
     Response respExpected = Response.getResponse(new File(respFilename));
     Date date = java.sql.Date.valueOf(localDate);
     double[] testRespAmp = respXML.getRespAmp(date,0,100, 100);
