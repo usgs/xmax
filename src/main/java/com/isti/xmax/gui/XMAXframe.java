@@ -78,6 +78,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -2487,8 +2488,20 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					if (pdpsToRotate.size() == 2) {
 						if (Rotation.isComplementaryChannel(pdpsToRotate.get(0), pdpsToRotate.get(1))) {
 							rotatedChannelsList.addAll(pdpsToRotate);
+							PlotDataProvider pdp = pdpsToRotate.get(0);
+							Date timeToGetAzimuth = pdp.getTimeRange().getStartTime();
+							double initialRotation = 0.;
+							try {
+								Double azi =
+										pdpsToRotate.get(0).getResponse().getEnclosingEpochAzimuth(timeToGetAzimuth);
+								if (azi != null) {
+									initialRotation = azi;
+								}
+							} catch (TraceViewException e1) {
+								logger.warn("Error getting azimuth for selected data: ", e1);
+							}
 							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel,
-									new Rotation(XMAX.getFrame(), 2));
+									new Rotation(XMAX.getFrame(), 2, initialRotation));
 							// Create ExecuteCommand obj for executing Runnable
 							ExecuteCommand executor = new ExecuteCommand(rotateTask);
 							executor.initialize();

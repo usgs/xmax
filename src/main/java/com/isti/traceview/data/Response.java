@@ -14,10 +14,15 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -281,10 +286,22 @@ public class Response {
   public static Response getResponseFromXML(String network, String station, String location,
       String channel, String xmlFilename) {
     // TODO: probably need to add some sort of call to get an XML folder param from data
+    try {
+      FileInputStream fileInputStream = new FileInputStream(xmlFilename);
+      return getResponseFromXML(network, station, location, channel, fileInputStream);
+    } catch (FileNotFoundException e) {
+      logger.error("FileNotFoundException:", e);
+    }
+    return null;
+  }
+
+  private static Response getResponseFromXML(String network, String station, String location,
+      String channel, InputStream inputStream) {
+    String snclString = network + "." + station + "." + location + "." + channel + ".xml";
     List<edu.iris.dmc.fdsn.station.model.Channel> foundChannels = new ArrayList<>();
     try {
       List<Network> networks = ServiceUtil
-          .getInstance().getStationService().load(new FileInputStream(xmlFilename));
+          .getInstance().getStationService().load(inputStream);
       for (Network foundNetwork : networks) {
         if (foundNetwork.getCode().equals(network)) {
           for (Station foundStation : foundNetwork.getStations()) {
@@ -312,9 +329,29 @@ public class Response {
       }
       String respData = new String(output.toByteArray(), US_ASCII);
       output.close();
-      return new Response(network, station, location, channel, respData, xmlFilename, azimuthMap);
+      return new Response(network, station, location, channel, respData, snclString, azimuthMap);
     } catch (IOException ex) {
-      logger.error(("Could not open file: " + xmlFilename), ex);
+      logger.error(("Could not load data from stream: " + snclString), ex);
+    }
+
+    return null;
+  }
+
+  public static Response getResponseFromWeb(String network, String station, String location,
+      String channel) {
+    String snclString = network + "." + station + "." + location + "." + channel;
+    List<edu.iris.dmc.fdsn.station.model.Channel> foundChannels = new ArrayList<>();
+    String webServicesURL = "https://service.iris.edu/fdsnws/station/1/query?net=" +
+        network + "&sta=" + station + "&loc=" + location + "&cha=" + channel +
+        "&level=response&format=xml&includecomments=true&nodata=404";
+    try {
+      URL xmlWeb = new URL(webServicesURL);
+      URLConnection xmlGrabber = xmlWeb.openConnection();
+      return getResponseFromXML(network, station, location, channel, xmlGrabber.getInputStream());
+    } catch (MalformedURLException e) {
+      logger.error("Problem with constructing URL for " + snclString + ": ", e);
+    } catch (IOException e) {
+      logger.error("Problem with accessing FDSN web services for " + snclString + ": ", e);
     }
 
     return null;
