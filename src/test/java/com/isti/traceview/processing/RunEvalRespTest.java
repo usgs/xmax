@@ -31,6 +31,22 @@ public class RunEvalRespTest {
   }
 
   @Test
+  public void testLoadStationXMLToRespValuesOnline() throws TraceViewException {
+    String folderName = "src/test/resources/";
+    String respFilename = folderName + "RESP.IU.ANMO.00.LH1";
+    LocalDate localDate = LocalDate.of(2014, 12, 18);
+
+    Response respXML = Response.getResponseFromWeb("IU", "ANMO", "00","LH1");
+    Response respExpected = Response.getResponse(new File(respFilename));
+    Date date = java.sql.Date.valueOf(localDate);
+    double[] testRespAmp = respXML.getRespAmp(date,0,100, 100);
+    double[] expectRespAmp = respExpected.getRespAmp(date,0,100, 100);
+
+    int exponent = (int) Math.log10(expectRespAmp[1]);
+    assertArrayEquals(expectRespAmp, testRespAmp, 1E-5 * Math.pow(10, exponent));
+  }
+
+  @Test
   public void testLoadStationXMLAzimuthEpochs() {
     String folderName = "src/test/resources/";
     String xmlFilename = folderName + "IU.ANMO.00.LH1.xml";
