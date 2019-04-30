@@ -37,6 +37,7 @@
 			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
 			<ResponsePath>./resources/Responses/</ResponsePath>
 			<!--XMLPath>./resources/StationXML</XMLPath-->
+			<!--XMLWebURL>https://service.iris.edu/fdsnws/station/1/query</XMLWebURL-->
 			<AllowMultiplexedData>true</AllowMultiplexedData>
 			<StationXMLPreferred>true</StationXMLPreferred>
 

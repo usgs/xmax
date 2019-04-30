@@ -338,12 +338,12 @@ public class Response {
   }
 
   public static Response getResponseFromWeb(String network, String station, String location,
-      String channel) {
+      String channel, String queryURL) {
     String snclString = network + "." + station + "." + location + "." + channel;
     List<edu.iris.dmc.fdsn.station.model.Channel> foundChannels = new ArrayList<>();
-    String webServicesURL = "https://service.iris.edu/fdsnws/station/1/query?net=" +
+    String webServicesURL = queryURL + "?net=" +
         network + "&sta=" + station + "&loc=" + location + "&cha=" + channel +
-        "&level=response&format=xml&includecomments=true&nodata=404";
+        "&level=response&format=xml&includecomments=false&nodata=404";
     try {
       URL xmlWeb = new URL(webServicesURL);
       URLConnection xmlGrabber = xmlWeb.openConnection();

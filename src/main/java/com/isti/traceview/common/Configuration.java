@@ -116,6 +116,7 @@ public class Configuration extends Observable {
 	 * Folder in which stationXML files of format NET.STA.LOC.CHA.xml can be found
 	 */
 	private String stationXMLPath = null;
+	private String stationXMLWebPath = "https://service.iris.edu/fdsnws/station/1/query";
 
 	/**
 	 * True when station XML should be loaded with priority over response files
@@ -265,6 +266,14 @@ public class Configuration extends Observable {
 	 */
 	public void setDataTempPath(String dataTempPath) {
 		this.dataTempPath = dataTempPath;
+	}
+
+	public void setStationXMLWebPath(String xmlServerURL) {
+		this.stationXMLWebPath = xmlServerURL;
+	}
+
+	public String getStationXMLWebPath() {
+		return stationXMLWebPath;
 	}
 
 	/**
