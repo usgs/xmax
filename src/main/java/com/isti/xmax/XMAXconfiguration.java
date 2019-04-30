@@ -91,6 +91,10 @@ public class XMAXconfiguration extends Configuration {
 			setUseTempData(false);
 
 			setStationXMLPath(config.getString("Configuration.Data.XMLPath", null));
+			String xmlServerURL = config.getString("Configuration.Data.XMLWebURL");
+			if (xmlServerURL != null) {
+				setStationXMLWebPath(xmlServerURL);
+			}
 
 			setStationXMLPreferred(config.getBoolean("Configuration.Data.StationXMLPreferred", false));
 			setLogFile(config.getString("Configuration.LogFile", "XMAX.log"));

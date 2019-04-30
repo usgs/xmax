@@ -798,12 +798,14 @@ public class DataModule extends Observable {
    * @return response class
    */
   public Response getResponse(String network, String station, String location, String channel) {
-    Response resp = new Response(network, station, location, channel, null, null);
+    Response resp;
 
     if (TraceView.getConfiguration() != null) {
       Configuration config = TraceView.getConfiguration();
       if (config.stationXMLPreferred()) {
         logger.info("Attempting to get XML metadata based on user preferences.");
+
+        // default to local copy to allow user to override data based on preferences
         if (config.getStationXMLPath() != null) {
           String xmlFilename = network + "." + station + "." + location + "." + channel + ".xml";
           logger.info("Attempting to read response from file: " + xmlFilename);
@@ -813,8 +815,9 @@ public class DataModule extends Observable {
           }
         }
 
-        logger.info("Attempting to download response data from FDSN web services.");
-        resp = Response.getResponseFromWeb(network, station, location, channel);
+        logger.info("Attempting to download response data from web services.");
+        String xmlURL = config.getStationXMLWebPath(); // should be non-null
+        resp = Response.getResponseFromWeb(network, station, location, channel, xmlURL);
         if (resp != null) {
           return resp;
         }
