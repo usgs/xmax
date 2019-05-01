@@ -488,7 +488,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     chart.setTitle(title);
     XYPlot plot = chart.getXYPlot();
     NumberAxis domainAxis = new LogarithmicAxis("Period, s");
-    domainAxis.setRange(new Range(0.01, 1000.0));
+    domainAxis.setRange(new Range(0.01, 10000.0));
     plot.setDomainAxis(domainAxis);
     NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
     rangeAxis.setAutoRange(true);
