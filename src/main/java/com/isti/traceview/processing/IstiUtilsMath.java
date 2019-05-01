@@ -6,8 +6,16 @@ import com.isti.traceview.data.Response;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.Logger;
+import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -464,48 +472,127 @@ public class IstiUtilsMath {
 	 * nx > 1024: For first 90% of pts., use nave=.01*nx. From there to end of
 	 * plot, use nave = 9 pts. If nx <= 1024: then nave=3.
 	 */
+
+	/**
+	 * Perform fractional-octave (variable length smoothing) over a series of data, used for plotting
+	 * PSDs, etc. A moving-average value is cached along with the points in range in order to speed
+	 * up the calculation of this data; the cached values are centered at the point of interest and
+	 * data is loaded in and out based on whether it fits within the octave range.
+	 * The fraction of the octave used to smooth is 1/{@value #SMOOTHING_FACTOR}.
+	 * @param toSmooth Collection of plottable series to get smoothed data from
+	 * @return Smoothed version of the data using 1/xth octave where x is {@value #SMOOTHING_FACTOR}
+	 */
 	public static XYSeriesCollection varismooth(XYSeriesCollection toSmooth) {
 		XYSeriesCollection ret = new XYSeriesCollection();
 
 		for (int i = 0; i < toSmooth.getSeriesCount(); i++) {
-			XYSeries toSmoothSeries = toSmooth.getSeries(i);
-			XYSeries smoothed = new XYSeries(toSmooth.getSeriesKey(i) + " (smoothed)");
 
-			// since x-axis is period, invert max/min period to get freq. range
-			double freqDiff = (1./toSmoothSeries.getMaxX() - 1./toSmoothSeries.getMinX()) /
-					toSmoothSeries.getItemCount(); // frequency range / num. points = delta of frequency
+			// hold the values over which we are doing the moving average, to remove when out of range
+			List<XYDataItem> cachedPoints = new ArrayList<>();
+
+			XYSeries toSmoothSeries = toSmooth.getSeries(i);
+			XYSeries smoothedSeries = new XYSeries(toSmooth.getSeriesKey(i) + " (smoothed)");
+
+			// get the first point in the series to seed the array
+			cachedPoints.add(toSmoothSeries.getDataItem(0));
+			// add the first point's value into the running total as well
+			BigDecimal windowedRunningTotal =
+					new BigDecimal(toSmoothSeries.getDataItem(0).getYValue());
+			int currentPointIndexInQueue = 0; // current point is center value -- where in queue it is
+			int nextPointToLoad = 1; // this lets us know how many points to add to list at any step
+
+			// xyseries are by default sorted according to x-axis; this is almost certainly negative
+			// but we handle this just in case the defaults ever get overridden somehow
+			double deltaFreq = 1. / toSmoothSeries.getDataItem(1).getXValue() -
+					1. / toSmoothSeries.getDataItem(0).getXValue();
 
 			for (int j = 0; j < toSmoothSeries.getItemCount(); j++) {
 
+				while (currentPointIndexInQueue >= cachedPoints.size()) {
+					XYDataItem anotherPoint = toSmoothSeries.getDataItem(nextPointToLoad);
+					cachedPoints.add(anotherPoint);
+					windowedRunningTotal = windowedRunningTotal.add(new BigDecimal(anotherPoint.getYValue()));
+					++nextPointToLoad;
+				}
+
 				// x-axis is typically period, so invert to get actual frequency
 				// this is the frequency associated with the PSD value under analysis currently
-				double sampleFreq = 1. / (double) toSmoothSeries.getX(j);
+				double sampleFreq = 1./toSmoothSeries.getDataItem(j).getXValue();
 
 				// use a sampling range of 1/4 of the octave at the frequency in question
 				// which means half of that -- smoothing *radius* -- is 1/8
-				double freqOffset = sampleFreq * Math.pow(2., 1./SMOOTHING_FACTOR);
-				// System.out.println(sampleFreq + ", " + freqOffset);
-				int radius = (int) Math.abs((freqOffset - sampleFreq) / (freqDiff));
-				smoothed.add(toSmoothSeries.getX(j), getMovingAverage(toSmoothSeries, j, radius));
-			}
-			ret.addSeries(smoothed);
-		}
-		return ret;
-	}
+				double freqLowerBound = sampleFreq / Math.pow(2., 1./SMOOTHING_FACTOR);
+				double freqUpperBound = sampleFreq * Math.pow(2., 1./SMOOTHING_FACTOR);
 
-	private static double getMovingAverage(XYSeries series, int center, int radius) {
-		double ret = 0.0;
-		int internalRadius = radius;
-		if (center < radius) {
-			internalRadius = center;
+				// pop off any points in the list lower than the bounding frequency we calculated
+				while (cachedPoints.size() > 0) {
+					double peekFreq = 1. / cachedPoints.get(0).getXValue();
+					// control if points are bound by cutoff based on ordering determined above
+					if (deltaFreq > 0 && peekFreq > freqLowerBound) {
+						break;
+					} else if (deltaFreq < 0 && peekFreq < freqUpperBound) {
+						break;
+					}
+					// remove item at front of queue, subtract its value from the running total
+					XYDataItem removed = cachedPoints.remove(0);
+					windowedRunningTotal =
+							windowedRunningTotal.subtract(new BigDecimal(removed.getYValue()));
+					--currentPointIndexInQueue; // removing that point shifts all points to the left
+				}
+
+				// now remove more points if the current point is past the center of the data
+				if (nextPointToLoad >= toSmoothSeries.getItemCount()) {
+					// note that because we sample an equal num. of points on either side of data
+					// that the center of the data should be the location of the current point
+					// if length of data is 5, midpoint is 2 (indices start at 0) -- 2 = (5-1)/2
+					int midpoint = ((cachedPoints.size() - 1) / 2);
+					int pointsToTrim = currentPointIndexInQueue - midpoint;
+					for (int k = 0; k < pointsToTrim; ++k) {
+						// remove item at front of queue, subtract value from the running total
+						XYDataItem removed = cachedPoints.remove(0);
+						windowedRunningTotal =
+								windowedRunningTotal.subtract(new BigDecimal(removed.getYValue()));
+						--currentPointIndexInQueue; // everything is shifted over by 1
+					}
+				} else {
+					// sampling radius is twice len. of cached data left of current point, plus that point
+					// if current index is 2, expected length is 5 -- 5 = 2*2+1
+					// again, recall that indices start at 0, so this is THIRD entry in list
+					int expectedLength = (currentPointIndexInQueue * 2) - 1;
+					while (cachedPoints.size() < expectedLength &&
+							nextPointToLoad < toSmoothSeries.getItemCount()) {
+						XYDataItem itemToAdd = toSmoothSeries.getDataItem(nextPointToLoad);
+						windowedRunningTotal = windowedRunningTotal.add(new BigDecimal(itemToAdd.getYValue()));
+						cachedPoints.add(itemToAdd);
+						++nextPointToLoad;
+					}
+				}
+
+				// now it's possible that we have reached the end of the list in the above iteration
+				// where we still had points to add. If so, one more double check that the point of
+				// interest is actually at the center of the data
+				if (nextPointToLoad >= toSmoothSeries.getItemCount()) {
+					int midpoint = ((cachedPoints.size() - 1) / 2);
+					int pointsToTrim = currentPointIndexInQueue - midpoint;
+					for (int k = 0; k < pointsToTrim; ++k) {
+						// remove item at front of queue, subtract value from the running total
+						XYDataItem removed = cachedPoints.remove(0);
+						windowedRunningTotal =
+								windowedRunningTotal.subtract(new BigDecimal(removed.getYValue()));
+						--currentPointIndexInQueue; // everything is shifted over by 1
+					}
+				}
+
+				// and at long last we can actually do the number crunching we hoped for
+				smoothedSeries.add(toSmoothSeries.getX(j),
+						windowedRunningTotal.doubleValue() / cachedPoints.size());
+
+				++currentPointIndexInQueue; // next point in list is one past the current point
+			}
+			ret.addSeries(smoothedSeries);
 		}
-		if ((series.getItemCount() - center - 1) < internalRadius) {
-			internalRadius = series.getItemCount() - center - 1;
-		}
-		for (int pos = center - internalRadius; pos <= center + internalRadius; pos++) {
-			ret = ret + (series.getY(pos)).doubleValue();
-		}
-		return ret / (2 * internalRadius + 1);
+
+		return ret;
 	}
 
 	static public int[] padArray(int[] original, int[] toAdd) {
