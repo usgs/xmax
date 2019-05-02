@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -696,10 +697,11 @@ public class DataModule extends Observable {
       String location, String channel) throws TraceViewException {
     List<String> respFiles = new ArrayList<>();
 
-    // these are the locations we intend to search -- first, where the config is,
-    // then the current working directory, then the response path defined in the config
-    String[] pathsToSearch = new String[]{TraceView.getConfiguration().getConfigFileDir(),
-        "./", TraceView.getConfiguration().getResponsePath()};
+    // these are the locations we intend to search -- first, the response path defined in config,
+    // then the current working directory, then where the config is
+    String[] pathsToSearch = new String[]{TraceView.getConfiguration().getResponsePath(),
+        Paths.get(".").toAbsolutePath().toString(),
+        TraceView.getConfiguration().getConfigFileDir()};
 
     for (String path : pathsToSearch) {
       addRespFiles(path, network, station, location, channel, respFiles);
