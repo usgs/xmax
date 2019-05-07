@@ -7,7 +7,6 @@ import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
-import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import java.util.ArrayList;
@@ -181,14 +180,22 @@ public class TransPPM implements ITransformation {
 		return dataset;
 	}
 
+	/**
+	 * Calculates regression on event particle motion to get slope and then uses arctan to
+	 * calculate the actual slope angle as back azimuth value (i.e., either the azimuth value
+	 * or out by 180 degrees) which is then set to the correct quadrant based on input signs.
+	 * @param north Data from sensor in north-facing direction
+	 * @param east Data from sensor in east-facing direction
+	 * @return Estimated azimuth of the sensor based on the inputs's slope and phasing
+	 */
 	static double estimateBackAzimuth (int[] north, int[] east) {
-		// we don'fintt care a but the intercept, only the slope
+		// we don't care about the intercept, only the slope
 		SimpleRegression slopeCalculation = new SimpleRegression(false);
 		for (int i = 0; i < north.length; ++i) {
 			slopeCalculation.addData(east[i], north[i]);
 		}
 		double backAzimuth = Math.atan(1. / slopeCalculation.getSlope());
-		backAzimuth = 360 + Math.toDegrees(backAzimuth);
+		backAzimuth = Math.toDegrees(backAzimuth);
 
 		// get a data point out from start to see if the inputs are in phase or not
 		// we assume that a single point near the end of the window will be all we need
@@ -200,23 +207,32 @@ public class TransPPM implements ITransformation {
 		return correctBackAzimuthQuadrant(backAzimuth, signumN, signumE);
 	}
 
+	/**
+	 * Correct the back azimuth quadrant based on whether the phase of north and east data matches
+	 * Note that data can still be out by 180 degrees and "correct" due to how slope works, which
+	 * would depend on vertical data not used in these calculations.
+	 * @param azimuth Estimated back azimuth value calculated from particle motion slope best-fit
+	 * @param signumN North data sign value
+	 * @param signumE East data sign value
+	 * @return Angle corrected to the proper quadrants based on whether signs match or not
+	 */
 	static double correctBackAzimuthQuadrant(double azimuth, int signumN, int signumE) {
-		double correctedAzimuth = ((azimuth % 360) + 360) % 360;
 		double minValue = 0;
 		double maxValue = 90;
 		// due to how cursor works, fit angle is in either both quadrants 1 and 3 or 2 and 4
 		// so we'll focus range of resulting angle to be between 0 and 180 (q. 1 vs. q. 2)
+		// The quadrant pair chosen depends on whether or not the data has the same sign or not
 		if (signumN != signumE) {
 				minValue = 90;
 				maxValue = 180;
 		}
-		while (correctedAzimuth < minValue) {
-			correctedAzimuth += 90;
+		while (azimuth < minValue) {
+			azimuth += 90;
 		}
-		while (correctedAzimuth > maxValue) {
-			correctedAzimuth -= 90;
+		while (azimuth > maxValue) {
+			azimuth -= 90;
 		}
-		return correctedAzimuth % 360;
+		return azimuth;
 	}
 
 	private class ArrayValues {
