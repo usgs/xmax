@@ -47,14 +47,33 @@ public class TransPPMTest {
 
     TransPPM ppm = new TransPPM();
     int[][] data = ppm.createDataset(pdpList, null, ti);
-    double bAzimuth = ppm.estimateBackAzimuth(data[0], data[1]);
-
-    while (bAzimuth >= 180) {
-      bAzimuth = bAzimuth-180;
-    }
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
 
     assertEquals(73.1489, bAzimuth, 1E-3);
 
+  }
+
+  @Test
+  public void testBackAzimCorrectQuadrant() throws XMAXException {
+    DataModule dm = TraceView.getDataModule();
+
+    List<PlotDataProvider> pdpList = dm.getAllChannels();
+
+    String startTimeString = "2019.108.14:51Z";
+    String endTimeString = "2019.108.14:52Z";
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy.DDD.HH:mmX").withZone(ZoneOffset.UTC);
+    long startTime = ZonedDateTime.parse(startTimeString, dtf).toInstant().toEpochMilli();
+    long endTime = ZonedDateTime.parse(endTimeString, dtf).toInstant().toEpochMilli();
+    TimeInterval ti = new TimeInterval(startTime, endTime);
+
+    TransPPM ppm = new TransPPM();
+    int[][] data = ppm.createDataset(pdpList, null, ti);
+    for (int i = 0; i < data[0].length; ++i) {
+      data[0][i] *= -1.;
+    }
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+
+    assertEquals(180 - 73.1489, bAzimuth, 1E-3);
   }
 
 }
