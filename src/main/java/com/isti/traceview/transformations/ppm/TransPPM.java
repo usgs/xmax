@@ -181,7 +181,7 @@ public class TransPPM implements ITransformation {
 		return dataset;
 	}
 
-	double estimateBackAzimuth (int[] north, int[] east) {
+	static double estimateBackAzimuth (int[] north, int[] east) {
 		// we don'fintt care a but the intercept, only the slope
 		SimpleRegression slopeCalculation = new SimpleRegression(false);
 		for (int i = 0; i < north.length; ++i) {
@@ -190,7 +190,33 @@ public class TransPPM implements ITransformation {
 		double backAzimuth = Math.atan(1. / slopeCalculation.getSlope());
 		backAzimuth = 360 + Math.toDegrees(backAzimuth);
 
-		return backAzimuth;
+		// get a data point out from start to see if the inputs are in phase or not
+		// we assume that a single point near the end of the window will be all we need
+		int signumIndex = north.length - 19;
+
+		int signumN = (int) Math.signum(north[signumIndex]);
+		int signumE = (int) Math.signum(east[signumIndex]);
+
+		return correctBackAzimuthQuadrant(backAzimuth, signumN, signumE);
+	}
+
+	static double correctBackAzimuthQuadrant(double azimuth, int signumN, int signumE) {
+		double correctedAzimuth = ((azimuth % 360) + 360) % 360;
+		double minValue = 0;
+		double maxValue = 90;
+		// due to how cursor works, fit angle is in either both quadrants 1 and 3 or 2 and 4
+		// so we'll focus range of resulting angle to be between 0 and 180 (q. 1 vs. q. 2)
+		if (signumN != signumE) {
+				minValue = 90;
+				maxValue = 180;
+		}
+		while (correctedAzimuth < minValue) {
+			correctedAzimuth += 90;
+		}
+		while (correctedAzimuth > maxValue) {
+			correctedAzimuth -= 90;
+		}
+		return correctedAzimuth % 360;
 	}
 
 	private class ArrayValues {
