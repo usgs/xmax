@@ -697,10 +697,11 @@ public class DataModule extends Observable {
       String location, String channel) throws TraceViewException {
     List<String> respFiles = new ArrayList<>();
 
-    // these are the locations we intend to search -- first, the response path defined in config,
-    // then the current working directory, then where the config is
-    String[] pathsToSearch = new String[]{TraceView.getConfiguration().getResponsePath(),
+    // these are the locations we intend to search -- first, the current working directory,
+    // then the response path defined in config, then where the config is
+    String[] pathsToSearch = new String[]{
         Paths.get(".").toAbsolutePath().toString(),
+        TraceView.getConfiguration().getResponsePath(),
         TraceView.getConfiguration().getConfigFileDir()};
 
     for (String path : pathsToSearch) {
