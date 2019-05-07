@@ -65,6 +65,7 @@ public class Response {
     this.channel = channel;
     this.content = content;
     this.fileName = fileName;
+    this.azimuthMap = new HashMap<>();
   }
 
   /**
