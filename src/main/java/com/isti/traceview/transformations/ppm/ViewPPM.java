@@ -48,11 +48,13 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 
 		// add back azimuth estimation, include ruler
 		double bAzimuth = estimatedBackAzimuth;
-		while (bAzimuth >= 180) {
-			bAzimuth = bAzimuth-180;
-		}
 		renderer.setRulerAngle(bAzimuth);
-		TextTitle subTitle = new TextTitle("Back Azimuth Est.: " + bAzimuth + "\u00b0", ret.getFont());
+		double bAzimuthAlt = 180 + estimatedBackAzimuth;
+
+
+		TextTitle subTitle =
+				new TextTitle("Back Azimuth Est.: " + bAzimuth + "\u00b0/" +
+						bAzimuthAlt + "\u00b0", ret.getFont());
 		cp.getChart().addSubtitle(1, subTitle);
 
 		// Make this dialog display it.
