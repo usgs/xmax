@@ -106,6 +106,7 @@ public class DataModule extends Observable {
       addDataSource(fileParser);
       Set<PlotDataProvider> dataSet = fileParser.parse();
       for (PlotDataProvider channel : dataSet) {
+        logger.info("Merging in data from " + channel.getName());
         String station = channel.getStation().getName();
         getOrAddStation(station);
         // merge in the new data into any channel that may already exist
