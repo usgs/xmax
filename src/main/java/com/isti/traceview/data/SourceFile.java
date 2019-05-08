@@ -24,6 +24,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -121,7 +123,10 @@ public abstract class SourceFile implements ISource {
 		 */
 		public ISource call() {
 			ISource datafile = null;
-			if (isIMS(file)) {
+			if (isASCII(file)) {
+				datafile = new SourceFileASCII(file);
+				logger.debug("ASCII data file added: " + file.getAbsolutePath());
+			} else if (isIMS(file)) {
 				datafile = new SourceFileIMS(file);
 				logger.debug("IMS data file added: " + file.getAbsolutePath());
 			} else if (isMSEED(file)) {
@@ -136,7 +141,7 @@ public abstract class SourceFile implements ISource {
 			} else if (isSEGD(file)) {
 				datafile = new SourceFileSEGD(file);
 				logger.debug("SEGD data file added: " + file.getAbsolutePath());
-			}/* else if (isSEED(file)) {
+			} /* else if (isSEED(file)) {
 				datafile = new SourceFileSEGD(file);
 				logger.debug("SEED data file added: " + file.getAbsolutePath());
 			}*/ else {
@@ -499,6 +504,36 @@ public abstract class SourceFile implements ISource {
 			}
 		}
 		return false;
+	}
+
+	public static boolean isASCII(File file) {
+		BufferedReader input = null;
+		try {
+			input = new BufferedReader(new FileReader(file));
+			String line;
+			// ASCII file header includes NET, STA, LOC, COMP, RATE, TIME, NSAM, DATA
+			Set<String> lineStarts = new HashSet<>(
+					Arrays.asList("NET ", "STA ", "LOC ", "COMP", "RATE", "TIME", "NSAM", "DATA"));
+			for (int i = 0; i < 8; i++) {
+				line = input.readLine().toUpperCase();
+				String substring = line.substring(0, 4);
+				if (lineStarts.contains(substring)) {
+					lineStarts.remove(substring);
+				} else {
+					return false;
+				}
+			}
+		} catch (IOException e) {
+			logger.debug(String.format("== CheckData: [file:%s] Exception:\n", file.getName()), e);
+			return false;
+		} finally {
+			try{
+				input.close();
+			} catch (IOException ex){
+				logger.debug("IOException:", ex);
+			}
+		}
+		return true;
 	}
 	
 	public String getBlockHeaderText(long blockStartOffset){
