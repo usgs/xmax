@@ -34,7 +34,7 @@ public class TransPSDTest {
     TraceView.getConfiguration().setDataPath(mask);
     TraceView.getConfiguration().setResponsePath(resp);
     TraceView.setDataModule(new DataModule());
-    TraceView.getDataModule().loadNewDataFromSources();
+    TraceView.getDataModule().loadAndParseDataForTesting();
 
   }
 

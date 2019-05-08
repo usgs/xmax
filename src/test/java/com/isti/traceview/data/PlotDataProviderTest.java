@@ -37,7 +37,7 @@ public class PlotDataProviderTest {
     assertTrue(fileWithGaps.getAbsolutePath(), fileWithGaps.getAbsoluteFile().exists());
 
     DataModule dm = new DataModule();
-    dm.loadNewDataFromSources(fileWithGaps);
+    dm.loadAndParseDataForTesting(fileWithGaps);
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     List<Segment> segments = dataProvider.getRawData();
@@ -58,7 +58,7 @@ public class PlotDataProviderTest {
     assertTrue(fileWithGaps.getAbsolutePath(), fileWithGaps.getAbsoluteFile().exists());
 
     DataModule dm = new DataModule();
-    dm.loadNewDataFromSources(fileWithGaps);
+    dm.loadAndParseDataForTesting(fileWithGaps);
 
     PlotDataProvider dataProvider = dm.getAllChannels().get(0);
     dataProvider.load();

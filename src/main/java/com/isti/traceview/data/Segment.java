@@ -441,6 +441,7 @@ public class Segment implements Externalizable, Cloneable {
 	 */
 	public void load() {
 		dataSource.load(this);
+		setIsLoaded(true);
 	}
 
 	/**
