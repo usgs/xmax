@@ -395,15 +395,10 @@ public class RawDataProvider extends Channel {
    * @param ti The TimeInterval to load
    */
   private void loadData(TimeInterval ti) {
-    for (SegmentCache sc : rawData) {
-      Segment seg = sc.getSegment();
-      if (!seg.getIsLoaded()) {
-        seg.load();
-        seg.setIsLoaded(true);
-      } else {
-        logger.debug("== RDP.loadData(): Segment is ALREADY loaded:" + seg.toString());
-      }
-    }
+
+    rawData.stream()
+        .filter(e -> !e.getSegment().getIsLoaded())
+        .forEach(e -> e.getSegment().load());
   }
 
   /**

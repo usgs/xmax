@@ -72,10 +72,10 @@ public class RawDataProviderTest {
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
 
-    dm.loadNewDataFromSources(fileToModify);
+    dm.loadAndParseDataForTesting(fileToModify);
 
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
-    dm.loadNewDataFromSources(fileToModify);
+    dm.loadAndParseDataForTesting(fileToModify);
     // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
@@ -97,10 +97,10 @@ public class RawDataProviderTest {
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
 
-    dm.loadNewDataFromSources(fileToModify);
+    dm.loadAndParseDataForTesting(fileToModify);
 
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
-    dm.loadNewDataFromSources(fileToModify);
+    dm.loadAndParseDataForTesting(fileToModify);
     // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
@@ -129,7 +129,7 @@ public class RawDataProviderTest {
       data.dumpMseed(ds, cut, null, null);
       ds.close();
       dm = new DataModule();
-      dm.loadNewDataFromSources(outputFile);
+      dm.loadAndParseDataForTesting(outputFile);
       data = dm.getAllChannels().get(0);
       cut = data.getTimeRange();
     }
@@ -158,10 +158,10 @@ public class RawDataProviderTest {
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
 
-    dm.loadNewDataFromSources(fileToModify);
+    dm.loadAndParseDataForTesting(fileToModify);
 
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
-    dm.loadNewDataFromSources(fileToModify);
+    dm.loadAndParseDataForTesting(fileToModify);
     // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
@@ -197,7 +197,7 @@ public class RawDataProviderTest {
     DataOutputStream ds = new DataOutputStream(new FileOutputStream(outputFile));
     data.dumpMseed(ds, data.getTimeRange(), lowPass, null);
     dm = new DataModule();
-    dm.loadNewDataFromSources(outputFile);
+    dm.loadAndParseDataForTesting(outputFile);
     if (outputFile.exists()) {
       outputFile.delete();
     }
@@ -226,10 +226,10 @@ public class RawDataProviderTest {
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
 
-    dm.loadNewDataFromSources(fileToModify);
+    dm.loadAndParseDataForTesting(fileToModify);
 
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
-    dm.loadNewDataFromSources(fileToModify);
+    dm.loadAndParseDataForTesting(fileToModify);
     // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
@@ -250,7 +250,7 @@ public class RawDataProviderTest {
       DataOutputStream ds = new DataOutputStream(new FileOutputStream(outputFile));
       data.dumpMseed(ds, data.getTimeRange(), null, null);
       dm = new DataModule();
-      dm.loadNewDataFromSources(outputFile);
+      dm.loadAndParseDataForTesting(outputFile);
       data = dm.getAllChannels().get(0);
     }
 
@@ -284,7 +284,7 @@ public class RawDataProviderTest {
     File concattedFile = new File(day91And92Fname);
 
     // day 92's data will be loaded in from concatted file in gap between 91 and 93
-    dm.loadNewDataFromSources(day91File, day93File, concattedFile, day92File);
+    dm.loadAndParseDataForTesting(day91File, day93File, concattedFile, day92File);
 
     RawDataProvider data = dm.getAllChannels().get(0);
 
@@ -315,7 +315,7 @@ public class RawDataProviderTest {
     assertTrue(originalEastFile.exists() &&
         originalNorthFile.exists() && originalVertFile.exists());
 
-    dm.loadNewDataFromSources(originalNorthFile, originalEastFile, originalVertFile);
+    dm.loadAndParseDataForTesting(originalNorthFile, originalEastFile, originalVertFile);
     // now that we have the data, rotate it
     Rotation twentyDegreesRotation = new Rotation(20.);
     for (PlotDataProvider dataProvider : dm.getAllChannels().subList(0, 2)) {
@@ -348,7 +348,7 @@ public class RawDataProviderTest {
     dataEast.dumpMseed(dsEast, ti, null, twentyDegreesRotation);
 
     dm = new DataModule();
-    dm.loadNewDataFromSources(outputFileNorth, outputFileEast);
+    dm.loadAndParseDataForTesting(outputFileNorth, outputFileEast);
     // now the data in dataNorth, dataEast is rotated data (by 20 degrees)
     dataNorth = dm.getAllChannels().get(0);
     dataEast = dm.getAllChannels().get(1);
@@ -374,7 +374,7 @@ public class RawDataProviderTest {
     assertTrue(expectedDataEastFile.exists());
     assertTrue(expectedDataNorthFile.exists());
     DataModule holdsExpectedData = new DataModule();
-    holdsExpectedData.loadNewDataFromSources(expectedDataNorthFile, expectedDataEastFile);
+    holdsExpectedData.loadAndParseDataForTesting(expectedDataNorthFile, expectedDataEastFile);
 
     int[] expectedDataNorth =
         holdsExpectedData.getAllChannels().get(0).getRawData(ti).get(0).getData().data;

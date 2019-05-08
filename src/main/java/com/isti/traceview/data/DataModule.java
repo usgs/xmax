@@ -7,6 +7,7 @@ import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.xmax.XMAXconfiguration;
+import edu.sc.seis.seisFile.segd.Trace;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -106,19 +107,37 @@ public class DataModule extends Observable {
       addDataSource(fileParser);
       Set<PlotDataProvider> dataSet = fileParser.parse();
       for (PlotDataProvider channel : dataSet) {
-        logger.info("Merging in data from " + channel.getName());
+        logger.info("Merging in from " + channel.getName());
         String station = channel.getStation().getName();
         getOrAddStation(station);
         // merge in the new data into any channel that may already exist
         getOrAddChannel(channel.getChannelName(), channel.getStation(),
             channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
-        channel.load();
       }
     }
+
     channels.sort(Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
     for (RawDataProvider channel : channels) {
       channel.sort(); // properly numerate segments, gaps, etc. for channel plot coloration
     }
+  }
+
+  /**
+   * Load in data from data path given in configuration and then ensure it is fully parsed in.
+   * This allows data to be loaded in from a single call for tests
+   */
+  public void loadAndParseDataForTesting() throws TraceViewException {
+    loadNewDataFromSources();
+    channels.forEach(RawDataProvider::load);
+  }
+
+  /**
+   * Load in data from a list of files and then ensure it is parsed in.
+   * This allows data to be loaded in from a single call for tests
+   */
+  public void loadAndParseDataForTesting(File... files) {
+    loadNewDataFromSources(files);
+    channels.forEach(RawDataProvider::load);
   }
 
   public void loadNewDataFromSources() throws TraceViewException {
