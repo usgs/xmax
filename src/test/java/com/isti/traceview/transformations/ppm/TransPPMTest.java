@@ -28,7 +28,7 @@ public class TransPPMTest {
     TraceView.setConfiguration(config);
     TraceView.getConfiguration().setDataPath(mask);
     TraceView.setDataModule(new DataModule());
-    TraceView.getDataModule().loadNewDataFromSources();
+    TraceView.getDataModule().loadAndParseDataForTesting();
   }
 
   @Test

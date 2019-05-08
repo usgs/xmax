@@ -32,7 +32,7 @@ public class ChannelTest {
     assertTrue(fileWithGaps.getAbsolutePath(), fileWithGaps.getAbsoluteFile().exists());
 
     DataModule dm = new DataModule();
-    dm.loadNewDataFromSources(fileWithGaps);
+    dm.loadAndParseDataForTesting(fileWithGaps);
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     assertEquals("LHZ", dataProvider.getChannelName());
@@ -45,7 +45,7 @@ public class ChannelTest {
     assertTrue(fileWithGaps.getAbsolutePath(), fileWithGaps.getAbsoluteFile().exists());
 
     DataModule dm = new DataModule();
-    dm.loadNewDataFromSources(fileWithGaps);
+    dm.loadAndParseDataForTesting(fileWithGaps);
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     assertEquals("IU/ANMO/00/LHZ", dataProvider.getName());
@@ -58,7 +58,7 @@ public class ChannelTest {
     assertTrue(fileWithGaps.getAbsolutePath(), fileWithGaps.getAbsoluteFile().exists());
 
     DataModule dm = new DataModule();
-    dm.loadNewDataFromSources(fileWithGaps);
+    dm.loadAndParseDataForTesting(fileWithGaps);
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     // LHZ = 1Hz data, or 1 sample every 1000 ms
@@ -72,7 +72,7 @@ public class ChannelTest {
     assertTrue(fileWithGaps.getAbsolutePath(), fileWithGaps.getAbsoluteFile().exists());
 
     DataModule dm = new DataModule();
-    dm.loadNewDataFromSources(fileWithGaps);
+    dm.loadAndParseDataForTesting(fileWithGaps);
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     // LHZ = 1Hz data, or 1 sample every 1000 ms
