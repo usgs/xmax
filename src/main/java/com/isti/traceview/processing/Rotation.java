@@ -20,7 +20,9 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
@@ -105,6 +107,8 @@ public class Rotation {
 
   private RotationType type = null;
 
+  private Map<String, List<Segment>> cachedData;
+  private TimeInterval cachedTimeInterval = null; // set to non-null when data is cached
 
   private double angle = 0;
 
@@ -113,6 +117,7 @@ public class Rotation {
    */
    public Rotation(StandardRotation standardRotation) {
      initMatrix(standardRotation);
+     cachedData = new HashMap<>();
    }
 
    /**
@@ -121,6 +126,7 @@ public class Rotation {
    public Rotation(double horizontalRotationAngle) {
      initMatrix(horizontalRotationAngle);
      type = RotationType.HORIZONTAL;
+     cachedData = new HashMap<>();
    }
 
    /**
@@ -130,6 +136,7 @@ public class Rotation {
     */
    public Rotation(JFrame frame, int numberOfChannels) {
      this(frame, numberOfChannels, 0.);
+     cachedData = new HashMap<>();
    }
 
   /**
@@ -151,6 +158,7 @@ public class Rotation {
        this.angle = dialog.horizontalAng;
        dialog.dispose();
      }
+     cachedData = new HashMap<>();
    }
 
    public RotationType getRotationType() {
@@ -352,10 +360,8 @@ public class Rotation {
            logger.error("MatrixException:", e);
            System.exit(0);
          }
-         int index = 0;
-         if (channelType == 'E' || channelType == 'U' || channelType== '2') {
-           index = 0;
-         } else if (channelType == 'N' || channelType == 'V' || channelType == '1') {
+         int index = 0; // set correctly if channel type is E, U, or 2
+         if (channelType == 'N' || channelType == 'V' || channelType == '1') {
            index = 1;
          } else if (channelType == 'Z' || channelType == 'W') {
            index = 2;
@@ -405,12 +411,33 @@ public class Rotation {
     */
    public List<Segment> rotate(RawDataProvider channel, TimeInterval ti)
        throws TraceViewException {
+
+     // is the cached data already set? if so, we run this operation to get the already-rotated data
+     // this will happen if we're doing calculations with a channel's complementary data
+     // i.e., if we're doing a PSD on both LH1 and LH2 -- over the same time range
+     if (cachedTimeInterval != null &&
+         cachedTimeInterval.getStart() == ti.getStart() &&
+         cachedTimeInterval.getEnd() == ti.getEnd() &&
+         cachedData.containsKey(channel.getName())) {
+       return cachedData.get(channel.getName());
+     }
+
+     cachedTimeInterval = ti;
+     cachedData = new HashMap<>();
      RawDataProvider[] triplet = getChannelsTriplet(channel);
-     char channelType = channel.getType();
-     List<Segment> ret = new ArrayList<>();
+     List<Segment> first = new ArrayList<>();
+     List<Segment> second = new ArrayList<>();
+     List<Segment> third = new ArrayList<>();
      double[][] pointPosition = new double[3][1];
      for (Segment segment: channel.getRawData(ti)) {
-       Segment rotated = new Segment(null, segment.getStartOffset(), segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
+       Segment firstRotated = new Segment(null, segment.getStartOffset(),
+           segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
+           segment.getSourceSerialNumber());
+       Segment secondRotated = new Segment(null, segment.getStartOffset(),
+           segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
+           segment.getSourceSerialNumber());
+       Segment thirdRotated = new Segment(null, segment.getStartOffset(),
+           segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
            segment.getSourceSerialNumber());
        double currentTime = segment.getStartTime().getTime();
        for (@SuppressWarnings("unused") int value: segment.getData().data) {
@@ -418,28 +445,34 @@ public class Rotation {
          pointPosition[0][0] = triplet[0].getRawData(currentTime); //x
          pointPosition[1][0] = triplet[1].getRawData(currentTime); //y
          pointPosition[2][0] = triplet[2].getRawData(currentTime); //z
-         if (pointPosition[0][0] == Integer.MIN_VALUE || pointPosition[1][0] == Integer.MIN_VALUE || pointPosition[2][0] == Integer.MIN_VALUE) {
-         } else {
-           try {
-             double[][] rotatedPointPosition = this.getMatrix().times(new Matrix(pointPosition)).getData();
-             if (channelType == 'E' || channelType == 'U' || channelType== '2') {
-               rotated.addDataPoint(new Double(rotatedPointPosition[0][0]).intValue());
-             } else if (channelType == 'N' || channelType == 'V' || channelType == '1') {
-               rotated.addDataPoint(new Double(rotatedPointPosition[1][0]).intValue());
-             } else if (channelType == 'Z' || channelType == 'W') {
-               rotated.addDataPoint(new Double(rotatedPointPosition[2][0]).intValue());
-             }
-           } catch (MatrixException e) {
-             logger.error("MatrixException:", e);
-             System.exit(0);
-           }
+         if (pointPosition[0][0] == Integer.MIN_VALUE ||
+             pointPosition[1][0] == Integer.MIN_VALUE ||
+             pointPosition[2][0] == Integer.MIN_VALUE) {
+           continue;
+         }
+         try {
+           double[][] rotatedPointPosition =
+               this.getMatrix().times(new Matrix(pointPosition)).getData();
+           firstRotated.addDataPoint((int) rotatedPointPosition[0][0]);
+           secondRotated.addDataPoint((int) rotatedPointPosition[1][0]);
+           thirdRotated.addDataPoint((int) rotatedPointPosition[2][0]);
+         } catch (MatrixException e) {
+           logger.error("MatrixException:", e);
+           System.exit(0);
          }
        }
-       if (rotated.getData().data.length > 0) {
-         ret.add(rotated);
+       if (firstRotated.getData().data.length > 0) {
+         first.add(firstRotated);
+         second.add(secondRotated);
+         third.add(thirdRotated);
        }
      }
-     return ret;
+
+     cachedData.put(triplet[0].getName(), first);
+     cachedData.put(triplet[1].getName(), second);
+     cachedData.put(triplet[2].getName(), third);
+
+     return cachedData.get(channel.getName());
    }
 
    /**
