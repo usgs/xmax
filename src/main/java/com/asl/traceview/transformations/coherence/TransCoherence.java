@@ -101,10 +101,12 @@ public class TransCoherence implements ITransformation{
 		PlotDataProvider channel = null;
 		int currentTraceNum = 0; 
 		int numsegs = 1;
+
+
 		while (li.hasNext()) {
 				channel = li.next();
-				List<Segment> segments; 
-	
+				List<Segment> segments;
+
 				if(channel.getRotation() != null && channel.isRotated()) {
 					segments = channel.getRawData(channel.getRotation(), ti); //if data is rotated then calculate the coherence on the rotated data.
 				} else {
