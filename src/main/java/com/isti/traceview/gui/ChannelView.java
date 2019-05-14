@@ -610,8 +610,9 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			IScaleModeState scaleMode = graphPanel.getScaleMode();
 			IMeanState meanState = graphPanel.getMeanState();
 			IOffsetState offsetState = graphPanel.getOffsetState();
-			scaleMode.init(graphs, (graphPanel.getOverlayState() == true) || (graphPanel.getSelectState() == true) ? graphPanel
-					.getCurrentChannelShowSet() : graphPanel.getChannelShowSet(), graphPanel.getTimeRange(), meanState, height);
+			scaleMode.init(graphs, graphPanel.getOverlayState() || graphPanel.getSelectState() ?
+					graphPanel.getCurrentChannelShowSet() : graphPanel.getChannelShowSet(),
+					graphPanel.getTimeRange(), meanState, height);
 			
 			//lg.debug("scaleMode Initialized:" + scaleMode.getStateName() + scaleMode.getMaxValue() + scaleMode.getMinValue());
 			if (scaleMode.getMinValue() != Double.POSITIVE_INFINITY && scaleMode.getMaxValue() != Double.NEGATIVE_INFINITY) {
@@ -802,8 +803,9 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			mousePressY = e.getY();
 			graphPanel.getScaleMode().init(
 					graphs,
-					(graphPanel.getOverlayState() == true) || (graphPanel.getSelectState() == true) ? graphPanel.getCurrentChannelShowSet()
-							: graphPanel.getChannelShowSet(), graphPanel.getTimeRange(), graphPanel.getMeanState(), getHeight());
+					graphPanel.getOverlayState() || graphPanel.getSelectState() ?
+							graphPanel.getCurrentChannelShowSet() : graphPanel.getChannelShowSet(),
+					graphPanel.getTimeRange(), graphPanel.getMeanState(), getHeight());
 			// one-button mouse Mac OSX behaviour emulation
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				if (e.isShiftDown()) {
@@ -821,7 +823,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 
 		public void mouseReleased(MouseEvent e) {
 			if (button != MouseEvent.NOBUTTON && ((mousePressX != e.getX()) || (mousePressY != e.getY()))) {
-				if (button == MouseEvent.BUTTON3 || (button == MouseEvent.BUTTON1 && e.isControlDown() == true)) {
+				if (button == MouseEvent.BUTTON3 || (button == MouseEvent.BUTTON1 && e.isControlDown())) {
 					if (mouseAdapter != null) {
 						mouseAdapter.mouseReleasedButton3(e.getX(), e.getY(), cv);
 					}
