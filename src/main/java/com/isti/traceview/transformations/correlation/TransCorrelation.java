@@ -81,7 +81,8 @@ public class TransCorrelation implements ITransformation {
 			throws XMAXException {
 		List<double[]> ret = new ArrayList<>();
 		PlotDataProvider channel1 = input.get(0);
-		List<Segment> segments1; 
+		List<Segment> segments1;
+		// TODO: strip out shared process, run as threaded operation, collect output in a list
 		if(channel1.getRotation() != null)
 			segments1 = channel1.getRawData(ti);
 		else {

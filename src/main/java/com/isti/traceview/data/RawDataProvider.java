@@ -167,7 +167,7 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * Get rotated raw data for a given time interval
+   * Get rotated data for a given time interval
    *
    * @param rotation to process data
    * @return rotated raw data
