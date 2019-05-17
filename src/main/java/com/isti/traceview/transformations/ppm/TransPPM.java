@@ -10,10 +10,15 @@ import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.log4j.Logger;
+import org.jfree.chart.plot.Plot;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -27,6 +32,7 @@ public class TransPPM implements ITransformation {
 
 	public static final String NAME = "Particle motion";
 
+	private static final Logger logger = Logger.getLogger(TransPPM.class);
 
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
@@ -71,7 +77,7 @@ public class TransPPM implements ITransformation {
 				ViewPPM vr = new ViewPPM(parentFrame, dataset, ti,
 						"N:" + inputRepositioned.get(0).getName() + "  E:" + inputRepositioned.get(1).getName(),
 						filter, backAzimuth);
-			} catch (XMAXException e) {
+			} catch (XMAXException | RuntimeException e) {
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		}
@@ -98,65 +104,23 @@ public class TransPPM implements ITransformation {
 		PlotDataProvider channel2 = input.get(1); // E/W
 		if (channel1.getSampleRate() != channel2.getSampleRate())
 			throw new XMAXException("Channels have different sample rate");
-		double sampleRate;
-		List<Segment> segments1;
-		if (channel1.getRotation() != null && channel1.isRotated()) {
-			segments1 = channel1.getRawData(channel1.getRotation(), ti);
-		} else
-			segments1 = channel1.getRawData(ti);
 
-		int[] intData1 = new int[0];
-		if (segments1.size() > 0) {
-			long segment_end_time = 0;
-			sampleRate = segments1.get(0).getSampleRate();
-			for (Segment segment : segments1) {
-				if (segment.getSampleRate() != sampleRate) {
-					throw new XMAXException(
-							"You have data with different sample rate for channel " + channel1.getName());
+		List<int[]> output = new ArrayList<>();
+
+		Stream.of(channel1, channel2).parallel().forEachOrdered(channel -> {
+			try {
+				int[] intData = channel.getContinuousGaplessDataOverRange(ti);
+				if (filter != null) {
+					intData = new FilterFacade(filter, channel).filter(intData);
 				}
-				if (segment_end_time != 0
-						&& Segment
-						.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
-					throw new XMAXException("You have gap in the data for channel " + channel1.getName());
-				}
-				segment_end_time = segment.getEndTime().getTime();
-				intData1 = IstiUtilsMath.padArray(intData1, segment.getData(ti).data);
+				output.add(intData);
+			} catch (XMAXException e) {
+				logger.error("Caught exception while iterating through transformation: ", e);;
+				throw new RuntimeException(e.getMessage());
 			}
+		});
 
-		} else {
-			throw new XMAXException("You have no data for channel " + channel1.getName());
-		}
-		List<Segment> segments2;
-		if (channel2.getRotation() != null && channel2.isRotated())
-			segments2 = channel2.getRawData(channel2.getRotation(), ti);
-		else
-			segments2 = channel2.getRawData(ti);
-		int[] intData2 = new int[0];
-		if (segments2.size() > 0) {
-			long segment_end_time = 0;
-			for (Segment segment : segments2) {
-				if (segment.getSampleRate() != sampleRate) {
-					throw new XMAXException("Channels " + channel1.getName() + " and " + channel2.getName()
-							+ " have different sample rates: " + sampleRate + " and " + segment.getSampleRate());
-				}
-				if (segment_end_time != 0
-						&& Segment
-						.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
-					throw new XMAXException("You have gap in the data for channel " + channel2.getName());
-				}
-				segment_end_time = segment.getEndTime().getTime();
-				intData2 = IstiUtilsMath.padArray(intData2, segment.getData(ti).data);
-			}
-
-		} else {
-			throw new XMAXException("You have no data for channel " + channel1.getName());
-		}
-		if (filter != null) {
-			intData1 = new FilterFacade(filter, channel1).filter(intData1);
-			intData2 = new FilterFacade(filter, channel2).filter(intData2);
-		}
-
-		return new int[][]{intData1, intData2};
+		return output.toArray(new int[][]{});
 	}
 
 	XYDataset populateDataset(int[] intData1, int[] intData2, String seriesName) throws XMAXException {
@@ -167,11 +131,14 @@ public class TransPPM implements ITransformation {
 		if (dataSize > maxDataLength) {
 			throw new XMAXException("Too many datapoints are selected.");
 		}
-		ArrayValues values1 = new ArrayValues(intData1, dataSize);
-		ArrayValues values2 = new ArrayValues(intData2, dataSize);
-		for (int i = 0; i < dataSize; i++) {
-			double x = intData1[i] - values1.getAverage();
-			double y = intData2[i] - values2.getAverage();
+
+		double firstAverage = new ArrayValues(intData1, dataSize).getAverage();
+		double secondAverage = new ArrayValues(intData2, dataSize).getAverage();
+
+
+		for (int i = 0; i < intData1.length; ++i) {
+			double x = intData1[i] - firstAverage;
+			double y = intData2[i] - secondAverage;
 			double radius = Math.sqrt(x * x + y * y);
 			double theta = 180 * Math.atan2(y, x) / Math.PI;
 			series.add(theta, radius);
@@ -201,8 +168,8 @@ public class TransPPM implements ITransformation {
 		// we assume that a single point near the end of the window will be all we need
 		int signumIndex = north.length - 19;
 
-		int signumN = (int) Math.signum(north[signumIndex]);
-		int signumE = (int) Math.signum(east[signumIndex]);
+		int signumN = (int) Math.signum(north[0] - north[signumIndex]);
+		int signumE = (int) Math.signum(east[0] - east[signumIndex]);
 
 		return correctBackAzimuthQuadrant(backAzimuth, signumN, signumE);
 	}
