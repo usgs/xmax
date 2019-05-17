@@ -38,7 +38,7 @@ public class TransSpectra implements ITransformation {
 				@SuppressWarnings("unused")
 				ViewSpectra vs = new ViewSpectra(parentFrame, createData(input, filter, timeInterval, parentFrame),
 						timeInterval);
-			} catch (XMAXException e) {
+			} catch (RuntimeException e) {
 				if (!e.getMessage().equals("Operation cancelled")) {
 					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 				}
@@ -62,31 +62,17 @@ public class TransSpectra implements ITransformation {
 	 *             channel
 	 */
 	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval timeInterval,
-			JFrame parentFrame) throws XMAXException {
+			JFrame parentFrame) {
 		List<Spectra> dataset = new ArrayList<>();
-		for (PlotDataProvider channel : input) {
-			double sampleRate = 0;
-			List<Segment> segments = channel.getRawData(timeInterval);
-			int[] intData = new int[0];
-			if (segments.size() > 0) {
-				long segment_end_time = 0;
-				sampleRate = segments.get(0).getSampleRate();
-				for (Segment segment : segments) {
-					if (segment.getSampleRate() != sampleRate) {
-						throw new XMAXException(
-								"You have data with different sample rate for channel " + channel.getName());
-					}
-					if (segment_end_time != 0
-							&& Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
-						throw new XMAXException("You have gap in the data for channel " + channel.getName());
-					}
-					segment_end_time = segment.getEndTime().getTime();
-					intData = IstiUtilsMath.padArray(intData, segment.getData(timeInterval).data);
-				}
-
-			} else {
-				throw new XMAXException("You have no data for channel " + channel.getName());
+		input.forEach(channel -> {
+			int[] intData;
+			try {
+				intData = channel.getContinuousGaplessDataOverRange(timeInterval);
+			} catch (XMAXException e) {
+				logger.error("Caught exception while iterating through transformation: ", e);
+				throw new RuntimeException(e);
 			}
+
 			int dataSize;
 			if (intData.length > maxDataLength) {
 				dataSize = maxDataLength; // maxDataLength is set to be 2^30, a power of two
@@ -98,9 +84,7 @@ public class TransSpectra implements ITransformation {
 
 			logger.debug("data size = " + dataSize);
 			int[] data = new int[dataSize];
-			for (int i = 0; i < dataSize; i++) {
-				data[i] = intData[i];
-			}
+			System.arraycopy(intData, 0, data, 0, dataSize);
 			if (filter != null) {
 				data = new FilterFacade(filter, channel).filter(data);
 			}
@@ -111,7 +95,7 @@ public class TransSpectra implements ITransformation {
 			} catch (TraceViewException e) {
 				logger.error("TraceViewException:", e);
 			}
-		}
+		});
 		return dataset;
 	}
 

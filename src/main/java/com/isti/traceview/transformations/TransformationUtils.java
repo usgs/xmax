@@ -24,7 +24,7 @@ public class TransformationUtils {
    * @param source The source frequency as interval between samples (milliseconds)
    * @return A timeseries decimated to the correct frequency
    */
-  public static int[] decimate(int[] data, long source, long target) {
+  public static double[] decimate(double[] data, long source, long target) {
 
     // a sample lower than 1Hz frq has longer time between samples
     // since it's an inverse relationship and all
@@ -59,9 +59,9 @@ public class TransformationUtils {
     double[] upped = upsample(converted, upf);
     double[] lpfed = lowPassFilter(upped, higherFreq, lowerFreq);
     double[] downsample = downsample(lpfed, dnf);
-    int[] returnValue = new int[downsample.length];
+    double[] returnValue = new double[downsample.length];
     for (int i = 0; i < downsample.length; ++i) {
-      returnValue[i] = (int) downsample[i];
+      returnValue[i] = downsample[i];
     }
     return returnValue;
 
@@ -138,14 +138,6 @@ public class TransformationUtils {
    * @param corner Corner frequency of LPF
    * @return lowpass-filtered timeseries data
    */
-  /**
-   * Apply a low pass filter to some timeseries data
-   *
-   * @param toFilt Data to be filtered
-   * @param sps Sample rate of the data in Hz
-   * @param corner Corner frequency of LPF
-   * @return lowpass-filtered timeseries data
-   */
   public static double[] lowPassFilter(double[] toFilt, double sps, double corner) {
     uk.me.berndporr.iirj.Butterworth casc = new Butterworth();
     // order 1 filter
@@ -158,6 +150,7 @@ public class TransformationUtils {
 
     return filtered;
   }
+
 
 
 }

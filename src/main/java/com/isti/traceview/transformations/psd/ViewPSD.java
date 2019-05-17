@@ -41,8 +41,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.DoubleUnaryOperator;
+import java.util.stream.DoubleStream;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
@@ -416,54 +419,44 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
 
   private XYSeriesCollection createDataset(List<Spectra> ds) {
     XYSeriesCollection ret = new XYSeriesCollection();
-    for (Spectra spectra : ds) {
-      ret.addSeries(spectra.getPSDSeries(OutputGenerator.VELOCITY_UNIT_CONV));
-    }
+    // unfilteredcollection is a finalized copy of ret to use in the following lambda
+    XYSeriesCollection unfilteredCollection = ret;
+    ds.parallelStream().forEach(spectra ->
+      unfilteredCollection.addSeries(spectra.getPSDSeries(OutputGenerator.VELOCITY_UNIT_CONV)));
+    ret = filterData(unfilteredCollection);
 
     XYSeries lowNoiseModelSeries = new XYSeries("NLNM");
     XYSeries highNoiseModelSeries = new XYSeries("NHNM");
+    // we'll plot 100 points in the series according to logarithmic scale
+    // and use for the noise model's range the min and max frequencies of all data being plotted
+    double minX = Double.MAX_VALUE;
+    double maxX = Double.MIN_VALUE;
+    for (Spectra spect : ds) {
+      double[] freqArr = spect.getFrequencies();
+      double min = 1./freqArr[freqArr.length - 1];
+      double max = 1./freqArr[0];
+      minX = (min < minX) ? min : minX;
+      maxX = (max > maxX) ? max : maxX;
+    }
+    // bound to either 0.1-10000 or the range of the data, whatever is smallest
+    final double periodMin = Math.log10(Math.max(0.1, minX));
+    final double periodMax = Math.log10(Math.min(10000, maxX));
+    // now go from linearly spaced points to being logarithmically scaled
+    logger.debug("Min, max period: " + periodMin + "," + periodMax);
+    final int numberOfPoints = 100;
+    final double scale = (periodMax - periodMin) / numberOfPoints;
+    for (int i = 0; i < numberOfPoints; ++i) {
+       double p = Math.pow(10, periodMin + (scale * i));
+       double lowModel = NoiseModel.fnlnm(p);
+       double highModel = NoiseModel.fnhnm(p);
+       if (lowModel != 0.) {
+         lowNoiseModelSeries.add(p, lowModel);
+       }
+       if (highModel != 0.) {
+         highNoiseModelSeries.add(p, highModel);
+       }
+    }
 
-    double[] freqArr = ds.get(0).getFrequencies();
-    for (int i = 1; i < freqArr.length; i++) {
-      double period = 1.0 / freqArr[i];
-      double lowModel = NoiseModel.fnlnm(period);
-      if (lowModel != 0.0) {
-        lowNoiseModelSeries.add(period, lowModel);
-      }
-      double highModel = NoiseModel.fnhnm(period);
-      if (highModel != 0) {
-        highNoiseModelSeries.add(period, highModel);
-      }
-    }
-    ret = filterData(ret);
-    // Adding head of noise models, between 0.1 s and psd graph beginning
-    int i = 2;
-    double period;
-    while ((period = 1 / (i * freqArr[freqArr.length - 1])) > 0.1) {
-      double lowModel = NoiseModel.fnlnm(period);
-      if (lowModel != 0.0) {
-        lowNoiseModelSeries.add(/* Math.log10( */period/* ) */, lowModel);
-      }
-      double highModel = NoiseModel.fnhnm(period);
-      if (highModel != 0) {
-        highNoiseModelSeries.add(/* Math.log10( */period/* ) */, highModel);
-      }
-      i++;
-    }
-    // Adding tail of noise models, besides psd graph ending, and 1000 s
-    // value
-    i = 2;
-    while ((period = i / (freqArr[1])) < 1000) {
-      double lowModel = NoiseModel.fnlnm(period);
-      if (lowModel != 0.0) {
-        lowNoiseModelSeries.add(period, lowModel);
-      }
-      double highModel = NoiseModel.fnhnm(period);
-      if (highModel != 0) {
-        highNoiseModelSeries.add(period, highModel);
-      }
-      i++;
-    }
     ret.addSeries(lowNoiseModelSeries);
     ret.addSeries(highNoiseModelSeries);
     return ret;
@@ -488,7 +481,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     chart.setTitle(title);
     XYPlot plot = chart.getXYPlot();
     NumberAxis domainAxis = new LogarithmicAxis("Period, s");
-    domainAxis.setRange(new Range(0.01, 10000.0));
+    domainAxis.setAutoRange(true);
     plot.setDomainAxis(domainAxis);
     NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
     rangeAxis.setAutoRange(true);

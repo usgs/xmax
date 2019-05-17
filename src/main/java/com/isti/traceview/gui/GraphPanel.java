@@ -664,7 +664,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					System.out.println("Loading channel segment data:");
 
 					long startl = System.nanoTime();
-					channelShowSet.forEach(e -> e.getPlotDataProviders().forEach(RawDataProvider::load));
+					channelShowSet.parallelStream().forEach(
+							e -> e.getPlotDataProviders().forEach(RawDataProvider::load));
 					long endl = System.nanoTime() - startl;
 
 					double end = endl * Math.pow(10, -9);

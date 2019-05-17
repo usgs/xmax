@@ -48,7 +48,7 @@ public class TransModal implements ITransformation {
             ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
         @SuppressWarnings("unused")
         ViewModal vp = new ViewModal(parentFrame, spList, effectiveInterval, input);
-      } catch (XMAXException e) {
+      } catch (RuntimeException e) {
         if (!e.getMessage().equals("Operation cancelled")) {
           JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
         }
@@ -72,60 +72,46 @@ public class TransModal implements ITransformation {
    *             if sample rates differ, gaps in the data, or no data for a
    *             channel
    */
-  private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame)
-      throws XMAXException {
+  private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter,
+      TimeInterval ti, JFrame parentFrame) {
 
     List<Spectra> dataset = new ArrayList<>();
-    for (PlotDataProvider channel : input) {
-      double sampleRate = 0;
-      List<Segment> segments = channel.getRawData(ti);
-      int[] intData = new int[0];
-      if (segments.size() > 0) {
-        long segment_end_time = 0;
-        sampleRate = segments.get(0).getSampleRate();
-        for (Segment segment : segments) {
-          if (segment.getSampleRate() != sampleRate) {
-            throw new XMAXException(
-                "You have data with different sample rate for channel " + channel.getName());
-          }
-          if (segment_end_time != 0
-              && Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(), sampleRate)) {
-            throw new XMAXException("You have gap in the data for channel " + channel.getName());
-          }
-          segment_end_time = segment.getEndTime().getTime();
-          intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
-        }
 
-      } else {
-        throw new XMAXException("You have no data for channel " + channel.getName());
-      }
-      int dataSize;
-      if (intData.length > maxDataLength) {
-        dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(maxDataLength)).intValue())).intValue();
-        ((XMAXframe) parentFrame).getStatusBar().setMessage(
-            "Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
-      } else {
-        dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(intData.length)).intValue()))
-            .intValue();
-      }
-      effectiveLength = dataSize;
-
-      logger.debug("data size = " + dataSize);
-      int[] data = new int[dataSize];
-      for (int i = 0; i < dataSize; i++) {
-        data[i] = intData[i];
-      }
-      if (filter != null) {
-        data = new FilterFacade(filter, channel).filter(data);
-      }
+    input.forEach(channel -> {
       try {
-        Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
-            ti.getStartTime(), channel, verboseDebug);
-        dataset.add(spectra);
-      } catch (TraceViewException e) {
-        logger.error("TraceViewException:", e);
+        int[] intData = channel.getContinuousGaplessDataOverRange(ti);
+        int dataSize;
+        if (intData.length > maxDataLength) {
+          dataSize = new Double(Math.pow(2,
+              new Double(IstiUtilsMath.log2(maxDataLength)).intValue())).intValue();
+          ((XMAXframe) parentFrame).getStatusBar().setMessage(
+              "Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
+        } else {
+          dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(intData.length)).intValue()))
+              .intValue();
+        }
+        effectiveLength = dataSize;
+
+        logger.debug("data size = " + dataSize);
+        int[] data = new int[dataSize];
+        System.arraycopy(intData, 0, data, 0, dataSize);
+        if (filter != null) {
+          data = new FilterFacade(filter, channel).filter(data);
+        }
+        try {
+          Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
+              ti.getStartTime(), channel, verboseDebug);
+          dataset.add(spectra);
+        } catch (TraceViewException e) {
+          logger.error("Caught exception while iterating through transformation: ", e);
+          throw new RuntimeException(e.getMessage());
+        }
+      } catch (XMAXException e) {
+        logger.error("Caught exception while iterating through transformation: ", e);
+        throw new RuntimeException(e.getMessage());
       }
-    }
+    });
+
     return dataset;
   }
 

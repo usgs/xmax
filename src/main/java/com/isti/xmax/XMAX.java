@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.jar.Manifest;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -343,16 +344,18 @@ public class XMAX extends TraceView {
 
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		options = getOptions();
-		try {
-			CommandLineParser parser = new PosixParser();
-			cmd = parser.parse(options, args);
-			XMAX xyz = new XMAX();
-		} catch (ParseException e) {
-			//System.err.println("Command line parsing failed.  Reason: " + e.getMessage());
-			String message = "Command line parsing failed. Reason:";
-			logger.error(message, e);
-		}
+		SwingUtilities.invokeLater(() -> {
+			options = getOptions();
+			try {
+				CommandLineParser parser = new PosixParser();
+				cmd = parser.parse(options, args);
+				XMAX xyz = new XMAX();
+			} catch (ParseException e) {
+				//System.err.println("Command line parsing failed.  Reason: " + e.getMessage());
+				String message = "Command line parsing failed. Reason:";
+				logger.error(message, e);
+			}
+		});
 	}
 
 	/**

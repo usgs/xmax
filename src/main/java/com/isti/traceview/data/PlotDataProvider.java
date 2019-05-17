@@ -8,9 +8,12 @@ import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.ColorModeBySource;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.processing.FilterFacade;
+import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.RemoveGainException;
 import com.isti.traceview.processing.Rotation;
+import com.isti.traceview.transformations.TransformationUtils;
+import com.isti.xmax.XMAXException;
 import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -655,6 +658,34 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 */
 	public String getName() {
 		return super.getName();
+	}
+
+	public int[] getContinuousGaplessDataOverRange(TimeInterval ti)
+			throws XMAXException{
+		List<Segment> segments = getRawData(getRotation(), ti);
+		int[] intData = new int[0];
+		if (segments.size() > 0) {
+			long segment_end_time = 0;
+			double firstSampleRate = segments.get(0).getSampleRate();
+			for (Segment segment : segments) {
+				if (segment.getSampleRate() != firstSampleRate) {
+					throw new XMAXException(
+							"You have data with different sample rate for channel " + getName());
+				}
+				if (segment_end_time != 0 &&
+						Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(),
+								firstSampleRate)) {
+					throw new XMAXException("You have gap in the data for channel " + getName());
+				}
+				segment_end_time = segment.getEndTime().getTime();
+				intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
+			}
+
+		} else {
+			throw new XMAXException("You have no data for channel " + getName());
+		}
+
+		return intData;
 	}
 
 	/**
