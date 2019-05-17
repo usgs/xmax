@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
@@ -481,11 +482,12 @@ public class IstiUtilsMath {
 	public static XYSeriesCollection varismooth(XYSeriesCollection toSmooth) {
 		XYSeriesCollection ret = new XYSeriesCollection();
 
-		for (int i = 0; i < toSmooth.getSeriesCount(); i++) {
+		IntStream.range(0, toSmooth.getSeriesCount()).parallel().forEachOrdered( i -> {
 
 			// hold the values over which we are doing the moving average, to remove when out of range
 			List<XYDataItem> cachedPoints = new ArrayList<>();
 
+			// this could be a for-each loop if there was an iterator for the XYSeriesCollection object
 			XYSeries toSmoothSeries = toSmooth.getSeries(i);
 			XYSeries smoothedSeries = new XYSeries(toSmooth.getSeriesKey(i) + " (smoothed)");
 
@@ -586,7 +588,7 @@ public class IstiUtilsMath {
 				++currentPointIndexInQueue; // next point in list is one past the current point
 			}
 			ret.addSeries(smoothedSeries);
-		}
+		});
 
 		return ret;
 	}

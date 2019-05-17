@@ -424,11 +424,13 @@ public class Rotation {
 
      cachedTimeInterval = ti;
      cachedData = new HashMap<>();
+
      RawDataProvider[] triplet = getChannelsTriplet(channel);
      List<Segment> first = new ArrayList<>();
      List<Segment> second = new ArrayList<>();
      List<Segment> third = new ArrayList<>();
      double[][] pointPosition = new double[3][1];
+
      for (Segment segment: channel.getRawData(ti)) {
        Segment firstRotated = new Segment(null, segment.getStartOffset(),
            segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
