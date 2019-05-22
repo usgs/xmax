@@ -228,7 +228,7 @@ public class TransPSD implements ITransformation {
 					}
 
 					xys.add(1./ frequenciesArray[i],
-							20 * Math.log10(finalNoiseSpectraData[i] / resp.mag()));
+							10 * Math.log10(finalNoiseSpectraData[i] / Math.pow(resp.mag(), 2)));
 				}
 				dataset.add(xys);
 			} else {
