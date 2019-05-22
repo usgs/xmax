@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
+import org.jfree.data.xy.XYSeries;
 
 /**
  * Power spectra density transformation. Prepares data for presentation in
@@ -47,11 +48,11 @@ public class TransPSD implements ITransformation {
 					JOptionPane.WARNING_MESSAGE);
 		} else {
 			try {
-				List<Spectra> spList = createData(input, filter, ti, parentFrame);
+				List<XYSeries> plotData = createData(input, filter, ti, parentFrame);
 				TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
 						ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
 				@SuppressWarnings("unused")
-				ViewPSD vp = new ViewPSD(parentFrame, spList, effectiveInterval, (Configuration) configuration, input);
+				ViewPSD vp = new ViewPSD(parentFrame, plotData, effectiveInterval, (Configuration) configuration, input);
 			} catch (XMAXException e) {
 				logger.error(e);
 				if (!e.getMessage().equals("Operation cancelled")) {
@@ -79,9 +80,9 @@ public class TransPSD implements ITransformation {
 	 *             channel
 	 */
 
-	public List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, JFrame parentFrame)
-			throws XMAXException {
-		List<Spectra> dataset = new ArrayList<>();
+	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
+			TimeInterval ti, JFrame parentFrame) throws XMAXException {
+		List<XYSeries> dataset = new ArrayList<>();
 		ListIterator<PlotDataProvider> li = input.listIterator();
 		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
@@ -125,14 +126,10 @@ public class TransPSD implements ITransformation {
 
 			int[] data = new int[smallDataSegmentLimit]; // data values in the time domain
 			Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; // array w/ current segment FFT
-			Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit / 2) + 1];
-			// array containing the cumulative sum of each segment's FFT
 
-			// initialize the finalNoiseSpectraData array to all zeros since we
-			// will be taking a cumulative sum of the data.
-			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
-				finalNoiseSpectraData[i] = new Cmplx(0, 0);
-			}
+			double[] finalNoiseSpectraData = new double[(smallDataSegmentLimit / 2) + 1];
+			// array containing the cumulative sum of each segment's FFT
+			// this is an array of doubles because doing the arithmetic w/ complex data causes noise
 
 			// loop indexes
 			int dsDataSegmentLimit = dsDataSegment;
@@ -172,7 +169,7 @@ public class TransPSD implements ITransformation {
 
 					// Compute a running total of the FFTs for all segments
 					for (int i = 0; i < noise_spectra.length; i++) {
-						finalNoiseSpectraData[i] = Cmplx.add(finalNoiseSpectraData[i], noise_spectra[i]);
+						finalNoiseSpectraData[i] += noise_spectra[i].mag();
 					}
 
 					// move cursors
@@ -194,7 +191,7 @@ public class TransPSD implements ITransformation {
 
 			// average each bin by dividing by the number of segments
 			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
-				finalNoiseSpectraData[i] = Cmplx.div(finalNoiseSpectraData[i], numsegs);
+				finalNoiseSpectraData[i] /= numsegs;
 			}
 
 			// Note that channel.getSampleRate() really returns the sampling
@@ -205,21 +202,26 @@ public class TransPSD implements ITransformation {
 			final double[] frequenciesArray = RespUtils
 					.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
 
-			Cmplx[] resp;
+			double[] response;
 			try {
-				resp = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq,
+				response = channel.getResponse().getRespAmp(ti.getStartTime(), fp.startFreq, fp.endFreq,
 						Math.max(finalNoiseSpectraData.length, fp.numFreq));
 			} catch (TraceViewException e) {
-				logger.error("Caught exception while iterating through transformation: ", e);
+				logger.error("Caught exception while trying to get response data: ", e);
 				throw new RuntimeException(e.getMessage());
 			}
 
-			Spectra spectra = new Spectra(ti.getStartTime(), finalNoiseSpectraData, frequenciesArray,
-					resp, fp.sampFreq,
-					channel, "");
+			if (response != null) {
+				XYSeries xys = new XYSeries(channel.getName());
+				for (int i = 0; i < frequenciesArray.length; ++i) {
 
-			if (spectra.getResp() != null) {
-				dataset.add(spectra);
+					// convert PSD to units of acceleration by multiplying twice by 2 pi
+					double rotationFactor = -1 / (StrictMath.PI * 2 * frequenciesArray[i]);
+					double responseFactor = response[i] * Math.pow(rotationFactor, 2);
+					xys.add(1./ frequenciesArray[i],
+							10 * Math.log10(finalNoiseSpectraData[i] / response[i]));
+				}
+				dataset.add(xys);
 			} else {
 				respNotFound.append(", ");
 				respNotFound.append(channel.getName());
