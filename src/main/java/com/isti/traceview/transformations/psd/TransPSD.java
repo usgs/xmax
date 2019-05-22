@@ -59,6 +59,8 @@ public class TransPSD implements ITransformation {
 					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 				}
 			} catch (RuntimeException e) {
+				logger.error(e);
+				e.printStackTrace();
 				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		}
@@ -92,7 +94,6 @@ public class TransPSD implements ITransformation {
 			try {
 				intData = channel.getContinuousGaplessDataOverRange(ti);
 			} catch (XMAXException e) {
-				logger.error("Caught exception while iterating through transformation: ", e);
 				throw new RuntimeException(e.getMessage());
 			}
 			int ds;
@@ -192,6 +193,8 @@ public class TransPSD implements ITransformation {
 			// average each bin by dividing by the number of segments
 			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
 				finalNoiseSpectraData[i] /= numsegs;
+				// square the PSD
+				finalNoiseSpectraData[i] = Math.pow(finalNoiseSpectraData[i], 2);
 			}
 
 			// Note that channel.getSampleRate() really returns the sampling
@@ -202,9 +205,9 @@ public class TransPSD implements ITransformation {
 			final double[] frequenciesArray = RespUtils
 					.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
 
-			double[] response;
+			Cmplx[] response;
 			try {
-				response = channel.getResponse().getRespAmp(ti.getStartTime(), fp.startFreq, fp.endFreq,
+				response = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq,
 						Math.max(finalNoiseSpectraData.length, fp.numFreq));
 			} catch (TraceViewException e) {
 				logger.error("Caught exception while trying to get response data: ", e);
@@ -214,12 +217,18 @@ public class TransPSD implements ITransformation {
 			if (response != null) {
 				XYSeries xys = new XYSeries(channel.getName());
 				for (int i = 0; i < frequenciesArray.length; ++i) {
+					// convert resp to units of acceleration and then deconvolve from spectral data
+					Cmplx resp = response[i];
+					Cmplx scaleFactor = new Cmplx(0., -1 / (2. * Math.PI * frequenciesArray[i]));
+					resp = Cmplx.mul(resp, scaleFactor);
+					resp = Cmplx.mul(resp, resp.conjg());
 
-					// convert PSD to units of acceleration by multiplying twice by 2 pi
-					double rotationFactor = -1 / (StrictMath.PI * 2 * frequenciesArray[i]);
-					double responseFactor = response[i] * Math.pow(rotationFactor, 2);
+					if (resp.mag() == 0) {
+						resp = new Cmplx(Double.MIN_VALUE, 0.);
+					}
+
 					xys.add(1./ frequenciesArray[i],
-							10 * Math.log10(finalNoiseSpectraData[i] / responseFactor));
+							20 * Math.log10(finalNoiseSpectraData[i] / resp.mag()));
 				}
 				dataset.add(xys);
 			} else {
