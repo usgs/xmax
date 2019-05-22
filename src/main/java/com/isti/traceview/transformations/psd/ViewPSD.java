@@ -98,23 +98,22 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
   private final MyOptionPane chartPanel;
   private final XYSeriesCollection dataset;
   private final TimeInterval ti;
-  private final List<Spectra> data;
+  private final List<XYSeries> data;
   private final Configuration configuration;
   private boolean showWaves = false;
 
   private JRadioButton smoothRB, rawRB, rawAndSmoothRB;
   private ButtonGroup buttonGroup;
 
-  ViewPSD(Frame owner, List<Spectra> data, TimeInterval ti, Configuration configuration,
+  ViewPSD(Frame owner, List<XYSeries> data, TimeInterval ti, Configuration configuration,
       List<PlotDataProvider> input) {
     super(owner, "Power Spectra Density", true);
     this.ti = ti;
     this.data = data;
     this.configuration = configuration;
 
-    Object[] options = {"Close", "Print", "Dump Freqs", "Export PSD (ASCII)", "Export SAC",
-        "Export GRAPH",
-        "Toggle waves"};
+    Object[] options = {"Close", "Print", "Dump Freqs", "Export PSD (ASCII)", // "Export SAC",
+        "Export GRAPH", "Toggle waves"};
     // Create the JOptionPane.
     optionPane = new JOptionPane();
     optionPane.setVisible(false);
@@ -270,10 +269,12 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
               xdata[j] = new Double(dataset.getXValue(i, j)).floatValue();
               ydata[j] = new Double(dataset.getYValue(i, j)).floatValue();
             }
+            /*
             SacTimeSeriesASCII sacAscii = SacTimeSeriesASCII.getSAC(data.get(i).getChannel(),
                 ti.getStartTime(), xdata, ydata);
             sacAscii.writeHeader(ds);
             sacAscii.writeData(ds);
+            */
           } catch (IOException e1) {
             JOptionPane.showMessageDialog(XMAXframe.getInstance(),
                 "Can't write file " + fileName + "; " + e1, "Error", JOptionPane.ERROR_MESSAGE);
@@ -417,12 +418,12 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     XMAXconfiguration.getInstance().save();
   }
 
-  private XYSeriesCollection createDataset(List<Spectra> ds) {
+  private XYSeriesCollection createDataset(List<XYSeries> ds) {
     XYSeriesCollection ret = new XYSeriesCollection();
     // unfilteredcollection is a finalized copy of ret to use in the following lambda
     XYSeriesCollection unfilteredCollection = ret;
-    ds.parallelStream().forEach(spectra ->
-      unfilteredCollection.addSeries(spectra.getPSDSeries(OutputGenerator.VELOCITY_UNIT_CONV)));
+
+    ds.parallelStream().forEach(unfilteredCollection::addSeries);
     ret = filterData(unfilteredCollection);
 
     XYSeries lowNoiseModelSeries = new XYSeries("NLNM");
@@ -431,10 +432,9 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     // and use for the noise model's range the min and max frequencies of all data being plotted
     double minX = Double.MAX_VALUE;
     double maxX = Double.MIN_VALUE;
-    for (Spectra spect : ds) {
-      double[] freqArr = spect.getFrequencies();
-      double min = 1./freqArr[freqArr.length - 1];
-      double max = 1./freqArr[0];
+    for (XYSeries xys : ds) {
+      double min = xys.getMinX();
+      double max = xys.getMaxX();
       minX = (min < minX) ? min : minX;
       maxX = (max > maxX) ? max : maxX;
     }
