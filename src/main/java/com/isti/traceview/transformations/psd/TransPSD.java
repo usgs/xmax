@@ -219,7 +219,7 @@ public class TransPSD implements ITransformation {
 					double rotationFactor = -1 / (StrictMath.PI * 2 * frequenciesArray[i]);
 					double responseFactor = response[i] * Math.pow(rotationFactor, 2);
 					xys.add(1./ frequenciesArray[i],
-							10 * Math.log10(finalNoiseSpectraData[i] / response[i]));
+							10 * Math.log10(finalNoiseSpectraData[i] / responseFactor));
 				}
 				dataset.add(xys);
 			} else {
