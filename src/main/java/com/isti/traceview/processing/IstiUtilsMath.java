@@ -482,7 +482,7 @@ public class IstiUtilsMath {
 	public static XYSeriesCollection varismooth(XYSeriesCollection toSmooth) {
 		XYSeriesCollection ret = new XYSeriesCollection();
 
-		IntStream.range(0, toSmooth.getSeriesCount()).parallel().forEachOrdered( i -> {
+		for (int i = 0; i < toSmooth.getSeriesCount(); ++i) {
 
 			// hold the values over which we are doing the moving average, to remove when out of range
 			List<XYDataItem> cachedPoints = new ArrayList<>();
@@ -588,7 +588,7 @@ public class IstiUtilsMath {
 				++currentPointIndexInQueue; // next point in list is one past the current point
 			}
 			ret.addSeries(smoothedSeries);
-		});
+		}
 
 		return ret;
 	}

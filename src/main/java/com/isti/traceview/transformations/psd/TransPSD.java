@@ -15,13 +15,17 @@ import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.commons.configuration.Configuration;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.jfree.data.xy.XYSeries;
 
 /**
@@ -32,6 +36,7 @@ import org.jfree.data.xy.XYSeries;
  */
 public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
+
 	public static final String NAME = "Power spectra density";
 
 	private int effectiveLength = 0;
@@ -39,6 +44,7 @@ public class TransPSD implements ITransformation {
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
 			JFrame parentFrame) {
+
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "PSD computation warning",
 					JOptionPane.WARNING_MESSAGE);
@@ -89,6 +95,7 @@ public class TransPSD implements ITransformation {
 		List<Double> tenSecPeriodRespMag = new ArrayList<>();
 		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
+
 		input.parallelStream().forEachOrdered(channel -> {
 
 			int[] intData;
@@ -193,11 +200,13 @@ public class TransPSD implements ITransformation {
 
 			// average each bin by dividing by the number of segments
 			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
+				// divide by the number of segments to average
+				// also divide by a correction factor related to the power loss from window function
 				finalNoiseSpectraData[i] /= numsegs;
-				// square the PSD and multiply by a correction factor based on the number of windows
 				finalNoiseSpectraData[i] = Math.pow(finalNoiseSpectraData[i], 2);
-				finalNoiseSpectraData[i] *= channel.getSampleRate();
-				finalNoiseSpectraData[i] /= (.875 * 13 * finalNoiseSpectraData.length);
+
+				finalNoiseSpectraData[i] /= (.875 * finalNoiseSpectraData.length);
+				finalNoiseSpectraData[i] *= channel.getSampleRate() / 1000;
 			}
 
 			// Note that channel.getSampleRate() really returns the sampling
@@ -252,6 +261,7 @@ public class TransPSD implements ITransformation {
 		logger.info("Resp. magnitude at appx. 10 seconds for first input: " + tenSecPeriodRespMag.get(0));
 
 		logger.info("\nPSD calculation duration = " + duration + " sec");
+
 
 		if (input.size() == 0) {
 			throw new XMAXException("Cannot find responses for any channels");
