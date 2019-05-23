@@ -77,13 +77,10 @@ public class TransPSDTest {
     }
 
     TransPSD psd = new TransPSD();
-    List<Spectra> psdData = psd.createData(toPSD, null, ti, null);
-    Spectra firstSpectra = psdData.get(0);
-    Spectra secondSpectra = psdData.get(1);
+    List<XYSeries> psdData = psd.createData(toPSD, null, ti, null);
 
-
-    XYSeries firstSeries = firstSpectra.getPSDSeries(OutputGenerator.VELOCITY_UNIT_CONV);
-    XYSeries secondSeries = secondSpectra.getPSDSeries(OutputGenerator.VELOCITY_UNIT_CONV);
+    XYSeries firstSeries = psdData.get(0);
+    XYSeries secondSeries = psdData.get(1);
 
     for (int i = 0; i < firstSeries.getItemCount(); ++i) {
       double x1 = (Double) firstSeries.getX(i);

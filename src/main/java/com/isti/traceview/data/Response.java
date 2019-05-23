@@ -232,7 +232,7 @@ public class Response {
 	*/
   public static FreqParameters getFreqParameters(int numSamples, double sampRate) {
     final double endFreq = sampRate / 2.0;
-    final int numFreq = (int) (numSamples / 2.0 + 1.0 + 0.5); // 0.5 for double to int conversion
+    final int numFreq = (int) (numSamples / 2.0 + 1.0 + 0.5); // 0.5 causes int cast to round up
     final double startFreq = endFreq / numFreq;
     //(double)
     final double sampFreq = (endFreq - startFreq) / (numFreq - 1.0);
