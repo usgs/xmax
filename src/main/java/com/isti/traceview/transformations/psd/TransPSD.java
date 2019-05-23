@@ -86,6 +86,7 @@ public class TransPSD implements ITransformation {
 			TimeInterval ti, JFrame parentFrame) throws XMAXException {
 		List<XYSeries> dataset = new ArrayList<>();
 		ListIterator<PlotDataProvider> li = input.listIterator();
+		List<Double> tenSecPeriodRespMag = new ArrayList<>();
 		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
 		input.parallelStream().forEachOrdered(channel -> {
@@ -193,8 +194,10 @@ public class TransPSD implements ITransformation {
 			// average each bin by dividing by the number of segments
 			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
 				finalNoiseSpectraData[i] /= numsegs;
-				// square the PSD
+				// square the PSD and multiply by a correction factor based on the number of windows
 				finalNoiseSpectraData[i] = Math.pow(finalNoiseSpectraData[i], 2);
+				finalNoiseSpectraData[i] *= channel.getSampleRate();
+				finalNoiseSpectraData[i] /= (.875 * 13 * finalNoiseSpectraData.length);
 			}
 
 			// Note that channel.getSampleRate() really returns the sampling
@@ -204,6 +207,7 @@ public class TransPSD implements ITransformation {
 					1000.0 / channel.getSampleRate());
 			final double[] frequenciesArray = RespUtils
 					.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
+
 
 			Cmplx[] response;
 			try {
@@ -219,6 +223,13 @@ public class TransPSD implements ITransformation {
 				for (int i = 0; i < frequenciesArray.length; ++i) {
 					// convert resp to units of acceleration and then deconvolve from spectral data
 					Cmplx resp = response[i];
+
+					if (1./frequenciesArray[i] == 10. ||
+							(i > 1 && 1./frequenciesArray[i] >= 10. && 1./frequenciesArray[i-1] <= 10.) ||
+							(i > 1 && 1./frequenciesArray[i] <= 10. && 1./frequenciesArray[i-1] >= 10.)) {
+						tenSecPeriodRespMag.add(resp.mag());
+					}
+
 					Cmplx scaleFactor = new Cmplx(0., -1 / (2. * Math.PI * frequenciesArray[i]));
 					resp = Cmplx.mul(resp, scaleFactor);
 					resp = Cmplx.mul(resp, resp.conjg());
@@ -228,7 +239,7 @@ public class TransPSD implements ITransformation {
 					}
 
 					xys.add(1./ frequenciesArray[i],
-							10 * Math.log10(finalNoiseSpectraData[i] / Math.pow(resp.mag(), 2)));
+							10 * Math.log10(finalNoiseSpectraData[i] / resp.mag()));
 				}
 				dataset.add(xys);
 			} else {
@@ -238,6 +249,8 @@ public class TransPSD implements ITransformation {
 		});
 		long endl = System.nanoTime() - startl;
 		double duration = endl * Math.pow(10, -9);
+		logger.info("Resp. magnitude at appx. 10 seconds for first input: " + tenSecPeriodRespMag.get(0));
+
 		logger.info("\nPSD calculation duration = " + duration + " sec");
 
 		if (input.size() == 0) {
