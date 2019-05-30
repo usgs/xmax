@@ -7,6 +7,7 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.processing.FFTResult;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.Rotation;
@@ -23,6 +24,7 @@ import java.util.ListIterator;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.math3.complex.Complex;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -92,184 +94,43 @@ public class TransPSD implements ITransformation {
 			TimeInterval ti, JFrame parentFrame) throws XMAXException {
 		List<XYSeries> dataset = new ArrayList<>();
 		ListIterator<PlotDataProvider> li = input.listIterator();
-		List<Double> tenSecPeriodRespMag = new ArrayList<>();
 		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
 
 		input.parallelStream().forEachOrdered(channel -> {
 
-			int[] intData;
-			try {
-				intData = channel.getContinuousGaplessDataOverRange(ti);
-			} catch (XMAXException e) {
-				throw new RuntimeException(e.getMessage());
-			}
-			int ds;
-			if (intData.length > maxDataLength) {
-				ds = maxDataLength; // maxDataLength is already a power of two
-				int[] tempIntData = new int[ds];
-				System.arraycopy(intData, 0, tempIntData, 0, maxDataLength);
-				intData = tempIntData;
-				((XMAXframe) parentFrame).getStatusBar().setMessage(
-						"Points count (" + intData.length + ") exceeds max value for trace " + channel
-								.getName());
-			} else {
-				ds = intData.length;
-			}
-			if (ds > effectiveLength) {
-				effectiveLength = ds;
-			}
-
-			logger.debug("data size = " + ds);
-
-			/*
-			 * Here we compute the power spectral density of the selected data
-			 * using the Welch method with 13 windows 75% overlap. The actual
-			 * PSD is calculated in the getPSD function within Spectra.java.
-			 */
-			int dsDataSegment = new Double(Math.round(intData.length / 4.0)).intValue();
-
-			int smallDataSegmentLimit = new Double(
-					Math.ceil(Math.pow(2, (Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1)))).intValue();
-			// set smallDataSegment limit to be one power of 2 less than the dsDataSegment length
-
-			int[] data = new int[smallDataSegmentLimit]; // data values in the time domain
-			Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; // array w/ current segment FFT
-
-			double[] finalNoiseSpectraData = new double[(smallDataSegmentLimit / 2) + 1];
-			// array containing the cumulative sum of each segment's FFT
-			// this is an array of doubles because doing the arithmetic w/ complex data causes noise
-
-			// loop indexes
-			int dsDataSegmentLimit = dsDataSegment;
-			// keeps track of where a segment ends in the data array
-			int cnt = 0; // keeps track where in the intData array the index is
-			int segIndex = 0; // keeps track of where the index is within an individual segment
-
-			// Perform windowing and compute the FFT of each segment. The
-			// finalNoiseSpectraData array contains the sum of the FFTs for all
-			// segments.
-			int numsegs = 1;
-			while (cnt < intData.length) {
-
-				if (cnt < dsDataSegmentLimit) {
-					if (segIndex < smallDataSegmentLimit)
-						data[segIndex] = intData[cnt];
-					cnt++;
-					segIndex++;
-				} else {
-					if (filter != null) {
-						data = new FilterFacade(filter, channel).filter(data);
+      try {
+        FFTResult data = FFTResult.getPSD(channel, ti);
+        double[] frequenciesArray = data.getFreqs();
+        Complex[] psd = data.getFFT();
+        XYSeries xys = new XYSeries(channel.getName());
+        for (int i = 0; i < frequenciesArray.length; ++i) {
+        	double period = 1. / frequenciesArray[i];
+        	// past 1E6 results are imprecise/unstable, and 0Hz is unplottable
+        	if (period < 1E6) {
+						xys.add(1. / frequenciesArray[i], 10 * Math.log10(psd[i].abs()));
 					}
-
-					// Make a copy of data to make it an array of doubles
-					double[] dataCopy = new double[data.length];
-					for (int i = 0; i < data.length; i++)
-						dataCopy[i] = data[i];
-
-					// Norm the data: remove mean
-					dataCopy = IstiUtilsMath.normData(dataCopy);
-
-					// Apply Hanning window
-					dataCopy = IstiUtilsMath.windowHanning(dataCopy);
-
-					// Calculate FFT of the current segment
-					noise_spectra = IstiUtilsMath.processFft(dataCopy);
-
-					// Compute a running total of the FFTs for all segments
-					for (int i = 0; i < noise_spectra.length; i++) {
-						finalNoiseSpectraData[i] += noise_spectra[i].mag();
-					}
-
-					// move cursors
-					segIndex = 0;
-					if (cnt + smallDataSegmentLimit > intData.length) // correction for last segment
-					{
-						cnt = intData.length - smallDataSegmentLimit;
-						dsDataSegmentLimit = intData.length;
-					} else {
-						cnt = cnt - ((smallDataSegmentLimit * 3) / 4); // move window backwards 75%
-						dsDataSegmentLimit = dsDataSegmentLimit + (smallDataSegmentLimit / 4);
-						// increase new dsDataSegmentLimit by 25%
-						numsegs++;
-					}
-
-				}
-
-			}
-
-			// average each bin by dividing by the number of segments
-			for (int i = 0; i < finalNoiseSpectraData.length; i++) {
-				// divide by the number of segments to average
-				// also divide by a correction factor related to the power loss from window function
-				finalNoiseSpectraData[i] /= numsegs;
-				finalNoiseSpectraData[i] = Math.pow(finalNoiseSpectraData[i], 2);
-
-				finalNoiseSpectraData[i] /= (.875 * finalNoiseSpectraData.length);
-				finalNoiseSpectraData[i] *= channel.getSampleRate() / 1000;
-			}
-
-			// Note that channel.getSampleRate() really returns the sampling
-			// interval. (e.g. For a sample frequency of 40Hz you have
-			// 1000.0/channel.getSampleRate() = 1000.0/25 = 40Hz)
-			final Response.FreqParameters fp = Response.getFreqParameters(smallDataSegmentLimit,
-					1000.0 / channel.getSampleRate());
-			final double[] frequenciesArray = RespUtils
-					.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
-
-
-			Cmplx[] response;
-			try {
-				response = channel.getResponse().getResp(ti.getStartTime(), fp.startFreq, fp.endFreq,
-						Math.max(finalNoiseSpectraData.length, fp.numFreq));
-			} catch (TraceViewException e) {
-				logger.error("Caught exception while trying to get response data: ", e);
-				throw new RuntimeException(e.getMessage());
-			}
-
-			if (response != null) {
-				XYSeries xys = new XYSeries(channel.getName());
-				for (int i = 0; i < frequenciesArray.length; ++i) {
-					// convert resp to units of acceleration and then deconvolve from spectral data
-					Cmplx resp = response[i];
-
-					if (1./frequenciesArray[i] == 10. ||
-							(i > 1 && 1./frequenciesArray[i] >= 10. && 1./frequenciesArray[i-1] <= 10.) ||
-							(i > 1 && 1./frequenciesArray[i] <= 10. && 1./frequenciesArray[i-1] >= 10.)) {
-						tenSecPeriodRespMag.add(resp.mag());
-					}
-
-					Cmplx scaleFactor = new Cmplx(0., -1 / (2. * Math.PI * frequenciesArray[i]));
-					resp = Cmplx.mul(resp, scaleFactor);
-					resp = Cmplx.mul(resp, resp.conjg());
-
-					if (resp.mag() == 0) {
-						resp = new Cmplx(Double.MIN_VALUE, 0.);
-					}
-
-					xys.add(1./ frequenciesArray[i],
-							10 * Math.log10(finalNoiseSpectraData[i] / resp.mag()));
-				}
-				dataset.add(xys);
-			} else {
-				respNotFound.append(", ");
-				respNotFound.append(channel.getName());
-			}
+        }
+        dataset.add(xys);
+      } catch (XMAXException e) {
+        throw new RuntimeException(e.getMessage());
+      } catch (TraceViewException e) {
+        respNotFound.append(", ");
+        respNotFound.append(channel.getName());
+      }
 		});
+
 		long endl = System.nanoTime() - startl;
 		double duration = endl * Math.pow(10, -9);
-		logger.info("Resp. magnitude at appx. 10 seconds for first input: " + tenSecPeriodRespMag.get(0));
-
 		logger.info("\nPSD calculation duration = " + duration + " sec");
-
 
 		if (input.size() == 0) {
 			throw new XMAXException("Cannot find responses for any channels");
 		} else {
 			if (respNotFound.length() > 0) {
-				JOptionPane.showMessageDialog(parentFrame, "Can not find responses for channels: " +
-								respNotFound.toString(),
-						"Warning", JOptionPane.WARNING_MESSAGE);
+			  String message = "Cannot find responses for these channels: " + respNotFound.toString();
+				JOptionPane.showMessageDialog(parentFrame, message,
+            "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 
