@@ -126,6 +126,63 @@ public class IstiUtilsMath {
 	}
 
 	/**
+	 * Calculates and performs an in-place cosine taper on an incoming data set.
+	 * Used for windowing for performing FFT.
+	 *
+	 * @param dataSet The dataset to have the taper applied to.
+	 * @param taperW Width of taper to be used
+	 * @return Value corresponding to power loss from application of taper.
+	 */
+	public static double cosineTaperInPlace(double[] dataSet, double taperW) {
+    /*
+    double widthSingleSide = taperW/2;
+    int ramp = (int) (widthSingleSide * dataSet.length);
+    widthSingleSide = (double) ramp / dataSet.length;
+    */
+		double wss = 0.0; // represents power loss
+
+		double[] taperCurve = getCosTaperCurveSingleSide(dataSet.length, taperW);
+		int ramp = taperCurve.length;
+
+		for (int i = 0; i < taperCurve.length; i++) {
+			double taper = taperCurve[i];
+			dataSet[i] *= taper;
+			int idx = dataSet.length - i - 1;
+			dataSet[idx] *= taper;
+			wss += 2.0 * taper * taper;
+		}
+
+		wss += (dataSet.length - (2 * ramp));
+
+		return wss;
+	}
+
+	/**
+	 * Return the cosine taper curve to multiply against data of a specified length, with taper of
+	 * given width
+	 *
+	 * @param length Length of data being tapered (to per-element multply against)
+	 * @param width Width of (half-) taper curve (i.e., decimal fraction of the data being tapered)
+	 * Because this parameter is used to create the actual length of the data, this should be half
+	 * the value of the full taper.
+	 * @return Start of taper curve, symmetric to end, with all other entries being implicitly 1.0
+	 */
+	public static double[] getCosTaperCurveSingleSide(int length, double width) {
+		// width = width/2;
+		int ramp = (int) ((((length * width) + 1) / 2.) - 1);
+
+		// int limit = (int) Math.ceil(ramp);
+
+		double[] result = new double[ramp];
+		for (int i = 0; i < ramp; i++) {
+			double taper = 0.5 * (1.0 - Math.cos(i * Math.PI / ramp));
+			result[i] = taper;
+		}
+
+		return result;
+	}
+
+	/**
 	 * Function for normalizing data vector with Hamming window.
 	 * 
 	 * @param data
