@@ -95,19 +95,21 @@ public class DataModule extends Observable {
    *
    * @param files List of file objects to be loaded in
    */
-  public void loadNewDataFromSources(File... files) {
+  public File[] loadNewDataFromSources(File... files) {
     // TODO: probably need to find a way to parallelize this?
+    List<File> filesProducingError = new ArrayList<>(files.length);
     for (File file : files) {
       try {
         logger.info("Loading in " + file.getCanonicalPath());
       } catch (IOException e) {
+        filesProducingError.add(file);
         logger.error(e);
+        continue;
       }
       ISource fileParser = SourceFile.getDataFile(file);
       addDataSource(fileParser);
       Set<PlotDataProvider> dataSet = fileParser.parse();
       for (PlotDataProvider channel : dataSet) {
-        logger.info("Merging in from " + channel.getName());
         String station = channel.getStation().getName();
         getOrAddStation(station);
         // merge in the new data into any channel that may already exist
@@ -120,6 +122,7 @@ public class DataModule extends Observable {
     for (RawDataProvider channel : channels) {
       channel.sort(); // properly numerate segments, gaps, etc. for channel plot coloration
     }
+    return filesProducingError.toArray(new File[]{});
   }
 
   /**
