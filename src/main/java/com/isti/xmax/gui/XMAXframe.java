@@ -205,6 +205,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private JMenuItem saveSACMenuItem = null;
 
 	private JMenuItem reloadMenuItem = null;
+	private JMenuItem loadMenuItem;
+	private JMenuItem deleteMenuItem;
 
 	private JMenuItem printMenuItem = null;
 
@@ -261,7 +263,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new SelectChannelsAction();
 		actionMap.put(action.getValue(Action.NAME), action);
-		action = new DeselectAllAction();
+		action = new ClearSelectionAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new ScaleModeAutoAction();
 		actionMap.put(action.getValue(Action.NAME), action);
@@ -347,6 +349,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		action = new AboutAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new ExitAction();
+		actionMap.put(action.getValue(Action.NAME), action);
+		action = new AddDataAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 
 		// adding actions for filter plugins
@@ -544,7 +548,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		try {
 			graphPanel.setChannelShowSet(dm.getNextChannelSet());
 		} catch (TraceViewException e) {
-			JOptionPane.showMessageDialog(this, "This is the last set", "Information", JOptionPane.INFORMATION_MESSAGE);
+			if (dm.getAllSources().size() > 0) {
+				JOptionPane.showMessageDialog(this, "This is the last set", "Information",
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				String message = "No data specified in configuration or command-line on startup.\n"
+						+ "Please select the load data option from the menu in order to load data.";
+				JOptionPane.showMessageDialog(this, message, "Information", JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 		statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
 				dm.getAllChannels().size());
@@ -810,15 +821,35 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			fileMenu = new JMenu();
 			fileMenu.setText("File");
 			fileMenu.setMnemonic(KeyEvent.VK_F);
-			fileMenu.add(getAboutMenuItem());
+			fileMenu.add(getLoadMenuItem());
+			fileMenu.add(getReloadMenuItem());
+			fileMenu.add(getDeleteMenuItem());
 			fileMenu.add(getUndoMenuItem());
+			fileMenu.add(getAboutMenuItem());
 			fileMenu.add(getPrintMenuItem());
 			fileMenu.add(getDumpMenu());
 			fileMenu.add(getExportMenu());
-			fileMenu.add(getReloadMenuItem());
 			fileMenu.add(getExitMenuItem());
 		}
 		return fileMenu;
+	}
+
+	private JMenuItem getDeleteMenuItem() {
+		if (deleteMenuItem == null) {
+			deleteMenuItem = new JMenuItem();
+			deleteMenuItem.setAction(actionMap.get("Clear selected"));
+			deleteMenuItem.addMouseListener(this);
+		}
+		return deleteMenuItem;
+	}
+
+	private JMenuItem getLoadMenuItem() {
+		if (loadMenuItem == null) {
+			loadMenuItem = new JMenuItem();
+			loadMenuItem.setAction(actionMap.get("Add data"));
+			loadMenuItem.addMouseListener(this);
+		}
+		return loadMenuItem;
 	}
 
 	/**
@@ -1762,23 +1793,32 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	/*
-	 * Deselects all selected channels
+	 * Removes all selected channels from the data module
 	 */
-	class DeselectAllAction extends AbstractAction implements Action {
+	class ClearSelectionAction extends AbstractAction implements Action {
 
 		private static final long serialVersionUID = 1L;
 
-		DeselectAllAction() {
+		ClearSelectionAction() {
 			super();
-			putValue(Action.NAME, "Deselect All");
-			putValue(Action.SHORT_DESCRIPTION, "Deselect All");
-			putValue(Action.LONG_DESCRIPTION, "Deselects all currently selected channels.");
+			putValue(Action.NAME, "Clear selected");
+			putValue(Action.SHORT_DESCRIPTION, "clear");
+			putValue(Action.LONG_DESCRIPTION, "Unloads all currently selected channels.");
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_U);
 		}
 
 		@Override
     public void actionPerformed(ActionEvent e) {
-			graphPanel.clearSelectedChannels();
+
+			List<PlotDataProvider> channels = graphPanel.getCurrentSelectedChannels();
+			XMAXDataModule dm = XMAX.getDataModule();
+			dm.deleteChannels(channels);
+			try {
+				dm.reLoadData();
+				graphPanel.setChannelShowSet(XMAX.getDataModule().getNextChannelSet());
+			} catch (TraceViewException e1) {
+				logger.error(e1);
+			}
 		}
 	}
 
@@ -2337,6 +2377,60 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			} finally {
 				statusBar.setMessage("");
 				setWaitCursor(false);
+			}
+		}
+	}
+
+	class AddDataAction extends AbstractAction implements Action {
+
+		AddDataAction() {
+			super();
+			putValue(Action.NAME, "Add data");
+			putValue(Action.SHORT_DESCRIPTION, "Add more data");
+			putValue(Action.LONG_DESCRIPTION, "Load in additional data files");
+			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser jfc = new JFileChooser();
+			jfc.setMultiSelectionEnabled(true);
+			if (XMAXconfiguration.getInstance().getDataPath() != null) {
+				jfc.setCurrentDirectory(new File(XMAXconfiguration.getInstance().getDataPath()));
+			}
+			int selectionState = jfc.showOpenDialog(XMAXframe.getInstance());
+			if (selectionState == JFileChooser.APPROVE_OPTION) {
+				File[] files = jfc.getSelectedFiles();
+				File[] errors = XMAXDataModule.getInstance().loadNewDataFromSources(files);
+
+				if (errors.length > 0) {
+					StringBuilder erroringFnames = new StringBuilder("Could not load the following files:\n");
+					for (File error : errors) {
+						erroringFnames.append(error.getName() + "\n");
+					}
+					logger.error(erroringFnames.toString());
+					JOptionPane.showMessageDialog(XMAXframe.getInstance(), erroringFnames.toString(),
+							"Could not load in all data!", JOptionPane.ERROR_MESSAGE);
+				}
+
+				try {
+					XMAX.getFrame().getGraphPanel().removeAll();
+					XMAXDataModule dm = XMAXDataModule.getInstance();
+					dm.reLoadData();
+					try {
+						graphPanel.setChannelShowSet(dm.getNextChannelSet());
+					} catch (TraceViewException ex) {
+						JOptionPane.showMessageDialog(XMAX.getFrame(), ex.getMessage(), "Information",
+								JOptionPane.INFORMATION_MESSAGE);
+						getGraphPanel().forceRepaint();
+					}
+
+					statusBar
+							.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
+									dm.getAllChannels().size());
+				} catch (TraceViewException e1) {
+					logger.error(e1);
+				}
 			}
 		}
 	}
@@ -3398,24 +3492,44 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		private static final long serialVersionUID = 1L;
 		private JButton selectButton = null;
 		private JButton overlayButton = null;
-		private JButton deselectAllButton = null;
+		private JButton clearSelectedButton = null;
 		private JButton demeanButton = null;
 		private JButton offsetButton = null;
 		private JButton colormodeButton = null;
+		private JButton reloadButton;
+		private JButton addDataButton;
 
 		SelectionButtonPanel() {
 			super();
-			GridLayout gridLayout = new GridLayout(3, 2);
+			GridLayout gridLayout = new GridLayout(4, 2);
 			setLayout(gridLayout);
 			setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			setPreferredSize(new Dimension(100, 100));
 			// Add buttons
 			add(getSelectButton(), null);
 			add(getOverlayButton(), null);
-			add(getDeselectAllButton(), null);
+			add(getClearSelectedButton(), null);
 			add(getDemeanButton(), null);
 			add(getOffsetButton(), null);
 			add(getColorModeButton(), null);
+			add(getReloadButton(), null);
+			add(getAddDataButton(), null);
+		}
+
+		private JButton getReloadButton() {
+			if (reloadButton == null) {
+				reloadButton = new JButton("Reload all data");
+				reloadButton.addActionListener(this);
+			}
+			return reloadButton;
+		}
+
+		private JButton getAddDataButton() {
+			if (addDataButton == null) {
+				addDataButton = new JButton("Load (more) data");
+				addDataButton.addActionListener(this);
+			}
+			return addDataButton;
 		}
 
 		private JButton getColorModeButton() {
@@ -3442,12 +3556,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			return overlayButton;
 		}
 
-		private JButton getDeselectAllButton() {
-			if (deselectAllButton == null) {
-				deselectAllButton = new JButton("Deselect All");
-				deselectAllButton.addActionListener(this);
+		private JButton getClearSelectedButton() {
+			if (clearSelectedButton == null) {
+				clearSelectedButton = new JButton("Unload Selected");
+				clearSelectedButton.addActionListener(this);
 			}
-			return deselectAllButton;
+			return clearSelectedButton;
 		}
 
 		private JButton getDemeanButton() {
@@ -3482,11 +3596,17 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			} else if (src == offsetButton) {
 				action = actionMap.get("Offset Segments");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
-			} else if (src == deselectAllButton) {
-				action = actionMap.get("Deselect All");
+			} else if (src == clearSelectedButton) {
+				action = actionMap.get("Clear selected");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			} else if (src == colormodeButton) {
 				action = actionMap.get("Color mode");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == reloadButton) {
+				action = actionMap.get("Reload data");
+				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
+			} else if (src == addDataButton) {
+				action = actionMap.get("Add data");
 				action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 			}
 		}
