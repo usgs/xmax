@@ -180,27 +180,21 @@ public class XMAX extends TraceView {
 					transformations = reflect.getSubTypesOf(ITransformation.class);
 
 					setDataModule(XMAXDataModule.getInstance());
-
 					getDataModule().loadData();
 
-					if (getDataModule().getAllChannels().size() > 0) {
-						setFrame(XMAXframe.getInstance());
-						if (XMAXconfiguration.getInstance().getTimeInterval() != null) {
-							getFrame().setShouldManageTimeRange(false);
-							getFrame().setTimeRange(XMAXconfiguration.getInstance().getTimeInterval());
-						}
-						try {
-							// Wait while frame will be created to correct repaint
-							Thread.sleep(200);
-						} catch (InterruptedException e) {
-							logger.error("InterruptedException:", e);
-						}
-						getFrame().setVisible(true);
-						getFrame().setShouldManageTimeRange(true);
-					} else {
-						JOptionPane.showMessageDialog(null, "No data found at path " + XMAXconfiguration.getInstance().getDataPath(), "Alert",
-								JOptionPane.WARNING_MESSAGE);
+					setFrame(XMAXframe.getInstance());
+					if (XMAXconfiguration.getInstance().getTimeInterval() != null) {
+						getFrame().setShouldManageTimeRange(false);
+						getFrame().setTimeRange(XMAXconfiguration.getInstance().getTimeInterval());
 					}
+					try {
+						// Wait while frame will be created to correct repaint
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						logger.error("InterruptedException:", e);
+					}
+					getFrame().setVisible(true);
+					getFrame().setShouldManageTimeRange(true);
 				}
 			}
 		} catch (Exception e) {
