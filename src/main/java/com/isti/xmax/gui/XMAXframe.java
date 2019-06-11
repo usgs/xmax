@@ -1815,7 +1815,21 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			dm.deleteChannels(channels);
 			try {
 				dm.reLoadData();
-				graphPanel.setChannelShowSet(XMAX.getDataModule().getNextChannelSet());
+				graphPanel.setChannelShowSet(XMAX.getDataModule().getCurrentChannelSet());
+				// we will go ahead and reset all the plots as well to prevent weird GUI snags
+				graphPanel.setScaleMode(new ScaleModeAuto());
+				graphPanel.setMeanState(new MeanModeDisabled());
+				graphPanel.setOffsetState(new OffsetModeDisabled());
+				graphPanel.setPickState(false);
+				graphPanel.setPhaseState(false);
+				graphPanel.setFilter(null);
+				graphPanel.setManualValueMax(Integer.MIN_VALUE);
+				graphPanel.setManualValueMin(Integer.MAX_VALUE);
+				// if the dataset is empty, first value will be 1 and second will be zero
+				// and in that case we expect the channel count message to be "0-0 of 0"
+				int startIndex = Math.min(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex());
+				statusBar.setChannelCountMessage(startIndex, dm.getChannelSetEndIndex(),
+						dm.getAllChannels().size());
 			} catch (TraceViewException e1) {
 				logger.error(e1);
 			}
