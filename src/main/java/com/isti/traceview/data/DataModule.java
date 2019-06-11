@@ -494,6 +494,27 @@ public class DataModule extends Observable {
   }
 
   /**
+   * Gets traces list for current window, see {@link DataModule#getWindowSize(boolean)}
+   *
+   * @return list of traces for previous display window
+   */
+  public List<PlotDataProvider> getCurrentChannelSet() {
+    synchronized (channels) {
+      int newWindowSize = getWindowSize(false);
+      if ((newWindowSize != 0)) {
+        from = markerPosition;
+        to = Math.min(markerPosition + newWindowSize, channels.size());
+        windowSize = 0;
+        logger.debug("END: from " + from
+            + ", to " + to);
+        return channels.subList(from, to);
+      } else {
+        return new ArrayList<>();
+      }
+    }
+  }
+
+  /**
    * @param ws an unused parameter probably a window state?
    * @return flag if we have previous window (if no, this one is the first)
    * @deprecated This method appears to not be used by anything.
