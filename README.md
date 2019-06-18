@@ -2,7 +2,7 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
 ====
 
 ### Purpose
-    XMAX waveform display for .seed files
+    XMAX waveform display for seismic data.
 
 ### Configuration
     The main configuration is found in config.xml. File is under
