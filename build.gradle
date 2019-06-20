@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+    compile project(':asl-java-utils')
+    
     compile group: 'org.jfree', name: 'jfreechart', version: '1.0.+'
     compile group: 'org.jfree', name: 'jcommon', version: '1.0.+'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.2'

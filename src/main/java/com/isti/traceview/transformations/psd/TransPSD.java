@@ -1,33 +1,24 @@
 package com.isti.traceview.transformations.psd;
 
-import com.isti.jevalresp.RespUtils;
+import asl.utils.FFTResult;
+import asl.utils.TimeSeriesUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.data.Response;
-import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.FFTResult;
-import com.isti.traceview.processing.FilterFacade;
-import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Rotation;
-import com.isti.traceview.processing.Spectra;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.IntStream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.math3.complex.Complex;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.jfree.data.xy.XYSeries;
 
 /**
@@ -100,7 +91,7 @@ public class TransPSD implements ITransformation {
 		input.parallelStream().forEachOrdered(channel -> {
 
       try {
-        FFTResult data = FFTResult.getPSD(channel, ti);
+        FFTResult data = getPSD(channel, ti);
         double[] frequenciesArray = data.getFreqs();
         Complex[] psd = data.getFFT();
         XYSeries xys = new XYSeries(channel.getName());
@@ -137,6 +128,37 @@ public class TransPSD implements ITransformation {
 		return dataset;
 	}
 
+	public static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti)
+			throws XMAXException, TraceViewException {
+
+		int[] data = channel.getContinuousGaplessDataOverRange(ti);
+		double[] doubleData = new double[data.length];
+
+		IntStream.range(0, doubleData.length).parallel().forEach(i ->
+				doubleData[i] = (double) data[i]
+		);
+
+		int dataLength = doubleData.length / 4;
+		int padLength = 2;
+		while (padLength < dataLength) {
+			padLength = padLength << 1;
+		}
+
+		long interval = (long) channel.getSampleRate();
+		double period = interval / (double) TimeSeriesUtils.ONE_HZ_INTERVAL;
+		double deltaFreq = 1. / (padLength * period);
+		double endFreq = deltaFreq * (padLength - 1);
+
+		Cmplx[] response = channel.getResponse().getResp(ti.getStartTime(), 0,
+				endFreq, padLength);
+
+		Complex[] responseAdapted = new Complex[response.length];
+		IntStream.range(0, responseAdapted.length).parallel().forEach(i ->
+				responseAdapted[i] = new Complex(response[i].real(), response[i].imag())
+		);
+
+		return FFTResult.powerSpectra(doubleData, interval, responseAdapted);
+	}
 
 	@Override
 	public String getName() {

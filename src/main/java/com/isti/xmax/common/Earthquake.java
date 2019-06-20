@@ -228,7 +228,7 @@ public class Earthquake extends AbstractEvent implements IEvent {
 			TauP_Time timeTool = new TauP_Time("iasp91");
 			timeTool.setPhaseNames(phases);
 			for (IEvent earthquake : XMAX.getDataModule().getEarthquakes()) {
-				timeTool.depthCorrect((Double) earthquake
+				timeTool.setSourceDepth((Double) earthquake
 						.getParameterValue("DEPTH"));
 				DistAz da = new DistAz(
 						(Double) earthquake.getParameterValue("LATITUDE"),
