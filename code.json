@@ -1,0 +1,47 @@
+[
+  {
+    "name": "xmax",
+    "organization": "U.S. Geological Survey",
+    "description": "XMAX waveform display for seismic data",
+    "version": "2.3.1",
+    "status": "Production",
+
+    "permissions": {
+      "usageType": "openSource",
+      "licenses": [
+        {
+          "name": "GPL v2.0",
+          "URL": "https://github.com/usgs/xmax/blob/master/LICENSE.md"
+        }
+      ]
+    },
+
+    "homepageURL": "https://usgs.github.io/xmax/",
+    "downloadURL": "https://github.com/usgs/xmax/archive/master.zip",
+    "disclaimerURL": "https://github.com/usgs/xmax/blob/master/DISCLAIMER.md",
+    "repositoryURL": "https://github.com/usgs/xmax.git",
+    "vcs": "git",
+
+    "laborHours": 2000,
+
+    "tags": [
+      "Seismic-Hazards",
+      "miniSeed Data",
+      "ASL",
+      "seismic data quality"
+    ],
+
+    "languages": [
+      "Java"
+    ],
+
+    "contact": {
+      "name": "James Holland",
+      "email": "jholland@usgs.gov"
+    },
+
+    "date": {
+      "metadataLastUpdated": "2019-06-18"
+    }
+  }
+]
