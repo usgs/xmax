@@ -1,0 +1,3 @@
+[submodule "asl-java-utils"]
+	path = asl-java-utils
+	url = git@code.usgs.gov:asl/asl-java-utils.git
