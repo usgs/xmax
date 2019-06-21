@@ -2,7 +2,14 @@ language: java
 os:
   - linux
 jdk:
-  - oraclejdk8
   - openjdk8
+
+git:
+  submodules: false
+
+before_install:
+  - sed -i 's/git@code.usgs.gov:/https:\/\/code.usgs.gov\//' .gitmodules
+  - git submodule update --init --recursive
+
 sudo: false
 script: gradle check
