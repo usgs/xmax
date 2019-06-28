@@ -88,7 +88,7 @@ public class TransPSD implements ITransformation {
 		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
 
-		input.parallelStream().forEachOrdered(channel -> {
+		input.parallelStream().forEach(channel -> {
 
       try {
         FFTResult data = getPSD(channel, ti);

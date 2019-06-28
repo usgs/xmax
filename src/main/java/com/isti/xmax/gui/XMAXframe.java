@@ -1811,6 +1811,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
     public void actionPerformed(ActionEvent e) {
 
 			List<PlotDataProvider> channels = graphPanel.getCurrentSelectedChannels();
+			if (channels.size() == 0)
+				return; // don't do anything if the list is empty
 			XMAXDataModule dm = XMAX.getDataModule();
 			dm.deleteChannels(channels);
 			try {
