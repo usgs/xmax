@@ -3,6 +3,7 @@ package com.isti.traceview.filters;
 import asl.utils.FilterUtils;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.LPFilterException;
+import org.apache.log4j.Logger;
 
 /**
  * Low-pass Butterworth filter Algorithm is from Stearns, 1975
@@ -11,6 +12,10 @@ import com.isti.traceview.processing.LPFilterException;
 public class FilterLP implements IFilter {
 	public static final String DESCRIPTION = "Apply Low Pass filter for selected channels";
 	public static final String NAME = "LP";
+
+	/** The Constant logger. */
+	private static final Logger logger = Logger.getLogger(FilterLP.class); // @jve:decl-index=0:
+
 	/**
 	 * number of filter sections
 	 */
@@ -52,7 +57,7 @@ public class FilterLP implements IFilter {
 	 *            trace to retrieve information
 	 */
 	synchronized public void init(RawDataProvider channel) {
-		sampleRate = channel.getSampleRate() / 1000.0;
+		sampleRate = 1000.0 / channel.getSampleRate();
 	}
 
 	/**
