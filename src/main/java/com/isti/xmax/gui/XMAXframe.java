@@ -1598,6 +1598,14 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				XMAXDataModule dm = XMAX.getDataModule();
+				if (dm.getChannelSetStartIndex() == 0) {
+					JOptionPane.showMessageDialog(XMAX.getFrame(), "This is the first set", "Information",
+							JOptionPane.INFORMATION_MESSAGE);
+					getGraphPanel().forceRepaint();
+					statusBar.setMessage("");
+					setWaitCursor(false);
+					return;
+				}
 				graphPanel.setChannelShowSet(dm.getPreviousChannelSet());
 				graphPanel.setScaleMode(new ScaleModeAuto());
 				graphPanel.setMeanState(new MeanModeDisabled());
@@ -1815,26 +1823,24 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				return; // don't do anything if the list is empty
 			XMAXDataModule dm = XMAX.getDataModule();
 			dm.deleteChannels(channels);
-			try {
-				dm.reLoadData();
-				graphPanel.setChannelShowSet(XMAX.getDataModule().getCurrentChannelSet());
-				// we will go ahead and reset all the plots as well to prevent weird GUI snags
-				graphPanel.setScaleMode(new ScaleModeAuto());
-				graphPanel.setMeanState(new MeanModeDisabled());
-				graphPanel.setOffsetState(new OffsetModeDisabled());
-				graphPanel.setPickState(false);
-				graphPanel.setPhaseState(false);
-				graphPanel.setFilter(null);
-				graphPanel.setManualValueMax(Integer.MIN_VALUE);
-				graphPanel.setManualValueMin(Integer.MAX_VALUE);
-				// if the dataset is empty, first value will be 1 and second will be zero
-				// and in that case we expect the channel count message to be "0-0 of 0"
-				int startIndex = Math.min(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex());
-				statusBar.setChannelCountMessage(startIndex, dm.getChannelSetEndIndex(),
-						dm.getAllChannels().size());
-			} catch (TraceViewException e1) {
-				logger.error(e1);
-			}
+			int panelCount = XMAXconfiguration.getInstance().getUnitsInFrame();
+
+			graphPanel.setChannelShowSet(XMAX.getDataModule().getCurrentChannelSet(panelCount));
+			// we will go ahead and reset all the plots as well to prevent weird GUI snags
+			graphPanel.setScaleMode(new ScaleModeAuto());
+			graphPanel.setMeanState(new MeanModeDisabled());
+			graphPanel.setOffsetState(new OffsetModeDisabled());
+			graphPanel.setPickState(false);
+			graphPanel.setPhaseState(false);
+			graphPanel.setFilter(null);
+			graphPanel.setManualValueMax(Integer.MIN_VALUE);
+			graphPanel.setManualValueMin(Integer.MAX_VALUE);
+			graphPanel.repaint();
+			// if the dataset is empty, first value will be 1 and second will be zero
+			// and in that case we expect the channel count message to be "0-0 of 0"
+			int startIndex = Math.min(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex());
+			statusBar.setChannelCountMessage(startIndex, dm.getChannelSetEndIndex(),
+					dm.getAllChannels().size());
 		}
 	}
 
