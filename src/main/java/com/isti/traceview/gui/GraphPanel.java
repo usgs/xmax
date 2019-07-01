@@ -1569,6 +1569,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @return time value in internal Java format
 	 */
 	public long getTime(int x) {
+		if (getChannelSet().size() == 0) {
+			return 0;
+		}
 		// lg.debug("GraphPanel getTime: " + x);
 		Insets i = getInsets();
 		double sr = (double) getTimeRange().getDuration() / (getWidth() - i.left - i.right - channelViewFactory.getInfoAreaWidth());
