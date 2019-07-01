@@ -54,7 +54,7 @@ public class FilterHP implements IFilter {
 	 *            trace to retrieve information
 	 */
 	synchronized public void init(RawDataProvider channel) {
-		sampleRate = channel.getSampleRate() / 1000.0;
+		sampleRate = 1000.0 / channel.getSampleRate();
 	}
 
 	/**
