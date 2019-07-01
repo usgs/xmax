@@ -430,7 +430,9 @@ public class DataModule extends Observable {
   public int getChannelSetStartIndex() {
     synchronized (channels) {
       // lg.debug("DataModule.getChannelSetStartIndex()");
-      return from;
+      // don't allow the start index to be negative -- this might change when trying to get active
+      // range of panel displays when a trace was deleted
+      return Math.max(from, 0);
     }
   }
 
@@ -443,6 +445,11 @@ public class DataModule extends Observable {
   public int getChannelSetEndIndex() {
     synchronized (channels) {
       // lg.debug("DataModule.getChannelSetEndIndex()");
+      // we set the value of to here in the event a channel was deleted
+      // otherwise our bounds will be messed up as we don't shift current active view range
+      // i.e., if we are in the last show set, deleting a trace shrinks set size by 1
+      // and so 'to' should be shrunk as well to reflect that
+      to = Math.min(to, channels.size());
       return to;
     }
   }
@@ -493,25 +500,17 @@ public class DataModule extends Observable {
     }
   }
 
-  /**
-   * Gets traces list for current window, see {@link DataModule#getWindowSize(boolean)}
-   *
-   * @return list of traces for previous display window
-   */
-  public List<PlotDataProvider> getCurrentChannelSet() {
-    synchronized (channels) {
-      int newWindowSize = getWindowSize(false);
-      if ((newWindowSize != 0)) {
-        from = markerPosition;
-        to = Math.min(markerPosition + newWindowSize, channels.size());
-        windowSize = 0;
-        logger.debug("END: from " + from
-            + ", to " + to);
-        return channels.subList(from, to);
-      } else {
-        return new ArrayList<>();
-      }
+  public List<PlotDataProvider> getCurrentChannelSet(int frameUnits) {
+    if (channels.size() == 0) {
+      return new ArrayList<>();
     }
+    int start = getChannelSetStartIndex();
+    while (start >= channels.size()) {
+      from -= frameUnits;
+      start = getChannelSetStartIndex();
+    }
+    int end = getChannelSetEndIndex();
+    return channels.subList(start, end);
   }
 
   /**
@@ -539,6 +538,7 @@ public class DataModule extends Observable {
   private int getWindowSize(boolean isForward) {
     Configuration.PanelCountUnit unit = TraceView.getConfiguration().getPanelCountUnit();
     int unitsInFrame = TraceView.getConfiguration().getUnitsInFrame();
+    logger.debug("Units in frame: " + unitsInFrame);
     if (unit.equals(Configuration.PanelCountUnit.ALL)) {
       return channels.size();
     } else if (unit.equals(Configuration.PanelCountUnit.TRACE)) {
