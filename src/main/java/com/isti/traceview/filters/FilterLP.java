@@ -42,7 +42,7 @@ public class FilterLP implements IFilter {
 	 * Default constructor
 	 */
 	public FilterLP() {
-		this(2, 0.05);
+		this(4, 0.05);
 	}
 
 	@Override
