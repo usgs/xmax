@@ -39,7 +39,7 @@ public class FilterHP implements IFilter {
 	 * Default constructor
 	 */
 	public FilterHP() {
-		this(2, 1);
+		this(4, 1);
 	}
 
 	@Override

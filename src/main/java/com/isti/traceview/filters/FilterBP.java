@@ -62,7 +62,7 @@ public class FilterBP implements IFilter {
 	 * Default constructor
 	 */
 	public FilterBP() {
-		this(2, 0.1, 0.5);
+		this(4, 0.1, 0.5);
 	}
 
 	/**
