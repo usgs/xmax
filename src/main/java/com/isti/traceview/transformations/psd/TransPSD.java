@@ -57,10 +57,6 @@ public class TransPSD implements ITransformation {
 				if (!e.getMessage().equals("Operation cancelled")) {
 					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 				}
-			} catch (RuntimeException e) {
-				logger.error(e);
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		((XMAXframe) parentFrame).getGraphPanel().forceRepaint();
@@ -88,28 +84,25 @@ public class TransPSD implements ITransformation {
 		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
 
-		input.parallelStream().forEach(channel -> {
-
-      try {
-        FFTResult data = getPSD(channel, ti);
-        double[] frequenciesArray = data.getFreqs();
-        Complex[] psd = data.getFFT();
-        XYSeries xys = new XYSeries(channel.getName());
-        for (int i = 0; i < frequenciesArray.length; ++i) {
-        	double period = 1. / frequenciesArray[i];
-        	// past 1E6 results are imprecise/unstable, and 0Hz is unplottable
-        	if (period < 1E6) {
+		for (PlotDataProvider channel : input) {
+			try {
+				FFTResult data = getPSD(channel, ti);
+				double[] frequenciesArray = data.getFreqs();
+				Complex[] psd = data.getFFT();
+				XYSeries xys = new XYSeries(channel.getName());
+				for (int i = 0; i < frequenciesArray.length; ++i) {
+					double period = 1. / frequenciesArray[i];
+					// past 1E6 results are imprecise/unstable, and 0Hz is unplottable
+					if (period < 1E6) {
 						xys.add(1. / frequenciesArray[i], 10 * Math.log10(psd[i].abs()));
 					}
-        }
-        dataset.add(xys);
-      } catch (XMAXException e) {
-        throw new RuntimeException(e.getMessage());
-      } catch (TraceViewException e) {
-        respNotFound.append(", ");
-        respNotFound.append(channel.getName());
-      }
-		});
+				}
+				dataset.add(xys);
+			} catch (TraceViewException e) {
+				respNotFound.append(", ");
+				respNotFound.append(channel.getName());
+			}
+		}
 
 		long endl = System.nanoTime() - startl;
 		double duration = endl * Math.pow(10, -9);
