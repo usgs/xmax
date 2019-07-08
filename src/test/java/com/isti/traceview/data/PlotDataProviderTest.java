@@ -61,9 +61,9 @@ public class PlotDataProviderTest {
 
     double[] filteredCalculated = defaultLPFilter.filter(initData, sampleCount);
     double[] filteredExpected = new double[]{
-        0.001902, 0.008398, 0.018059,
-        0.026400, 0.029003, 0.021730,
-        6.88E-4, -0.037911
+        0.000000, 0.000000, 0.000001,
+        0.000000, 0.000006, 0.000011,
+        0.000017, 0.000023
     };
 
     for (int i = 0; i < filteredExpected.length; ++i) {
