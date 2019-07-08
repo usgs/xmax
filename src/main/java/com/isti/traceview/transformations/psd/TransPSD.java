@@ -84,7 +84,7 @@ public class TransPSD implements ITransformation {
 		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
 
-		for (PlotDataProvider channel : input) {
+		input.parallelStream().forEachOrdered(channel -> {
 			try {
 				FFTResult data = getPSD(channel, ti);
 				double[] frequenciesArray = data.getFreqs();
@@ -101,8 +101,10 @@ public class TransPSD implements ITransformation {
 			} catch (TraceViewException e) {
 				respNotFound.append(", ");
 				respNotFound.append(channel.getName());
+			} catch (XMAXException e) {
+				logger.error(e);
 			}
-		}
+		});
 
 		long endl = System.nanoTime() - startl;
 		double duration = endl * Math.pow(10, -9);
