@@ -1,6 +1,7 @@
 package com.isti.traceview.filters;
 
 import asl.utils.FilterUtils;
+import asl.utils.TimeSeriesUtils;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.LPFilterException;
 import org.apache.log4j.Logger;
@@ -73,6 +74,7 @@ public class FilterLP implements IFilter {
 		if (data.length > length)
 			throw new LPFilterException("Requested filtering length exceeds provided array length");
 
+		TimeSeriesUtils.demeanInPlace(data);
 		return FilterUtils.lowPassFilter(data, sampleRate, cutFrequency, order);
 	}
 
