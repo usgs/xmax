@@ -1,6 +1,7 @@
 package com.isti.traceview.filters;
 
 import asl.utils.FilterUtils;
+import asl.utils.TimeSeriesUtils;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.HPFilterException;
 
@@ -70,7 +71,8 @@ public class FilterHP implements IFilter {
 		if (data.length > length)
 			throw new HPFilterException("Requested filtering length exceeds provided array length");
 
-		return FilterUtils.highPassFilter(data, sampleRate, cutFrequency, order);
+    TimeSeriesUtils.demeanInPlace(data);
+    return FilterUtils.highPassFilter(data, sampleRate, cutFrequency, order);
 	}
 
 	public boolean needProcessing() {

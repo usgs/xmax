@@ -1,6 +1,7 @@
 package com.isti.traceview.filters;
 
 import asl.utils.FilterUtils;
+import asl.utils.TimeSeriesUtils;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
 
@@ -88,6 +89,7 @@ public class FilterBP implements IFilter {
 		if (data.length > length)
 			throw new BPFilterException("Requested filtering length exceeds provided array length");
 
+		TimeSeriesUtils.demeanInPlace(data);
 		return FilterUtils.bandFilter(data, sampleRate, cutLowFrequency, cutHighFrequency, order);
 	}
 
