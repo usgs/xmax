@@ -62,13 +62,15 @@ public class PlotDataProviderTest {
     double[] filteredCalculated = defaultLPFilter.filter(initData, sampleCount);
     double[] filteredExpected = new double[]{
         0.000000, 0.000000, 0.000001,
-        0.000000, 0.000006, 0.000011,
-        0.000017, 0.000023
+        0.000000, 0.000023, 0.000046,
+        0.000083, 0.000137
     };
 
     for (int i = 0; i < filteredExpected.length; ++i) {
       assertEquals(filteredExpected[i], filteredCalculated[i], 1E-5);
     }
+
+    System.out.println(Arrays.toString(Arrays.copyOfRange(filteredExpected, 0, 100)));
   }
 
   @Test
