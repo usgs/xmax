@@ -69,8 +69,6 @@ public class PlotDataProviderTest {
     for (int i = 0; i < filteredExpected.length; ++i) {
       assertEquals(filteredExpected[i], filteredCalculated[i], 1E-5);
     }
-
-    System.out.println(Arrays.toString(Arrays.copyOfRange(filteredExpected, 0, 100)));
   }
 
   @Test
