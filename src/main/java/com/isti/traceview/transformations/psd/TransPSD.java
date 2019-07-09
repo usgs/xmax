@@ -11,6 +11,8 @@ import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.IntStream;
@@ -79,32 +81,24 @@ public class TransPSD implements ITransformation {
 
 	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
 			TimeInterval ti, JFrame parentFrame) throws XMAXException {
-		List<XYSeries> dataset = new ArrayList<>();
+		List<XYSeries> dataset = Collections.synchronizedList(new ArrayList<>());
 		ListIterator<PlotDataProvider> li = input.listIterator();
 		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
 
-		input.parallelStream().forEachOrdered(channel -> {
+		input.parallelStream().forEach(channel -> {
 			try {
-				FFTResult data = getPSD(channel, ti);
-				double[] frequenciesArray = data.getFreqs();
-				Complex[] psd = data.getFFT();
-				XYSeries xys = new XYSeries(channel.getName());
-				for (int i = 0; i < frequenciesArray.length; ++i) {
-					double period = 1. / frequenciesArray[i];
-					// past 1E6 results are imprecise/unstable, and 0Hz is unplottable
-					if (period < 1E6) {
-						xys.add(1. / frequenciesArray[i], 10 * Math.log10(psd[i].abs()));
-					}
-				}
+				XYSeries xys = convertToPlottableSeries(channel, ti);
 				dataset.add(xys);
+			} catch (XMAXException e) {
+				logger.error(e);
 			} catch (TraceViewException e) {
 				respNotFound.append(", ");
 				respNotFound.append(channel.getName());
-			} catch (XMAXException e) {
-				logger.error(e);
 			}
 		});
+
+		Collections.sort(dataset, new XYSeriesComparator());
 
 		long endl = System.nanoTime() - startl;
 		double duration = endl * Math.pow(10, -9);
@@ -123,7 +117,32 @@ public class TransPSD implements ITransformation {
 		return dataset;
 	}
 
-	public static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti)
+	private class XYSeriesComparator implements Comparator<XYSeries> {
+
+
+		@Override
+		public int compare(XYSeries o1, XYSeries o2) {
+			return o1.getKey().compareTo(o2.getKey());
+		}
+	}
+
+	private static XYSeries convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti)
+			throws TraceViewException, XMAXException {
+		FFTResult data = getPSD(channel, ti);
+		double[] frequenciesArray = data.getFreqs();
+		Complex[] psd = data.getFFT();
+		XYSeries xys = new XYSeries(channel.getName());
+		for (int i = 0; i < frequenciesArray.length; ++i) {
+			double period = 1. / frequenciesArray[i];
+			// past 1E6 results are imprecise/unstable, and 0Hz is unplottable
+			if (period < 1E6) {
+				xys.add(1. / frequenciesArray[i], 10 * Math.log10(psd[i].abs()));
+			}
+		}
+		return xys;
+	}
+
+	private static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti)
 			throws XMAXException, TraceViewException {
 
 		int[] data = channel.getContinuousGaplessDataOverRange(ti);
