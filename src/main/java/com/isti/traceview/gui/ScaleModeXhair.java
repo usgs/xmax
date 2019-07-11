@@ -44,6 +44,17 @@ public class ScaleModeXhair extends ScaleModeAbstract implements IScaleModeState
 		this.height = height;
 	}
 
+	// override super method in order to prevent range argument exception if max is somehow < min
+	// since this is entirely user-specified scaling based on GUI, this is clearly preferable
+	public double getMaxValue() {
+		return Math.max(super.getMaxValue(), super.getMinValue());
+	}
+
+	// same as above, prevents issue where assigned min value is somehow > max
+	public double getMinValue() {
+		return Math.min(super.getMaxValue(), super.getMinValue());
+	}
+
 	public String getStateName() {
 		return "XHAIR";
 	}
