@@ -119,10 +119,18 @@ public class TransPSD implements ITransformation {
 
 	private class XYSeriesComparator implements Comparator<XYSeries> {
 
-
 		@Override
 		public int compare(XYSeries o1, XYSeries o2) {
-			return o1.getKey().compareTo(o2.getKey());
+			// These should always be strings in our usage
+			// and since this is a private method anyway this is overly-defensive programming
+			// we COULD do o1.getKey().compareTo(o2.getKey)) but that would cause a warning to show up
+			// and I don't like compiler warnings and neither should you, so we'll do this
+			// and since they're already strings, the toString() method just ensures type-safety without
+			// having to do any weird stuff with casts
+			String key1 = o1.getKey().toString();
+			String key2 = o2.getKey().toString();
+			// anyway since strings are nicely comparable, we'll just call compareTo with those now
+			return key1.compareTo(key2);
 		}
 	}
 
