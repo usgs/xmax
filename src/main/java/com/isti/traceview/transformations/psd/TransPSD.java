@@ -81,20 +81,25 @@ public class TransPSD implements ITransformation {
 
 	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
 			TimeInterval ti, JFrame parentFrame) throws XMAXException {
+
+		// evalresp doesn't play nicely with threads so let's get that out of the way first
+		StringBuffer respNotFound = new StringBuffer();
+		List<Complex[]> responses = generateResponses(input, ti, respNotFound);
+
 		List<XYSeries> dataset = Collections.synchronizedList(new ArrayList<>());
-		ListIterator<PlotDataProvider> li = input.listIterator();
-		StringBuilder respNotFound = new StringBuilder();
 		long startl = System.nanoTime();
 
-		input.parallelStream().forEach(channel -> {
+		IntStream.range(0, input.size()).parallel().forEach( i-> {
+			PlotDataProvider channel = input.get(i);
+			Complex[] respCurve = responses.get(i);
+			if (respCurve == null) {
+				return; // skip to next PSD
+			}
 			try {
-				XYSeries xys = convertToPlottableSeries(channel, ti);
+				XYSeries xys = convertToPlottableSeries(channel, ti, respCurve);
 				dataset.add(xys);
 			} catch (XMAXException e) {
 				logger.error(e);
-			} catch (TraceViewException e) {
-				respNotFound.append(", ");
-				respNotFound.append(channel.getName());
 			}
 		});
 
@@ -108,7 +113,8 @@ public class TransPSD implements ITransformation {
 			throw new XMAXException("Cannot find responses for any channels");
 		} else {
 			if (respNotFound.length() > 0) {
-			  String message = "Cannot find responses for these channels: " + respNotFound.toString();
+			  String message = "Error attempting to load responses for these channels: " +
+						respNotFound.toString();
 				JOptionPane.showMessageDialog(parentFrame, message,
             "Warning", JOptionPane.WARNING_MESSAGE);
 			}
@@ -134,9 +140,9 @@ public class TransPSD implements ITransformation {
 		}
 	}
 
-	private static XYSeries convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti)
-			throws TraceViewException, XMAXException {
-		FFTResult data = getPSD(channel, ti);
+	private static XYSeries convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti, Complex[] response)
+			throws XMAXException {
+		FFTResult data = getPSD(channel, ti, response);
 		double[] frequenciesArray = data.getFreqs();
 		Complex[] psd = data.getFFT();
 		XYSeries xys = new XYSeries(channel.getName());
@@ -150,41 +156,65 @@ public class TransPSD implements ITransformation {
 		return xys;
 	}
 
-	private static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti)
-			throws XMAXException, TraceViewException {
+	private static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti, Complex[] response)
+			throws XMAXException {
 
 		int[] data = channel.getContinuousGaplessDataOverRange(ti);
 		double[] doubleData = new double[data.length];
-
 		IntStream.range(0, doubleData.length).parallel().forEach(i ->
 				doubleData[i] = (double) data[i]
 		);
-
-		int dataLength = doubleData.length / 4;
-		int padLength = 2;
-		while (padLength < dataLength) {
-			padLength = padLength << 1;
-		}
-
 		long interval = (long) channel.getSampleRate();
-		double period = interval / (double) TimeSeriesUtils.ONE_HZ_INTERVAL;
-		double deltaFreq = 1. / (padLength * period);
-		double endFreq = deltaFreq * (padLength - 1);
 
-		Cmplx[] response = channel.getResponse().getResp(ti.getStartTime(), 0,
-				endFreq, padLength);
-
-		Complex[] responseAdapted = new Complex[response.length];
-		IntStream.range(0, responseAdapted.length).parallel().forEach(i ->
-				responseAdapted[i] = new Complex(response[i].real(), response[i].imag())
-		);
-
-		return FFTResult.powerSpectra(doubleData, interval, responseAdapted);
+		return FFTResult.powerSpectra(doubleData, interval, response);
 	}
 
 	@Override
 	public String getName() {
 		return TransPSD.NAME;
+	}
+
+	private List<Complex[]> generateResponses(List<PlotDataProvider> channels, TimeInterval ti,
+			StringBuffer respNotFound) {
+		// generate the response curve for each channel and compile them into a list
+		List<Complex[]> responses = new ArrayList<>();
+
+		for (PlotDataProvider channel : channels) {
+			// first, get the range of data for this channel
+			long interval = (long) channel.getSampleRate();
+			long traceLength = (ti.getEnd() - ti.getStart()) / interval;
+			// divide that length by 4 because the PSD uses windows sized at 1/4 of the data
+			int dataLength = (int) traceLength / 4;
+			// PSD output is padded to be the largest power of 2 above the length given
+			int padLength = 2;
+			while (padLength < dataLength) {
+				padLength = padLength << 1;
+			}
+			// now get the frequency range for the PSD based on the sample interval in seconds
+			double period = interval / (double) TimeSeriesUtils.ONE_HZ_INTERVAL;
+			// these are in units of Hz
+			double deltaFreq = 1. / (padLength * period);
+			double endFreq = deltaFreq * (padLength - 1);
+
+			Cmplx[] response; // response is initially in a specific complex class from fissures
+			try {
+				response = channel.getResponse().getResp(ti.getStartTime(), 0,
+						endFreq, padLength);
+				// convert this into apache complex class as it's what the PSD calculator uses
+				Complex[] responseAdapted = new Complex[response.length];
+				IntStream.range(0, responseAdapted.length).parallel().forEach(i ->
+						responseAdapted[i] = new Complex(response[i].real(), response[i].imag())
+				);
+				responses.add(responseAdapted);
+			} catch (TraceViewException e) {
+				respNotFound.append(", ");
+				respNotFound.append(channel.getName());
+				// if the response doesn't exist, then
+				responses.add(null);
+			}
+		}
+
+		return responses;
 	}
 
 }
