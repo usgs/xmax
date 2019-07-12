@@ -98,7 +98,7 @@ public class TransPSD implements ITransformation {
 			}
 		});
 
-		Collections.sort(dataset, new XYSeriesComparator());
+		dataset.sort(new XYSeriesComparator());
 
 		long endl = System.nanoTime() - startl;
 		double duration = endl * Math.pow(10, -9);
