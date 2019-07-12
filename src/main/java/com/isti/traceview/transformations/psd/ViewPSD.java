@@ -423,7 +423,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     // unfilteredcollection is a finalized copy of ret to use in the following lambda
     XYSeriesCollection unfilteredCollection = ret;
 
-    ds.parallelStream().forEachOrdered(unfilteredCollection::addSeries);
+    ds.forEach(unfilteredCollection::addSeries);
     ret = filterData(unfilteredCollection);
 
     XYSeries lowNoiseModelSeries = new XYSeries("NLNM");
