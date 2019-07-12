@@ -166,7 +166,7 @@ public class Response {
    * @throws TraceViewException if thrown in {@link
    * com.isti.traceview.processing.RunEvalResp#generateResponse(double, double, int, Date, String)}
    */
-  public Cmplx[] getResp(Date date, double minFreqValue, double maxFreqValue,
+  public synchronized Cmplx[] getResp(Date date, double minFreqValue, double maxFreqValue,
       int len) throws TraceViewException {
     RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
 
