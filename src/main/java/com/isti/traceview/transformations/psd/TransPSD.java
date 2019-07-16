@@ -42,11 +42,11 @@ public class TransPSD implements ITransformation {
 
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "PSD computation warning",
-					JOptionPane.WARNING_MESSAGE);
+					JOptionPane.ERROR_MESSAGE);
 		} else if (input.get(0).getDataLength(ti) < 32) {
 			JOptionPane.showMessageDialog(parentFrame, "One or more of the traces you selected does not contain enough datapoints (<32). "
 					+ "Please select a longer dataset.", "PSD computation warning",
-					JOptionPane.WARNING_MESSAGE);
+					JOptionPane.ERROR_MESSAGE);
 		} else {
 			try {
 				List<XYSeries> plotData = createData(input, filter, ti, parentFrame);
@@ -57,7 +57,7 @@ public class TransPSD implements ITransformation {
 			} catch (XMAXException e) {
 				logger.error(e);
 				if (!e.getMessage().equals("Operation cancelled")) {
-					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -84,6 +84,7 @@ public class TransPSD implements ITransformation {
 
 		// evalresp doesn't play nicely with threads so let's get that out of the way first
 		StringBuffer respNotFound = new StringBuffer();
+		StringBuffer traceHadError = new StringBuffer();
 		List<Complex[]> responses = generateResponses(input, ti, respNotFound);
 
 		List<XYSeries> dataset = Collections.synchronizedList(new ArrayList<>());
@@ -100,6 +101,7 @@ public class TransPSD implements ITransformation {
 				dataset.add(xys);
 			} catch (XMAXException e) {
 				logger.error(e);
+				traceHadError.append(e.getMessage()).append("\n");
 			}
 		});
 
@@ -109,14 +111,25 @@ public class TransPSD implements ITransformation {
 		double duration = endl * Math.pow(10, -9);
 		logger.info("\nPSD calculation duration = " + duration + " sec");
 
-		if (input.size() == 0) {
+		if (responses.size() == 0) {
 			throw new XMAXException("Cannot find responses for any channels");
+		} else if (dataset.size() == 0) {
+			String message = "The following errors were caught while trying to produce a PSD: " +
+					traceHadError.toString();
+			throw new XMAXException(message);
 		} else {
+			StringBuilder message = new StringBuilder();
 			if (respNotFound.length() > 0) {
-			  String message = "Error attempting to load responses for these channels: " +
-						respNotFound.toString();
-				JOptionPane.showMessageDialog(parentFrame, message,
-            "Warning", JOptionPane.WARNING_MESSAGE);
+				message.append("Error attempting to load responses for these channels: ")
+						.append(respNotFound.toString());
+			}
+			if (traceHadError.length() > 0) {
+				message.append("Error attempting to process PSD data on these channels: ")
+						.append(traceHadError.toString());
+			}
+			if (message.length() > 0) {
+				JOptionPane.showMessageDialog(parentFrame, message.toString(),
+						"Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 
@@ -206,8 +219,10 @@ public class TransPSD implements ITransformation {
 						responseAdapted[i] = new Complex(response[i].real(), response[i].imag())
 				);
 				responses.add(responseAdapted);
-			} catch (TraceViewException e) {
-				respNotFound.append(", ");
+			} catch (TraceViewException | NullPointerException e) {
+				if (respNotFound.length() > 0) {
+					respNotFound.append(", ");
+				}
 				respNotFound.append(channel.getName());
 				// if the response doesn't exist, then
 				responses.add(null);
