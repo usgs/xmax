@@ -8,6 +8,7 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -539,7 +540,9 @@ public class IstiUtilsMath {
 	public static XYSeriesCollection varismooth(XYSeriesCollection toSmooth) {
 		XYSeriesCollection ret = new XYSeriesCollection();
 
-		for (int i = 0; i < toSmooth.getSeriesCount(); ++i) {
+		List<XYSeries> xySeriesList = Collections.synchronizedList(new ArrayList<>());
+
+		IntStream.range(0, toSmooth.getSeriesCount()).parallel().forEachOrdered( i -> {
 
 			// hold the values over which we are doing the moving average, to remove when out of range
 			List<XYDataItem> cachedPoints = new ArrayList<>();
@@ -644,7 +647,11 @@ public class IstiUtilsMath {
 
 				++currentPointIndexInQueue; // next point in list is one past the current point
 			}
-			ret.addSeries(smoothedSeries);
+			xySeriesList.add(smoothedSeries);
+		});
+
+		for (XYSeries series : xySeriesList) {
+			ret.addSeries(series);
 		}
 
 		return ret;
