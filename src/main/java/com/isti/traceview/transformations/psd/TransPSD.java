@@ -89,18 +89,23 @@ public class TransPSD implements ITransformation {
 
 		List<XYSeries> dataset = Collections.synchronizedList(new ArrayList<>());
 		long startl = System.nanoTime();
+		final int[] emptyResponses = {0};
+		// this is a single-element array to allow value increments during parallel loop
+		// since final primitives would not be able to be incremented
 
 		IntStream.range(0, input.size()).parallel().forEach( i-> {
 			PlotDataProvider channel = input.get(i);
 			Complex[] respCurve = responses.get(i);
 			if (respCurve == null) {
-				return; // skip to next PSD
+				++emptyResponses[0];
+				return; // skip to next PSD -- this lambda is basically its own method
 			}
 			try {
 				XYSeries xys = convertToPlottableSeries(channel, ti, respCurve);
 				dataset.add(xys);
 			} catch (XMAXException e) {
 				logger.error(e);
+				traceHadError.append("Couldn't load in ").append(channel.getName()).append(": ");
 				traceHadError.append(e.getMessage()).append("\n");
 			}
 		});
@@ -111,20 +116,20 @@ public class TransPSD implements ITransformation {
 		double duration = endl * Math.pow(10, -9);
 		logger.info("\nPSD calculation duration = " + duration + " sec");
 
-		if (responses.size() == 0) {
-			throw new XMAXException("Cannot find responses for any channels");
+		if (emptyResponses[0] == responses.size()) {
+			throw new XMAXException("Cannot find responses for any channels selected.");
 		} else if (dataset.size() == 0) {
-			String message = "The following errors were caught while trying to produce a PSD: " +
+			String message = "The following errors were caught while trying to produce a PSD:\n" +
 					traceHadError.toString();
 			throw new XMAXException(message);
 		} else {
 			StringBuilder message = new StringBuilder();
 			if (respNotFound.length() > 0) {
-				message.append("Error attempting to load responses for these channels: ")
+				message.append("Error attempting to load responses for these channels:\n")
 						.append(respNotFound.toString());
 			}
 			if (traceHadError.length() > 0) {
-				message.append("Error attempting to process PSD data on these channels: ")
+				message.append("The following errors occurred while trying to get trace data:\n")
 						.append(traceHadError.toString());
 			}
 			if (message.length() > 0) {
