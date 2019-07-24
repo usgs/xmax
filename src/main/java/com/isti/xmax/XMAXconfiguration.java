@@ -91,9 +91,13 @@ public class XMAXconfiguration extends Configuration {
 			setUseTempData(false);
 
 			setStationXMLPath(config.getString("Configuration.Data.XMLPath", null));
-			String xmlServerURL = config.getString("Configuration.Data.XMLWebURL");
-			if (xmlServerURL != null) {
-				setStationXMLWebPath(xmlServerURL);
+			String metadataServiceURL = config.getString("Configuration.Data.XMLWebURL");
+			if (metadataServiceURL != null) {
+				setMetadataServerURL(metadataServiceURL);
+			}
+			String dataServiceURL = config.getString("Configuration.Data.DataServiceURL");
+			if (dataServiceURL != null) {
+				setDataServiceURL(dataServiceURL);
 			}
 
 			setStationXMLPreferred(config.getBoolean("Configuration.Data.StationXMLPreferred", false));

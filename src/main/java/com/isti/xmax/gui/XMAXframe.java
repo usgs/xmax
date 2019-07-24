@@ -48,6 +48,7 @@ import com.isti.traceview.transformations.spectra.TransSpectra;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.common.Pick;
+import com.isti.xmax.data.XMAXChannelFactory;
 import com.isti.xmax.data.XMAXDataModule;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -77,6 +78,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -85,30 +91,40 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.TimeZone;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
+import javax.swing.SpinnerDateModel;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.MouseInputListener;
+import javax.swing.text.MaskFormatter;
+import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.Logger;
 
 /**
@@ -239,7 +255,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		if ((getExtendedState() == Frame.MAXIMIZED_BOTH || getExtendedState() == Frame.MAXIMIZED_HORIZ
 				|| getExtendedState() == Frame.MAXIMIZED_VERT)
 				&& (XMAX.getJavaVersionMessage().toLowerCase().contains("linux")
-						|| XMAX.getJavaVersionMessage().toLowerCase().contains("sunos"))
+				|| XMAX.getJavaVersionMessage().toLowerCase().contains("sunos"))
 				|| XMAX.getJavaVersionMessage().toLowerCase().contains("solaris")) {
 			// Manual size setting for Linux and Solaris, setExtendedState
 			// doesn't work
@@ -367,77 +383,77 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		CommandHandler.getInstance().addObserver(this);
 		addMouseListener(new MouseListener() {
 			@Override
-      public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e) {
 			}
 
 			@Override
-      public void mousePressed(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 			}
 
 			@Override
-      public void mouseReleased(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 			}
 
 			@Override
-      public void mouseEntered(MouseEvent e) {
+			public void mouseEntered(MouseEvent e) {
 				graphPanel.xframeMouseEntered(e);
 			}
 
 			@Override
-      public void mouseExited(MouseEvent e) {
+			public void mouseExited(MouseEvent e) {
 				graphPanel.xframeMouseExited(e);
 			}
 		});
 
 		addComponentListener(new ComponentListener() {
 			@Override
-      public void componentHidden(ComponentEvent e) {
+			public void componentHidden(ComponentEvent e) {
 			}
 
 			@Override
-      public void componentMoved(ComponentEvent e) {
+			public void componentMoved(ComponentEvent e) {
 				XMAX.getConfiguration().setFrameState(getExtendedState(), getX(), getY(), getWidth(), getHeight());
 			}
 
 			@Override
-      public void componentResized(ComponentEvent e) {
+			public void componentResized(ComponentEvent e) {
 				XMAX.getConfiguration().setFrameState(getExtendedState(), getX(), getY(), getWidth(), getHeight());
 				graphPanel.forceRepaint(); // re-pixelize and paint data when
-											// resizing
+				// resizing
 			}
 
 			@Override
-      public void componentShown(ComponentEvent e) {
+			public void componentShown(ComponentEvent e) {
 			}
 		});
 
 		addWindowListener(new WindowListener() {
 			@Override
-      public void windowActivated(WindowEvent e) {
+			public void windowActivated(WindowEvent e) {
 			}
 
 			@Override
-      public void windowClosed(WindowEvent e) {
+			public void windowClosed(WindowEvent e) {
 			}
 
 			@Override
-      public void windowClosing(WindowEvent e) {
+			public void windowClosing(WindowEvent e) {
 			}
 
 			@Override
-      public void windowDeactivated(WindowEvent e) {
+			public void windowDeactivated(WindowEvent e) {
 			}
 
 			@Override
-      public void windowDeiconified(WindowEvent e) {
+			public void windowDeiconified(WindowEvent e) {
 			}
 
 			@Override
-      public void windowIconified(WindowEvent e) {
+			public void windowIconified(WindowEvent e) {
 			}
 
 			@Override
-      public void windowOpened(WindowEvent e) {
+			public void windowOpened(WindowEvent e) {
 			}
 		});
 	}
@@ -573,27 +589,27 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 * Methods from MouseInputListener interface
 	 */
 	@Override
-  public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(MouseEvent e) {
 	}
 
 	@Override
-  public void mousePressed(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {
 	}
 
 	@Override
-  public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(MouseEvent e) {
 	}
 
 	@Override
-  public void mouseDragged(MouseEvent event) {
+	public void mouseDragged(MouseEvent event) {
 	}
 
 	@Override
-  public void mouseMoved(MouseEvent event) {
+	public void mouseMoved(MouseEvent event) {
 	}
 
 	@Override
-  public void mouseEntered(MouseEvent evt) {
+	public void mouseEntered(MouseEvent evt) {
 		if (evt.getSource() instanceof AbstractButton) {
 			AbstractButton button = (AbstractButton) evt.getSource();
 			Action action = button.getAction();
@@ -605,7 +621,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	}
 
 	@Override
-  public void mouseExited(MouseEvent evt) {
+	public void mouseExited(MouseEvent evt) {
 		if (evt.getSource() instanceof AbstractButton) {
 			statusBar.setMessage("");
 		}
@@ -616,7 +632,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 */
 
 	@Override
-  public void itemStateChanged(ItemEvent e) {
+	public void itemStateChanged(ItemEvent e) {
 		String message = null;
 		JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getItem();
 		if (e.getStateChange() == ItemEvent.SELECTED)
@@ -634,7 +650,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	 */
 
 	@Override
-  public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e) {
 		JMenuItem source = (JMenuItem) (e.getSource());
 		Action action = actionMap.get(source.getText());
 		System.out.println("ACTION NAME: " + action.getValue(Action.NAME));
@@ -646,7 +662,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	// Method from Observer interface
 	// Update cursor after notification that all tasks were executed
 	@Override
-  public void update(Observable o, Object arg) {
+	public void update(Observable o, Object arg) {
 		logger.debug("updating frame due to request from " + o.getClass().getName());
 		setWaitCursor(false);
 	}
@@ -1542,17 +1558,17 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				XMAXDataModule dm = XMAX.getDataModule();
 				graphPanel.setChannelShowSet(dm.getNextChannelSet()); // and
-																		// also
-																		// switch
-																		// off
-																		// OVR,
-																		// SEL,
-																		// ROT
+				// also
+				// switch
+				// off
+				// OVR,
+				// SEL,
+				// ROT
 				graphPanel.setScaleMode(new ScaleModeAuto());
 				graphPanel.setMeanState(new MeanModeDisabled());
 				graphPanel.setOffsetState(new OffsetModeDisabled());
@@ -1594,7 +1610,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				XMAXDataModule dm = XMAX.getDataModule();
@@ -1645,7 +1661,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			// Create Runnable SaveAllDataCommand obj
 			SaveAllDataCommand saveAllTask = new SaveAllDataCommand();
@@ -1674,7 +1690,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				if (phasePanel == null) {
@@ -1713,7 +1729,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				if (qCPanel == null) {
@@ -1751,7 +1767,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			try {
 				setWaitCursor(true);
 				// Create Runnable OverlayCommand obj
@@ -1782,7 +1798,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			try {
 				setWaitCursor(true);
 				// Create SelectCommand obj
@@ -1816,7 +1832,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 
 			List<PlotDataProvider> channels = graphPanel.getCurrentSelectedChannels();
 			if (channels.size() == 0)
@@ -1857,7 +1873,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale auto")) {
 				setWaitCursor(true);
 				// Create Runnable SetScaleModeCommand obj
@@ -1890,7 +1906,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale com")) {
 				setWaitCursor(true);
 				// Create SetScaleModeCommand runnable obj
@@ -1923,7 +1939,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Scale Xhair")) {
 				setWaitCursor(true);
 				// Create SetScaleModeCommand obj
@@ -1956,7 +1972,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				if (e.getActionCommand().equals("Remove gain")) {
@@ -1993,7 +2009,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setShowBigCursor(showBigCursorMenuCheckBox.getState());
 			statusBar.setMessage("");
 		}
@@ -2012,7 +2028,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setColorMode(new ColorModeBySegment());
 			bySegmentMenuRadioBt.setSelected(true);
 			statusBar.setMessage("");
@@ -2032,7 +2048,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setColorMode(new ColorModeBW());
 			BWMenuRadioBt.setSelected(true);
 			statusBar.setMessage("");
@@ -2052,7 +2068,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setColorMode(new ColorModeGray());
 			GrayMenuRadioBt.setSelected(true);
 			statusBar.setMessage("");
@@ -2072,7 +2088,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setColorMode(new ColorModeByGap());
 			byGapMenuRadioBt.setSelected(true);
 			statusBar.setMessage("");
@@ -2093,7 +2109,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			if (graphPanel.getColorMode() instanceof ColorModeBySegment) {
 				graphPanel.setColorMode(new ColorModeGray());
 				GrayMenuRadioBt.setSelected(true);
@@ -2128,7 +2144,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			if (graphPanel.getMeanState() instanceof MeanModeDisabled) {
 				graphPanel.setMeanState(new MeanModeEnabled());
 
@@ -2153,7 +2169,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			statusBar.setVisible(showStatusBarMenuCheckBox.getState());
 			graphPanel.repaint();
 			statusBar.setMessage("");
@@ -2173,7 +2189,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			buttonPanel.setVisible(showButtonsMenuCheckBox.getState());
 			graphPanel.repaint();
 			statusBar.setMessage("");
@@ -2193,7 +2209,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Show buttons top")) {
 				commandButtonTopMenuRadioBt.setSelected(true);
 				jContentPane.add(buttonPanel, BorderLayout.NORTH);
@@ -2216,7 +2232,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("Show buttons bottom")) {
 				commandButtonBottomMenuRadioBt.setSelected(true);
 				jContentPane.add(buttonPanel, BorderLayout.SOUTH);
@@ -2239,7 +2255,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			LinkedList<ICommand> history = CommandHandler.getInstance().getCommandHistory();
 			if (!history.isEmpty()) {
 				ICommand command = history.getLast();
@@ -2268,7 +2284,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransPPM();
@@ -2327,7 +2343,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 
@@ -2353,11 +2369,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					}
 				}
 				if(hasRotatedData) {
-							JOptionPane.showMessageDialog(TraceView.getFrame(),
-									"One or more of the traces you have selected contains rotated data.\n"
-											+ "The rotated data will be plotted using their original responses.\n"
-											+ "To use the original traces, un-rotate the data before calculating the PSD.",
-									"PSD will be computed on rotated data", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(TraceView.getFrame(),
+							"One or more of the traces you have selected contains rotated data.\n"
+									+ "The rotated data will be plotted using their original responses.\n"
+									+ "To use the original traces, un-rotate the data before calculating the PSD.",
+							"PSD will be computed on rotated data", JOptionPane.INFORMATION_MESSAGE);
 				}
 				org.apache.commons.configuration.Configuration pluginConf = XMAXconfiguration.getInstance()
 						.getConfigurationAt("Configuration.Plugins.PSD");
@@ -2383,7 +2399,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 
@@ -2413,8 +2429,150 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
 		}
 
+		void queryFDSN() {
+			try {
+				MaskFormatter networkFormatter = new MaskFormatter("AA");
+				// MaskFormatter stationFormatter = new MaskFormatter("UUUUU");
+				MaskFormatter locationFormatter = new MaskFormatter("##");
+				MaskFormatter channelFormatter = new MaskFormatter("UUA");
+				JFormattedTextField networkField = new JFormattedTextField(networkFormatter);
+				networkField.setText("IU");
+				networkField.setMinimumSize(networkField.getPreferredSize());
+				JTextField stationField = new JTextField();
+				stationField.setText("ANMO");
+				stationField.setMinimumSize(stationField.getPreferredSize());
+				JFormattedTextField locationField = new JFormattedTextField(locationFormatter);
+				locationField.setText("00");
+				locationField.setMinimumSize(locationField.getPreferredSize());
+				JFormattedTextField channelField = new JFormattedTextField(channelFormatter);
+				channelField.setText("LHZ");
+				channelField.setMinimumSize(channelField.getPreferredSize());
+
+				Date start = null;
+				Date end = null;
+				// set initial start and end times to be 2 days ago and 1 day ago at day start
+				// such that there should be data for the full day's length that already exists
+				Date defaultStartValue = Date.from(
+						LocalDate.now().minusDays(2).atStartOfDay(ZoneOffset.UTC).toInstant());
+				Date defaultEndValue = Date.from(
+						LocalDate.now().minusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant());
+
+				JSpinner startPicker = timePickerFactory(start, end);
+				JSpinner endPicker = timePickerFactory(start, end);
+
+				SimpleDateFormat format = ((JSpinner.DateEditor) startPicker.getEditor()).getFormat();
+				format.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+				format = ((JSpinner.DateEditor) endPicker.getEditor()).getFormat();
+				format.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+
+				startPicker.setValue(defaultStartValue);
+				endPicker.setValue(defaultEndValue);
+
+				JPanel queryPanel = new JPanel();
+				queryPanel.setLayout(new GridLayout(6, 2));
+				queryPanel.add(new JLabel("Network:"));
+				queryPanel.add(networkField);
+				queryPanel.add(new JLabel("Station:"));
+				queryPanel.add(stationField);
+				queryPanel.add(new JLabel("Location:"));
+				queryPanel.add(locationField);
+				queryPanel.add(new JLabel("Channel:"));
+				queryPanel.add(channelField);
+				queryPanel.add(new JLabel("Start time (UTC):"));
+				queryPanel.add(startPicker);
+				queryPanel.add(new JLabel("End time (UTC):"));
+				queryPanel.add(endPicker);
+
+				int result = JOptionPane.showConfirmDialog(XMAX.getFrame(), queryPanel,
+						"Set FDSN query parameters", JOptionPane.OK_CANCEL_OPTION);
+
+				if (result == JOptionPane.OK_OPTION) {
+					String net = networkField.getText().toUpperCase();
+					String sta = stationField.getText().replaceAll("\\s", "").toUpperCase();
+					String loc = locationField.getText().replaceAll("\\s", "").toUpperCase();
+					String cha = channelField.getText().toUpperCase();
+
+					Date startDate = (Date) startPicker.getValue();
+					long startMillis = startDate.toInstant().toEpochMilli();
+					Date endDate = (Date) endPicker.getValue();
+					long endMillis = endDate.toInstant().toEpochMilli();
+
+					XMAXDataModule dm = XMAXDataModule.getInstance();
+					dm.loadNewDataFromSocket(net, sta, loc, cha, startMillis,
+							endMillis);
+
+					resetPlottedData();
+				}
+			} catch(ParseException e){
+				logger.error(e);
+				String message = "Error creating FDSN query dialog box";
+				JOptionPane.showMessageDialog(XMAX.getFrame(), message, "FDSN ERROR",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+
+		void resetPlottedData() {
+			try {
+				XMAXDataModule dm = XMAXDataModule.getInstance();
+				XMAX.getFrame().getGraphPanel().removeAll();
+				dm.reLoadData();
+				try {
+					graphPanel.setChannelShowSet(dm.getNextChannelSet());
+				} catch (TraceViewException ex) {
+					JOptionPane.showMessageDialog(XMAX.getFrame(), ex.getMessage(), "Information",
+							JOptionPane.INFORMATION_MESSAGE);
+					getGraphPanel().forceRepaint();
+				}
+
+				statusBar .setChannelCountMessage(
+						dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
+						dm.getAllChannels().size());
+			} catch (TraceViewException e1) {
+				logger.error(e1);
+			}
+		}
+
+		JSpinner timePickerFactory(Date start, Date end) {
+			String formatterPattern = "yyyy.DDD | HH:mm:ss.SSS";
+			JSpinner.DateEditor timeEditor;
+			SpinnerDateModel startModel = new SpinnerDateModel();
+			startModel.setStart(start);
+			startModel.setEnd(end);
+			JSpinner timePicker = new JSpinner(startModel);
+			timeEditor = new JSpinner.DateEditor(timePicker, formatterPattern);
+			timePicker.setEditor(timeEditor);
+			return timePicker;
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			{
+				JRadioButton local = new JRadioButton("Load from local file");
+				JRadioButton fdsn = new JRadioButton("Load from FDSN");
+				ButtonGroup group = new ButtonGroup();
+				group.add(local);
+				group.add(fdsn);
+				local.setSelected(true);
+
+				JPanel panel = new JPanel();
+				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+				panel.add(local);
+				panel.add(fdsn);
+
+				int result = JOptionPane.showConfirmDialog(XMAXframe.getInstance(), panel,
+						"Select load method", JOptionPane.OK_CANCEL_OPTION);
+
+				if (result == JOptionPane.CANCEL_OPTION) {
+					return;
+				}
+
+				if (fdsn.isSelected()) {
+					queryFDSN();
+					return;
+				}
+			}
+
+
 			JFileChooser jfc = new JFileChooser();
 			jfc.setMultiSelectionEnabled(true);
 			if (XMAXconfiguration.getInstance().getDataPath() != null) {
@@ -2435,24 +2593,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 							"Could not load in all data!", JOptionPane.ERROR_MESSAGE);
 				}
 
-				try {
-					XMAX.getFrame().getGraphPanel().removeAll();
-					XMAXDataModule dm = XMAXDataModule.getInstance();
-					dm.reLoadData();
-					try {
-						graphPanel.setChannelShowSet(dm.getNextChannelSet());
-					} catch (TraceViewException ex) {
-						JOptionPane.showMessageDialog(XMAX.getFrame(), ex.getMessage(), "Information",
-								JOptionPane.INFORMATION_MESSAGE);
-						getGraphPanel().forceRepaint();
-					}
-
-					statusBar
-							.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
-									dm.getAllChannels().size());
-				} catch (TraceViewException e1) {
-					logger.error(e1);
-				}
+				resetPlottedData();
 			}
 		}
 	}
@@ -2470,7 +2611,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransSpectra();
@@ -2506,7 +2647,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransCorrelation();
@@ -2700,7 +2841,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				ITransformation resp = new TransResp();
@@ -2735,7 +2876,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			OffsetCommand offsetCmd = new OffsetCommand(graphPanel);
 			ExecuteCommand executor = new ExecuteCommand(offsetCmd);
 			executor.initialize();
@@ -2759,7 +2900,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			try {
 				if (graphPanel.getPickState()) {
 					graphPanel.setPickState(false);
@@ -2785,10 +2926,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			Pick.geleteLastPick();
 			graphPanel.repaint(); // may need to override graph when deleting
-									// (force?)
+			// (force?)
 			statusBar.setMessage("");
 		}
 	}
@@ -2806,7 +2947,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			final FileChooser fc = new FileChooser(FileChooser.Type.MSEED);
 			String exportDir = XMAX.getConfiguration().getUserDir("MSEED");
 			if (exportDir != null) {
@@ -2870,7 +3011,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			final FileChooser fc = new FileChooser(FileChooser.Type.SAC);
 			String exportDir = XMAX.getConfiguration().getUserDir("SAC");
 			if (exportDir != null) {
@@ -2957,7 +3098,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			final FileChooser fc = new FileChooser(FileChooser.Type.XML);
 			String exportDir = XMAX.getConfiguration().getUserDir("XML");
 			if (exportDir != null) {
@@ -2979,9 +3120,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					if (selectedChannels.size() > 0) {
 						fw.write("<Export start = \""
 								+ TimeInterval.formatDate(graphPanel.getTimeRange().getStartTime(),
-										TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+								TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 								+ "\" end = \"" + TimeInterval.formatDate(graphPanel.getTimeRange().getEndTime(),
-										TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+								TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 								+ "\">\n");
 						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
@@ -3028,7 +3169,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			final FileChooser fc = new FileChooser(FileChooser.Type.ASCII);
 			String exportDir = XMAX.getConfiguration().getUserDir("ASCII");
 			if (exportDir != null) {
@@ -3091,7 +3232,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			String pluginId = null;
 			setWaitCursor(true);
 			try {
@@ -3182,7 +3323,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			TimeInterval ti = LimXDialog.showDialog(XMAXframe.getInstance(), graphPanel.getTimeRange());
 			if (ti != null) {
 				setWaitCursor(true);
@@ -3215,7 +3356,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			LimYDialog dialog = new LimYDialog(XMAXframe.getInstance(),
 					new Double(graphPanel.getManualValueMin()).intValue(),
 					new Double(graphPanel.getManualValueMax()).intValue());
@@ -3262,7 +3403,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			PrinterJob printJob = PrinterJob.getPrinterJob();
 			printJob.setJobName("XMAX traces");
 
@@ -3311,7 +3452,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			File exportFile = GraphUtil.saveGraphics(graphPanel, XMAX.getConfiguration().getUserDir("GRAPH"));
 			if (exportFile != null) {
 				XMAX.getConfiguration().setUserDir("GRAPH", exportFile.getParent());
@@ -3335,7 +3476,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			File exportFile = GraphUtil.addToHTML(graphPanel, XMAX.getConfiguration().getUserDir("HTML"));
 			if (exportFile != null) {
 				XMAX.getConfiguration().setUserDir("HTML", exportFile.getParent());
@@ -3359,7 +3500,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			graphPanel.setShowBlockHeader(!graphPanel.getShowBlockHeader());
 			showBlockHeadersMenuCheckBox.setState(graphPanel.getShowBlockHeader());
 		}
@@ -3378,7 +3519,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
 			try {
 				XMAXDataModule dm = XMAX.getDataModule();
@@ -3417,7 +3558,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			AboutDialog.showDialog(XMAXframe.getInstance());
 			statusBar.setMessage("");
 		}
@@ -3436,7 +3577,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			/*
 			 * try { Pick.updatePickFile(); } catch (Exception e1) {
 			 * e1.printStackTrace(); }
@@ -3491,7 +3632,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent evt) {
+		public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
 			Action action;
 			if (src == nextButton) {
@@ -3603,7 +3744,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent evt) {
+		public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
 			Action action;
 			if (src == selectButton) {
@@ -3711,7 +3852,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent evt) {
+		public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
 			Action action;
 			if (src == commonScaleButton) {
@@ -3799,7 +3940,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent evt) {
+		public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
 			Action action;
 			if (src == lowPassButton) {
@@ -3938,7 +4079,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		@Override
-    public void actionPerformed(ActionEvent evt) {
+		public void actionPerformed(ActionEvent evt) {
 			Object src = evt.getSource();
 			Action action;
 			if (src == PSDButton) {

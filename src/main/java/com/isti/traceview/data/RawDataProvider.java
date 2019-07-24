@@ -57,6 +57,7 @@ public class RawDataProvider extends Channel {
   private boolean loadingStarted = false;
   private boolean loaded = false;
 
+  protected boolean resetCaches = false;
 
   // Used to store dataStream file name and restore it after serialization
   private String serialFile = null;
@@ -206,6 +207,7 @@ public class RawDataProvider extends Channel {
    * @param segment to add
    */
   public void addSegment(Segment segment) {
+    resetCaches = false;
     if (segment.getSampleCount() < 1) {
       logger.warn("Segment has no usable data!");
       return;
@@ -231,6 +233,7 @@ public class RawDataProvider extends Channel {
       return;
     }
 
+    resetCaches = false;
     synchronized (rawData) {
       List<Segment> segments = mergeIn.getRawData();
       // now go through the data we're merging in and see if they overlap/duplicate
@@ -389,7 +392,7 @@ public class RawDataProvider extends Channel {
   /**
    * Load data into this data provider from data sources
    *
-   * NOTE: Removed multithreading due to hardware constraints TODO: Remove old multithreading code
+   * NOTE: Removed multithreading due to hardware constraints
    * and clean this method.
    *
    * @param ti The TimeInterval to load
@@ -398,7 +401,10 @@ public class RawDataProvider extends Channel {
 
     rawData.stream()
         .filter(e -> !e.getSegment().getIsLoaded())
-        .forEach(e -> e.getSegment().load());
+        .forEach(e -> {
+          e.getSegment().load();
+          e.getSegment().setIsLoaded(true);
+        });
   }
 
   /**
