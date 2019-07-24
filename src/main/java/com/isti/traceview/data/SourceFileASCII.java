@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 public class SourceFileASCII extends SourceFile implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = Logger.getLogger(SourceFileSAC.class);
+  private static final Logger logger = Logger.getLogger(SourceFileASCII.class);
   private static final DateTimeFormatter TIME_FMT = DateTimeFormatter
       .ofPattern("yyyy,DDD,HH:mm:ss.SSSS").withZone(ZoneOffset.UTC);
 

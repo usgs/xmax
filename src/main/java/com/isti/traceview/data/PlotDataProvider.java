@@ -218,8 +218,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		// time afresh.
 		List<PlotDataPoint[]> points = null;
 
-		if (pointsCache == null) {
+		if (!resetCaches) {
 			initPointCache(colorMode);
+			resetCaches = true;
 		}
 
 		// Time range need to be pixelized - intersection of requested pixalization range and

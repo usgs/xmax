@@ -105,7 +105,6 @@ public class TransPSD implements ITransformation {
 				dataset.add(xys);
 			} catch (XMAXException e) {
 				logger.error(e);
-				traceHadError.append("Couldn't load in ").append(channel.getName()).append(": ");
 				traceHadError.append(e.getMessage()).append("\n");
 			}
 		});
@@ -136,6 +135,7 @@ public class TransPSD implements ITransformation {
 				JOptionPane.showMessageDialog(parentFrame, message.toString(),
 						"Warning", JOptionPane.WARNING_MESSAGE);
 			}
+
 		}
 
 		return dataset;
