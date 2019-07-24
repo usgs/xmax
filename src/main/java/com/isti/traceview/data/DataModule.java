@@ -6,8 +6,6 @@ import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.IColorModeState;
-import com.isti.xmax.XMAXconfiguration;
-import edu.sc.seis.seisFile.segd.Trace;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -863,8 +861,8 @@ public class DataModule extends Observable {
         }
 
         logger.info("Attempting to download response data from web services.");
-        String xmlURL = config.getStationXMLWebPath(); // should be non-null
-        resp = Response.getResponseFromWeb(network, station, location, channel, xmlURL);
+        String webservicesURL = config.getMetadataServerURL(); // should be non-null
+        resp = Response.getResponseFromWeb(network, station, location, channel, webservicesURL);
         if (resp != null) {
           return resp;
         }
@@ -929,4 +927,25 @@ public class DataModule extends Observable {
       }
     }
   }
+
+  public void loadNewDataFromSocket(String net, String sta, String loc, String cha,
+      long startMillis, long endMillis) {
+
+    ISource socketSource = new SourceSocketFDSN(net, sta, loc, cha, startMillis, endMillis);
+    addDataSource(socketSource);
+    Set<PlotDataProvider> dataSet = socketSource.parse();
+    for (PlotDataProvider channel : dataSet) {
+      String station = channel.getStation().getName();
+      getOrAddStation(station);
+      // merge in the new data into any channel that may already exist
+      getOrAddChannel(channel.getChannelName(), channel.getStation(),
+          channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
+    }
+
+    channels.sort(Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
+    for (RawDataProvider channel : channels) {
+      channel.sort(); // properly numerate segments, gaps, etc. for channel plot coloration
+    }
+  }
+
 }

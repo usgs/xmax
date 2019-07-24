@@ -1,5 +1,7 @@
 package com.isti.traceview.common;
 
+import static edu.sc.seis.seisFile.fdsnws.AbstractQueryParams.DEFAULT_HOST;
+
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.IColorModeState;
@@ -8,6 +10,7 @@ import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.gui.ScaleModeCom;
 import com.isti.traceview.gui.ScaleModeXhair;
 import edu.iris.dmc.seedcodec.B1000Types;
+import edu.sc.seis.seisFile.fdsnws.FDSNDataSelectQueryParams;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Observable;
@@ -32,7 +35,8 @@ public class Configuration extends Observable {
 
 	private String default_pattern_html = "<html><head><title>HTML report</title></head><body><h1>HTML report</h1> </body></html>";
 	protected static String listSeparator = ",";
-	
+
+
 	public Configuration() throws TraceViewException {
 		setPanelCountUnit(PanelCountUnit.TRACE);
 		setUnitsInFrame(20);
@@ -116,7 +120,8 @@ public class Configuration extends Observable {
 	 * Folder in which stationXML files of format NET.STA.LOC.CHA.xml can be found
 	 */
 	private String stationXMLPath = null;
-	private String stationXMLWebPath = "https://service.iris.edu/fdsnws/station/1/query";
+	private String metadataServerURL = "https://service.iris.edu/fdsnws/station/1/query";
+	private String dataServiceURL = DEFAULT_HOST;
 
 	/**
 	 * True when station XML should be loaded with priority over response files
@@ -258,6 +263,14 @@ public class Configuration extends Observable {
 
 	}
 
+	public void setDataServiceURL(String dataServiceURL) {
+		this.dataServiceURL = dataServiceURL;
+	}
+
+	public String getDataServiceURL() {
+		return dataServiceURL;
+	}
+
 	/**
 	 * Setter of the property <tt>dataTempPath</tt>
 	 * 
@@ -268,12 +281,12 @@ public class Configuration extends Observable {
 		this.dataTempPath = dataTempPath;
 	}
 
-	public void setStationXMLWebPath(String xmlServerURL) {
-		this.stationXMLWebPath = xmlServerURL;
+	public void setMetadataServerURL(String xmlServerURL) {
+		this.metadataServerURL = xmlServerURL;
 	}
 
-	public String getStationXMLWebPath() {
-		return stationXMLWebPath;
+	public String getMetadataServerURL() {
+		return metadataServerURL;
 	}
 
 	/**
