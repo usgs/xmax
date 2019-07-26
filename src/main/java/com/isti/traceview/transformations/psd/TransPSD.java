@@ -48,10 +48,8 @@ public class TransPSD implements ITransformation {
 		} else {
 			try {
 				List<XYSeries> plotData = createData(input, filter, ti, parentFrame);
-				TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
-						ti.getStart() + ti.getEnd());
 				@SuppressWarnings("unused")
-				ViewPSD vp = new ViewPSD(parentFrame, plotData, effectiveInterval, (Configuration) configuration, input);
+				ViewPSD vp = new ViewPSD(parentFrame, plotData, ti, (Configuration) configuration, input);
 			} catch (XMAXException e) {
 				logger.error(e);
 				if (!e.getMessage().equals("Operation cancelled")) {
