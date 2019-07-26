@@ -877,7 +877,7 @@ public class DataModule extends Observable {
         File f = new File(respFile);
         resp = Response.getResponse(f);
         if (resp != null) {
-          System.out.println("Response loaded from file: " + respFile);
+          logger.info("Response loaded from file: " + respFile);
           return resp;
         }
       }
