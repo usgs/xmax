@@ -653,7 +653,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	public void actionPerformed(ActionEvent e) {
 		JMenuItem source = (JMenuItem) (e.getSource());
 		Action action = actionMap.get(source.getText());
-		System.out.println("ACTION NAME: " + action.getValue(Action.NAME));
+		logger.debug("ACTION NAME: " + action.getValue(Action.NAME));
 		action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 
 		statusBar.setMessage("");

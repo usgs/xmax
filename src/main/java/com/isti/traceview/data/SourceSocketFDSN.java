@@ -40,7 +40,7 @@ public class SourceSocketFDSN extends SourceSocket {
           DataModule.getOrAddStation(station), network, location);
       interval = db.getInterval();
       int numberSamples = cachedData.length;
-      System.out.println("Expected sample count: " + numberSamples);
+      logger.debug("Expected sample count: " + numberSamples);
       ret.add(pdp);
       Segment segment = new Segment(this, 0,
           Date.from(Instant.ofEpochMilli(startTime)), (double) interval, numberSamples, 0);
@@ -53,10 +53,10 @@ public class SourceSocketFDSN extends SourceSocket {
 
   @Override
   public void load(Segment segment) {
-    System.out.println("SAMPLE COUNT: " + segment.getSampleCount());
+    logger.debug("SAMPLE COUNT: " + segment.getSampleCount());
     int cachedDataOffset = (int)
         ((segment.getStartTime().toInstant().toEpochMilli() - startTime) / interval);
-    System.out.println("CACHED DATA OFFSET? " + cachedDataOffset);
+    logger.debug("CACHED DATA OFFSET? " + cachedDataOffset);
     for (int i = 0; i < segment.getSampleCount(); ++i) {
       segment.addDataPoint((int) cachedData[i + cachedDataOffset]);
     }
