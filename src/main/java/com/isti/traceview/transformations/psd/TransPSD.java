@@ -34,8 +34,6 @@ public class TransPSD implements ITransformation {
 
 	public static final String NAME = "Power spectra density";
 
-	private int effectiveLength = 0;
-
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
 			JFrame parentFrame) {
@@ -51,7 +49,7 @@ public class TransPSD implements ITransformation {
 			try {
 				List<XYSeries> plotData = createData(input, filter, ti, parentFrame);
 				TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
-						ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
+						ti.getStart() + ti.getEnd());
 				@SuppressWarnings("unused")
 				ViewPSD vp = new ViewPSD(parentFrame, plotData, effectiveInterval, (Configuration) configuration, input);
 			} catch (XMAXException e) {
