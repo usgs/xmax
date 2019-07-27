@@ -1,15 +1,13 @@
 package com.isti.traceview.filters;
 
 import asl.utils.FilterUtils;
-import asl.utils.TimeSeriesUtils;
-import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.HPFilterException;
 
 /**
  * High-pass Butterworth filter Algorithm is from Stearns, 1975
  */
 
-public class FilterHP implements IFilter {
+public class FilterHP extends AbstractFilter {
 
 	public static final String DESCRIPTION = "Apply High Pass filter for selected channels";
 	public static final String NAME = "HP";
@@ -17,12 +15,15 @@ public class FilterHP implements IFilter {
 	/**
 	 * number of filter sections
 	 */
-	int order = 0;
-	double cutFrequency = Double.NaN;
-	double sampleRate = 0.;
+	private int order;
+	private double cutFrequency;
 
-	public int getMaxDataLength() {
-		return Integer.MAX_VALUE;
+	@Override
+	double[] filterBackend(double[] data, int length) throws HPFilterException {
+		if (data.length > length)
+			throw new HPFilterException("Requested filtering length exceeds provided array length");
+
+		return FilterUtils.highPassFilter(data, sampleRate, cutFrequency, order);
 	}
 
 	/**
@@ -48,33 +49,6 @@ public class FilterHP implements IFilter {
 		return FilterHP.NAME;
 	}
 
-	/**
-	 * design routine
-	 * 
-	 * @param channel
-	 *            trace to retrieve information
-	 */
-	synchronized public void init(RawDataProvider channel) {
-		sampleRate = 1000.0 / channel.getSampleRate();
-	}
-
-	/**
-	 * Performs high-pass Butterworth filtering of a time series.
-	 * 
-	 * @param data
-	 *            = data array
-	 * @param length
-	 *            = number of samples in data array
-	 * @return filtered data array
-	 */
-	synchronized public double[] filter(double[] data, int length) throws HPFilterException {
-		if (data.length > length)
-			throw new HPFilterException("Requested filtering length exceeds provided array length");
-
-    TimeSeriesUtils.demeanInPlace(data);
-    return FilterUtils.highPassFilter(data, sampleRate, cutFrequency, order);
-	}
-
 	public boolean needProcessing() {
 		return true;
 	}
@@ -88,8 +62,8 @@ public class FilterHP implements IFilter {
 	}
 
 	public boolean equals(Object o) {
-		if (o instanceof FilterLP) {
-			FilterLP arg = (FilterLP) o;
+		if (o instanceof FilterHP) {
+			FilterHP arg = (FilterHP) o;
 			if ((order == arg.getOrder()) && (cutFrequency == arg.getCutFrequency())) {
 				return true;
 			}

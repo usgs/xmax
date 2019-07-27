@@ -61,7 +61,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 			cutHighFrequency = 0.5;
 		}
 		if (order == null) {
-			order = 2;
+			order = 4;
 		}
 		Object[] options = { "OK", "Close" };
 		// Create the JOptionPane.
@@ -231,11 +231,9 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	private JComboBox<Object> getOrderCB() {
 		if (orderCB == null) {
 			orderCB = new JComboBox<>();
-			orderCB.addItem(1);
-			orderCB.addItem(2);
-			orderCB.addItem(3);
-			orderCB.addItem(4);
-			orderCB.addItem(5);
+			for (int i = 1; i <= 5; ++i) {
+				orderCB.addItem((i * 2));
+			}
 			orderCB.setSelectedItem(order);
 		}
 		return orderCB;
