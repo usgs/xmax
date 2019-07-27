@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import asl.utils.TimeSeriesUtils;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
@@ -12,6 +13,8 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.filters.FilterLP;
 import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.IColorModeState;
+import com.isti.traceview.processing.BPFilterException;
+import com.isti.traceview.processing.HPFilterException;
 import com.isti.traceview.processing.LPFilterException;
 import com.isti.traceview.processing.RemoveGainException;
 import java.io.File;
@@ -42,7 +45,7 @@ public class PlotDataProviderTest {
   }
 
   @Test
-  public void filterWorksCorrectly() throws LPFilterException {
+  public void filterWorksCorrectly() throws LPFilterException, BPFilterException, HPFilterException {
     String filename = "src/test/resources/ppm/00_BH1.512.seed";
     DataModule dm = new DataModule();
     File dataToFilter = new File(filename);
@@ -59,6 +62,9 @@ public class PlotDataProviderTest {
       initData[i] = pdp.getRawData().get(0).getData().data[i];
     }
 
+    double mean = initData[0];
+    mean -= TimeSeriesUtils.demean(Arrays.copyOfRange(initData, 0, sampleCount))[0];
+
     double[] filteredCalculated = defaultLPFilter.filter(initData, sampleCount);
     double[] filteredExpected = new double[]{
         0.000000, 0.000000, 0.000001,
@@ -67,7 +73,7 @@ public class PlotDataProviderTest {
     };
 
     for (int i = 0; i < filteredExpected.length; ++i) {
-      assertEquals(filteredExpected[i], filteredCalculated[i], 1E-5);
+      assertEquals(filteredExpected[i] + mean, filteredCalculated[i], 1E-5);
     }
   }
 

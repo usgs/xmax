@@ -1,8 +1,6 @@
 package com.isti.traceview.filters;
 
 import asl.utils.FilterUtils;
-import asl.utils.TimeSeriesUtils;
-import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
 
 /**
@@ -25,23 +23,27 @@ import com.isti.traceview.processing.BPFilterException;
  * </p>
  */
 
-public class FilterBP implements IFilter {
+public class FilterBP extends AbstractFilter {
 
 	public static final String DESCRIPTION = "Apply Band Pass filter for selected channels";
 	public static final String NAME = "BP";
 
-	int order = 0;
-	double cutLowFrequency = Double.NaN;
-	double cutHighFrequency = Double.NaN;
-	double sampleRate = 0.;
+	private int order;
+	private double cutLowFrequency;
+	private double cutHighFrequency;
 
 	@Override
 	public String getName() {
 		return NAME;
 	}
 
-	public int getMaxDataLength() {
-		return Integer.MAX_VALUE;
+	@Override
+	double[] filterBackend(double[] data, int length)
+			throws BPFilterException {
+		if (data.length > length)
+			throw new BPFilterException("Requested filtering length exceeds provided array length");
+
+		return FilterUtils.bandFilter(data, sampleRate, cutLowFrequency, cutHighFrequency, order);
 	}
 
 	/**
@@ -64,33 +66,6 @@ public class FilterBP implements IFilter {
 	 */
 	public FilterBP() {
 		this(4, 0.1, 0.5);
-	}
-
-	/**
-	 * Bandpass butterworth digital filter design subroutine
-	 * 
-	 * @param channel
-	 *            trace to retrieve information
-	 */
-	synchronized public void init(RawDataProvider channel) {
-		sampleRate = 1000.0 / channel.getSampleRate();
-	}
-
-	/**
-	 * Performs band-pass Butterworth filtering of a time series.
-	 * 
-	 * @param data
-	 *            = data array
-	 * @param length
-	 *            = number of samples to filter
-	 * @return filtered data array
-	 */
-	synchronized public double[] filter(double[] data, int length) throws BPFilterException {
-		if (data.length > length)
-			throw new BPFilterException("Requested filtering length exceeds provided array length");
-
-		TimeSeriesUtils.demeanInPlace(data);
-		return FilterUtils.bandFilter(data, sampleRate, cutLowFrequency, cutHighFrequency, order);
 	}
 
 	public boolean needProcessing() {

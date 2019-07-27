@@ -12,6 +12,8 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.filters.FilterLP;
+import com.isti.traceview.processing.BPFilterException;
+import com.isti.traceview.processing.HPFilterException;
 import com.isti.traceview.processing.LPFilterException;
 import com.isti.traceview.processing.Rotation;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
@@ -151,7 +153,8 @@ public class RawDataProviderTest {
   }
 
   @Test
-  public void dumpMseed_filter() throws IOException, LPFilterException {
+  public void dumpMseed_filter()
+      throws IOException, LPFilterException, BPFilterException, HPFilterException {
     // first, we need to load in the data (may be moved to set-up method)
     DataModule dm = new DataModule();
 
