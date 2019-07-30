@@ -169,7 +169,9 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 					cutHighFrequency = Double.NaN;
 				}
 				order = (Integer) orderCB.getSelectedItem();
-				if (!Double.isNaN(cutLowFrequency) && !Double.isNaN(cutHighFrequency)) {
+				if (!Double.isNaN(cutLowFrequency) && !Double.isNaN(cutHighFrequency) &&
+						cutLowFrequency > 0 && cutHighFrequency > 0) {
+					logger.info("Band pass filtering triggered");
 					if (cutLowFrequency < cutHighFrequency) {
 						filter = new FilterBP(order, cutLowFrequency, cutHighFrequency);
 						setVisible(false);
@@ -178,15 +180,18 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
 								"Low frequency should be less then high one", "Error", JOptionPane.ERROR_MESSAGE);
 					}
-				} else if (!Double.isNaN(cutLowFrequency)) {
+				} else if (!Double.isNaN(cutLowFrequency) && cutLowFrequency > 0) {
+					logger.info("Low pass filtering triggered");
 					filter = new FilterLP(order, cutLowFrequency);
 					setVisible(false);
 					needProcessing = true;
-				} else if (!Double.isNaN(cutHighFrequency)) {
+				} else if (!Double.isNaN(cutHighFrequency) && cutHighFrequency > 0) {
+					logger.info("High pass filtering triggered");
 					filter = new FilterHP(order, cutHighFrequency);
 					setVisible(false);
 					needProcessing = true;
 				} else {
+					logger.warn("Could not get suitable filter parameters");
 					filter = null;
 					JOptionPane.showMessageDialog(XMAXframe.getInstance(),
 							"Please enter either low or high frequencies", "Error", JOptionPane.ERROR_MESSAGE);
