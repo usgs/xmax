@@ -2,6 +2,11 @@ package com.isti.xmax;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.filters.AbstractFilter;
+import com.isti.traceview.filters.FilterBP;
+import com.isti.traceview.filters.FilterDYO;
+import com.isti.traceview.filters.FilterHP;
+import com.isti.traceview.filters.FilterLP;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.ColorModeBySegment;
 import com.isti.traceview.transformations.ITransformation;
@@ -11,10 +16,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.jar.Manifest;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -176,7 +182,9 @@ public class XMAX extends TraceView {
 				} else {
 					// Find all classes that implement IFilter and ITransformation.
 					Reflections reflect = new Reflections("com.isti");
-					filters = reflect.getSubTypesOf(IFilter.class);
+					filters = new HashSet<>();
+					filters.addAll(reflect.getSubTypesOf(AbstractFilter.class));
+					filters.add(FilterDYO.class);
 					transformations = reflect.getSubTypesOf(ITransformation.class);
 
 					setDataModule(XMAXDataModule.getInstance());
