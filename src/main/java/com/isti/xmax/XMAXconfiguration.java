@@ -91,15 +91,18 @@ public class XMAXconfiguration extends Configuration {
 			setUseTempData(false);
 
 			setStationXMLPath(config.getString("Configuration.Data.XMLPath", null));
-			String metadataServiceURL = config.getString("Configuration.Data.XMLWebURL");
-			if (metadataServiceURL != null) {
-				setMetadataServerURL(metadataServiceURL);
+			String metadataServicePath = config.getString("Configuration.Data.FDSNMetaPath");
+			if (metadataServicePath != null) {
+				setMetadataServicePath(metadataServicePath);
+			}
+			String dataServicePath = config.getString("Configuration.Data.FDSNDataPath");
+			if (dataServicePath != null) {
+				setDataServicePath(dataServicePath);
 			}
 			String dataServiceURL = config.getString("Configuration.Data.DataServiceURL");
 			if (dataServiceURL != null) {
-				setDataServiceURL(dataServiceURL);
+				setDataServiceHost(dataServiceURL);
 			}
-
 			setStationXMLPreferred(config.getBoolean("Configuration.Data.StationXMLPreferred", false));
 			setLogFile(config.getString("Configuration.LogFile", "XMAX.log"));
 			setPanelCountUnit(PanelCountUnit.values()[config.getInt("Configuration.PanelCountUnit", 0)]);

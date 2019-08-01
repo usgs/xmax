@@ -1,7 +1,6 @@
 package com.isti.traceview.data;
 
 import com.isti.traceview.TraceView;
-import edu.sc.seis.seisFile.segd.Trace;
 import java.util.Set;
 import org.apache.log4j.Logger;
 
@@ -67,7 +66,7 @@ public abstract class SourceSocket implements ISource {
    * @return flag if url for data services defined in the configuration
    */
   public static boolean isWebservicesPathDefined() {
-    return !TraceView.getConfiguration().getDataServiceURL().equals("!");
+    return !TraceView.getConfiguration().getDataServiceHost().equals("!");
   }
 
 

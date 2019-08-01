@@ -10,7 +10,6 @@ import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.gui.ScaleModeCom;
 import com.isti.traceview.gui.ScaleModeXhair;
 import edu.iris.dmc.seedcodec.B1000Types;
-import edu.sc.seis.seisFile.fdsnws.FDSNDataSelectQueryParams;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Observable;
@@ -120,8 +119,9 @@ public class Configuration extends Observable {
 	 * Folder in which stationXML files of format NET.STA.LOC.CHA.xml can be found
 	 */
 	private String stationXMLPath = null;
-	private String metadataServerURL = "https://service.iris.edu/fdsnws/station/1/query";
 	private String dataServiceURL = DEFAULT_HOST;
+	private String dataServicePath = "fdsnws";
+	private String metadataServicePath = "/fdsnws/station/1/query";
 
 	/**
 	 * True when station XML should be loaded with priority over response files
@@ -263,11 +263,11 @@ public class Configuration extends Observable {
 
 	}
 
-	public void setDataServiceURL(String dataServiceURL) {
+	public void setDataServiceHost(String dataServiceURL) {
 		this.dataServiceURL = dataServiceURL;
 	}
 
-	public String getDataServiceURL() {
+	public String getDataServiceHost() {
 		return dataServiceURL;
 	}
 
@@ -281,12 +281,25 @@ public class Configuration extends Observable {
 		this.dataTempPath = dataTempPath;
 	}
 
-	public void setMetadataServerURL(String xmlServerURL) {
-		this.metadataServerURL = xmlServerURL;
+	/**
+	 * Set path
+	 * Full URL will be dataServiceURL +
+	 * @param metadataServicePath subdirectory (i.e., "/metadatairis/fdsnws/station/1/query")
+	 */
+	public void setMetadataServicePath(String metadataServicePath) {
+		this.metadataServicePath = metadataServicePath;
 	}
 
-	public String getMetadataServerURL() {
-		return metadataServerURL;
+	public String getMetadataServicePath() {
+		return metadataServicePath;
+	}
+
+	public void setDataServicePath(String dataServicePath) {
+		this.dataServicePath = dataServicePath;
+	}
+
+	public String getDataServicePath() {
+		return dataServicePath;
 	}
 
 	/**

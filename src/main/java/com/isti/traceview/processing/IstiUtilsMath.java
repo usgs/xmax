@@ -559,7 +559,8 @@ public class IstiUtilsMath {
 			int currentPointIndexInQueue = 0; // current point is center value -- where in queue it is
 			int nextPointToLoad = 1; // this lets us know how many points to add to list at any step
 
-			// xyseries are by default sorted according to x-axis; this is almost certainly negative
+			// xyseries are by default sorted by period value decreasing
+			// so this is almost certainly negative in the circumstances it appears
 			// but we handle this just in case the defaults ever get overridden somehow
 			double deltaFreq = 1. / toSmoothSeries.getDataItem(1).getXValue() -
 					1. / toSmoothSeries.getDataItem(0).getXValue();
