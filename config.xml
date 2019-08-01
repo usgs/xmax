@@ -23,7 +23,8 @@
 			<!--DataMask>/xs0/seed/IU_ANMO/2014/2014_*/00_LHZ.512.seed</DataMask-->	
 			<!--DataMask>seed/IU_MACI/2014_236</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
-
+			<!-- Connection scheme, either http or https -->
+			<DataServiceProtocol>http</DataServiceProtocol>
 			<DataServiceURL>vmdevwb.cr.usgs.gov</DataServiceURL>
 			<FDSNDataPath>metadatairis/fdsnws</FDSNDataPath>
 			<!-- Temporary directory to store decompressed traces in the internal format -->
@@ -93,8 +94,8 @@
 			<State>MAXIMIZED_BOTH</State>
 			<PosY>23</PosY>
 			<PosX>0</PosX>
-			<Width>1920</Width>
-			<Heigth>979</Heigth>
+			<Width>640</Width>
+			<Heigth>480</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>
