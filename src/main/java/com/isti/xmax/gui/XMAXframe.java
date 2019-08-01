@@ -2436,16 +2436,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				MaskFormatter locationFormatter = new MaskFormatter("##");
 				MaskFormatter channelFormatter = new MaskFormatter("UUA");
 				JFormattedTextField networkField = new JFormattedTextField(networkFormatter);
-				networkField.setText("IU");
 				networkField.setMinimumSize(networkField.getPreferredSize());
 				JTextField stationField = new JTextField();
-				stationField.setText("ANMO");
 				stationField.setMinimumSize(stationField.getPreferredSize());
 				JFormattedTextField locationField = new JFormattedTextField(locationFormatter);
-				locationField.setText("00");
 				locationField.setMinimumSize(locationField.getPreferredSize());
 				JFormattedTextField channelField = new JFormattedTextField(channelFormatter);
-				channelField.setText("LHZ");
 				channelField.setMinimumSize(channelField.getPreferredSize());
 
 				Date start = null;
@@ -2470,13 +2466,13 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				JPanel queryPanel = new JPanel();
 				queryPanel.setLayout(new GridLayout(6, 2));
-				queryPanel.add(new JLabel("Network:"));
+				queryPanel.add(new JLabel("Network: (ex: IU)"));
 				queryPanel.add(networkField);
-				queryPanel.add(new JLabel("Station:"));
+				queryPanel.add(new JLabel("Station: (ex: ANMO)"));
 				queryPanel.add(stationField);
-				queryPanel.add(new JLabel("Location:"));
+				queryPanel.add(new JLabel("Location: (ex: 00)"));
 				queryPanel.add(locationField);
-				queryPanel.add(new JLabel("Channel:"));
+				queryPanel.add(new JLabel("Channel: (ex: LHZ)"));
 				queryPanel.add(channelField);
 				queryPanel.add(new JLabel("Start time (UTC):"));
 				queryPanel.add(startPicker);
