@@ -95,6 +95,10 @@ public class XMAXconfiguration extends Configuration {
 			if (metadataServicePath != null) {
 				setMetadataServicePath(metadataServicePath);
 			}
+			String dataServiceProtocol = config.getString("Configuration.Data.DataServiceProtocol");
+			if (dataServiceProtocol.equals("http") || dataServiceProtocol.equals("https")) {
+				setDataServiceProtocol(dataServiceProtocol);
+			}
 			String dataServicePath = config.getString("Configuration.Data.FDSNDataPath");
 			if (dataServicePath != null) {
 				setDataServicePath(dataServicePath);

@@ -1,13 +1,11 @@
 package com.isti.traceview.data;
 
-import static edu.sc.seis.seisFile.fdsnws.AbstractQueryParams.DEFAULT_HOST;
-
 import asl.utils.TimeSeriesUtils;
 import asl.utils.input.DataBlock;
 import com.isti.traceview.TraceView;
+import com.isti.traceview.common.Configuration;
 import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.seisFile.SeisFileException;
-import edu.sc.seis.seisFile.fdsnws.FDSNDataSelectQueryParams;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
@@ -34,12 +32,13 @@ public class SourceSocketFDSN extends SourceSocket {
   @Override
   public Set<PlotDataProvider> parse() {
     Set<PlotDataProvider> ret = new HashSet<>();
-    String host = TraceView.getConfiguration().getDataServiceHost();
-    String path = TraceView.getConfiguration().getDataServicePath();
+    Configuration config = TraceView.getConfiguration();
+    String scheme = config.getDataServiceProtocol();
+    String host = config.getDataServiceHost();
+    String path = config.getDataServicePath();
     try {
-      String scheme = "http";
-      DataBlock db = TimeSeriesUtils.getTimeSeriesFromFDSNQuery(scheme, host, path, network, station, location,
-          channel, startTime, endTime);
+      DataBlock db = TimeSeriesUtils.getTimeSeriesFromFDSNQuery(scheme, host, path,
+          network, station, location, channel, startTime, endTime);
       cachedData = db.getData();
       PlotDataProvider pdp = new PlotDataProvider(channel,
           DataModule.getOrAddStation(station), network, location);

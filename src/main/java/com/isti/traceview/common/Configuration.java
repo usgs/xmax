@@ -119,6 +119,7 @@ public class Configuration extends Observable {
 	 * Folder in which stationXML files of format NET.STA.LOC.CHA.xml can be found
 	 */
 	private String stationXMLPath = null;
+	private String dataServiceProtocol = "http";
 	private String dataServiceURL = DEFAULT_HOST;
 	private String dataServicePath = "fdsnws";
 	private String metadataServicePath = "/fdsnws/station/1/query";
@@ -249,6 +250,14 @@ public class Configuration extends Observable {
 	 */
 	public String getDataTempPath() {
 		return dataTempPath.replace("." + File.separator, getConfigFileDir());
+	}
+
+	public void setDataServiceProtocol(String dataServiceProtocol) {
+		this.dataServiceProtocol = dataServiceProtocol;
+	}
+
+	public String getDataServiceProtocol() {
+		return dataServiceProtocol;
 	}
 
 	public void setStationXMLPath(String stationXMLPath) {
