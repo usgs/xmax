@@ -24,8 +24,8 @@
 			<!--DataMask>seed/IU_MACI/2014_236</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
 
-			<DataServiceURL>service.iris.edu</DataServiceURL>
-			
+			<DataServiceURL>vmdevwb.cr.usgs.gov</DataServiceURL>
+			<FDSNDataPath>metadatairis/fdsnws</FDSNDataPath>
 			<!-- Temporary directory to store decompressed traces in the internal format -->
 			<TempPath>resources/DATA_TEMP</TempPath>
 
@@ -37,9 +37,9 @@
 			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
 			<ResponsePath>./resources/Responses/</ResponsePath>
 			<!--XMLPath>./resources/StationXML</XMLPath-->
-			<!--XMLWebURL>https://service.iris.edu/fdsnws/station/1/query</XMLWebURL-->
+			<FDSNMetaPath>/metadatairis/fdsnws/station/1/query</FDSNMetaPath>
 			<AllowMultiplexedData>true</AllowMultiplexedData>
-			<StationXMLPreferred>false</StationXMLPreferred>
+			<StationXMLPreferred>true</StationXMLPreferred>
 
 			<!-- Picks directory. Recovers by -p option -->
 			<PickPath>resources/Picks</PickPath>
@@ -93,8 +93,8 @@
 			<State>MAXIMIZED_BOTH</State>
 			<PosY>23</PosY>
 			<PosX>0</PosX>
-			<Width>640</Width>
-			<Heigth>480</Heigth>
+			<Width>1920</Width>
+			<Heigth>979</Heigth>
 		</Frame>
 		<UserDir>
 			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>
