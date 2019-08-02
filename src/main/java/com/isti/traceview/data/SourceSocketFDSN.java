@@ -9,14 +9,18 @@ import edu.sc.seis.seisFile.SeisFileException;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.Logger;
 
 public class SourceSocketFDSN extends SourceSocket {
 
   private static final Logger logger = Logger.getLogger(SourceSocketFDSN.class);
-  private double[] cachedData;
+  private DataBlock cachedData;
   private long interval;
 
   public SourceSocketFDSN(String network, String station, String location, String channel,
@@ -37,18 +41,22 @@ public class SourceSocketFDSN extends SourceSocket {
     String host = config.getDataServiceHost();
     String path = config.getDataServicePath();
     try {
-      DataBlock db = TimeSeriesUtils.getTimeSeriesFromFDSNQuery(scheme, host, path,
+      cachedData = TimeSeriesUtils.getTimeSeriesFromFDSNQuery(scheme, host, path,
           network, station, location, channel, startTime, endTime);
-      cachedData = db.getData();
       PlotDataProvider pdp = new PlotDataProvider(channel,
           DataModule.getOrAddStation(station), network, location);
-      interval = db.getInterval();
-      int numberSamples = cachedData.length;
-      logger.debug("Expected sample count: " + numberSamples);
+      interval = cachedData.getInterval();
+      logger.debug("Expected sample count: " + cachedData.size());
       ret.add(pdp);
-      Segment segment = new Segment(this, 0,
-          Date.from(Instant.ofEpochMilli(startTime)), (double) interval, numberSamples, 0);
-      pdp.addSegment(segment);
+      Map<Long, double[]> dataMap = cachedData.getDataMap();
+      for (Long startTime : dataMap.keySet()) {
+        double[] timeSeries = dataMap.get(startTime);
+        int numberSamples = timeSeries.length;
+        Segment segment = new Segment(this, 0,
+            Date.from(Instant.ofEpochMilli(startTime)), (double) interval, numberSamples, 0);
+        pdp.addSegment(segment);
+      }
+
     } catch (SeisFileException | IOException | CodecException e) {
       logger.error(e);
     }
@@ -61,8 +69,10 @@ public class SourceSocketFDSN extends SourceSocket {
     int cachedDataOffset = (int)
         ((segment.getStartTime().toInstant().toEpochMilli() - startTime) / interval);
     logger.debug("CACHED DATA OFFSET? " + cachedDataOffset);
+    long startTime = segment.getStartTime().toInstant().toEpochMilli();
+    double[] dataRange = cachedData.getDataMap().get(startTime);
     for (int i = 0; i < segment.getSampleCount(); ++i) {
-      segment.addDataPoint((int) cachedData[i + cachedDataOffset]);
+      segment.addDataPoint((int) dataRange[i]);
     }
   }
 
