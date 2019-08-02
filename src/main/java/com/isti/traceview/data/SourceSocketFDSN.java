@@ -9,12 +9,9 @@ import edu.sc.seis.seisFile.SeisFileException;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.Logger;
 
 public class SourceSocketFDSN extends SourceSocket {
