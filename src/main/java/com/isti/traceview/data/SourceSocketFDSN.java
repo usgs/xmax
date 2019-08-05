@@ -37,8 +37,9 @@ public class SourceSocketFDSN extends SourceSocket {
     String scheme = config.getDataServiceProtocol();
     String host = config.getDataServiceHost();
     String path = config.getDataServicePath();
+    int port = config.getDataServicePort();
     try {
-      cachedData = TimeSeriesUtils.getTimeSeriesFromFDSNQuery(scheme, host, path,
+      cachedData = TimeSeriesUtils.getTimeSeriesFromFDSNQuery(scheme, host, port, path,
           network, station, location, channel, startTime, endTime);
       PlotDataProvider pdp = new PlotDataProvider(channel,
           DataModule.getOrAddStation(station), network, location);

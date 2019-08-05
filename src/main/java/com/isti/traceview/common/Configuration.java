@@ -123,6 +123,7 @@ public class Configuration extends Observable {
 	private String dataServiceURL = DEFAULT_HOST;
 	private String dataServicePath = "fdsnws";
 	private String metadataServicePath = "/fdsnws/station/1/query";
+	private int dataServicePort = 80;
 
 	/**
 	 * True when station XML should be loaded with priority over response files
@@ -278,6 +279,14 @@ public class Configuration extends Observable {
 
 	public String getDataServiceHost() {
 		return dataServiceURL;
+	}
+
+	public void setDataServicePort(int dataServicePort) {
+		this.dataServicePort = dataServicePort;
+	}
+
+	public int getDataServicePort() {
+		return dataServicePort;
 	}
 
 	/**

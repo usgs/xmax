@@ -104,6 +104,8 @@ public class XMAXconfiguration extends Configuration {
 			if (dataServicePath != null) {
 				setDataServicePath(dataServicePath);
 			}
+			int dataServicePort = config.getInt("Configuration.Data.FDSNPort", 80);
+			setDataServicePort(dataServicePort);
 			String dataServiceURL = config.getString("Configuration.Data.DataServiceURL");
 			if (dataServiceURL != null) {
 				setDataServiceHost(dataServiceURL);

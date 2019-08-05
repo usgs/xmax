@@ -27,6 +27,7 @@
 			<DataServiceProtocol>http</DataServiceProtocol>
 			<DataServiceURL>vmdevwb.cr.usgs.gov</DataServiceURL>
 			<FDSNDataPath>metadatairis/fdsnws</FDSNDataPath>
+			<FDSNPort>80</FDSNPort>
 			<!-- Temporary directory to store decompressed traces in the internal format -->
 			<TempPath>resources/DATA_TEMP</TempPath>
 
