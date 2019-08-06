@@ -12,14 +12,20 @@ import com.isti.traceview.gui.ColorModeBySegment;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.data.XMAXDataModule;
 import com.isti.xmax.gui.XMAXframe;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import javax.swing.SwingUtilities;
 import org.apache.commons.cli.CommandLine;
@@ -54,12 +60,13 @@ public class XMAX extends TraceView {
 	private static Set<Class<? extends ITransformation>> transformations;
 
 	public static String getReleaseDate() {
-		URLClassLoader urlLoader = (URLClassLoader) XMAX.class.getClassLoader();
 		try {
-			URL url = urlLoader.findResource("META-INF/MANIFEST.MF");
-			Manifest manifest = new Manifest(url.openStream());
+			JarInputStream stream = new JarInputStream(new FileInputStream(new File(
+					XMAX.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()
+			)));
+			Manifest manifest = stream.getManifest();
 			return manifest.getMainAttributes().getValue("Build-Timestamp");
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			return "RELEASE DATE UNKNOWN";
 		}
 	}
