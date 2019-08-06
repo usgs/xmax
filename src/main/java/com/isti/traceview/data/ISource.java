@@ -56,7 +56,9 @@ public interface ISource extends Serializable {
 	String getName();
 
 	/**
-	 * Load trace data from this data source
+	 * Load trace data from this data source into a segment object.
+	 * Segment objects represent contiguous ranges of time; multiple segments are used to handle
+	 * gaps between
 	 * 
 	 * These params are inaccurate, but potentially useful
 	 * param offset
