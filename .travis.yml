@@ -3,6 +3,7 @@ os:
   - linux
 jdk:
   - openjdk8
+  - openjdk11
 
 git:
   submodules: false
