@@ -212,10 +212,20 @@ public class Configuration extends Observable {
 
 	private Set<String> filterLocation = null;
 
+	/**
+	 * Sets whether to use station XML or RESP metadata file formats
+	 * @param preferred True to default to station XML files
+	 */
 	public void setStationXMLPreferred(boolean preferred) {
 		this.stationXMLPreferred = preferred;
 	}
 
+	/**
+	 * Get current state of preference betweeen RESP and stationXML.
+	 * If this is set to true and FDSN metadata is enabled, lacking stationXML for a given trace
+	 * will cause a call to the FDSN metadata service to run to get the relevant data.
+	 * @return true if preferred to use station XML metadata if it exists
+	 */
 	public boolean stationXMLPreferred() {
 		return stationXMLPreferred;
 	}
@@ -253,18 +263,35 @@ public class Configuration extends Observable {
 		return dataTempPath.replace("." + File.separator, getConfigFileDir());
 	}
 
+	/**
+	 * Setter of data service protocol -- connection protocol for FDSN data service.
+	 * This is expected to be a value like http or https
+	 * @param dataServiceProtocol Protocol for FDSN data service connections
+	 */
 	public void setDataServiceProtocol(String dataServiceProtocol) {
 		this.dataServiceProtocol = dataServiceProtocol;
 	}
 
+	/**
+	 * Gets the data service connection protocol
+	 * @return FDSN connection protocol, i.e., http or https
+	 */
 	public String getDataServiceProtocol() {
 		return dataServiceProtocol;
 	}
 
+	/**
+	 * Expected location to find stationXML data if existed and preferred metadata source
+	 * @param stationXMLPath Path to search for station XML metadata from
+	 */
 	public void setStationXMLPath(String stationXMLPath) {
 		this.stationXMLPath = stationXMLPath;
 	}
 
+	/**
+	 * Returns location to search for stationXML files from
+	 * @return String representing stationXML data root path
+	 */
 	public String getStationXMLPath() {
 		if (stationXMLPath == null) {
 			return null;
@@ -273,18 +300,35 @@ public class Configuration extends Observable {
 
 	}
 
+	/**
+	 * Set the domain to use in calling FDSN data/metadata requests.
+	 * This is a string like "service.iris.edu"
+	 * @param dataServiceURL Base URL for FDSN requests
+	 */
 	public void setDataServiceHost(String dataServiceURL) {
 		this.dataServiceURL = dataServiceURL;
 	}
 
+	/**
+	 * Get the domain for FDSN data service requests
+	 * @return Base URL for FDSN requests
+	 */
 	public String getDataServiceHost() {
 		return dataServiceURL;
 	}
 
+	/**
+	 * Set the port to use for FDSN services (default value is 80)
+	 * @param dataServicePort Port to connect to for FDSN service requests
+	 */
 	public void setDataServicePort(int dataServicePort) {
 		this.dataServicePort = dataServicePort;
 	}
 
+	/**
+	 * Get the port used for FDSN services
+	 * @return port value for FDSN connections
+	 */
 	public int getDataServicePort() {
 		return dataServicePort;
 	}
@@ -300,22 +344,37 @@ public class Configuration extends Observable {
 	}
 
 	/**
-	 * Set path
-	 * Full URL will be dataServiceURL +
+	 * Set path to use for stationXML queries from FDSN metadata services
+	 * Full URL will be protocol + "://" + dataServiceURL + this value
 	 * @param metadataServicePath subdirectory (i.e., "/metadatairis/fdsnws/station/1/query")
 	 */
 	public void setMetadataServicePath(String metadataServicePath) {
 		this.metadataServicePath = metadataServicePath;
 	}
 
+	/**
+	 * Get subpath of metadata services for constructing metadata requests
+	 * Full URL will be dataServiceProtocol + "://" + dataServiceURL + this value
+	 * @return subpath of metadata services (i.e., "/metadatairis/fdsnws/station/1/query")
+	 */
 	public String getMetadataServicePath() {
 		return metadataServicePath;
 	}
 
+	/**
+	 * Set path for data services to be used in FDSN data queries
+	 * FDSN data queries will use protocol, url, port, and this value
+	 * @param dataServicePath path of FDSN data query (i.e., "metadatairis/fdsnws")
+	 */
 	public void setDataServicePath(String dataServicePath) {
 		this.dataServicePath = dataServicePath;
 	}
 
+	/**
+	 * Get path for data services to be used in FDSN data queries
+	 * FDSN data queries will use protocol, url, port, and this value
+	 * @return path under domain for FDSN data queries
+	 */
 	public String getDataServicePath() {
 		return dataServicePath;
 	}
