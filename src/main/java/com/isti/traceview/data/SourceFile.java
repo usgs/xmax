@@ -164,6 +164,11 @@ public abstract class SourceFile implements ISource {
 		return listFiles;
 	}
 
+	/**
+	 * Identify format type from file
+	 * @param file File to load in
+	 * @return Object representing parser/loading object of the given file
+	 */
 	public static ISource getDataFile(File file) {
 		return new FileType(file).call();
 	}
@@ -506,6 +511,11 @@ public abstract class SourceFile implements ISource {
 		return false;
 	}
 
+	/**
+	 * Tests if file is ASCII bdf
+	 * @param file file to test
+	 * @return true if file can be parsed as BDF file
+	 */
 	public static boolean isASCII(File file) {
 		BufferedReader input = null;
 		try {

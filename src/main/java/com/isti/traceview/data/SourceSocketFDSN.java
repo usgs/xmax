@@ -20,6 +20,17 @@ public class SourceSocketFDSN extends SourceSocket {
   private DataBlock cachedData;
   private long interval;
 
+  /**
+   * Connect to the FDSN and receive data from one trace over a given time range.
+   * Currently, wildcards are not supported.
+   * FDSN connection parameters such as port, url, etc. are taken from config.xml file
+   * @param network Name of network to get data from
+   * @param station Name of station
+   * @param location Name of location (i.e., "00")
+   * @param channel Name of channel (i.e., "LHZ")
+   * @param startTime Start time, in epoch ms
+   * @param endTime End time, in epoch ms
+   */
   public SourceSocketFDSN(String network, String station, String location, String channel,
       long startTime, long endTime) {
     super(network, station, location, channel, startTime, endTime);
