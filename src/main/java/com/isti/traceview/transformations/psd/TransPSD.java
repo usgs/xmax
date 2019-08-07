@@ -154,8 +154,8 @@ public class TransPSD implements ITransformation {
 		}
 	}
 
-	private static XYSeries convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti, Complex[] response)
-			throws XMAXException {
+	private static XYSeries convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti,
+			Complex[] response) throws XMAXException {
 		FFTResult data = getPSD(channel, ti, response);
 		double[] frequenciesArray = data.getFreqs();
 		Complex[] psd = data.getFFT();
