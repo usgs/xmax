@@ -2430,80 +2430,69 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		void queryFDSN() {
-			try {
-				MaskFormatter networkFormatter = new MaskFormatter("AA");
-				// MaskFormatter stationFormatter = new MaskFormatter("UUUUU");
-				MaskFormatter locationFormatter = new MaskFormatter("##");
-				MaskFormatter channelFormatter = new MaskFormatter("UUA");
-				JFormattedTextField networkField = new JFormattedTextField(networkFormatter);
-				networkField.setMinimumSize(networkField.getPreferredSize());
-				JTextField stationField = new JTextField();
-				stationField.setMinimumSize(stationField.getPreferredSize());
-				JFormattedTextField locationField = new JFormattedTextField(locationFormatter);
-				locationField.setMinimumSize(locationField.getPreferredSize());
-				JFormattedTextField channelField = new JFormattedTextField(channelFormatter);
-				channelField.setMinimumSize(channelField.getPreferredSize());
+			JTextField networkField = new JTextField();
+			networkField.setMinimumSize(networkField.getPreferredSize());
+			JTextField stationField = new JTextField();
+			stationField.setMinimumSize(stationField.getPreferredSize());
+			JTextField locationField = new JTextField();
+			locationField.setMinimumSize(locationField.getPreferredSize());
+			JTextField channelField = new JTextField();
+			channelField.setMinimumSize(channelField.getPreferredSize());
 
-				Date start = null;
-				Date end = null;
-				// set initial start and end times to be 2 days ago and 1 day ago at day start
-				// such that there should be data for the full day's length that already exists
-				Date defaultStartValue = Date.from(
-						LocalDate.now().minusDays(2).atStartOfDay(ZoneOffset.UTC).toInstant());
-				Date defaultEndValue = Date.from(
-						LocalDate.now().minusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant());
+			Date start = null;
+			Date end = null;
+			// set initial start and end times to be 2 days ago and 1 day ago at day start
+			// such that there should be data for the full day's length that already exists
+			Date defaultStartValue = Date.from(
+					LocalDate.now().minusDays(2).atStartOfDay(ZoneOffset.UTC).toInstant());
+			Date defaultEndValue = Date.from(
+					LocalDate.now().minusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant());
 
-				JSpinner startPicker = timePickerFactory(start, end);
-				JSpinner endPicker = timePickerFactory(start, end);
+			JSpinner startPicker = timePickerFactory(start, end);
+			JSpinner endPicker = timePickerFactory(start, end);
 
-				SimpleDateFormat format = ((JSpinner.DateEditor) startPicker.getEditor()).getFormat();
-				format.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
-				format = ((JSpinner.DateEditor) endPicker.getEditor()).getFormat();
-				format.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+			SimpleDateFormat format = ((JSpinner.DateEditor) startPicker.getEditor()).getFormat();
+			format.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+			format = ((JSpinner.DateEditor) endPicker.getEditor()).getFormat();
+			format.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
 
-				startPicker.setValue(defaultStartValue);
-				endPicker.setValue(defaultEndValue);
+			startPicker.setValue(defaultStartValue);
+			endPicker.setValue(defaultEndValue);
 
-				JPanel queryPanel = new JPanel();
-				queryPanel.setLayout(new GridLayout(6, 2));
-				queryPanel.add(new JLabel("Network: (ex: IU)"));
-				queryPanel.add(networkField);
-				queryPanel.add(new JLabel("Station: (ex: ANMO)"));
-				queryPanel.add(stationField);
-				queryPanel.add(new JLabel("Location: (ex: 00)"));
-				queryPanel.add(locationField);
-				queryPanel.add(new JLabel("Channel: (ex: LHZ)"));
-				queryPanel.add(channelField);
-				queryPanel.add(new JLabel("Start time (UTC):"));
-				queryPanel.add(startPicker);
-				queryPanel.add(new JLabel("End time (UTC):"));
-				queryPanel.add(endPicker);
+			JPanel queryPanel = new JPanel();
+			queryPanel.setLayout(new GridLayout(6, 2));
+			queryPanel.add(new JLabel("Network: (ex: IU)"));
+			queryPanel.add(networkField);
+			queryPanel.add(new JLabel("Station: (ex: ANMO)"));
+			queryPanel.add(stationField);
+			queryPanel.add(new JLabel("Location: (ex: 00)"));
+			queryPanel.add(locationField);
+			queryPanel.add(new JLabel("Channel: (ex: LHZ)"));
+			queryPanel.add(channelField);
+			queryPanel.add(new JLabel("Start time (UTC):"));
+			queryPanel.add(startPicker);
+			queryPanel.add(new JLabel("End time (UTC):"));
+			queryPanel.add(endPicker);
 
-				int result = JOptionPane.showConfirmDialog(XMAX.getFrame(), queryPanel,
-						"Set FDSN query parameters", JOptionPane.OK_CANCEL_OPTION);
+			int result = JOptionPane.showConfirmDialog(XMAX.getFrame(), queryPanel,
+					"Set FDSN query parameters", JOptionPane.OK_CANCEL_OPTION);
 
-				if (result == JOptionPane.OK_OPTION) {
-					String net = networkField.getText().toUpperCase();
-					String sta = stationField.getText().replaceAll("\\s", "").toUpperCase();
-					String loc = locationField.getText().replaceAll("\\s", "").toUpperCase();
-					String cha = channelField.getText().toUpperCase();
+			if (result == JOptionPane.OK_OPTION) {
+				String net = networkField.getText().toUpperCase();
+				String sta = stationField.getText().replaceAll("\\s", "").toUpperCase();
+				String loc = locationField.getText().replaceAll("\\s", "").toUpperCase();
+				String cha = channelField.getText().toUpperCase();
 
-					Date startDate = (Date) startPicker.getValue();
-					long startMillis = startDate.toInstant().toEpochMilli();
-					Date endDate = (Date) endPicker.getValue();
-					long endMillis = endDate.toInstant().toEpochMilli();
+				Date startDate = (Date) startPicker.getValue();
+				long startMillis = startDate.toInstant().toEpochMilli();
+				Date endDate = (Date) endPicker.getValue();
+				long endMillis = endDate.toInstant().toEpochMilli();
 
-					XMAXDataModule dm = XMAXDataModule.getInstance();
-					dm.loadNewDataFromSocket(net, sta, loc, cha, startMillis,
-							endMillis);
+				XMAXDataModule dm = XMAXDataModule.getInstance();
+				dm.loadNewDataFromSocket(net, sta, loc, cha, startMillis,
+						endMillis);
 
-					resetPlottedData();
-				}
-			} catch(ParseException e){
-				logger.error(e);
-				String message = "Error creating FDSN query dialog box";
-				JOptionPane.showMessageDialog(XMAX.getFrame(), message, "FDSN ERROR",
-						JOptionPane.ERROR_MESSAGE);
+				resetPlottedData();
 			}
 		}
 

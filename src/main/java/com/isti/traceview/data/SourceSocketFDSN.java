@@ -60,7 +60,6 @@ public class SourceSocketFDSN extends SourceSocket {
       // here the index into datanames list is used as start offset
       for (int i = 0; i < dataNames.size(); ++i) {
         String key = dataNames.get(i);
-
         String[] snclData = key.split("_"); // split on occurence of character '_'
         logger.debug(Arrays.toString(snclData));
         // snclData has format {network [0], station [1], location [2], channel [3]}
