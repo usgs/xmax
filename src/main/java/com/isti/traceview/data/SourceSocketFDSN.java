@@ -9,7 +9,10 @@ import edu.sc.seis.seisFile.SeisFileException;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
@@ -17,7 +20,8 @@ import org.apache.log4j.Logger;
 public class SourceSocketFDSN extends SourceSocket {
 
   private static final Logger logger = Logger.getLogger(SourceSocketFDSN.class);
-  private DataBlock cachedData;
+  private Map<String, DataBlock> cachedData;
+  private List<String> dataNames;
   private long interval;
 
   /**
@@ -50,20 +54,30 @@ public class SourceSocketFDSN extends SourceSocket {
     String path = config.getDataServicePath();
     int port = config.getDataServicePort();
     try {
-      cachedData = TimeSeriesUtils.getTimeSeriesFromFDSNQuery(scheme, host, port, path,
+      cachedData = TimeSeriesUtils.getDataFromFDSNQuery(scheme, host, port, path,
           network, station, location, channel, startTime, endTime);
-      PlotDataProvider pdp = new PlotDataProvider(channel,
-          DataModule.getOrAddStation(station), network, location);
-      interval = cachedData.getInterval();
-      logger.debug("Expected sample count: " + cachedData.size());
-      ret.add(pdp);
-      Map<Long, double[]> dataMap = cachedData.getDataMap();
-      for (Long startTime : dataMap.keySet()) {
-        double[] timeSeries = dataMap.get(startTime);
-        int numberSamples = timeSeries.length;
-        Segment segment = new Segment(this, 0,
-            Date.from(Instant.ofEpochMilli(startTime)), (double) interval, numberSamples, 0);
-        pdp.addSegment(segment);
+      dataNames = new ArrayList<>(cachedData.keySet());
+      // here the index into datanames list is used as start offset
+      for (int i = 0; i < dataNames.size(); ++i) {
+        String key = dataNames.get(i);
+
+        String[] snclData = key.split("_"); // split on occurence of character '_'
+        logger.debug(Arrays.toString(snclData));
+        // snclData has format {network [0], station [1], location [2], channel [3]}
+        DataBlock block = cachedData.get(key);
+        PlotDataProvider pdp = new PlotDataProvider(snclData[3],
+            DataModule.getOrAddStation(snclData[1]), snclData[0], snclData[2]);
+        interval = block.getInterval();
+        logger.debug("Expected sample count: " + cachedData.size());
+        ret.add(pdp);
+        Map<Long, double[]> dataMap = block.getDataMap();
+        for (Long startTime : dataMap.keySet()) {
+          double[] timeSeries = dataMap.get(startTime);
+          int numberSamples = timeSeries.length;
+          Segment segment = new Segment(this, i,
+              Date.from(Instant.ofEpochMilli(startTime)), (double) interval, numberSamples, 0);
+          pdp.addSegment(segment);
+        }
       }
 
     } catch (SeisFileException | IOException | CodecException e) {
@@ -79,7 +93,8 @@ public class SourceSocketFDSN extends SourceSocket {
         ((segment.getStartTime().toInstant().toEpochMilli() - startTime) / interval);
     logger.debug("CACHED DATA OFFSET? " + cachedDataOffset);
     long startTime = segment.getStartTime().toInstant().toEpochMilli();
-    double[] dataRange = cachedData.getDataMap().get(startTime);
+    int offset = (int) segment.getStartOffset();
+    double[] dataRange = cachedData.get(dataNames.get(offset)).getDataMap().get(startTime);
     for (int i = 0; i < segment.getSampleCount(); ++i) {
       segment.addDataPoint((int) dataRange[i]);
     }
