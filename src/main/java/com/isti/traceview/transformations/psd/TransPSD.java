@@ -78,10 +78,13 @@ public class TransPSD implements ITransformation {
 	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
 			TimeInterval ti, JFrame parentFrame) throws XMAXException {
 
+		int windowDivisor = 2; // windows are half the length of full data
+		int shiftDivisor = 4;
+
 		// evalresp doesn't play nicely with threads so let's get that out of the way first
 		StringBuffer respNotFound = new StringBuffer();
 		StringBuffer traceHadError = new StringBuffer();
-		List<Complex[]> responses = generateResponses(input, ti, respNotFound);
+		List<Complex[]> responses = generateResponses(input, ti, respNotFound, windowDivisor);
 
 		List<XYSeries> dataset = Collections.synchronizedList(new ArrayList<>());
 		long startl = System.nanoTime();
@@ -97,7 +100,7 @@ public class TransPSD implements ITransformation {
 				return; // skip to next PSD -- this lambda is basically its own method
 			}
 			try {
-				XYSeries xys = convertToPlottableSeries(channel, ti, respCurve);
+				XYSeries xys = convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor);
 				dataset.add(xys);
 			} catch (XMAXException e) {
 				logger.error(e);
@@ -155,8 +158,14 @@ public class TransPSD implements ITransformation {
 	}
 
 	private static XYSeries convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti,
-			Complex[] response) throws XMAXException {
-		FFTResult data = getPSD(channel, ti, response);
+			Complex[] response, int windowDivisor, int shiftDivisor) throws XMAXException {
+
+		long interval = (long) channel.getSampleRate();
+		long traceLength = (ti.getEnd() - ti.getStart()) / interval;
+		int windowLength = (int) (traceLength / windowDivisor);
+		int shiftLength = windowLength / shiftDivisor;
+
+		FFTResult data = getPSD(channel, ti, response, windowLength, shiftLength);
 		double[] frequenciesArray = data.getFreqs();
 		Complex[] psd = data.getFFT();
 		XYSeries xys = new XYSeries(channel.getName());
@@ -170,7 +179,8 @@ public class TransPSD implements ITransformation {
 		return xys;
 	}
 
-	private static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti, Complex[] response)
+	private static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti,
+			Complex[] response, int range, int slider)
 			throws XMAXException {
 
 		int[] data = channel.getContinuousGaplessDataOverRange(ti);
@@ -180,7 +190,7 @@ public class TransPSD implements ITransformation {
 		);
 		long interval = (long) channel.getSampleRate();
 
-		return FFTResult.powerSpectra(doubleData, interval, response);
+		return FFTResult.powerSpectra(doubleData, interval, response, range, slider);
 	}
 
 	@Override
@@ -189,7 +199,7 @@ public class TransPSD implements ITransformation {
 	}
 
 	private List<Complex[]> generateResponses(List<PlotDataProvider> channels, TimeInterval ti,
-			StringBuffer respNotFound) {
+			StringBuffer respNotFound, int windowDivisor) {
 		// generate the response curve for each channel and compile them into a list
 		List<Complex[]> responses = new ArrayList<>();
 
@@ -198,7 +208,7 @@ public class TransPSD implements ITransformation {
 			long interval = (long) channel.getSampleRate();
 			long traceLength = (ti.getEnd() - ti.getStart()) / interval;
 			// divide that length by 4 because the PSD uses windows sized at 1/4 of the data
-			int dataLength = (int) traceLength / 4;
+			int dataLength = (int) traceLength / windowDivisor;
 			// PSD output is padded to be the largest power of 2 above the length given
 			int padLength = 2;
 			while (padLength < dataLength) {
