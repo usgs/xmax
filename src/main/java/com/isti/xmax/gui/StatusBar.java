@@ -189,7 +189,10 @@ public class StatusBar extends JPanel implements Observer {
 	 *            total traces
 	 */
 	public void setChannelCountMessage(int start, int end, int all) {
-		String text = new Integer(start).toString() + "-" + new Integer(end).toString() + " of " + new Integer(all).toString();
+		// set text to handle case where it would display "1-0 of 0" more gracefully
+		String text = end > 0 ?
+				start + "-" + end + " of " + all :
+				"NO DATA";
 		Dimension dim = new Dimension(channelCountLabel.getFontMetrics(channelCountLabel.getFont()).stringWidth(text)+5, 18);
 		channelCountLabel.setPreferredSize(dim);
 		channelCountLabel.setMinimumSize(dim);

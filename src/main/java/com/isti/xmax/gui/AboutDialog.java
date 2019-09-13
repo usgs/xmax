@@ -1,5 +1,7 @@
 package com.isti.xmax.gui;
 
+import static javax.swing.JOptionPane.OK_OPTION;
+
 import com.isti.xmax.XMAX;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -56,19 +58,17 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 	/**
 	 * Default constructor
 	 */
-	public AboutDialog() {
+	private AboutDialog() {
 		super();
 		initialize();
+		validate();
+		this.setPreferredSize(this.getPreferredSize());
 	}
 
 	/**
 	 * This method initializes dialog
 	 */
 	private void initialize() {
-		setSize(new Dimension(320, 285));
-		setMinimumSize(new Dimension(320, 285));
-		setMaximumSize(new Dimension(320, 285));
-		setPreferredSize(new Dimension(320, 285));
 		setBorder(BorderFactory.createEtchedBorder());
 		setLayout(new GridBagLayout());
 
@@ -122,7 +122,7 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		gridBagConstraints4.insets = new Insets(2, 10, 5, 10);
 		gridBagConstraints4.fill = GridBagConstraints.HORIZONTAL;
 		usedLibsSP = new JScrollPane(getUsedLibsTA());
-		usedLibsSP.setMaximumSize(new Dimension(310, 70));
+		//usedLibsSP.setMaximumSize(new Dimension(310, 70));
 		usedLibsSP.setMinimumSize(new Dimension(310, 70));
 		add(usedLibsSP, gridBagConstraints4);
 
@@ -140,8 +140,8 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		javaVersionMessageTA.setText(XMAX.getJavaVersionMessage());
 		javaVersionMessageTA.setBackground(this.getBackground());
 		javaVersionMessageTA.setEditable(false);
-		javaVersionMessageTA.setMaximumSize(new Dimension(190, 70));
-		javaVersionMessageTA.setMinimumSize(new Dimension(190, 70));
+		//javaVersionMessageTA.setMaximumSize(new Dimension(190, 70));
+		//javaVersionMessageTA.setMinimumSize(new Dimension(190, 70));
 		add(javaVersionMessageTA, gridBagConstraints5);
 
 		GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
@@ -191,7 +191,7 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 			writtenL = new JLabel();
 			writtenL.setText("Written by ");
 			copyrightPanel = new JPanel();
-			copyrightPanel.setMinimumSize(new Dimension(300, 65));
+			//copyrightPanel.setMinimumSize(new Dimension(300, 65));
 			copyrightPanel.add(writtenL);
 			copyrightPanel.add(istiL);
 			copyrightPanel.add(forL);
@@ -217,11 +217,11 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 	}
 
 	public static void showDialog(JFrame frame) {
-		JOptionPane optionPane = new JOptionPane(new AboutDialog(), JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.CLOSED_OPTION);
-		JDialog dialog = optionPane.createDialog(frame, "About");
-		dialog.setVisible(true);
-		dialog.dispose();
+		JOptionPane.showMessageDialog(frame, new AboutDialog(), "About",
+				JOptionPane.PLAIN_MESSAGE);
+		//JDialog dialog = optionPane.createDialog(frame, "About");
+		//dialog.setVisible(true);
+		// dialog.dispose();
 	}
 
 	// Method from ActionListener interface
