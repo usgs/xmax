@@ -122,7 +122,6 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		gridBagConstraints4.insets = new Insets(2, 10, 5, 10);
 		gridBagConstraints4.fill = GridBagConstraints.HORIZONTAL;
 		usedLibsSP = new JScrollPane(getUsedLibsTA());
-		//usedLibsSP.setMaximumSize(new Dimension(310, 70));
 		usedLibsSP.setMinimumSize(new Dimension(310, 70));
 		add(usedLibsSP, gridBagConstraints4);
 
@@ -140,8 +139,6 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		javaVersionMessageTA.setText(XMAX.getJavaVersionMessage());
 		javaVersionMessageTA.setBackground(this.getBackground());
 		javaVersionMessageTA.setEditable(false);
-		//javaVersionMessageTA.setMaximumSize(new Dimension(190, 70));
-		//javaVersionMessageTA.setMinimumSize(new Dimension(190, 70));
 		add(javaVersionMessageTA, gridBagConstraints5);
 
 		GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
@@ -191,7 +188,6 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 			writtenL = new JLabel();
 			writtenL.setText("Written by ");
 			copyrightPanel = new JPanel();
-			//copyrightPanel.setMinimumSize(new Dimension(300, 65));
 			copyrightPanel.add(writtenL);
 			copyrightPanel.add(istiL);
 			copyrightPanel.add(forL);
@@ -219,9 +215,6 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 	public static void showDialog(JFrame frame) {
 		JOptionPane.showMessageDialog(frame, new AboutDialog(), "About",
 				JOptionPane.PLAIN_MESSAGE);
-		//JDialog dialog = optionPane.createDialog(frame, "About");
-		//dialog.setVisible(true);
-		// dialog.dispose();
 	}
 
 	// Method from ActionListener interface
