@@ -1,7 +1,5 @@
 package com.isti.xmax.gui;
 
-import static javax.swing.JOptionPane.OK_OPTION;
-
 import com.isti.xmax.XMAX;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -16,7 +14,6 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -33,27 +30,13 @@ import javax.swing.SwingConstants;
 public class AboutDialog extends JPanel implements ActionListener, MouseListener {
 
 	private static final long serialVersionUID = 1L;
-	private JLabel programNameL = null;
-	private JLabel dateL = null;
 
 	private JTextArea javaVersionMessageTA = null;
-
-	private JLabel usedLibsL = null;
-
 	private JTextArea usedLibsTA = null;
-
 	private JButton getJavaB = null;
-
 	private JPanel copyrightPanel = null;
-
-	private JLabel writtenL = null;
-
 	private JLabel istiL = null;
-
-	private JLabel forL = null;
-
 	private JLabel usgsL = null;
-	private JScrollPane usedLibsSP = null;
 
 	/**
 	 * Default constructor
@@ -79,7 +62,7 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		gridBagConstraints.insets = new Insets(5, 10, 5, 15);
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		programNameL = new JLabel();
+		JLabel programNameL = new JLabel();
 		programNameL.setText("XMAX version " + XMAX.getVersionMessage());
 		add(programNameL, gridBagConstraints);
 
@@ -90,7 +73,7 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		gridBagConstraints1.anchor = GridBagConstraints.EAST;
 		gridBagConstraints1.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints1.insets = new Insets(5, 10, 5, 15);
-		dateL = new JLabel();
+		JLabel dateL = new JLabel();
 		dateL.setText(XMAX.getReleaseDateMessage());
 		dateL.setHorizontalAlignment(SwingConstants.TRAILING);
 		GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
@@ -110,7 +93,7 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		gridBagConstraints3.anchor = GridBagConstraints.WEST;
 		gridBagConstraints3.fill = GridBagConstraints.HORIZONTAL;
 		gridBagConstraints3.insets = new Insets(5, 10, 0, 10);
-		usedLibsL = new JLabel();
+		JLabel usedLibsL = new JLabel();
 		usedLibsL.setText("Used libraries:");
 		add(usedLibsL, gridBagConstraints3);
 
@@ -121,7 +104,7 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 		gridBagConstraints4.anchor = GridBagConstraints.WEST;
 		gridBagConstraints4.insets = new Insets(2, 10, 5, 10);
 		gridBagConstraints4.fill = GridBagConstraints.HORIZONTAL;
-		usedLibsSP = new JScrollPane(getUsedLibsTA());
+		JScrollPane usedLibsSP = new JScrollPane(getUsedLibsTA());
 		usedLibsSP.setMinimumSize(new Dimension(310, 70));
 		add(usedLibsSP, gridBagConstraints4);
 
@@ -178,14 +161,14 @@ public class AboutDialog extends JPanel implements ActionListener, MouseListener
 			usgsL.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			usgsL.setForeground(Color.blue);
 			usgsL.addMouseListener(this);
-			forL = new JLabel();
+			JLabel forL = new JLabel();
 			forL.setText("for ");
 			istiL = new JLabel();
 			istiL.setText("Instrumental Software Technologies, Inc ");
 			istiL.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			istiL.setForeground(Color.blue);
 			istiL.addMouseListener(this);
-			writtenL = new JLabel();
+			JLabel writtenL = new JLabel();
 			writtenL.setText("Written by ");
 			copyrightPanel = new JPanel();
 			copyrightPanel.add(writtenL);
