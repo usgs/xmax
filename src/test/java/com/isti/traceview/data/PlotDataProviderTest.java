@@ -1,10 +1,9 @@
 package com.isti.traceview.data;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import asl.utils.TimeSeriesUtils;
+import asl.utils.NumericUtils;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
@@ -18,16 +17,13 @@ import com.isti.traceview.processing.HPFilterException;
 import com.isti.traceview.processing.LPFilterException;
 import com.isti.traceview.processing.RemoveGainException;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
-import org.jfree.chart.plot.Plot;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,7 +59,7 @@ public class PlotDataProviderTest {
     }
 
     double mean = initData[0];
-    mean -= TimeSeriesUtils.demean(Arrays.copyOfRange(initData, 0, sampleCount))[0];
+    mean -= NumericUtils.demean(Arrays.copyOfRange(initData, 0, sampleCount))[0];
 
     double[] filteredCalculated = defaultLPFilter.filter(initData, sampleCount);
     double[] filteredExpected = new double[]{
