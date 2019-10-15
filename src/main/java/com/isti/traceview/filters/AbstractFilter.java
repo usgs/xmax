@@ -1,6 +1,7 @@
 package com.isti.traceview.filters;
 
-import asl.utils.TimeSeriesUtils;
+import asl.utils.NumericUtils;
+
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
 import com.isti.traceview.processing.HPFilterException;
@@ -33,7 +34,7 @@ public abstract class AbstractFilter implements IFilter {
       throws BPFilterException, HPFilterException, LPFilterException {
 
     double predemean = data[0];
-    data = TimeSeriesUtils.demean(Arrays.copyOfRange(data, 0, length));
+    data = NumericUtils.demean(Arrays.copyOfRange(data, 0, length));
     double offset = predemean - data[0]; // difference here is the removed mean
     double[] returnArray = filterBackend(data, length);
     IntStream.range(0, length).parallel().forEach(i -> returnArray[i] += offset);
