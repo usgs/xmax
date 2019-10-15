@@ -13,6 +13,7 @@ logs/
 src/META_INF/
 xmax.jar
 .gradle
+gradle.properties
 
 #Javadoc build files
 doc/
