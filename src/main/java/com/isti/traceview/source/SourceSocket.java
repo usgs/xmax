@@ -1,6 +1,9 @@
-package com.isti.traceview.data;
+package com.isti.traceview.source;
 
 import com.isti.traceview.TraceView;
+import com.isti.traceview.data.ISource;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
 import java.util.Set;
 import org.apache.log4j.Logger;
 

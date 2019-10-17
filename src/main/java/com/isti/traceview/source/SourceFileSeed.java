@@ -1,6 +1,8 @@
-package com.isti.traceview.data;
+package com.isti.traceview.source;
 
 import com.isti.traceview.TraceView;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
 import edu.iris.Fissures.seed.app.Jseedr;
 import edu.iris.Fissures.seed.builder.ExportBuilder;
 import edu.iris.Fissures.seed.container.Blockette;

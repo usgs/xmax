@@ -1,6 +1,10 @@
-package com.isti.traceview.data;
+package com.isti.traceview.source;
 
 import com.isti.traceview.TraceViewException;
+import com.isti.traceview.data.DataModule;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
+import com.isti.traceview.data.SegyTimeSeries;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;

@@ -4,7 +4,7 @@ import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.data.DataModule;
-import com.isti.traceview.data.SourceFile;
+import com.isti.traceview.source.SourceFile;
 import com.isti.traceview.data.TemporaryStorage;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.common.Earthquake;

@@ -6,6 +6,7 @@ import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.data.ISource.FormatType;
+import com.isti.traceview.source.SourceFileMseed;
 import java.io.File;
 import java.util.Set;
 import org.apache.log4j.Level;

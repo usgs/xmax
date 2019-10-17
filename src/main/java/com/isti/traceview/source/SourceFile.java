@@ -1,9 +1,13 @@
-package com.isti.traceview.data;
+package com.isti.traceview.source;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.Wildcard;
+import com.isti.traceview.data.ISource;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
+import com.isti.traceview.data.SegyTimeSeries;
 import edu.iris.Fissures.seed.builder.SeedObjectBuilder;
 import edu.iris.Fissures.seed.director.SeedImportDirector;
 import edu.sc.seis.seisFile.mseed.DataRecord;
