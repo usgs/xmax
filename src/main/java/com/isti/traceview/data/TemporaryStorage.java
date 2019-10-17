@@ -1,5 +1,6 @@
 package com.isti.traceview.data;
 
+import com.isti.traceview.source.SourceFile;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;

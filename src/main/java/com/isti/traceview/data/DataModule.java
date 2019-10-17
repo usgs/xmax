@@ -6,6 +6,8 @@ import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.IColorModeState;
+import com.isti.traceview.source.SourceFile;
+import com.isti.traceview.source.SourceSocketFDSN;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

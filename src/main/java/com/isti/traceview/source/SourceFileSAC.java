@@ -1,8 +1,11 @@
-package com.isti.traceview.data;
+package com.isti.traceview.source;
 
 import static edu.sc.seis.seisFile.sac.SacConstants.data_offset;
 
 import com.isti.traceview.TraceView;
+import com.isti.traceview.data.DataModule;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
 import edu.iris.Fissures.Time;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import java.io.File;
@@ -50,7 +53,8 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 			} else {
 				loc = sac.getHeader().getKhole().trim();
 			}
-			PlotDataProvider channel = new PlotDataProvider(sac.getHeader().getKcmpnm(), DataModule.getOrAddStation(sac.getHeader().getKstnm()), sac.getHeader().getKnetwk(), loc);
+			PlotDataProvider channel = new PlotDataProvider(sac.getHeader().getKcmpnm(), DataModule
+          .getOrAddStation(sac.getHeader().getKstnm()), sac.getHeader().getKnetwk(), loc);
 			ret.add(channel);
 			Segment segment = new Segment(this, 0, new Date(getSACtime(sac)), sac.getHeader().getDelta() * 1000, sac.getHeader().getNpts(), 0);
 			channel.addSegment(segment);

@@ -2488,11 +2488,18 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				Date endDate = (Date) endPicker.getValue();
 				long endMillis = endDate.toInstant().toEpochMilli();
 
-				XMAXDataModule dm = XMAXDataModule.getInstance();
-				dm.loadNewDataFromSocket(net, sta, loc, cha, startMillis,
-						endMillis);
-
-				resetPlottedData();
+				Thread load = new Thread(() -> {
+					XMAXDataModule dm = XMAXDataModule.getInstance();
+					dm.loadNewDataFromSocket(net, sta, loc, cha, startMillis,
+							endMillis);
+				});
+				load.start();
+				try {
+					load.join();
+					resetPlottedData();
+				} catch (InterruptedException e) {
+					logger.error(e);
+				}
 			}
 		}
 
