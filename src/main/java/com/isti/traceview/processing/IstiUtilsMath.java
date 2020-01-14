@@ -570,11 +570,11 @@ public class IstiUtilsMath {
 				while (currentPointIndexInQueue >= cachedPoints.size()) {
 					XYDataItem anotherPoint = toSmoothSeries.getDataItem(nextPointToLoad);
 					cachedPoints.add(anotherPoint);
-					windowedRunningTotal = windowedRunningTotal.add(new BigDecimal(anotherPoint.getYValue()));
+					windowedRunningTotal = windowedRunningTotal.add(anotherPoint.getYValue());
 					++nextPointToLoad;
 				}
 
-				// x-axis is typically period, so invert to get actual frequency
+				// x-axis is presumed period, so invert to get actual frequency
 				// this is the frequency associated with the PSD value under analysis currently
 				double sampleFreq = 1./toSmoothSeries.getDataItem(j).getXValue();
 
@@ -595,7 +595,7 @@ public class IstiUtilsMath {
 					// remove item at front of queue, subtract its value from the running total
 					XYDataItem removed = cachedPoints.remove(0);
 					windowedRunningTotal =
-							windowedRunningTotal.subtract(new BigDecimal(removed.getYValue()));
+							windowedRunningTotal.subtract(removed.getYValue());
 					--currentPointIndexInQueue; // removing that point shifts all points to the left
 				}
 
@@ -621,7 +621,7 @@ public class IstiUtilsMath {
 					while (cachedPoints.size() < expectedLength &&
 							nextPointToLoad < toSmoothSeries.getItemCount()) {
 						XYDataItem itemToAdd = toSmoothSeries.getDataItem(nextPointToLoad);
-						windowedRunningTotal = windowedRunningTotal.add(new BigDecimal(itemToAdd.getYValue()));
+						windowedRunningTotal = windowedRunningTotal.add(itemToAdd.getYValue());
 						cachedPoints.add(itemToAdd);
 						++nextPointToLoad;
 					}
@@ -637,7 +637,7 @@ public class IstiUtilsMath {
 						// remove item at front of queue, subtract value from the running total
 						XYDataItem removed = cachedPoints.remove(0);
 						windowedRunningTotal =
-								windowedRunningTotal.subtract(new BigDecimal(removed.getYValue()));
+								windowedRunningTotal.subtract(removed.getYValue());
 						--currentPointIndexInQueue; // everything is shifted over by 1
 					}
 				}
