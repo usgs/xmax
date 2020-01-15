@@ -157,7 +157,7 @@ class ViewCoherence extends JDialog implements PropertyChangeListener, ItemListe
 				}
 			}
 		}
-		else if (getRawAndSmoothRB().isSelected()){
+		else if (getRawRB().isSelected()){
 			for (int i = 0; i < series.getSeriesCount(); ++i) {
 				String key = series.getSeriesKey(i).toString();
 				if (!key.contains("smoothed")) {
@@ -165,8 +165,8 @@ class ViewCoherence extends JDialog implements PropertyChangeListener, ItemListe
 				}
 			}
 		}
-		else if (getRawRB().isSelected()){
-			ret = series; 
+		else if (getRawAndSmoothRB().isSelected()){
+			ret = series;
 		}
 		return ret;
 	}
