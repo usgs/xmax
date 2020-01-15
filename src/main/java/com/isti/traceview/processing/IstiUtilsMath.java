@@ -1,21 +1,20 @@
 package com.isti.traceview.processing;
 
+import static com.isti.traceview.transformations.psd.TransPSD.SMOOTHING_FACTOR;
+
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
+import com.isti.traceview.transformations.psd.TransPSD;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.IntStream;
 import org.apache.log4j.Logger;
-import org.jfree.data.xy.XYDataItem;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  * ISTI utils math methods.
@@ -32,7 +31,7 @@ public class IstiUtilsMath {
 	 */
 	private static final int ISTI_UTIL_FAILED = -1;
 
-	public static final double SMOOTHING_FACTOR = 8;
+	private static final double SMOOTHING_FACTOR = TransPSD.SMOOTHING_FACTOR;
 
 	/**
 	 * \ingroup isti_utils_public_functions \brief Function to normalize
@@ -519,145 +518,6 @@ public class IstiUtilsMath {
 		return Math.log10(x) / Math.log10(2.0);
 	}
 
-	/*
-	 * Subroutine varismooth smooths psd by variable-point averaging. Translated
-	 * from fortran in old XYZ. The value MAXAVE (largest # of pts. of average
-	 * at high frequency end of plot) is calculated based on NX, the # of PSD
-	 * points in file. Starting with shortest periods (highest freq.) first: If
-	 * nx > 1024: For first 90% of pts., use nave=.01*nx. From there to end of
-	 * plot, use nave = 9 pts. If nx <= 1024: then nave=3.
-	 */
-
-	/**
-	 * Perform fractional-octave (variable length smoothing) over a series of data, used for plotting
-	 * PSDs, etc. A moving-average value is cached along with the points in range in order to speed
-	 * up the calculation of this data; the cached values are centered at the point of interest and
-	 * data is loaded in and out based on whether it fits within the octave range.
-	 * The fraction of the octave used to smooth is 1/{@value #SMOOTHING_FACTOR}.
-	 * @param toSmooth Collection of plottable series to get smoothed data from
-	 * @return Smoothed version of the data using 1/xth octave where x is {@value #SMOOTHING_FACTOR}
-	 */
-	public static XYSeriesCollection varismooth(XYSeriesCollection toSmooth) {
-		XYSeriesCollection ret = new XYSeriesCollection();
-
-		List<XYSeries> xySeriesList = Collections.synchronizedList(new ArrayList<>());
-
-		IntStream.range(0, toSmooth.getSeriesCount()).parallel().forEachOrdered( i -> {
-
-			// hold the values over which we are doing the moving average, to remove when out of range
-			List<XYDataItem> cachedPoints = new ArrayList<>();
-
-			// this could be a for-each loop if there was an iterator for the XYSeriesCollection object
-			XYSeries toSmoothSeries = toSmooth.getSeries(i);
-			XYSeries smoothedSeries = new XYSeries(toSmooth.getSeriesKey(i) + " (smoothed)");
-
-			// get the first point in the series to seed the array
-			cachedPoints.add(toSmoothSeries.getDataItem(0));
-			// add the first point's value into the running total as well
-			BigDecimal windowedRunningTotal =
-					new BigDecimal(toSmoothSeries.getDataItem(0).getYValue());
-			int currentPointIndexInQueue = 0; // current point is center value -- where in queue it is
-			int nextPointToLoad = 1; // this lets us know how many points to add to list at any step
-
-			// xyseries are by default sorted by period value decreasing
-			// so this is almost certainly negative in the circumstances it appears
-			// but we handle this just in case the defaults ever get overridden somehow
-			double deltaFreq = 1. / toSmoothSeries.getDataItem(1).getXValue() -
-					1. / toSmoothSeries.getDataItem(0).getXValue();
-
-			for (int j = 0; j < toSmoothSeries.getItemCount(); j++) {
-
-				while (currentPointIndexInQueue >= cachedPoints.size()) {
-					XYDataItem anotherPoint = toSmoothSeries.getDataItem(nextPointToLoad);
-					cachedPoints.add(anotherPoint);
-					windowedRunningTotal = windowedRunningTotal.add(anotherPoint.getYValue());
-					++nextPointToLoad;
-				}
-
-				// x-axis is presumed period, so invert to get actual frequency
-				// this is the frequency associated with the PSD value under analysis currently
-				double sampleFreq = 1./toSmoothSeries.getDataItem(j).getXValue();
-
-				// use a sampling range of 1/4 of the octave at the frequency in question
-				// which means half of that -- smoothing *radius* -- is 1/8
-				double freqLowerBound = sampleFreq / Math.pow(2., 1./SMOOTHING_FACTOR);
-				double freqUpperBound = sampleFreq * Math.pow(2., 1./SMOOTHING_FACTOR);
-
-				// pop off any points in the list lower than the bounding frequency we calculated
-				while (cachedPoints.size() > 0) {
-					double peekFreq = 1. / cachedPoints.get(0).getXValue();
-					// control if points are bound by cutoff based on ordering determined above
-					if (deltaFreq > 0 && peekFreq > freqLowerBound) {
-						break;
-					} else if (deltaFreq < 0 && peekFreq < freqUpperBound) {
-						break;
-					}
-					// remove item at front of queue, subtract its value from the running total
-					XYDataItem removed = cachedPoints.remove(0);
-					windowedRunningTotal =
-							windowedRunningTotal.subtract(removed.getYValue());
-					--currentPointIndexInQueue; // removing that point shifts all points to the left
-				}
-
-				// now remove more points if the current point is past the center of the data
-				if (nextPointToLoad >= toSmoothSeries.getItemCount()) {
-					// note that because we sample an equal num. of points on either side of data
-					// that the center of the data should be the location of the current point
-					// if length of data is 5, midpoint is 2 (indices start at 0) -- 2 = (5-1)/2
-					int midpoint = ((cachedPoints.size() - 1) / 2);
-					int pointsToTrim = currentPointIndexInQueue - midpoint;
-					for (int k = 0; k < pointsToTrim; ++k) {
-						// remove item at front of queue, subtract value from the running total
-						XYDataItem removed = cachedPoints.remove(0);
-						windowedRunningTotal =
-								windowedRunningTotal.subtract(new BigDecimal(removed.getYValue()));
-						--currentPointIndexInQueue; // everything is shifted over by 1
-					}
-				} else {
-					// sampling radius is twice len. of cached data left of current point, plus that point
-					// if current index is 2, expected length is 5 -- 5 = 2*2+1
-					// again, recall that indices start at 0, so this is THIRD entry in list
-					int expectedLength = (currentPointIndexInQueue * 2) - 1;
-					while (cachedPoints.size() < expectedLength &&
-							nextPointToLoad < toSmoothSeries.getItemCount()) {
-						XYDataItem itemToAdd = toSmoothSeries.getDataItem(nextPointToLoad);
-						windowedRunningTotal = windowedRunningTotal.add(itemToAdd.getYValue());
-						cachedPoints.add(itemToAdd);
-						++nextPointToLoad;
-					}
-				}
-
-				// now it's possible that we have reached the end of the list in the above iteration
-				// where we still had points to add. If so, one more double check that the point of
-				// interest is actually at the center of the data
-				if (nextPointToLoad >= toSmoothSeries.getItemCount()) {
-					int midpoint = ((cachedPoints.size() - 1) / 2);
-					int pointsToTrim = currentPointIndexInQueue - midpoint;
-					for (int k = 0; k < pointsToTrim; ++k) {
-						// remove item at front of queue, subtract value from the running total
-						XYDataItem removed = cachedPoints.remove(0);
-						windowedRunningTotal =
-								windowedRunningTotal.subtract(removed.getYValue());
-						--currentPointIndexInQueue; // everything is shifted over by 1
-					}
-				}
-
-				// and at long last we can actually do the number crunching we hoped for
-				smoothedSeries.add(toSmoothSeries.getX(j),
-						windowedRunningTotal.doubleValue() / cachedPoints.size());
-
-				++currentPointIndexInQueue; // next point in list is one past the current point
-			}
-			xySeriesList.add(smoothedSeries);
-		});
-
-		for (XYSeries series : xySeriesList) {
-			ret.addSeries(series);
-		}
-
-		return ret;
-	}
-
 	static public int[] padArray(int[] original, int[] toAdd) {
 		// so as Mac OSX java doesn't contain Arrays.copyOf method
 		int[] ret = new int[original.length + toAdd.length];
@@ -665,6 +525,109 @@ public class IstiUtilsMath {
 		// --------
 		System.arraycopy(toAdd, 0, ret, original.length, toAdd.length);
 		return ret;
+	}
+
+	/**
+	 * Perform fractional-octave (variable length smoothing) over a series of data, used for plotting
+	 * PSDs, etc. A moving-average value is cached along with the points in range in order to speed
+	 * up the calculation of this data; the cached values are centered at the point of interest and
+	 * data is loaded in and out based on whether it fits within the octave range.
+	 * The fraction of the octave used to smooth is 1/{@value #SMOOTHING_FACTOR}.
+	 * @param frequenciesArray array of frequencies associated with each point in the PSD
+	 * @param psdData array of the PSD-like values being plotted
+	 * @return Smoothed version of the data using 1/xth octave where x is {@value #SMOOTHING_FACTOR}
+	 */
+	public static double[] getSmoothedPSD(double[] frequenciesArray, double[] psdData) {
+		double[] smoothedData = new double[psdData.length];
+		BigDecimal windowedRunningTotal = BigDecimal.valueOf(0.);
+		int currentPointIndexInQueue = 0; // current point is center value -- where in queue it is
+		int nextPointToLoad = 1; // this lets us know how many points to add to list at any step
+		List<Double> cachedPoints = new LinkedList<>(); // should be faster than array list for pops
+
+		for (int i = 0; i < frequenciesArray.length; ++i) {
+			double period = 1./frequenciesArray[i];
+			// skip low freq values; we don't plot them in the unsmoothed case either
+			if (period < 1E6) {
+				++currentPointIndexInQueue;
+				++nextPointToLoad;
+				continue;
+			}
+
+			// add new points to the running total until we have enough to fit our current window
+			while (currentPointIndexInQueue >= cachedPoints.size() &&
+					nextPointToLoad < psdData.length) {
+				double anotherPoint = psdData[nextPointToLoad];
+				cachedPoints.add(anotherPoint);
+				windowedRunningTotal =
+						windowedRunningTotal.add(BigDecimal.valueOf(anotherPoint));
+				++nextPointToLoad;
+			}
+
+			// use a sampling range of 1/4 of the octave at the frequency in question
+			// which means half of that -- smoothing *radius* -- is 1/8
+			double freqLowerBound = frequenciesArray[i] / Math.pow(2., 1./SMOOTHING_FACTOR);
+
+			// pop off any points in the list lower than the bounding frequency we calculated
+			while (cachedPoints.size() > 0) {
+				double peekFreq = 1. / cachedPoints.get(0);
+				// control if points are bound by cutoff based on ordering determined above
+				if (peekFreq > freqLowerBound) {
+					break;
+				}
+				// remove item at front of queue, subtract its value from the running total
+				double removed = cachedPoints.remove(0);
+				windowedRunningTotal =
+						windowedRunningTotal.subtract(BigDecimal.valueOf(removed));
+				--currentPointIndexInQueue; // removing that point shifts all points to the left
+			}
+
+			// now remove more points if the current point is past the center of the data
+			if (nextPointToLoad >= psdData.length) {
+				// note that because we sample an equal num. of points on either side of data
+				// that the center of the data should be the location of the current point
+				// if length of data is 5, midpoint is 2 (indices start at 0) -- 2 = (5-1)/2
+				int midpoint = ((cachedPoints.size() - 1) / 2);
+				int pointsToTrim = currentPointIndexInQueue - midpoint;
+				for (int k = 0; k < pointsToTrim; ++k) {
+					// remove item at front of queue, subtract value from the running total
+					double removed = cachedPoints.remove(0);
+					windowedRunningTotal =
+							windowedRunningTotal.subtract(BigDecimal.valueOf(removed));
+					--currentPointIndexInQueue; // everything is shifted over by 1
+				} // end of for loop (points to trim)
+			} else {
+				// sampling radius is twice len. of cached data left of current point, plus that point
+				// if current index is 2, expected length is 5 -- 5 = 2*2+1
+				// again, recall that indices start at 0, so this is THIRD entry in list
+				int expectedLength = (currentPointIndexInQueue * 2) - 1;
+				while (cachedPoints.size() < expectedLength && nextPointToLoad < psdData.length) {
+					double itemToAdd = psdData[nextPointToLoad];
+					windowedRunningTotal = windowedRunningTotal.add(BigDecimal.valueOf(itemToAdd));
+					cachedPoints.add(itemToAdd);
+					++nextPointToLoad;
+				} // end of while loop
+			}
+
+			// now it's possible that we have reached the end of the list in the above iteration
+			// where we still had points to add. If so, one more double check that the point of
+			// interest is actually at the center of the data
+			if (nextPointToLoad >= psdData.length) {
+				int midpoint = ((cachedPoints.size() - 1) / 2);
+				int pointsToTrim = currentPointIndexInQueue - midpoint;
+				for (int k = 0; k < pointsToTrim; ++k) {
+					// remove item at front of queue, subtract value from the running total
+					double removed = cachedPoints.remove(0);
+					windowedRunningTotal = windowedRunningTotal.subtract(BigDecimal.valueOf(removed));
+					--currentPointIndexInQueue; // everything is shifted over by 1
+				}
+			}
+
+			// and now at last it is time to crunch the number we have in the windowed total variable
+			smoothedData[i] = windowedRunningTotal.doubleValue() / cachedPoints.size();
+
+			++currentPointIndexInQueue; // next point in list is one past the current point
+		}
+		return smoothedData;
 	}
 
 }

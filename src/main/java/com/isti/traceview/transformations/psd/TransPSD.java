@@ -1,5 +1,8 @@
 package com.isti.traceview.transformations.psd;
 
+
+import static com.isti.traceview.processing.IstiUtilsMath.getSmoothedPSD;
+
 import asl.utils.FFTResult;
 import asl.utils.TimeSeriesUtils;
 import com.isti.traceview.TraceViewException;
@@ -10,11 +13,11 @@ import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.stream.IntStream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -33,6 +36,7 @@ public class TransPSD implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPSD.class);
 
 	public static final String NAME = "Power spectra density";
+	public static final double SMOOTHING_FACTOR = 8;
 
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
@@ -100,8 +104,8 @@ public class TransPSD implements ITransformation {
 				return; // skip to next PSD -- this lambda is basically its own method
 			}
 			try {
-				XYSeries xys = convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor);
-				dataset.add(xys);
+				XYSeries[] xys = convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor);
+				Collections.addAll(dataset, xys);
 			} catch (XMAXException e) {
 				logger.error(e);
 				traceHadError.append(e.getMessage()).append("\n");
@@ -144,20 +148,24 @@ public class TransPSD implements ITransformation {
 
 		@Override
 		public int compare(XYSeries o1, XYSeries o2) {
-			// These should always be strings in our usage
-			// and since this is a private method anyway this is overly-defensive programming
-			// we COULD do o1.getKey().compareTo(o2.getKey)) but that would cause a warning to show up
-			// and I don't like compiler warnings and neither should you, so we'll do this
-			// and since they're already strings, the toString() method just ensures type-safety without
+			// since they're already strings, the toString() method just ensures type-safety without
 			// having to do any weird stuff with casts
 			String key1 = o1.getKey().toString();
 			String key2 = o2.getKey().toString();
+			// handling the cases where only one set of data is smoothed; that one has higher priority
+			if (key1.contains("smoothed")) {
+				if (!key2.contains("smoothed")) {
+					return 1;
+				}
+			} else if (key2.contains("smoothed")) {
+				return -1;
+			}
 			// anyway since strings are nicely comparable, we'll just call compareTo with those now
 			return key1.compareTo(key2);
 		}
 	}
 
-	private static XYSeries convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti,
+	private static XYSeries[] convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti,
 			Complex[] response, int windowDivisor, int shiftDivisor) throws XMAXException {
 
 		long interval = (long) channel.getSampleRate();
@@ -168,15 +176,27 @@ public class TransPSD implements ITransformation {
 		FFTResult data = getPSD(channel, ti, response, windowLength, shiftLength);
 		double[] frequenciesArray = data.getFreqs();
 		Complex[] psd = data.getFFT();
+		double[] dbScaled = new double[psd.length];
 		XYSeries xys = new XYSeries(channel.getName());
+		XYSeries smoothed = new XYSeries(channel.getName() + " smoothed");
 		for (int i = 0; i < frequenciesArray.length; ++i) {
 			double period = 1. / frequenciesArray[i];
 			// past 1E6 results are imprecise/unstable, and 0Hz is unplottable
+			dbScaled[i] = 10 * Math.log10(psd[i].abs());
 			if (period < 1E6) {
-				xys.add(1. / frequenciesArray[i], 10 * Math.log10(psd[i].abs()));
+				xys.add(period, dbScaled[i]);
+			} else {
+				System.out.println(i);
 			}
 		}
-		return xys;
+		double[] smoothedData = getSmoothedPSD(frequenciesArray, dbScaled);
+		for (int i = 0; i < frequenciesArray.length; ++i) {
+			double period = 1. / frequenciesArray[i];
+			if (period < 1E6) {
+				smoothed.add(period, smoothedData[i]);
+			}
+		}
+		return new XYSeries[]{xys, smoothed};
 	}
 
 	private static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti,

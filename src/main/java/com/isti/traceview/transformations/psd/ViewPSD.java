@@ -1,5 +1,7 @@
 package com.isti.traceview.transformations.psd;
 
+import static com.isti.traceview.transformations.psd.TransPSD.SMOOTHING_FACTOR;
+
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
 import com.isti.traceview.data.FileOutputUtils;
@@ -10,7 +12,6 @@ import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.GraphUtil;
 import com.isti.traceview.gui.IChannelViewFactory;
 import com.isti.traceview.gui.ScaleModeAuto;
-import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.gui.XMAXframe;
@@ -134,16 +135,6 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     setLocationRelativeTo(owner);
     optionPane.setVisible(true);
     setVisible(true);
-  }
-
-  private XYSeriesCollection filterData(XYSeriesCollection dataset) {
-    // plot the smoothed data first so it shows up on top
-    XYSeriesCollection ret = IstiUtilsMath.varismooth(dataset);
-    // now add the unsmoothed data
-    for (int i = 0; i < dataset.getSeriesCount(); ++i) {
-      ret.addSeries(dataset.getSeries(i));
-    }
-    return ret;
   }
 
   private JRadioButton getRawRB() {
@@ -410,11 +401,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
 
   private XYSeriesCollection createDataset(List<XYSeries> ds) {
     XYSeriesCollection ret = new XYSeriesCollection();
-    // unfilteredcollection is a finalized copy of ret to use in the following lambda
-    XYSeriesCollection unfilteredCollection = ret;
-
-    ds.forEach(unfilteredCollection::addSeries);
-    ret = filterData(unfilteredCollection);
+    ds.forEach(ret::addSeries);
 
     XYSeries lowNoiseModelSeries = new XYSeries("NLNM");
     XYSeries highNoiseModelSeries = new XYSeries("NHNM");
@@ -569,7 +556,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
 
     JLabel smoothingDetail = new JLabel();
     smoothingDetail.setText("(Smoothing parameter is 1/" +
-        (int) IstiUtilsMath.SMOOTHING_FACTOR +  " of octave per-point)");
+        (int) SMOOTHING_FACTOR +  " of octave per-point)");
     smoothingDetail.setMaximumSize(smoothingDetail.getMinimumSize());
     buttonPanel.add(smoothingDetail);
 

@@ -216,6 +216,18 @@ public class Spectra {
 		return series;
 	}
 
+	public XYSeries getSmoothedSpectraSeries(boolean isDeconvolve, String respToConvolve) {
+		XYSeries series = new XYSeries(getName() + " smoothed");
+		double[] out = getSpectraAmp(isDeconvolve, respToConvolve);
+		out = IstiUtilsMath.getSmoothedPSD(frequenciesArray, out);
+		for (int i = 1; i < spectra.length; i++) {
+			double x = 1.0 / frequenciesArray[i];
+			double y = out[i];
+			series.add(x, y);
+		}
+		return series;
+	}
+
 	/**
 	 * Get PSD as jFreeChart's series
 	 */

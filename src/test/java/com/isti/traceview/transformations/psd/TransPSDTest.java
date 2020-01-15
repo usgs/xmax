@@ -3,6 +3,7 @@ package com.isti.traceview.transformations.psd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.bbn.openmap.omGraphics.geom.PolygonGeometry.XY;
 import com.isti.jevalresp.OutputGenerator;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
@@ -78,7 +79,7 @@ public class TransPSDTest {
 
     TransPSD psd = new TransPSD();
     List<XYSeries> psdData = psd.createData(toPSD, null, ti, null);
-
+    
     XYSeries firstSeries = psdData.get(0);
     XYSeries secondSeries = psdData.get(1);
 
