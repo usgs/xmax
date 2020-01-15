@@ -31,7 +31,7 @@ public class WID2 extends Block {
 								//at which the system sensitivity is valid; calper should be near 
 								//the flat part of the response curve (in most cases, 1 second)
 	private String instType;	//89-94 a6 instrument type (from Table A-5 on page A17)
-	private double orientHor;	//96-100 f5.1 horizontal orientation of sensor, measured in positive degrees clockwise from North (�1.0 if vertical)
+	private double orientHor;	//96-100 f5.1 horizontal orientation of sensor, measured in positive degrees clockwise from North (?1.0 if vertical)
 	private double orientVer;	//102-105 f4.1 vertical orientation of sensor, measured in degrees from vertical (90.0 if horizontal)
 	
 								
