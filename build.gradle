@@ -5,7 +5,18 @@ apply plugin: 'eclipse'
 apply plugin: 'application'
 
 mainClassName = "com.isti.xmax.XMAX"
-version = '2.3.1'
+
+/* Get first three version numbers from code.json */
+def codeJson = new groovy.json.JsonSlurper().parseText(new File("code.json").text)
+def jsonVersion = codeJson.version[0]
+/* Get last version number from commit counts */
+def lastTagHash = "git rev-list --tags --max-count=1".execute().text
+lastTagHash = lastTagHash.substring(0, lastTagHash.length() - 1)
+def commitCount = ("git rev-list "+lastTagHash+".. --count").execute().text
+commitCount = commitCount.substring(0, commitCount.length() - 1)
+
+version = "$jsonVersion.$commitCount"
+
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
