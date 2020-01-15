@@ -24,7 +24,7 @@
 			<!--DataMask>seed/IU_MACI/2014_236</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
 			<!-- Connection scheme, either http or https -->
-			<DataServiceProtocol>http</DataServiceProtocol>
+			<DataServiceProtocol>https</DataServiceProtocol>
 			<DataServiceURL>vmweb01.cr.usgs.gov</DataServiceURL>
 			<FDSNDataPath>/metadata/iris</FDSNDataPath>
 			<FDSNPort>80</FDSNPort>
