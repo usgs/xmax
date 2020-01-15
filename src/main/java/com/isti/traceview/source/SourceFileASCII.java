@@ -1,18 +1,19 @@
-package com.isti.traceview.data;
+package com.isti.traceview.source;
 
+import com.isti.traceview.data.DataModule;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TimeZone;
 import org.apache.log4j.Logger;
 
 public class SourceFileASCII extends SourceFile implements Serializable {

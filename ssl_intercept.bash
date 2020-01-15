@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAVA_HOME=$(dirname $( dirname $( readlink -f $(which javac))))
+JAVA_HOME=$(/usr/libexec/java_home)
 wget -O DOIRootCA2.cer http://sslhelp.doi.net/docs/DOIRootCA2.cer
 
 echo "Password is most likely 'changeit'"

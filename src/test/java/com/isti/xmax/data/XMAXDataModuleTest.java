@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
-import com.isti.traceview.data.SourceFile;
+import com.isti.traceview.source.SourceFile;
 import com.isti.xmax.XMAXconfiguration;
 import java.io.File;
 import java.util.List;

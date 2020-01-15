@@ -1,5 +1,8 @@
-package com.isti.traceview.data;
+package com.isti.traceview.source;
 
+import com.isti.traceview.data.DataModule;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
 import edu.sc.seis.seisFile.segd.ChannelSet;
 import edu.sc.seis.seisFile.segd.ScanType;
 import edu.sc.seis.seisFile.segd.SegdRecord;

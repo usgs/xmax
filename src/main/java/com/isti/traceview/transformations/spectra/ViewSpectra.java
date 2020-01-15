@@ -201,13 +201,15 @@ class ViewSpectra extends JDialog implements PropertyChangeListener, ItemListene
 
 	private XYDataset filterData(List<Spectra> ds) {
 		XYSeriesCollection ret = new XYSeriesCollection();
+
 		for (Spectra spectra : ds) {
+			if (getSmoothCB().isSelected()) {
+				ret.addSeries(spectra.getSmoothedSpectraSeries(getDeconvolveCB().isSelected(),
+						getConvolveCB().getSelectedItem().toString()));
+			}
+
 			ret.addSeries(spectra.getSpectraSeries(getDeconvolveCB().isSelected(),
 					getConvolveCB().getSelectedItem().toString()));
-		}
-
-		if (getSmoothCB().isSelected()) {
-			ret = IstiUtilsMath.varismooth(ret);
 		}
 
 		if (getShowDiffCB().isSelected()) {

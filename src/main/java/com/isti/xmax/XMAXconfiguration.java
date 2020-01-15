@@ -91,10 +91,6 @@ public class XMAXconfiguration extends Configuration {
 			setUseTempData(false);
 
 			setStationXMLPath(config.getString("Configuration.Data.XMLPath", null));
-			String metadataServicePath = config.getString("Configuration.Data.FDSNMetaPath");
-			if (metadataServicePath != null) {
-				setMetadataServicePath(metadataServicePath);
-			}
 			String dataServiceProtocol = config.getString("Configuration.Data.DataServiceProtocol");
 			if (dataServiceProtocol != null &&
 					(dataServiceProtocol.equals("http") || dataServiceProtocol.equals("https"))) {
@@ -103,6 +99,13 @@ public class XMAXconfiguration extends Configuration {
 			String dataServicePath = config.getString("Configuration.Data.FDSNDataPath");
 			if (dataServicePath != null) {
 				setDataServicePath(dataServicePath);
+			}
+			String metadataServicePath = config.getString("Configuration.Data.FDSNMetaPath");
+			if (metadataServicePath != null) {
+				if (dataServicePath != null) {
+					metadataServicePath = dataServicePath + metadataServicePath;
+				}
+				setMetadataServicePath(metadataServicePath);
 			}
 			int dataServicePort = config.getInt("Configuration.Data.FDSNPort", 80);
 			setDataServicePort(dataServicePort);

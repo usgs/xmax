@@ -59,7 +59,7 @@ class ViewCoherence extends JDialog implements PropertyChangeListener, ItemListe
 		this.timeInterval = timeInterval;
 		Object[] options = { "Close", "Print", "Export GRAPH" };
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createChartPanel(filterData(data)), JOptionPane.PLAIN_MESSAGE,
+		optionPane = new JOptionPane(createChartPanel(filterData(this.data)), JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.CLOSED_OPTION, null, options, options[0]);
 		// Make this dialog display it.
 		setContentPane(optionPane);
@@ -150,18 +150,23 @@ class ViewCoherence extends JDialog implements PropertyChangeListener, ItemListe
 	private XYDataset filterData(XYSeriesCollection series) {
 		XYSeriesCollection ret = new XYSeriesCollection();
 		if (getSmoothRB().isSelected()) {
-			ret = series;
-			ret = IstiUtilsMath.varismooth(ret);
-			ret.getSeries(0).setKey("smoothed series");
-		}
-		else if (getRawAndSmoothRB().isSelected()){
-			XYSeries smoothedSeries =  IstiUtilsMath.varismooth(series).getSeries(0);
-			smoothedSeries.setKey("smoothed series");
-			ret.addSeries(smoothedSeries);
-			ret.addSeries(series.getSeries(0));
+			for (int i = 0; i < series.getSeriesCount(); ++i) {
+				String key = series.getSeriesKey(i).toString();
+				if (key.contains("smoothed")) {
+					ret.addSeries(series.getSeries(i));
+				}
+			}
 		}
 		else if (getRawRB().isSelected()){
-			ret = series; 
+			for (int i = 0; i < series.getSeriesCount(); ++i) {
+				String key = series.getSeriesKey(i).toString();
+				if (!key.contains("smoothed")) {
+					ret.addSeries(series.getSeries(i));
+				}
+			}
+		}
+		else if (getRawAndSmoothRB().isSelected()){
+			ret = series;
 		}
 		return ret;
 	}

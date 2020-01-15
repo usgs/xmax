@@ -24,10 +24,10 @@
 			<!--DataMask>seed/IU_MACI/2014_236</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
 			<!-- Connection scheme, either http or https -->
-			<DataServiceProtocol>http</DataServiceProtocol>
-			<DataServiceURL>vmdevwb.cr.usgs.gov</DataServiceURL>
-			<FDSNDataPath>metadatairis/fdsnws</FDSNDataPath>
-			<FDSNPort>80</FDSNPort>
+			<DataServiceProtocol>https</DataServiceProtocol>
+			<DataServiceURL>vmweb01.cr.usgs.gov</DataServiceURL>
+			<FDSNDataPath>/metadata/iris/fdsnws</FDSNDataPath>
+			<FDSNPort>443</FDSNPort>
 			<!-- Temporary directory to store decompressed traces in the internal format -->
 			<TempPath>resources/DATA_TEMP</TempPath>
 
@@ -39,7 +39,8 @@
 			<StationInfoFile>resources/gsn_sta_list</StationInfoFile>
 			<ResponsePath>./resources/Responses/</ResponsePath>
 			<!--XMLPath>./resources/StationXML</XMLPath-->
-			<FDSNMetaPath>/metadatairis/fdsnws/station/1/query</FDSNMetaPath>
+			<!-- if FDSNDataPath is defined, that value is prepended to this result; this is a subpath -->
+			<FDSNMetaPath>/station/1/query</FDSNMetaPath>
 			<AllowMultiplexedData>true</AllowMultiplexedData>
 			<StationXMLPreferred>true</StationXMLPreferred>
 

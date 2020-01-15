@@ -1,19 +1,17 @@
 package com.isti.traceview.transformations.psd;
 
-import com.isti.jevalresp.OutputGenerator;
+import static com.isti.traceview.transformations.psd.TransPSD.SMOOTHING_FACTOR;
+
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
 import com.isti.traceview.data.FileOutputUtils;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.data.SacTimeSeriesASCII;
 import com.isti.traceview.gui.ChannelView;
 import com.isti.traceview.gui.ColorModeFixed;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.GraphUtil;
 import com.isti.traceview.gui.IChannelViewFactory;
 import com.isti.traceview.gui.ScaleModeAuto;
-import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.Spectra;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.gui.XMAXframe;
@@ -41,11 +39,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.function.DoubleUnaryOperator;
-import java.util.stream.DoubleStream;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
@@ -60,19 +55,15 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.block.GridArrangement;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
-import org.jfree.data.Range;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RectangleAnchor;
 
 /**
  * Dialog to view PSD results. Also performs deconvolution, convolution and smoothing.
@@ -144,16 +135,6 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     setLocationRelativeTo(owner);
     optionPane.setVisible(true);
     setVisible(true);
-  }
-
-  private XYSeriesCollection filterData(XYSeriesCollection dataset) {
-    // plot the smoothed data first so it shows up on top
-    XYSeriesCollection ret = IstiUtilsMath.varismooth(dataset);
-    // now add the unsmoothed data
-    for (int i = 0; i < dataset.getSeriesCount(); ++i) {
-      ret.addSeries(dataset.getSeries(i));
-    }
-    return ret;
   }
 
   private JRadioButton getRawRB() {
@@ -420,11 +401,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
 
   private XYSeriesCollection createDataset(List<XYSeries> ds) {
     XYSeriesCollection ret = new XYSeriesCollection();
-    // unfilteredcollection is a finalized copy of ret to use in the following lambda
-    XYSeriesCollection unfilteredCollection = ret;
-
-    ds.forEach(unfilteredCollection::addSeries);
-    ret = filterData(unfilteredCollection);
+    ds.forEach(ret::addSeries);
 
     XYSeries lowNoiseModelSeries = new XYSeries("NLNM");
     XYSeries highNoiseModelSeries = new XYSeries("NHNM");
@@ -435,8 +412,8 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     for (XYSeries xys : ds) {
       double min = xys.getMinX();
       double max = xys.getMaxX();
-      minX = (min < minX) ? min : minX;
-      maxX = (max > maxX) ? max : maxX;
+      minX = Math.min(min, minX);
+      maxX = Math.max(max, maxX);
     }
     // bound to either 0.1-10000 or the range of the data, whatever is smallest
     final double periodMin = Math.log10(Math.max(0.1, minX));
@@ -579,7 +556,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
 
     JLabel smoothingDetail = new JLabel();
     smoothingDetail.setText("(Smoothing parameter is 1/" +
-        (int) IstiUtilsMath.SMOOTHING_FACTOR +  " of octave per-point)");
+        (int) SMOOTHING_FACTOR +  " of octave per-point)");
     smoothingDetail.setMaximumSize(smoothingDetail.getMinimumSize());
     buttonPanel.add(smoothingDetail);
 

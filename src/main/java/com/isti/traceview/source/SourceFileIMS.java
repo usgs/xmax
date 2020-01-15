@@ -1,5 +1,8 @@
-package com.isti.traceview.data;
+package com.isti.traceview.source;
 
+import com.isti.traceview.data.DataModule;
+import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Segment;
 import com.isti.traceview.data.ims.BlockSet;
 import com.isti.traceview.data.ims.DAT2;
 import com.isti.traceview.data.ims.DataType;
@@ -40,7 +43,8 @@ public class SourceFileIMS extends SourceFile {
 					if (dataType instanceof DataTypeWaveform) {
 						DataTypeWaveform dtw = (DataTypeWaveform) dataType;
 						for (BlockSet bs : dtw.getBlockSets()) {
-							PlotDataProvider channel = new PlotDataProvider(bs.getWID2().getChannel(), DataModule.getOrAddStation(bs.getWID2().getStation()), "", "");
+							PlotDataProvider channel = new PlotDataProvider(bs.getWID2().getChannel(), DataModule
+                  .getOrAddStation(bs.getWID2().getStation()), "", "");
 							ret.add(channel);
 							Segment segment = new Segment(this, bs.getStartOffset(), bs.getWID2().getStart(), 1000.0/bs.getWID2().getSampleRate(), bs.getWID2().getNumSamples(), 0);
 							channel.addSegment(segment);
