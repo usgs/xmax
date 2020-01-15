@@ -15,6 +15,7 @@ import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -155,10 +156,10 @@ public class TransPSD implements ITransformation {
 			// handling the cases where only one set of data is smoothed; that one has higher priority
 			if (key1.contains("smoothed")) {
 				if (!key2.contains("smoothed")) {
-					return 1;
+					return -1;
 				}
 			} else if (key2.contains("smoothed")) {
-				return -1;
+				return 1;
 			}
 			// anyway since strings are nicely comparable, we'll just call compareTo with those now
 			return key1.compareTo(key2);
@@ -179,22 +180,26 @@ public class TransPSD implements ITransformation {
 		double[] dbScaled = new double[psd.length];
 		XYSeries xys = new XYSeries(channel.getName());
 		XYSeries smoothed = new XYSeries(channel.getName() + " smoothed");
+		int firstIndexWithPeriodAboveThreshhold = -1;
 		for (int i = 0; i < frequenciesArray.length; ++i) {
 			double period = 1. / frequenciesArray[i];
 			// past 1E6 results are imprecise/unstable, and 0Hz is unplottable
 			dbScaled[i] = 10 * Math.log10(psd[i].abs());
 			if (period < 1E6) {
+				if (firstIndexWithPeriodAboveThreshhold < 0) {
+					firstIndexWithPeriodAboveThreshhold = i;
+				}
 				xys.add(period, dbScaled[i]);
-			} else {
-				System.out.println(i);
 			}
 		}
-		double[] smoothedData = getSmoothedPSD(frequenciesArray, dbScaled);
-		for (int i = 0; i < frequenciesArray.length; ++i) {
-			double period = 1. / frequenciesArray[i];
-			if (period < 1E6) {
-				smoothed.add(period, smoothedData[i]);
-			}
+		int len = frequenciesArray.length;
+		double[] smoothedData = getSmoothedPSD(
+				Arrays.copyOfRange(frequenciesArray, firstIndexWithPeriodAboveThreshhold, len),
+				Arrays.copyOfRange(dbScaled, firstIndexWithPeriodAboveThreshhold, len)
+		);
+		for (int i = 0; i < smoothedData.length; ++i) {
+			double period = 1. / frequenciesArray[i + firstIndexWithPeriodAboveThreshhold];
+			smoothed.add(period, smoothedData[i]);
 		}
 		return new XYSeries[]{xys, smoothed};
 	}

@@ -316,15 +316,15 @@ public class TransCoherence implements ITransformation{
       sqrtCoherence[i] = Math.sqrt(finalCoherence[i]);
       series.add(1.0 / frequenciesArray[i], sqrtCoherence[i]);
     }
-    dataset.addSeries(series);
 
     XYSeries smoothedSeries = new XYSeries("smoothed series");
     double[] smoothedData = IstiUtilsMath.getSmoothedPSD(frequenciesArray, sqrtCoherence);
     for (int i = 0; i < finalCoherence.length; ++i) {
       smoothedSeries.add(1.0 / frequenciesArray[i], smoothedData[i]);
     }
+    // add smoothed series first, so that it has priority in plot
     dataset.addSeries(smoothedSeries);
-
+    dataset.addSeries(series);
     return dataset;
   }
 

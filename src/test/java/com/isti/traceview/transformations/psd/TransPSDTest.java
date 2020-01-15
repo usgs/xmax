@@ -1,6 +1,7 @@
 package com.isti.traceview.transformations.psd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.bbn.openmap.omGraphics.geom.PolygonGeometry.XY;
@@ -16,6 +17,7 @@ import com.isti.xmax.XMAXException;
 import com.isti.xmax.XMAXconfiguration;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.jfree.data.xy.XYSeries;
 import org.junit.Before;
@@ -79,9 +81,10 @@ public class TransPSDTest {
 
     TransPSD psd = new TransPSD();
     List<XYSeries> psdData = psd.createData(toPSD, null, ti, null);
-    
-    XYSeries firstSeries = psdData.get(0);
-    XYSeries secondSeries = psdData.get(1);
+
+    // first two entries are going to be the smoothed data for these entries rather than raw
+    XYSeries firstSeries = psdData.get(2);
+    XYSeries secondSeries = psdData.get(3);
 
     for (int i = 0; i < firstSeries.getItemCount(); ++i) {
       double x1 = (Double) firstSeries.getX(i);
@@ -95,6 +98,27 @@ public class TransPSDTest {
       }
 
     }
+  }
+
+  @Test
+  public void testSmoothingValid() throws XMAXException {
+    DataModule dm = TraceView.getDataModule();
+    List<PlotDataProvider> pdpList = dm.getAllChannels();
+    pdpList = pdpList.subList(0, 1);
+    TimeInterval ti = pdpList.get(0).getTimeRange();
+    TransPSD psd = new TransPSD();
+    List<XYSeries> psdData = psd.createData(pdpList, null, ti, null);
+    assertEquals(2, psdData.size());
+    assertEquals("IU/COLA/00/LH1 smoothed", psdData.get(0).getKey().toString());
+    double[] yValues = psdData.get(1).toArray()[1];
+    System.out.println(Arrays.toString(yValues));
+    boolean yValuesAllNonzeroNumeric = true;
+    for (double y : yValues) {
+      if (y != 0 && !Double.isNaN(y)) {
+        yValuesAllNonzeroNumeric = false;
+      }
+    }
+    assertFalse(yValuesAllNonzeroNumeric);
   }
 
 }

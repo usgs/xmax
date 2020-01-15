@@ -11,9 +11,11 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import org.apache.log4j.Logger;
 
 /**
@@ -538,26 +540,25 @@ public class IstiUtilsMath {
 	 * @return Smoothed version of the data using 1/xth octave where x is {@value #SMOOTHING_FACTOR}
 	 */
 	public static double[] getSmoothedPSD(double[] frequenciesArray, double[] psdData) {
+		assert(frequenciesArray.length == psdData.length);
 		double[] smoothedData = new double[psdData.length];
 		BigDecimal windowedRunningTotal = BigDecimal.valueOf(0.);
 		int currentPointIndexInQueue = 0; // current point is center value -- where in queue it is
-		int nextPointToLoad = 1; // this lets us know how many points to add to list at any step
-		List<Double> cachedPoints = new LinkedList<>(); // should be faster than array list for pops
+		int nextPointToLoad = 0; // index of first point in data not yet added to queue
+		// TODO: can save space by replacing queue with start and end indices of the queue
+		//Queue<Double> cachedPoints = new LinkedList<>(); // linked list is a type of queue
+		// indices here keep track of simulated queue structure backed by psdData array
+		int queueStartIndex = nextPointToLoad; // index of frequency at the head of the queue
+		int queueEndIndex = nextPointToLoad;
+		int size = 0; // increments with end index, decrements when start index increments
 
 		for (int i = 0; i < frequenciesArray.length; ++i) {
-			double period = 1./frequenciesArray[i];
-			// skip low freq values; we don't plot them in the unsmoothed case either
-			if (period < 1E6) {
-				++currentPointIndexInQueue;
-				++nextPointToLoad;
-				continue;
-			}
 
 			// add new points to the running total until we have enough to fit our current window
-			while (currentPointIndexInQueue >= cachedPoints.size() &&
-					nextPointToLoad < psdData.length) {
+			while (currentPointIndexInQueue >= size) {
 				double anotherPoint = psdData[nextPointToLoad];
-				cachedPoints.add(anotherPoint);
+				++queueEndIndex;
+				++size; // manually update based on loop conditional, increases with end index too
 				windowedRunningTotal =
 						windowedRunningTotal.add(BigDecimal.valueOf(anotherPoint));
 				++nextPointToLoad;
@@ -568,14 +569,16 @@ public class IstiUtilsMath {
 			double freqLowerBound = frequenciesArray[i] / Math.pow(2., 1./SMOOTHING_FACTOR);
 
 			// pop off any points in the list lower than the bounding frequency we calculated
-			while (cachedPoints.size() > 0) {
-				double peekFreq = 1. / cachedPoints.get(0);
+			while (queueStartIndex < queueEndIndex) { // conditional is true if queue size > 0
+				double peekFreq = frequenciesArray[queueStartIndex];
 				// control if points are bound by cutoff based on ordering determined above
 				if (peekFreq > freqLowerBound) {
 					break;
 				}
 				// remove item at front of queue, subtract its value from the running total
-				double removed = cachedPoints.remove(0);
+				double removed = psdData[queueStartIndex];
+				++queueStartIndex; // now first point of cachedPoints is next frequency up
+				--size; // start index +1 means size decreases by 1
 				windowedRunningTotal =
 						windowedRunningTotal.subtract(BigDecimal.valueOf(removed));
 				--currentPointIndexInQueue; // removing that point shifts all points to the left
@@ -586,11 +589,13 @@ public class IstiUtilsMath {
 				// note that because we sample an equal num. of points on either side of data
 				// that the center of the data should be the location of the current point
 				// if length of data is 5, midpoint is 2 (indices start at 0) -- 2 = (5-1)/2
-				int midpoint = ((cachedPoints.size() - 1) / 2);
+				int midpoint = (size - 1) / 2;
 				int pointsToTrim = currentPointIndexInQueue - midpoint;
 				for (int k = 0; k < pointsToTrim; ++k) {
 					// remove item at front of queue, subtract value from the running total
-					double removed = cachedPoints.remove(0);
+					double removed = psdData[queueStartIndex];
+					++queueStartIndex; // now first point of cachedPoints is next frequency up
+					--size;
 					windowedRunningTotal =
 							windowedRunningTotal.subtract(BigDecimal.valueOf(removed));
 					--currentPointIndexInQueue; // everything is shifted over by 1
@@ -600,10 +605,11 @@ public class IstiUtilsMath {
 				// if current index is 2, expected length is 5 -- 5 = 2*2+1
 				// again, recall that indices start at 0, so this is THIRD entry in list
 				int expectedLength = (currentPointIndexInQueue * 2) - 1;
-				while (cachedPoints.size() < expectedLength && nextPointToLoad < psdData.length) {
+				while (size < expectedLength && nextPointToLoad < psdData.length) {
 					double itemToAdd = psdData[nextPointToLoad];
 					windowedRunningTotal = windowedRunningTotal.add(BigDecimal.valueOf(itemToAdd));
-					cachedPoints.add(itemToAdd);
+					++queueEndIndex;
+					++size;
 					++nextPointToLoad;
 				} // end of while loop
 			}
@@ -612,18 +618,20 @@ public class IstiUtilsMath {
 			// where we still had points to add. If so, one more double check that the point of
 			// interest is actually at the center of the data
 			if (nextPointToLoad >= psdData.length) {
-				int midpoint = ((cachedPoints.size() - 1) / 2);
+				int midpoint = ((size - 1) / 2);
 				int pointsToTrim = currentPointIndexInQueue - midpoint;
 				for (int k = 0; k < pointsToTrim; ++k) {
 					// remove item at front of queue, subtract value from the running total
-					double removed = cachedPoints.remove(0);
+					double removed = psdData[queueStartIndex];
+					++queueStartIndex;
+					--size;
 					windowedRunningTotal = windowedRunningTotal.subtract(BigDecimal.valueOf(removed));
 					--currentPointIndexInQueue; // everything is shifted over by 1
 				}
 			}
 
 			// and now at last it is time to crunch the number we have in the windowed total variable
-			smoothedData[i] = windowedRunningTotal.doubleValue() / cachedPoints.size();
+			smoothedData[i] = windowedRunningTotal.doubleValue() / size;
 
 			++currentPointIndexInQueue; // next point in list is one past the current point
 		}
