@@ -13,7 +13,7 @@ import org.junit.Test;
 
 public class RunEvalRespTest {
 
-  private static final String XML_SERVICE = "https://service.iris.edu/fdsnws/station/1/query";
+  private static final String XML_SERVICE = "https://vmweb01.cr.usgs.gov/metadata/iris/fdsnws/station/1/query";
 
   @Test
   public void testLoadStationXMLToRespValues() throws TraceViewException {
