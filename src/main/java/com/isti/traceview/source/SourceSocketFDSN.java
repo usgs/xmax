@@ -19,9 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.IntStream;
-import javax.swing.SwingWorker;
 import org.apache.log4j.Logger;
 
 public class SourceSocketFDSN extends SourceSocket {
