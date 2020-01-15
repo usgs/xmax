@@ -26,8 +26,8 @@
 			<!-- Connection scheme, either http or https -->
 			<DataServiceProtocol>https</DataServiceProtocol>
 			<DataServiceURL>vmweb01.cr.usgs.gov</DataServiceURL>
-			<FDSNDataPath>/metadata/iris</FDSNDataPath>
-			<FDSNPort>80</FDSNPort>
+			<FDSNDataPath>/metadata/iris/fdsnws</FDSNDataPath>
+			<FDSNPort>443</FDSNPort>
 			<!-- Temporary directory to store decompressed traces in the internal format -->
 			<TempPath>resources/DATA_TEMP</TempPath>
 
