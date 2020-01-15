@@ -309,14 +309,21 @@ public class TransCoherence implements ITransformation{
     final Response.FreqParameters fp = Response.getFreqParameters(finalCoherence.length*2,
         1000.0 / downsampleInterval);
     final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
+    double[] sqrtCoherence = new double[frequenciesArray.length];
 
     XYSeries series = new XYSeries("raw series");
-
     for(int i = 0; i < finalCoherence.length; i++){
-      series.add(1.0 / frequenciesArray[i], Math.sqrt(finalCoherence[i]));
+      sqrtCoherence[i] = Math.sqrt(finalCoherence[i]);
+      series.add(1.0 / frequenciesArray[i], sqrtCoherence[i]);
     }
-
     dataset.addSeries(series);
+
+    XYSeries smoothedSeries = new XYSeries("smoothed series");
+    double[] smoothedData = IstiUtilsMath.getSmoothedPSD(frequenciesArray, sqrtCoherence);
+    for (int i = 0; i < finalCoherence.length; ++i) {
+      smoothedSeries.add(1.0 / frequenciesArray[i], smoothedData[i]);
+    }
+    dataset.addSeries(smoothedSeries);
 
     return dataset;
   }
