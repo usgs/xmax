@@ -1,7 +1,6 @@
 package com.isti.traceview.filters;
 
 import asl.utils.NumericUtils;
-
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
 import com.isti.traceview.processing.HPFilterException;

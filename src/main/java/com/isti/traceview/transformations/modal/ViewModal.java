@@ -8,8 +8,6 @@ import com.isti.traceview.data.SacTimeSeriesASCII;
 import com.isti.traceview.gui.GraphUtil;
 import com.isti.traceview.processing.Spectra;
 import com.isti.xmax.XMAX;
-import com.isti.xmax.XMAXconfiguration;
-import com.isti.xmax.gui.XMAXGraphPanel;
 import com.isti.xmax.gui.XMAXframe;
 import java.awt.BasicStroke;
 import java.awt.Frame;

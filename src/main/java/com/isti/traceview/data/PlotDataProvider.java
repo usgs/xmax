@@ -12,7 +12,6 @@ import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.RemoveGainException;
 import com.isti.traceview.processing.Rotation;
-import com.isti.traceview.transformations.TransformationUtils;
 import com.isti.xmax.XMAXException;
 import java.awt.Color;
 import java.io.FileInputStream;

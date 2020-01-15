@@ -5,8 +5,6 @@ package com.isti.traceview.data;
 
 import com.isti.traceview.common.TimeInterval;
 import java.io.Externalizable;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;

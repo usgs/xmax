@@ -3,7 +3,6 @@ package com.isti.traceview.transformations.spectra;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
