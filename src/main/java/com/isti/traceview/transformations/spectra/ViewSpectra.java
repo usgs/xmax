@@ -5,7 +5,6 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.gui.GraphUtil;
-import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.Spectra;
 import com.isti.xmax.XMAX;
 import java.awt.Color;

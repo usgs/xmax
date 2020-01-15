@@ -3,7 +3,6 @@ package com.asl.traceview.transformations.coherence;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
 import com.isti.traceview.gui.GraphUtil;
-import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.xmax.XMAX;
 import java.awt.Color;
 import java.awt.Frame;
@@ -29,7 +28,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 /**

@@ -1,7 +1,5 @@
 package com.isti.traceview.processing;
 
-import static com.isti.traceview.transformations.psd.TransPSD.SMOOTHING_FACTOR;
-
 import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.Response;
@@ -10,12 +8,7 @@ import com.isti.traceview.transformations.psd.TransPSD;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import org.apache.log4j.Logger;
 
 /**

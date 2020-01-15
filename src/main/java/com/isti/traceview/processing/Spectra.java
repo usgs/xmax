@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Date;
 import org.apache.log4j.Logger;

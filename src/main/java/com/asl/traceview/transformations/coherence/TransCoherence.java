@@ -1,11 +1,9 @@
 package com.asl.traceview.transformations.coherence;
 
 import com.isti.jevalresp.RespUtils;
-import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
-import com.isti.traceview.data.Segment;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
@@ -16,7 +14,6 @@ import com.isti.xmax.gui.XMAXframe;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.stream.Stream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
