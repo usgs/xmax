@@ -1,6 +1,6 @@
 package com.isti.traceview.transformations.ppm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
@@ -12,7 +12,6 @@ import com.isti.xmax.XMAXconfiguration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
