@@ -111,11 +111,11 @@ public class TransPSDTest {
     assertEquals(2, psdData.size());
     assertEquals("IU/COLA/00/LH1 smoothed", psdData.get(0).getKey().toString());
     double[] yValues = psdData.get(1).toArray()[1];
-    System.out.println(Arrays.toString(yValues));
     boolean yValuesAllNonzeroNumeric = true;
     for (double y : yValues) {
       if (y != 0 && !Double.isNaN(y)) {
         yValuesAllNonzeroNumeric = false;
+        break;
       }
     }
     assertFalse(yValuesAllNonzeroNumeric);
