@@ -104,15 +104,6 @@ task copyJar(type: Copy) {
     into rootDir
 }
 
-task setupJEvalResp(type: Exec) {
-    commandLine './jevalresp_setup.bash'
-}
-
-task gitSubmodule(type: Exec) {
-    description 'Update git submodules'
-    commandLine 'git', 'submodule', 'update', '--init', '--recursive'
-}
-
 test {
     maxHeapSize = "4096m"
     maxParallelForks = 4
@@ -127,9 +118,29 @@ test {
     }
 }
 
-build.dependsOn gitSubmodule
+gradle.beforeProject {
+    println("Perform pre-project setup")
+    def sout = new StringBuilder()
+    def serr = new StringBuilder()
+    println("Updating gitsubmodules")
+    def proc = "git submodule update --init --recursive".execute()
+    proc.consumeProcessOutput(sout, serr)
+    proc.waitFor()
+    print sout
+    print serr
+    sout = new StringBuilder()
+    serr = new StringBuilder()
+    println("Updating JEvalResp")
+    proc = "./jevalresp_setup.bash".execute()
+    proc.consumeProcessOutput(sout, serr)
+    proc.waitFor()
+    print sout
+    print serr
 
-compileJava.dependsOn(setupJEvalResp, gitSubmodule)
+    println("Done with pre-project setup")
+}
+
+build.dependsOn(copyJar)
 
 javadoc {
     options.memberLevel = JavadocMemberLevel.PRIVATE
