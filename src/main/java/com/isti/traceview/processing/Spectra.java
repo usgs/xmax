@@ -218,7 +218,7 @@ public class Spectra {
 	public XYSeries getSmoothedSpectraSeries(boolean isDeconvolve, String respToConvolve) {
 		XYSeries series = new XYSeries(getName() + " smoothed");
 		double[] out = getSpectraAmp(isDeconvolve, respToConvolve);
-		out = IstiUtilsMath.getSmoothedPSD(frequenciesArray, out);
+		out = IstiUtilsMath.getSmoothedPSD(frequenciesArray, out, 0);
 		for (int i = 1; i < spectra.length; i++) {
 			double x = 1.0 / frequenciesArray[i];
 			double y = out[i];

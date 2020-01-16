@@ -530,14 +530,16 @@ public class IstiUtilsMath {
 	 * The fraction of the octave used to smooth is 1/{@value #SMOOTHING_FACTOR}.
 	 * @param frequenciesArray array of frequencies associated with each point in the PSD
 	 * @param psdData array of the PSD-like values being plotted
+	 * @param startIdx first index of PSD-like to analyze from (some particularly low frequency values
+	 * may have predominantly noise and be cut off)
 	 * @return Smoothed version of the data using 1/xth octave where x is {@value #SMOOTHING_FACTOR}
 	 */
-	public static double[] getSmoothedPSD(double[] frequenciesArray, double[] psdData) {
+	public static double[] getSmoothedPSD(double[] frequenciesArray, double[] psdData, int startIdx) {
 		assert(frequenciesArray.length == psdData.length);
 		double[] smoothedData = new double[psdData.length];
 		BigDecimal windowedRunningTotal = BigDecimal.valueOf(0.);
 		int currentPointIndexInQueue = 0; // current point is center value -- where in queue it is
-		int nextPointToLoad = 0; // index of first point in data not yet added to queue
+		int nextPointToLoad = startIdx; // index of first point in data not yet added to queue
 		// TODO: can save space by replacing queue with start and end indices of the queue
 		//Queue<Double> cachedPoints = new LinkedList<>(); // linked list is a type of queue
 		// indices here keep track of simulated queue structure backed by psdData array
@@ -545,7 +547,7 @@ public class IstiUtilsMath {
 		int queueEndIndex = nextPointToLoad;
 		int size = 0; // increments with end index, decrements when start index increments
 
-		for (int i = 0; i < frequenciesArray.length; ++i) {
+		for (int i = startIdx; i < frequenciesArray.length; ++i) {
 
 			// add new points to the running total until we have enough to fit our current window
 			while (currentPointIndexInQueue >= size) {
