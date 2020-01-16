@@ -315,7 +315,8 @@ public class TransCoherence implements ITransformation{
     }
 
     XYSeries smoothedSeries = new XYSeries("smoothed series");
-    double[] smoothedData = IstiUtilsMath.getSmoothedPSD(frequenciesArray, sqrtCoherence);
+    // smooth entire array (start at index 0)
+    double[] smoothedData = IstiUtilsMath.getSmoothedPSD(frequenciesArray, sqrtCoherence, 0);
     for (int i = 0; i < finalCoherence.length; ++i) {
       smoothedSeries.add(1.0 / frequenciesArray[i], smoothedData[i]);
     }

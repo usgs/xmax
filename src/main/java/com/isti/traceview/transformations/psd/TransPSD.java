@@ -191,13 +191,12 @@ public class TransPSD implements ITransformation {
 				xys.add(period, dbScaled[i]);
 			}
 		}
-		int len = frequenciesArray.length;
+
 		double[] smoothedData = getSmoothedPSD(
-				Arrays.copyOfRange(frequenciesArray, firstIndexWithPeriodAboveThreshhold, len),
-				Arrays.copyOfRange(dbScaled, firstIndexWithPeriodAboveThreshhold, len)
+				frequenciesArray, dbScaled, firstIndexWithPeriodAboveThreshhold
 		);
-		for (int i = 0; i < smoothedData.length; ++i) {
-			double period = 1. / frequenciesArray[i + firstIndexWithPeriodAboveThreshhold];
+		for (int i = firstIndexWithPeriodAboveThreshhold; i < smoothedData.length; ++i) {
+			double period = 1. / frequenciesArray[i];
 			smoothed.add(period, smoothedData[i]);
 		}
 		return new XYSeries[]{xys, smoothed};
