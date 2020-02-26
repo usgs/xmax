@@ -4,6 +4,7 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.ColorModeBySegment;
+import com.isti.xmax.gui.XMAXframe;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
@@ -18,6 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import javax.swing.JOptionPane;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.SubnodeConfiguration;
@@ -84,7 +86,17 @@ public class XMAXconfiguration extends Configuration {
 
 	private XMAXconfiguration() throws ConfigurationException, TraceViewException, XMAXException {
 		setDefaultHTMLPattern("<html><head><title>XMAX report</title></head><body><h1>XMAX report</h1> </body></html>");
-		config = new XMLConfiguration(confFileName);
+		File confFile = new File(confFileName);
+		if (!confFile.exists()) {
+			JOptionPane.showMessageDialog(null,
+					"XML file specified at load does not exist.\n" +
+							"The program will likely not be able to run.\n" +
+					"We will attempt to load data using default parameters.",
+				"Configuration file load error", JOptionPane.ERROR_MESSAGE);
+			config = new XMLConfiguration();
+		} else {
+			config = new XMLConfiguration(confFileName);
+		}
 		userDirectories = new HashMap<>();
 		ti = null;
 		try {
@@ -122,10 +134,10 @@ public class XMAXconfiguration extends Configuration {
 			setDataPath(config.getString("Configuration.Data.DataMask", "!"));
 			setDataTempPath(config.getString("Configuration.Data.TempPath"));
 			setQCdataFileName(config.getString("Configuration.Data.QCdataFile", "qc.xml"));
-			setPickPath(config.getString("Configuration.Data.PickPath", "./Picks"));
-			setStationInfoFileName(config.getString("Configuration.Data.StationInfoFile"));
-			setEarthquakeFileMask(config.getString("Configuration.Data.EventFileMask"));
-			setResponsePath(config.getString("Configuration.Data.ResponsePath", "/Responses"));
+			setPickPath(config.getString("Configuration.Data.PickPath", "./resources/Picks"));
+			setStationInfoFileName(config.getString("Configuration.Data.StationInfoFile", "./resources/gsn_sta_list"));
+			setEarthquakeFileMask(config.getString("Configuration.Data.EventFileMask", "*.ndk"));
+			setResponsePath(config.getString("Configuration.Data.ResponsePath", "./Responses"));
 			// setAllowMultiplexedData(config.getBoolean("Configuration.Data.AllowMultiplexedData"));
 			setOutputPath(config.getString("Configuration.OutputPath"));
 			String startTimeStr = config.getString("Configuration.StartTime");
