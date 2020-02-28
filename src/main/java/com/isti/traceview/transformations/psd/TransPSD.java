@@ -8,13 +8,12 @@ import asl.utils.TimeSeriesUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Response;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -37,6 +36,15 @@ public class TransPSD implements ITransformation {
 
 	public static final String NAME = "Power spectra density";
 	public static final double SMOOTHING_FACTOR = 8;
+
+	private static final int MAX_POINTS_BEFORE_NORMAL_WINDOW =
+			25 * 60 * 60 * 24; // length of one day of 25 Hz data (25 * 86400 seconds in a day)
+
+	private static boolean performSmoothing = true;
+
+	public static void setPerformSmoothing(boolean doSmoothing) {
+		performSmoothing = doSmoothing;
+	}
 
 	@Override
 	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
@@ -86,21 +94,31 @@ public class TransPSD implements ITransformation {
 		int shiftDivisor = 4;
 
 		// evalresp doesn't play nicely with threads so let's get that out of the way first
-		StringBuffer respNotFound = new StringBuffer();
-		StringBuffer traceHadError = new StringBuffer();
-		List<Complex[]> responses = generateResponses(input, ti, respNotFound, windowDivisor);
+		// we can use a stringbuilder for error messages because getting the responses is not threaded
+		StringBuilder respNotFound = new StringBuilder();
+		final List<Response> responses = new ArrayList<>();
+		for (PlotDataProvider channel : input) {
+			try {
+				responses.add(channel.getResponse());
+			} catch (TraceViewException | NullPointerException e) {
+					if (respNotFound.length() > 0) {
+						respNotFound.append(", ");
+					}
+					respNotFound.append(channel.getName());
+					// if the response doesn't exist, then
+					responses.add(null);
+			}
+		}
 
+		StringBuffer traceHadError = new StringBuffer();
+		// this list needs to be synchronized because it's written to at the end of each thread
 		List<XYSeries> dataset = Collections.synchronizedList(new ArrayList<>());
 		long startl = System.nanoTime();
-		final int[] emptyResponses = {0};
-		// this is a single-element array to allow value increments during parallel loop
-		// since final primitives would not be able to be incremented
-
 		IntStream.range(0, input.size()).parallel().forEach( i-> {
 			PlotDataProvider channel = input.get(i);
-			Complex[] respCurve = responses.get(i);
+			Complex[] respCurve = generateResponse(responses.get(i), ti, (long) channel.getSampleRate(),
+					windowDivisor);
 			if (respCurve == null) {
-				++emptyResponses[0];
 				return; // skip to next PSD -- this lambda is basically its own method
 			}
 			try {
@@ -118,7 +136,8 @@ public class TransPSD implements ITransformation {
 		double duration = endl * Math.pow(10, -9);
 		logger.info("\nPSD calculation duration = " + duration + " sec");
 
-		if (emptyResponses[0] == responses.size()) {
+		// throw an error if no data could be loaded. otherwise try with what we have
+		if (responses.size() == 0) {
 			throw new XMAXException("Cannot find responses for any channels selected.");
 		} else if (dataset.size() == 0) {
 			String message = "The following errors were caught while trying to produce a PSD:\n" +
@@ -144,7 +163,7 @@ public class TransPSD implements ITransformation {
 		return dataset;
 	}
 
-	private class XYSeriesComparator implements Comparator<XYSeries> {
+	private static class XYSeriesComparator implements Comparator<XYSeries> {
 
 		@Override
 		public int compare(XYSeries o1, XYSeries o2) {
@@ -178,7 +197,7 @@ public class TransPSD implements ITransformation {
 		Complex[] psd = data.getFFT();
 		double[] dbScaled = new double[psd.length];
 		XYSeries xys = new XYSeries(channel.getName());
-		XYSeries smoothed = new XYSeries(channel.getName() + " smoothed");
+
 		int firstIndexWithPeriodAboveThreshhold = -1;
 		for (int i = 0; i < frequenciesArray.length; ++i) {
 			double period = 1. / frequenciesArray[i];
@@ -191,15 +210,18 @@ public class TransPSD implements ITransformation {
 				xys.add(period, dbScaled[i]);
 			}
 		}
-
-		double[] smoothedData = getSmoothedPSD(
-				frequenciesArray, dbScaled, firstIndexWithPeriodAboveThreshhold
-		);
-		for (int i = firstIndexWithPeriodAboveThreshhold; i < smoothedData.length; ++i) {
-			double period = 1. / frequenciesArray[i];
-			smoothed.add(period, smoothedData[i]);
+		if (performSmoothing) {
+			XYSeries smoothed = new XYSeries(channel.getName() + " smoothed");
+			double[] smoothedData = getSmoothedPSD(
+					frequenciesArray, dbScaled, firstIndexWithPeriodAboveThreshhold
+			);
+			for (int i = firstIndexWithPeriodAboveThreshhold; i < smoothedData.length; ++i) {
+				double period = 1. / frequenciesArray[i];
+				smoothed.add(period, smoothedData[i]);
+			}
+			return new XYSeries[]{xys, smoothed};
 		}
-		return new XYSeries[]{xys, smoothed};
+		return new XYSeries[]{xys};
 	}
 
 	private static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti,
@@ -221,49 +243,32 @@ public class TransPSD implements ITransformation {
 		return TransPSD.NAME;
 	}
 
-	private List<Complex[]> generateResponses(List<PlotDataProvider> channels, TimeInterval ti,
-			StringBuffer respNotFound, int windowDivisor) {
-		// generate the response curve for each channel and compile them into a list
-		List<Complex[]> responses = new ArrayList<>();
+	private Complex[] generateResponse(Response response, TimeInterval ti,
+			long interval, int windowDivisor) {
+		Complex[] respCurve = null;
 
-		for (PlotDataProvider channel : channels) {
-			// first, get the range of data for this channel
-			long interval = (long) channel.getSampleRate();
-			long traceLength = (ti.getEnd() - ti.getStart()) / interval;
-			// divide that length by 4 because the PSD uses windows sized at 1/4 of the data
-			int dataLength = (int) traceLength / windowDivisor;
-			// PSD output is padded to be the largest power of 2 above the length given
-			int padLength = 2;
-			while (padLength < dataLength) {
-				padLength = padLength << 1;
-			}
-			// now get the frequency range for the PSD based on the sample interval in seconds
-			double period = interval / (double) TimeSeriesUtils.ONE_HZ_INTERVAL;
-			// these are in units of Hz
-			double deltaFreq = 1. / (padLength * period);
-			double endFreq = deltaFreq * (padLength - 1);
-
-			Cmplx[] response; // response is initially in a specific complex class from fissures
-			try {
-				response = channel.getResponse().getResp(ti.getStartTime(), 0,
-						endFreq, padLength);
-				// convert this into apache complex class as it's what the PSD calculator uses
-				Complex[] responseAdapted = new Complex[response.length];
-				IntStream.range(0, responseAdapted.length).parallel().forEach(i ->
-						responseAdapted[i] = new Complex(response[i].real(), response[i].imag())
-				);
-				responses.add(responseAdapted);
-			} catch (TraceViewException | NullPointerException e) {
-				if (respNotFound.length() > 0) {
-					respNotFound.append(", ");
-				}
-				respNotFound.append(channel.getName());
-				// if the response doesn't exist, then
-				responses.add(null);
-			}
+		// first, get the range of data for this channel
+		long traceLength = (ti.getEnd() - ti.getStart()) / interval;
+		// divide that length by 4 because the PSD uses windows sized at 1/4 of the data
+		int dataLength = (int) traceLength / windowDivisor;
+		// PSD output is padded to be the largest power of 2 above the length given
+		int padLength = 2;
+		while (padLength < dataLength) {
+			padLength = padLength << 1;
 		}
+		// now get the frequency range for the PSD based on the sample interval in seconds
+		double period = interval / (double) TimeSeriesUtils.ONE_HZ_INTERVAL;
+		// these are in units of Hz
+		double deltaFreq = 1. / (padLength * period);
+		double endFreq = deltaFreq * (padLength - 1);
 
-		return responses;
+		try {
+			respCurve = response.getResp(ti.getStartTime(), 0,
+					endFreq, padLength);
+		} catch (TraceViewException e) {
+			e.printStackTrace();
+		}
+		return respCurve;
 	}
 
 }

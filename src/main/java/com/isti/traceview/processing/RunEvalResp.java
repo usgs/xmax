@@ -6,10 +6,11 @@ import com.isti.jevalresp.RespFileParser;
 import com.isti.jevalresp.RunExt;
 import com.isti.traceview.TraceViewException;
 import edu.iris.Fissures.IfNetwork.Response;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
+import edu.sc.seis.seisFile.segd.Trace;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import org.apache.commons.math3.complex.Complex;
 
 /**
  * JEvalResp related logic.
@@ -23,7 +24,7 @@ public class RunEvalResp extends RunExt {
 
 	/**
 	 * Creates a run evalresp object.
-	 * 
+	 *
 	 * @param logSpacingFlag
 	 *            log spacing flag
 	 * @param verboseDebug
@@ -36,7 +37,7 @@ public class RunEvalResp extends RunExt {
 
 	/**
 	 * Gets the frequencies array.
-	 * 
+	 *
 	 * @return the frequencies array.
 	 */
 	public double[] getFrequenciesArray() {
@@ -45,16 +46,39 @@ public class RunEvalResp extends RunExt {
 
 	/**
 	 * Gets the frequency of sensitivity.
-	 * 
+	 *
 	 * @return the frequency of sensitivity.
 	 */
 	public double getFrequencyOfSensitivity() {
 		return frequencyOfSensitivity;
 	}
 
+	public Response getResponseFromFile(Date date, String respReader) throws TraceViewException {
+		String[] staArr = null;
+		String[] chaArr = null;
+		String[] netArr = null;
+		String[] siteArr = null;
+		final RespFileParser parserObj;
+		final String inFName = "(reader)";
+		parserObj = new RespFileParser(new ByteArrayInputStream(respReader.getBytes(
+				StandardCharsets.UTF_8)), inFName);
+		if (parserObj.getErrorFlag()) {
+			// error creating parser object;
+			throw new TraceViewException("Error in 'stdin' data:  " + parserObj.getErrorMessage());
+		}
+		parserObj.findChannelId(staArr, chaArr, netArr, siteArr, date, null);
+		// read and parse response data from input:
+		final Response respObj = parserObj.readResponse();
+		parserObj.close();
+		if (respObj == null) {
+			throw new TraceViewException("Unable to parse response file: " + parserObj.getErrorMessage());
+		}
+		return respObj;
+	}
+
 	/**
 	 * Computes complex response
-	 * 
+	 *
 	 * @param minFreqValue
 	 *            the minimum frequency to generate output for.
 	 * @param maxFreqValue
@@ -67,49 +91,41 @@ public class RunEvalResp extends RunExt {
 	 *            response reader.
 	 * @return an array of amplitude values.
 	 */
-		public Cmplx[] generateResponse(double minFreqValue, double maxFreqValue, int numberFreqs, Date date, String respReader)
+	public Complex[] generateResponse(double minFreqValue, double maxFreqValue, int numberFreqs, Date date, String respReader)
 			throws TraceViewException {
-		Cmplx[] spectra = null;
-		String[] staArr = null;
-		String[] chaArr = null;
-		String[] netArr = null;
-		String[] siteArr = null;
+		Response respObj = getResponseFromFile(date, respReader);
+		return generateResponse(minFreqValue, maxFreqValue, numberFreqs, respObj);
+	}
+
+	public Complex[] generateResponse(double minFreqValue, double maxFreqValue, int numberFreqs, Response response) throws TraceViewException {
+		final OutputGenerator outGenObj = new OutputGenerator(response);
 		this.minFreqValue = minFreqValue;
 		this.maxFreqValue = maxFreqValue;
 		this.numberFreqs = numberFreqs;
+		Complex[] spectra = null;
+		final String inFName = "(reader)";
 		if (checkGenerateFreqArray()) // check/generate frequencies array
 		{
-			final String inFName = "(reader)";
-			final RespFileParser parserObj;
-			parserObj = new RespFileParser(new ByteArrayInputStream(respReader.getBytes(
-					StandardCharsets.UTF_8)), inFName);
-			if (parserObj.getErrorFlag()) {
-				// error creating parser object;
-				throw new TraceViewException("Error in 'stdin' data:  " + parserObj.getErrorMessage());
-			}
-			parserObj.findChannelId(staArr, chaArr, netArr, siteArr, date, null);
 
-			// read and parse response data from input:
-			final Response respObj = parserObj.readResponse();
-			if (respObj == null) {
-				throw new TraceViewException("Unable to parse response file: " + parserObj.getErrorMessage());
-			}
-			// create output generator:
-			final OutputGenerator outGenObj = new OutputGenerator(respObj);
 			// check validity of response:
 			if (!outGenObj.checkResponse()) {
 				// error in response; set error code & msg
-				throw new TraceViewException("Error in response from \"" + inFName + "\":  " + outGenObj.getErrorMessage());
+				throw new TraceViewException(
+						"Error in response from \"" + inFName + "\":  " + outGenObj.getErrorMessage());
 			}
 			// response checked OK; do normalization:
 			if (!outGenObj.normalizeResponse(startStageNum, stopStageNum)) {
 				// normalization error; set error message
-				throw new TraceViewException("Error normalizing response from \"" + inFName + "\":  " + outGenObj.getErrorMessage());
+				throw new TraceViewException(
+						"Error normalizing response from \"" + inFName + "\":  " + outGenObj.getErrorMessage());
 			}
 			// response normalized OK; calculate output:
-			if (!outGenObj.calculateResponse(frequenciesArray, logSpacingFlag, outUnitsConvIdx, startStageNum, stopStageNum)) {
+			if (!outGenObj
+					.calculateResponse(frequenciesArray, logSpacingFlag, outUnitsConvIdx, startStageNum,
+							stopStageNum)) {
 				// calculation error; set error message
-				throw new TraceViewException("Error calculating response from \"" + inFName + "\":  " + outGenObj.getErrorMessage());
+				throw new TraceViewException(
+						"Error calculating response from \"" + inFName + "\":  " + outGenObj.getErrorMessage());
 			}
 			// get the frequency of sensitivity
 			frequencyOfSensitivity = outGenObj.getCalcSenseFrequency();
@@ -119,18 +135,17 @@ public class RunEvalResp extends RunExt {
 
 			// final AmpPhaseBlk ampPhaseArray[] = outGenObj.getAmpPhaseArray();
 			ComplexBlk[] spectraBlk = outGenObj.getCSpectraArray();
-			spectra = new Cmplx[spectraBlk.length];
+			spectra = new Complex[spectraBlk.length];
 			for (int i = 0; i < spectraBlk.length; i++) {
-				spectra[i] = new Cmplx(spectraBlk[i].real, spectraBlk[i].imag);
+				spectra[i] = new Complex(spectraBlk[i].real, spectraBlk[i].imag);
 				if (verboseDebug)
-					System.out.println("resp[" + i + "]: r= " + spectra[i].r + ", i= " + spectra[i].i + ", freq=" + calcFreqArray[i]);
+					System.out.println("resp[" + i + "]: r= " + spectra[i].getReal() + ", i= " +
+							spectra[i].getImaginary() + ", freq=" + calcFreqArray[i]);
 			}
-			parserObj.close();
 			System.out.println(outGenObj.getRespInfoString());
 			System.out.println(outGenObj.getStagesListStr());
+
 		}
 		return spectra;
 	}
-
-
 }

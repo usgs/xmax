@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Date;
+import org.apache.commons.math3.complex.Complex;
 import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYSeries;
 
@@ -27,12 +28,12 @@ public class Spectra {
 	 * Noise Spectra.
 	 */
 	Date date = null;
-	private final Cmplx[] spectra;
+	private final Complex[] spectra;
 	/**
 	 * The frequency array.
 	 */
 	private final double[] frequenciesArray;
-	private final Cmplx[] resp;
+	private final Complex[] resp;
 	private final double sampFreq;
 	private final Channel channel;
 	private final String err;
@@ -54,7 +55,8 @@ public class Spectra {
 	 * @param err
 	 *            this string contains errors during building spectra and response.
 	 */
-	public Spectra(Date date, Cmplx[] spectra, double[] frequenciesArray, Cmplx[] resp, double sampFreq, Channel channel, String err) {
+	public Spectra(Date date, Complex[] spectra, double[] frequenciesArray, Complex[] resp,
+			double sampFreq, Channel channel, String err) {
 		this.date = date;
 		this.spectra = spectra;
 		this.frequenciesArray = frequenciesArray;
@@ -67,7 +69,7 @@ public class Spectra {
 	/**
 	 * Get complex spectra
 	 */
-	public Cmplx[] getSpectra() {
+	public Complex[] getSpectra() {
 		return spectra;
 	}
 
@@ -81,7 +83,7 @@ public class Spectra {
 	/**
 	 * Get response
 	 */
-	public Cmplx[] getResp() {
+	public Complex[] getResp() {
 		return resp;
 	}
 
@@ -143,7 +145,7 @@ public class Spectra {
 	 * @return amplitude of complex spectra
 	 */
 	public double[] getSpectraAmp(boolean isDeconvolve, String respToConvolve) {
-		Cmplx[] processed = Arrays.copyOf(spectra, spectra.length, spectra.getClass());
+		Complex[] processed = Arrays.copyOf(spectra, spectra.length, spectra.getClass());
 		if (isDeconvolve && resp != null) {
 			try {	
 				processed = IstiUtilsMath.complexDeconvolution(spectra, resp);
@@ -156,7 +158,7 @@ public class Spectra {
 			Response respExternal = Response.getResponse(respFile);
 			if (respExternal != null) {
 				try {
-					Cmplx[] respExt = respExternal.getResp(date, getStartFreq(), getEndFreq(), Math.min(processed.length, frequenciesArray.length));
+					Complex[] respExt = respExternal.getResp(date, getStartFreq(), getEndFreq(), Math.min(processed.length, frequenciesArray.length));
 					// Cmplx[] respExt = respExternal.getResp(getStartFreq(), getEndFreq(), frequenciesArray.length);
 					// respExt = copyOf(respExt, Math.min(processed.length,
 					// frequenciesArray.length));
@@ -173,14 +175,15 @@ public class Spectra {
 	 * Compute PSD for this spectra
 	 */
 	public double[] getPSD(int inputUnits) {
-		try {	
-			
-			Cmplx[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);//Removes the response by dividing it out
+		try {
+
+			Complex[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);//Removes the response by dividing it out
 				
 			double[] psd = new double[deconvolved.length];
 			//Computing the PSD
 			for (int i = 0; i < deconvolved.length; i++) {
-				psd[i] = (deconvolved[i].r * deconvolved[i].r + deconvolved[i].i * deconvolved[i].i) * (channel.getSampleRate() / (double)deconvolved.length) * (1.0/0.875) / 13.0; 
+				psd[i] = (deconvolved[i].getReal() * deconvolved[i].getReal() + deconvolved[i].getImaginary() * deconvolved[i].getImaginary())
+						* (channel.getSampleRate() / (double)deconvolved.length) * (1.0/0.875) / 13.0;
 			}
 		
 			switch (inputUnits) {
@@ -252,7 +255,8 @@ public class Spectra {
 			PrintStream pStr =
 					new PrintStream(new BufferedOutputStream(new FileOutputStream("OutFile.txt")));
 			for (int i = 0; i < spectra.length; i++) {
-				pStr.println("freq=" + frequenciesArray[i] + ", r=" + spectra[i].r + ", i=" + spectra[i].i + ", mag=" + spectra[i].mag());
+				pStr.println("freq=" + frequenciesArray[i] + ", r=" + spectra[i].getReal()
+						+ ", i=" + spectra[i].getImaginary() + ", mag=" + spectra[i].abs());
 			}
 			pStr.close();
 		} catch (FileNotFoundException ex) {

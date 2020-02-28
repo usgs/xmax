@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import org.apache.commons.math3.complex.Complex;
 import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -96,8 +97,8 @@ public class TransCoherence implements ITransformation{
   private XYSeriesCollection createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, double downsampleInterval, JFrame parentFrame)
       throws XMAXException {
     XYSeriesCollection dataset = new XYSeriesCollection();
-    List<Cmplx[]> xSegmentData = new ArrayList<>();
-    List<Cmplx[]> ySegmentData = new ArrayList<>();
+    List<Complex[]> xSegmentData = new ArrayList<>();
+    List<Complex[]> ySegmentData = new ArrayList<>();
     final int[] numsegs = {0}; // allows us to keep segment counter finalized within loop
 
     // change for the sake of change? not quite, allows us to easily parallelize this loop
@@ -150,13 +151,13 @@ public class TransCoherence implements ITransformation{
       // this is one power of 2 less than the dsDataSegment length
 
       int[] data = new int[smallDataSegmentLimit]; // data values in the the time domain
-      Cmplx[] noise_spectra = new Cmplx[smallDataSegmentLimit]; // current segment fft
-      Cmplx[] finalNoiseSpectraData = new Cmplx[(smallDataSegmentLimit / 2) + 1]; // cumulative sum
+      Complex[] noise_spectra = new Complex[smallDataSegmentLimit]; // current segment fft
+      Complex[] finalNoiseSpectraData = new Complex[(smallDataSegmentLimit / 2) + 1]; // cumulative sum
 
       // initialize the finalNoiseSpectraData array to all zeros since we
       // will be taking a cumulative sum of the data.
       for (int i = 0; i < finalNoiseSpectraData.length; i++) {
-        finalNoiseSpectraData[i] = new Cmplx(0, 0);
+        finalNoiseSpectraData[i] = new Complex(0, 0);
       }
 
       // loop indexes
@@ -230,72 +231,72 @@ public class TransCoherence implements ITransformation{
     });
 
     //Caculate the averaged Pxx*
-    Cmplx[] pXConj = new Cmplx[xSegmentData.get(0).length];
+    Complex[] pXConj = new Complex[xSegmentData.get(0).length];
     for(int i = 0; i < pXConj.length; i++)
-      pXConj[i] = new Cmplx(0,0);
-    for(Cmplx[] segdata : xSegmentData) {
+      pXConj[i] = new Complex(0,0);
+    for(Complex[] segdata : xSegmentData) {
       for(int i = 0; i < segdata.length; i++) {
-        pXConj[i] = Cmplx.add(pXConj[i], Cmplx.mul(segdata[i], segdata[i].conjg()));
+        pXConj[i] = pXConj[i].add(segdata[i].multiply(segdata[i].conjugate()));
       }
     }
     for(int i = 0; i < pXConj.length; i++) {
-      pXConj[i] = Cmplx.div(pXConj[i], numsegs[0]);
+      pXConj[i] = pXConj[i].divide(numsegs[0]);
     }
 
     //Calculate the average Pyy*
-    Cmplx[] pYConj = new Cmplx[ySegmentData.get(0).length];
+    Complex[] pYConj = new Complex[ySegmentData.get(0).length];
     for(int i = 0; i < pYConj.length; i++)
-      pYConj[i] = new Cmplx(0,0);
-    for(Cmplx[] segdata : ySegmentData) {
+      pYConj[i] = new Complex(0,0);
+    for(Complex[] segdata : ySegmentData) {
       for(int i = 0; i < segdata.length; i++) {
-        pYConj[i] = Cmplx.add(pYConj[i], Cmplx.mul(segdata[i], segdata[i].conjg()));
+        pYConj[i] = pYConj[i].add(segdata[i].multiply(segdata[i].conjugate()));
       }
     }
     for(int i = 0; i < pYConj.length; i++) {
-      pYConj[i] = Cmplx.div(pYConj[i], numsegs[0]);
+      pYConj[i] = pYConj[i].divide(numsegs[0]);
     }
 
     //Calculate the average Pxy*
-    Cmplx[] pXYConj = new Cmplx[ySegmentData.get(0).length];
+    Complex[] pXYConj = new Complex[ySegmentData.get(0).length];
     for(int i = 0; i < pXYConj.length; i++)
-      pXYConj[i] = new Cmplx(0,0);
+      pXYConj[i] = new Complex(0,0);
     for(int r = 0; r < numsegs[0]; r++) {
-      Cmplx[] curXSeg = xSegmentData.get(r);
-      Cmplx[] curYSeg = ySegmentData.get(r);
+      Complex[] curXSeg = xSegmentData.get(r);
+      Complex[] curYSeg = ySegmentData.get(r);
       for(int c = 0; c < pXYConj.length; c++) {
-        pXYConj[c] = Cmplx.add(pXYConj[c], Cmplx.mul(curXSeg[c], curYSeg[c].conjg()));
+        pXYConj[c] =  pXYConj[c].add(curXSeg[c].multiply(curYSeg[c].conjugate()));
       }
     }
     for(int i = 0; i < pXYConj.length; i++) {
-      pXYConj[i] = Cmplx.div(pXYConj[i], numsegs[0]);
+      pXYConj[i] = pXYConj[i].divide(numsegs[0]);
     }
 
     //Calculate the average Pyx*
-    Cmplx[] pYXConj = new Cmplx[ySegmentData.get(0).length];
+    Complex[] pYXConj = new Complex[ySegmentData.get(0).length];
     for(int i = 0; i < pYXConj.length; i++)
-      pYXConj[i] = new Cmplx(0,0);
+      pYXConj[i] = new Complex(0,0);
     for(int r = 0; r < numsegs[0]; r++) {
-      Cmplx[] curXSeg = xSegmentData.get(r);
-      Cmplx[] curYSeg = ySegmentData.get(r);
+      Complex[] curXSeg = xSegmentData.get(r);
+      Complex[] curYSeg = ySegmentData.get(r);
       for(int c = 0; c < pYXConj.length; c++) {
-        pYXConj[c] = Cmplx.add(pYXConj[c], Cmplx.mul(curYSeg[c], curXSeg[c].conjg()));
+        pYXConj[c] = pYXConj[c].add(curYSeg[c].multiply(curXSeg[c].conjugate()));
       }
     }
     for(int i = 0; i < pXYConj.length; i++) {
-      pYXConj[i] = Cmplx.div(pYXConj[i], numsegs[0]);
+      pYXConj[i] = pYXConj[i].divide(numsegs[0]);
     }
 
     final double[] finalCoherence;
     double[] coherenceTrace = new double[pXConj.length];
     for(int i = 0; i < pXConj.length; i++){
-      Cmplx pxx = pXConj[i];
-      Cmplx pyy = pYConj[i];
-      Cmplx pxy = pXYConj[i];
-      Cmplx pyx = pYXConj[i];
+      Complex pxx = pXConj[i];
+      Complex pyy = pYConj[i];
+      Complex pxy = pXYConj[i];
+      Complex pyx = pYXConj[i];
       //Calcluate |Pxy|^2
-      double numerator = Cmplx.mul(pxy, pyx).real();
+      double numerator = pxy.multiply(pyx).getReal();
       //Calculate |Pxx| * |Pyy|
-      double denominator = Cmplx.mul(pxx, pyy).real();
+      double denominator = pxx.multiply(pyy).getReal();
       coherenceTrace[i] = numerator / denominator; //normalized coherence value
     }
     finalCoherence = coherenceTrace;
