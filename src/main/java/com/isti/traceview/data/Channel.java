@@ -204,7 +204,7 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @return Returns the channel response.
 	 */
 	public Response getResponse() throws TraceViewException {
-		return TraceView.getDataModule().getResponse(getNetworkName(), getStation().getName(), getLocationName(), getChannelName());
+		return TraceView.getDataModule().getResponseCached(getNetworkName(), getStation().getName(), getLocationName(), getChannelName());
 	}
 	
 	public boolean isSelected(){

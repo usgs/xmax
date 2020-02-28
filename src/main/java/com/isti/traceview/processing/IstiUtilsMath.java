@@ -9,6 +9,7 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.math.BigDecimal;
 import java.util.Date;
+import org.apache.commons.math3.complex.Complex;
 import org.apache.log4j.Logger;
 
 /**
@@ -299,35 +300,35 @@ public class IstiUtilsMath {
 	/**
 	 * Compute complex deconvolution
 	 */
-	public static Cmplx[] complexDeconvolution(Cmplx[] f, Cmplx[] g) {
+	public static Complex[] complexDeconvolution(Complex[] f, Complex[] g) {
 		if (f.length != g.length)
 			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
 		
-		Cmplx[] ret = new Cmplx[f.length];
+		Complex[] ret = new Complex[f.length];
 		for (int i = 0; i < f.length; i++)
-			ret[i] = Cmplx.div(f[i], g[i]);
+			ret[i] = f[i].divide(g[i]);
 		return ret;
 	}
 
 	/**
 	 * Compute complex convolution
 	 */
-	public static Cmplx[] complexConvolution(Cmplx[] f, Cmplx[] g) {
+	public static Complex[] complexConvolution(Complex[] f, Complex[] g) {
 		if (f.length != g.length)
 			throw new IllegalArgumentException("both arrays must have same length. " + f.length + " " + g.length);
-		Cmplx[] ret = new Cmplx[f.length];
+		Complex[] ret = new Complex[f.length];
 		for (int i = 0; i < f.length; i++)
-			ret[i] = Cmplx.mul(f[i], g[i]);
+			ret[i] = f[i].multiply(g[i]);
 		return ret;
 	}
 
 	/**
 	 * Compute amplitude of complex spectra
 	 */
-	public static double[] getSpectraAmplitude(Cmplx[] spectra) {
+	public static double[] getSpectraAmplitude(Complex[] spectra) {
 		final double[] ret = new double[spectra.length];
 		for (int i = 0; i < spectra.length; i++) {
-			ret[i] = spectra[i].mag();
+			ret[i] = spectra[i].abs();
 		}
 		return ret;
 	}
@@ -356,10 +357,10 @@ public class IstiUtilsMath {
 			}
 		}
 		double scale = StrictMath.sqrt(sumF * sumG);
-		Cmplx[] fTrans = processFft(fdataPadded);
-		Cmplx[] gTrans = processFft(gdataPadded);
+		Complex[] fTrans = processFft(fdataPadded);
+		Complex[] gTrans = processFft(gdataPadded);
 		for (int i = 0; i < fTrans.length; i++)
-			fTrans[i] = Cmplx.mul(fTrans[i], gTrans[i].conjg());
+			fTrans[i] = fTrans[i].multiply(gTrans[i].conjugate());
 		double[] corr = inverseFft(fTrans);
 		double[] crosscorr = new double[2 * dataLength - 1];
 		for (int i = 0; i < dataLength; i++) {
@@ -401,8 +402,8 @@ public class IstiUtilsMath {
 		traceCopy = windowHanning(traceCopy);
 
 		// Do FFT and get imag and real parts of the data spectrum
-		final Cmplx[] noise_spectra = processFft(traceCopy);
-		Cmplx[] resp = null;
+		final Complex[] noise_spectra = processFft(traceCopy);
+		Complex[] resp = null;
 		try {
 			resp = response.getResp(date, fp.startFreq, fp.endFreq, Math.min(noise_spectra.length, fp.numFreq));
 		} catch (Exception e) {
@@ -422,21 +423,21 @@ public class IstiUtilsMath {
 	 * @return the FFT output.
 	 */
 
-	public static Cmplx[] processFft(double[] indata) {
+	public static Complex[] processFft(double[] indata) {
 		int n = indata.length;
 		DoubleFFT_1D fft = new DoubleFFT_1D(n);
 		fft.realForward(indata);
-		Cmplx[] ret;
+		Complex[] ret;
 		int l;
 		if(n%2==0){
 			l = n/2;
-			ret = new Cmplx[l+1];
+			ret = new Complex[l+1];
 			for (int k = 0; k <= l; k++) {
-				ret[k] = new Cmplx(k==l?indata[1]:indata[2*k], (k==0 || k==l) ? 0 : indata[2*k+1]);
+				ret[k] = new Complex(k==l?indata[1]:indata[2*k], (k==0 || k==l) ? 0 : indata[2*k+1]);
 			}
 		} else {
 			l = (n-1)/2;
-			ret = new Cmplx[l+1];
+			ret = new Complex[l+1];
 			for (int k = 0; k <= l; k++) {
 				double im;
 				if(k==0){
@@ -446,7 +447,7 @@ public class IstiUtilsMath {
 				} else {
 					im=indata[2*k+1];
 				}
-				ret[k] = new Cmplx(indata[2*k], im);
+				ret[k] = new Complex(indata[2*k], im);
 			}
 		}
 		return ret;
@@ -459,14 +460,14 @@ public class IstiUtilsMath {
 	 *            data to process, count of points must be even
 	 * @return half of symmetric complex spectra
 	 */
-	public static Cmplx[] processFft_Even(double[] indata) {
+	public static Complex[] processFft_Even(double[] indata) {
 		RealDoubleFFT_Even fft = new RealDoubleFFT_Even(indata.length);
 		fft.transform(indata);
 
 		final int outLen = indata.length / 2;
-		final Cmplx[] ret = new Cmplx[outLen];
+		final Complex[] ret = new  Complex[outLen];
 		for (int k = 0; k < outLen; k++) {
-			ret[k] = new Cmplx(indata[k], k == 0 ? 0 : indata[indata.length - k]);
+			ret[k] = new Complex(indata[k], k == 0 ? 0 : indata[indata.length - k]);
 		}
 		return ret;
 	}
@@ -478,12 +479,12 @@ public class IstiUtilsMath {
 	 *            spectra to process, count of points must be power of 2
 	 */
 	
-	private static double[] inverseFft(Cmplx[] indata) {
+	private static double[] inverseFft(Complex[] indata) {
 		DoubleFFT_1D fft = new DoubleFFT_1D(indata.length * 2-2);
 		double[] dataToProcess = new double[indata.length * 2-2];
 		for (int k = 0; k < indata.length-1; k++) {
-			dataToProcess[2*k] = indata[k].r;
-			dataToProcess[2*k+1] = (k==0?indata[indata.length-1].r:indata[k].i);
+			dataToProcess[2*k] = indata[k].getReal();
+			dataToProcess[2*k+1] = (k==0?indata[indata.length-1].getReal():indata[k].getImaginary());
 		}
 		fft.realInverse(dataToProcess, true);
 		return dataToProcess;
@@ -495,12 +496,12 @@ public class IstiUtilsMath {
 	 * @param indata
 	 * 			  half of spectra to process
 	 */
-	public static double[] inverseFft_Even(Cmplx[] indata) {
+	public static double[] inverseFft_Even(Complex[] indata) {
 		RealDoubleFFT_Even fft = new RealDoubleFFT_Even(indata.length * 2);
 		double[] dataToProcess = new double[indata.length * 2];
 		for (int k = 0; k < indata.length; k++) {
-			dataToProcess[k] = indata[k].r;
-			dataToProcess[dataToProcess.length - k - 1] = indata[k].i;
+			dataToProcess[k] = indata[k].getReal();
+			dataToProcess[dataToProcess.length - k - 1] = indata[k].getImaginary();
 		}
 		fft.inverse(dataToProcess);
 		return dataToProcess;
@@ -540,8 +541,7 @@ public class IstiUtilsMath {
 		BigDecimal windowedRunningTotal = BigDecimal.valueOf(0.);
 		int currentPointIndexInQueue = 0; // current point is center value -- where in queue it is
 		int nextPointToLoad = startIdx; // index of first point in data not yet added to queue
-		// TODO: can save space by replacing queue with start and end indices of the queue
-		//Queue<Double> cachedPoints = new LinkedList<>(); // linked list is a type of queue
+
 		// indices here keep track of simulated queue structure backed by psdData array
 		int queueStartIndex = nextPointToLoad; // index of frequency at the head of the queue
 		int queueEndIndex = nextPointToLoad;

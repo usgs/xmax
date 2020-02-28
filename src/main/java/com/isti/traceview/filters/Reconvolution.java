@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
+import org.apache.commons.math3.complex.Complex;
 import org.apache.log4j.Logger;
 
 public class Reconvolution extends JDialog implements IFilter, PropertyChangeListener {
@@ -147,12 +148,12 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 		traceCopy = IstiUtilsMath.windowHanning(traceCopy);
 
 		// Do FFT and get imag and real parts of the data spectrum
-		Cmplx[] spectra = IstiUtilsMath.processFft_Even(traceCopy);
+		Complex[] spectra = IstiUtilsMath.processFft_Even(traceCopy);
 
 		// Get response
 		Response response = XMAX.getDataModule().getResponse(channel.getNetworkName(), channel.getStation().getName(),
 				channel.getLocationName(), channel.getChannelName());
-		Cmplx[] resp = null;
+		Complex[] resp = null;
 		try {
 			resp = response.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq, spectra.length);
 			resp = normData(resp);
@@ -167,16 +168,16 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 
 		// Deconvolve
 		try {
-			Cmplx[] deconvolved = null;
+			Complex[] deconvolved = null;
 			deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);
 
 			// Convolve if needed
-			Cmplx[] reconvolved = null;
+			Complex[] reconvolved = null;
 			String selectedFileName = (String) convolveCB.getSelectedItem();
 			if (!selectedFileName.equals("None")) {
 				Response respExternal = Response.getResponse(new File(selectedFileName));
 				if (respExternal != null) {
-					Cmplx[] respExt;
+					Complex[] respExt;
 					try {
 						respExt = respExternal.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq,
 								spectra.length);
@@ -307,21 +308,21 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 		}
 	}
 
-	public static Cmplx[] normData(Cmplx[] data) {
-		Cmplx[] ret = new Cmplx[data.length];
-		Cmplx sum = new Cmplx(0, 0);
+	public static Complex[] normData(Complex[] data) {
+		Complex[] ret = new Complex[data.length];
+		Complex sum = new Complex(0, 0);
 		for (int i = 0; i < data.length; i++)
-			sum = Cmplx.add(sum, data[i]);
-		final Cmplx mean = Cmplx.div(sum, data.length);
+			sum = sum.add(data[i]);
+		final Complex mean = sum.divide(data.length);
 		double maxAmp = 0;
 		for (int i = 0; i < data.length; i++) {
-			ret[i] = Cmplx.sub(data[i], mean);
-			if (ret[i].mag() > maxAmp) {
-				maxAmp = ret[i].mag();
+			ret[i] = data[i].subtract(mean);
+			if (ret[i].abs() > maxAmp) {
+				maxAmp = ret[i].abs();
 			}
 		}
 		for (int i = 0; i < data.length; i++) {
-			ret[i] = Cmplx.div(ret[i], maxAmp);
+			ret[i] = ret[i].divide(maxAmp);
 		}
 		return ret;
 	}
@@ -334,21 +335,21 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 	 * ret; }
 	 */
 
-	public static Cmplx[] removeExcessFrequencies(Cmplx[] spectra, Cmplx[] resp) throws ReconvolutionException {
+	public static Complex[] removeExcessFrequencies(Complex[] spectra, Complex[] resp) throws ReconvolutionException {
 		double cutOffRatio = 100.0;
 		if (spectra.length != resp.length) {
 			throw new ReconvolutionException("Arrays length should be equal");
 		}
 		double maxAmp = 0;
 		for (int i = 0; i < resp.length; i++) {
-			if (resp[i].mag() > maxAmp) {
-				maxAmp = resp[i].mag();
+			if (resp[i].abs() > maxAmp) {
+				maxAmp = resp[i].abs();
 			}
 		}
-		Cmplx[] ret = new Cmplx[spectra.length];
+		Complex[] ret = new Complex[spectra.length];
 		for (int i = 0; i < spectra.length; i++) {
-			if (maxAmp / resp[i].mag() > cutOffRatio) {
-				ret[i] = new Cmplx(0, 0);
+			if (maxAmp / resp[i].abs() > cutOffRatio) {
+				ret[i] = new Complex(0, 0);
 			} else {
 				ret[i] = spectra[i];
 			}

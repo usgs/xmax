@@ -12,6 +12,7 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.processing.Rotation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.XMAXconfiguration;
+import edu.sc.seis.seisFile.segd.Trace;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class TransPSDTest {
     String mask = "src/test/resources/psd/*.seed";
     String resp = "src/test/resources/psd";
     XMAXconfiguration config = XMAXconfiguration.getInstance();
+    config.setStationXMLPreferred(false);
     TraceView.setConfiguration(config);
     TraceView.getConfiguration().setDataPath(mask);
     TraceView.getConfiguration().setResponsePath(resp);
@@ -115,6 +117,34 @@ public class TransPSDTest {
       }
     }
     assertFalse(yValuesAllNonzeroNumeric);
+  }
+
+  @Test
+  public void testTimingOfPSDSmoothing() throws XMAXException, TraceViewException {
+    TraceView.getDataModule().deleteChannels(TraceView.getDataModule().getAllChannels());
+    TraceView.getConfiguration().setDataPath("src/test/resources/rotation/unrot*.seed");
+    TraceView.getConfiguration().setResponsePath("src/test/resources/rotation");
+    TraceView.getDataModule().loadAndParseDataForTesting();
+    DataModule dm = TraceView.getDataModule();
+    List<PlotDataProvider> pdpList = dm.getAllChannels();
+    TimeInterval ti = pdpList.get(0).getTimeRange();
+
+    TransPSD.setPerformSmoothing(false);
+    TransPSD psd = new TransPSD();
+    long timeUnsmoothedStart = System.currentTimeMillis();
+    List<XYSeries> psdData = psd.createData(pdpList, null, ti, null);
+    long timeUnsmoothedEnd = System.currentTimeMillis();
+    for (XYSeries psdDatum : psdData) {
+      assertFalse(psdDatum.getKey().toString().contains("Smoothed"));
+    }
+
+    TransPSD.setPerformSmoothing(true);
+    long timeSmoothedStart = System.currentTimeMillis();
+    psdData = psd.createData(pdpList, null, ti, null);
+    long timeSmoothedEnd = System.currentTimeMillis();
+    assertEquals(pdpList.size() * 2, psdData.size());
+    System.out.println(timeUnsmoothedEnd - timeUnsmoothedStart);
+    System.out.println(timeSmoothedEnd - timeSmoothedStart);
   }
 
 }

@@ -893,7 +893,7 @@ public class DataModule extends Observable {
   }
 
   /**
-   * Gets response for given SNCL, and cashes it in memory
+   * Gets response for given SNCL, and caches it in memory
    *
    * @param channel name of channel
    * @param station station
@@ -901,8 +901,9 @@ public class DataModule extends Observable {
    * @param location name of location
    * @return response class
    */
-  public Response getResponseCashed(String network, String station, String location,
+  public Response getResponseCached(String network, String station, String location,
       String channel) {
+
     Response resp = new Response(network, station, location, channel, null, null);
     int i = responses.indexOf(resp);
     if (i >= 0) {

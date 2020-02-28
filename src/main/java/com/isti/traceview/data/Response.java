@@ -1,7 +1,9 @@
 package com.isti.traceview.data;
 
+import static asl.utils.input.InstrumentResponse.getRespFileEpochs;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+import asl.utils.input.InstrumentResponse;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.RunEvalResp;
@@ -9,7 +11,6 @@ import edu.iris.dmc.fdsn.station.model.Network;
 import edu.iris.dmc.fdsn.station.model.Station;
 import edu.iris.dmc.service.ServiceUtil;
 import edu.iris.dmc.ws.util.RespUtil;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -20,15 +21,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.Logger;
 
 /**
@@ -41,13 +46,13 @@ public class Response {
   private static final Logger logger = Logger.getLogger(Response.class);
   private static final boolean verboseDebug = false;
 
-  String network = null;
-  String station = null;
-  String location = null;
-  String channel = null;
-  String content = null;
-  String fileName = null;
-  Map<Date, Double> azimuthMap = null;
+  String network;
+  String station;
+  String location;
+  String channel;
+  String fileName;
+  Map<Date, Double> azimuthMap;
+  Map<Date, edu.iris.Fissures.IfNetwork.Response> parsedEpochs;
 
   /**
    * @param network network code
@@ -63,9 +68,9 @@ public class Response {
     this.station = station;
     this.location = location;
     this.channel = channel;
-    this.content = content;
     this.fileName = fileName;
     this.azimuthMap = new HashMap<>();
+    parsedEpochs = populateResponseMap(content);
   }
 
   /**
@@ -85,9 +90,9 @@ public class Response {
     this.station = station;
     this.location = location;
     this.channel = channel;
-    this.content = content;
     this.fileName = fileName;
     this.azimuthMap = azimuthMap;
+    parsedEpochs = populateResponseMap(content);
   }
 
   public Double getEpochStartAzimuth(Date date) {
@@ -116,6 +121,22 @@ public class Response {
       // then insertion point is point of first epoch AFTER date, so go back by 1 to get epoch
       location = ((location + 1) * -1) -1;
       return azimuthMap.get(epochStartDates.get(location));
+    }
+    return null;
+  }
+
+  public edu.iris.Fissures.IfNetwork.Response getEnclosingEpochResponse(Date date) {
+    List<Date> epochStartDates = new ArrayList<>(parsedEpochs.keySet());
+    Collections.sort(epochStartDates);
+    int location = Collections.binarySearch(epochStartDates, date);
+    if (location >= 0) {
+      return parsedEpochs.get(epochStartDates.get(location));
+    } else if (location < -1) {
+      // if location = -1, then insertion point is 0, so date is before even first epoch in list
+      // location = -(insertion point) -1, so invert to get insertion point
+      // then insertion point is point of first epoch AFTER date, so go back by 1 to get epoch
+      location = ((location + 1) * -1) -1;
+      return parsedEpochs.get(epochStartDates.get(location));
     }
     return null;
   }
@@ -151,8 +172,28 @@ public class Response {
     return "RESP." + getNetwork() + "." + getStation() + "." + getLocation() + "." + getChannel();
   }
 
-  public String getContent() {
-    return content;
+  public static Map<Date, edu.iris.Fissures.IfNetwork.Response>
+  populateResponseMap(String content) {
+    Map<Date, edu.iris.Fissures.IfNetwork.Response> parsedEpochs = new HashMap<>();
+    // sometimes we create a response with empty content to check the cache against
+    // in that case we don't need to populate this map -- it's almost a dummy object
+    if (content == null) return null;
+
+    BufferedReader contentReader = new BufferedReader(new StringReader(content));
+    try {
+      List<Pair<Instant, Instant>> epochMap = getRespFileEpochs(contentReader);
+      for (Pair<Instant, Instant> startAndEnd : epochMap) {
+        Instant startInstant = startAndEnd.getFirst();
+        Date date = Date.from(startInstant);
+        RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
+        edu.iris.Fissures.IfNetwork.Response resp = evalResp.getResponseFromFile(date, content);
+        parsedEpochs.put(date, resp);
+      }
+    } catch (IOException | TraceViewException e) {
+      logger.error(e);
+    }
+
+    return parsedEpochs;
   }
 
   /**
@@ -166,18 +207,20 @@ public class Response {
    * @throws TraceViewException if thrown in {@link
    * com.isti.traceview.processing.RunEvalResp#generateResponse(double, double, int, Date, String)}
    */
-  public synchronized Cmplx[] getResp(Date date, double minFreqValue, double maxFreqValue,
+  public synchronized Complex[] getResp(Date date, double minFreqValue, double maxFreqValue,
       int len) throws TraceViewException {
     RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
-
-    return evalResp.generateResponse(minFreqValue, maxFreqValue, len, date, getContent());
+    // find closest epoch to the date
+    edu.iris.Fissures.IfNetwork.Response closestResp = getEnclosingEpochResponse(date);
+    return evalResp.generateResponse(minFreqValue, maxFreqValue, len, closestResp);
   }
 
   public double[] getRespAmp(Date date, double minFreqValue, double maxFreqValue, int len)
       throws TraceViewException {
     RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
+    edu.iris.Fissures.IfNetwork.Response closestResp = getEnclosingEpochResponse(date);
     double[] respAmp = IstiUtilsMath.getSpectraAmplitude(
-        evalResp.generateResponse(minFreqValue, maxFreqValue, len, date, getContent()));
+        evalResp.generateResponse(minFreqValue, maxFreqValue, len, closestResp));
     if (respAmp.length != len) {
       throw new TraceViewException(
           getLocalFileName() + ": The length of the RESPONSE AMPLITUDE (" + respAmp.length
@@ -286,7 +329,6 @@ public class Response {
    */
   public static Response getResponseFromXML(String network, String station, String location,
       String channel, String xmlFilename) {
-    // TODO: probably need to add some sort of call to get an XML folder param from data
     try {
       FileInputStream fileInputStream = new FileInputStream(xmlFilename);
       return getResponseFromXML(network, station, location, channel, fileInputStream);
@@ -356,6 +398,10 @@ public class Response {
     }
 
     return null;
+  }
+
+  public String toString() {
+    return "RESPONSE - " + network + "." + station + "." + location + "." + channel;
   }
 
   /**
