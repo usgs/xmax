@@ -29,6 +29,7 @@ public class TransPSDTest {
     String mask = "src/test/resources/psd/*.seed";
     String resp = "src/test/resources/psd";
     XMAXconfiguration config = XMAXconfiguration.getInstance();
+    config.setStationXMLPreferred(false);
     TraceView.setConfiguration(config);
     TraceView.getConfiguration().setDataPath(mask);
     TraceView.getConfiguration().setResponsePath(resp);
@@ -76,11 +77,11 @@ public class TransPSDTest {
     }
 
     TransPSD psd = new TransPSD();
-    List<XYSeries> psdData = psd.createData(toPSD, null, ti, null);
+    List<XYSeries> psdData = psd.createData(toPSD, null, ti, false, null);
 
-    // first two entries are going to be the smoothed data for these entries rather than raw
-    XYSeries firstSeries = psdData.get(2);
-    XYSeries secondSeries = psdData.get(3);
+    // since we disable smoothing, our data is held in the first two series
+    XYSeries firstSeries = psdData.get(0);
+    XYSeries secondSeries = psdData.get(1);
 
     for (int i = 0; i < firstSeries.getItemCount(); ++i) {
       double x1 = (Double) firstSeries.getX(i);
@@ -103,7 +104,7 @@ public class TransPSDTest {
     pdpList = pdpList.subList(0, 1);
     TimeInterval ti = pdpList.get(0).getTimeRange();
     TransPSD psd = new TransPSD();
-    List<XYSeries> psdData = psd.createData(pdpList, null, ti, null);
+    List<XYSeries> psdData = psd.createData(pdpList, null, ti, true, null);
     assertEquals(2, psdData.size());
     assertEquals("IU/COLA/00/LH1 smoothed", psdData.get(0).getKey().toString());
     double[] yValues = psdData.get(1).toArray()[1];
@@ -115,6 +116,33 @@ public class TransPSDTest {
       }
     }
     assertFalse(yValuesAllNonzeroNumeric);
+  }
+
+  @Test
+  public void testTimingOfPSDSmoothing() throws XMAXException, TraceViewException {
+    TraceView.getDataModule().deleteChannels(TraceView.getDataModule().getAllChannels());
+    TraceView.getConfiguration().setDataPath("src/test/resources/rotation/unrot*.seed");
+    TraceView.getConfiguration().setResponsePath("src/test/resources/rotation");
+    TraceView.getDataModule().loadAndParseDataForTesting();
+    DataModule dm = TraceView.getDataModule();
+    List<PlotDataProvider> pdpList = dm.getAllChannels();
+    TimeInterval ti = pdpList.get(0).getTimeRange();
+
+
+    TransPSD psd = new TransPSD();
+    long timeUnsmoothedStart = System.currentTimeMillis();
+    List<XYSeries> psdData = psd.createData(pdpList, null, ti, false, null);
+    long timeUnsmoothedEnd = System.currentTimeMillis();
+    for (XYSeries psdDatum : psdData) {
+      assertFalse(psdDatum.getKey().toString().contains("Smoothed"));
+    }
+
+    long timeSmoothedStart = System.currentTimeMillis();
+    psdData = psd.createData(pdpList, null, ti, true, null);
+    long timeSmoothedEnd = System.currentTimeMillis();
+    assertEquals(pdpList.size() * 2, psdData.size());
+    System.out.println(timeUnsmoothedEnd - timeUnsmoothedStart);
+    System.out.println(timeSmoothedEnd - timeSmoothedStart);
   }
 
 }

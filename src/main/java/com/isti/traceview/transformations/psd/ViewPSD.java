@@ -5,6 +5,7 @@ import static com.isti.traceview.transformations.psd.TransPSD.SMOOTHING_FACTOR;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
 import com.isti.traceview.data.FileOutputUtils;
+import com.isti.traceview.data.PlotData;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.gui.ChannelView;
 import com.isti.traceview.gui.ColorModeFixed;
@@ -57,6 +58,7 @@ import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -469,7 +471,17 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     plot.setDomainCrosshairVisible(true);
     plot.setRangeCrosshairVisible(true);
     plot.setDomainCrosshairLockedOnData(true);
-    return new MyOptionPane(cp, input);
+    boolean doSmoothing = containsSmoothedData(dataset);
+    return new MyOptionPane(cp, input, doSmoothing);
+  }
+
+  private boolean containsSmoothedData(XYDataset input) {
+    for (int i = 0; i < input.getSeriesCount(); ++i) {
+      if (input.getSeriesKey(i).toString().contains("smoothed")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -574,7 +586,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     private JPanel waveP = null;
     private final List<PlotDataProvider> input;
 
-    private MyOptionPane(TraceViewChartPanel cp, List<PlotDataProvider> input) {
+    private MyOptionPane(TraceViewChartPanel cp, List<PlotDataProvider> input, boolean doSmoothing) {
       this.cp = cp;
       Dimension d = cp.getPreferredSize();
       int maxDim = (int) Math.max(d.getHeight(), d.getWidth());
@@ -587,7 +599,9 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
         add(getWavePanel());
       }
       // add options for which (smooth vs. unsmooth) data should be shown
-      add(instantiateSmoothingButtons());
+      if (doSmoothing) {
+        add(instantiateSmoothingButtons());
+      }
       add(getCrosshairPositionL());
       setVisibleItems();
     }
