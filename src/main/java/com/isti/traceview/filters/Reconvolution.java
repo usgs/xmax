@@ -6,7 +6,6 @@ import com.isti.traceview.data.Response;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.gui.XMAXframe;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
