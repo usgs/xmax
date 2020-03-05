@@ -78,8 +78,6 @@ public class TransPSDTest {
 
     TransPSD psd = new TransPSD();
     List<XYSeries> psdData = psd.createData(toPSD, null, ti, false, null);
-
-    // since we disable smoothing, our data is held in the first two series
     XYSeries firstSeries = psdData.get(0);
     XYSeries secondSeries = psdData.get(1);
 
@@ -118,7 +116,7 @@ public class TransPSDTest {
     assertFalse(yValuesAllNonzeroNumeric);
   }
 
-  @Test
+  // @Test
   public void testTimingOfPSDSmoothing() throws XMAXException, TraceViewException {
     TraceView.getDataModule().deleteChannels(TraceView.getDataModule().getAllChannels());
     TraceView.getConfiguration().setDataPath("src/test/resources/rotation/unrot*.seed");
