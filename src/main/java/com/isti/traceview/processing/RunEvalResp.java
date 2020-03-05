@@ -6,7 +6,6 @@ import com.isti.jevalresp.RespFileParser;
 import com.isti.jevalresp.RunExt;
 import com.isti.traceview.TraceViewException;
 import edu.iris.Fissures.IfNetwork.Response;
-import edu.sc.seis.seisFile.segd.Trace;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
