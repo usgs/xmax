@@ -37,18 +37,23 @@ public class TransPSD implements ITransformation {
 	public static final String NAME = "Power spectra density";
 	public static final double SMOOTHING_FACTOR = 8;
 
-	private static final int MAX_POINTS_BEFORE_NORMAL_WINDOW =
-			25 * 60 * 60 * 24; // length of one day of 25 Hz data (25 * 86400 seconds in a day)
+	private static final int POINTS_TO_CONSIDER_LIMITING_DATA =
+			20 * 60 * 60 * 24; // length of one day of 25 Hz data (25 * 86400 seconds in a day)
 
-	private static boolean performSmoothing = true;
-
-	public static void setPerformSmoothing(boolean doSmoothing) {
-		performSmoothing = doSmoothing;
-	}
+	/**
+	 * Default value to use for window length divisor (i.e., 1/2 of data is in each window)
+	 */
+	public static final int DEFAULT_WINDOW_LENGTH_DIVISOR = 2;
+	/**
+	 * Default value to use for shift length divisor, the fraction of window size that is shifted
+	 * for each iteration of Welch's method (i.e., 1/4 of the window; 1/8 of the total data if
+	 * the default window length of 1/2 is chosen)
+	 */
+	public static final int DEFAULT_SHIFT_LENGTH_DIVISOR = 4;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
-			JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter,
+			Object configuration, JFrame parentFrame) {
 
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "PSD computation warning",
@@ -58,10 +63,33 @@ public class TransPSD implements ITransformation {
 					+ "Please select a longer dataset.", "PSD computation warning",
 					JOptionPane.ERROR_MESSAGE);
 		} else {
+
+			boolean doSmoothing = true;
+			for (PlotDataProvider channel : input) {
+				if (channel.getDataLength(ti) >= POINTS_TO_CONSIDER_LIMITING_DATA) {
+
+					String message = "One or more traces of data (" + channel.getName() + ") has at least as "
+							+ "many points as a full day of 20 Hz Data.\nRunning the smoothing on this much data "
+							+ "may take several minutes.\n" +
+							"Do you want to still perform smoothing on these traces?";
+					int selection = JOptionPane.showConfirmDialog(parentFrame, message,
+							"Smoothing duration warning", JOptionPane.YES_NO_OPTION);
+					// only do smoothing if yes is chosen
+					doSmoothing = (selection == JOptionPane.YES_OPTION);
+					break;
+				}
+			}
+
 			try {
-				List<XYSeries> plotData = createData(input, filter, ti, parentFrame);
+				Configuration config = (Configuration) configuration;
+				int windowLength = config.getInt("WindowLength", DEFAULT_WINDOW_LENGTH_DIVISOR);
+				int shiftDivisor = config.getInt("ShiftDivisor", DEFAULT_SHIFT_LENGTH_DIVISOR);
+				logger.debug("Using the following window length and shift divisor values: (" +
+						windowLength + ", " + shiftDivisor + ")");
+				List<XYSeries> plotData = createData(input, filter, ti, doSmoothing,
+						windowLength, shiftDivisor, parentFrame);
 				@SuppressWarnings("unused")
-				ViewPSD vp = new ViewPSD(parentFrame, plotData, ti, (Configuration) configuration, input);
+				ViewPSD vp = new ViewPSD(parentFrame, plotData, ti, config, input);
 			} catch (XMAXException e) {
 				logger.error(e);
 				if (!e.getMessage().equals("Operation cancelled")) {
@@ -86,12 +114,33 @@ public class TransPSD implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-
 	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
-			TimeInterval ti, JFrame parentFrame) throws XMAXException {
+			TimeInterval ti, boolean doSmoothing, JFrame parentFrame) throws XMAXException {
 
-		int windowDivisor = 2; // windows are half the length of full data
-		int shiftDivisor = 4;
+		return createData(input, filter, ti, doSmoothing, DEFAULT_WINDOW_LENGTH_DIVISOR,
+				DEFAULT_SHIFT_LENGTH_DIVISOR, parentFrame);
+	}
+
+	/**
+	 * @param input
+	 *            List of traces to process
+	 * @param filter
+	 *            Filter applied to traces before correlation
+	 * @param ti
+	 *            Time interval to define processed range
+	 * @param parentFrame
+	 *            parent frame
+	 * @param doSmoothing true if the data should be smoothed before plotting
+	 * @param windowDivisor denominator x for which 1/x the data length is used per window
+	 * @param shiftDivisor denominator x for which 1/x the window length is shifted per iteration
+	 * @return list of spectra for selected traces and time ranges
+	 * @throws XMAXException
+	 *             if sample rates differ, gaps in the data, or no data for a
+	 *             channel
+	 */
+	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
+			TimeInterval ti, boolean doSmoothing, int windowDivisor, int shiftDivisor,
+			JFrame parentFrame) throws XMAXException {
 
 		// evalresp doesn't play nicely with threads so let's get that out of the way first
 		// we can use a stringbuilder for error messages because getting the responses is not threaded
@@ -122,7 +171,8 @@ public class TransPSD implements ITransformation {
 				return; // skip to next PSD -- this lambda is basically its own method
 			}
 			try {
-				XYSeries[] xys = convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor);
+				XYSeries[] xys =
+						convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor, doSmoothing);
 				Collections.addAll(dataset, xys);
 			} catch (XMAXException e) {
 				logger.error(e);
@@ -185,7 +235,8 @@ public class TransPSD implements ITransformation {
 	}
 
 	private static XYSeries[] convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti,
-			Complex[] response, int windowDivisor, int shiftDivisor) throws XMAXException {
+			Complex[] response, int windowDivisor, int shiftDivisor, boolean performSmoothing)
+			throws XMAXException {
 
 		long interval = (long) channel.getSampleRate();
 		long traceLength = (ti.getEnd() - ti.getStart()) / interval;

@@ -6,7 +6,6 @@ import com.isti.traceview.data.Response;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
 import com.isti.traceview.transformations.psd.TransPSD;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.math.BigDecimal;
 import java.util.Date;
 import org.apache.commons.math3.complex.Complex;
@@ -526,8 +525,10 @@ public class IstiUtilsMath {
 	/**
 	 * Perform fractional-octave (variable length smoothing) over a series of data, used for plotting
 	 * PSDs, etc. A moving-average value is cached along with the points in range in order to speed
-	 * up the calculation of this data; the cached values are centered at the point of interest and
-	 * data is loaded in and out based on whether it fits within the octave range.
+	 * up the calculation of this data. The smoothing uses the lower fractional-octave for the
+	 * smoothing and centers the data being averaged at that point, so it is not strictly speaking
+	 * a fraction of the octave on either side of the data. This allows the smoothing to be reasonably
+	 * precise while still efficient, and to gracefully taper away as we reach the end of the data.
 	 * The fraction of the octave used to smooth is 1/{@value #SMOOTHING_FACTOR}.
 	 * @param frequenciesArray array of frequencies associated with each point in the PSD
 	 * @param psdData array of the PSD-like values being plotted
