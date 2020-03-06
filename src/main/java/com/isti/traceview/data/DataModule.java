@@ -863,7 +863,7 @@ public class DataModule extends Observable {
         }
 
         logger.info("Attempting to download response data from web services.");
-        String webservicesURL = "http://" + config.getDataServiceHost() + config.getMetadataServicePath();
+        String webservicesURL = config.getDataServiceProtocol() + "://" + config.getDataServiceHost() + "/" + config.getMetadataServicePath();
         // note that above should be non-null
         resp = Response.getResponseFromWeb(network, station, location, channel, webservicesURL);
         if (resp != null) {
