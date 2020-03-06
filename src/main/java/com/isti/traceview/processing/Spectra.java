@@ -5,7 +5,6 @@ import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.Response;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -264,13 +263,13 @@ public class Spectra {
 		}
 	}
 	
-	public static void log(String name, Cmplx[] spectra){
+	public static void log(String name, Complex[] spectra){
 		System.out.println("-----------------------------------------------------------------------");
 		System.out.println(name);
 		System.out.println("-----------------------------------------------------------------------");
-		for (Cmplx aSpectra : spectra) {
+		for (Complex aSpectra : spectra) {
 			System.out
-					.println(/*"r=" + spectra[i].r + ", i=" + spectra[i].i + ", mag=" + */aSpectra.mag());
+					.println("r=" + aSpectra.getReal() + ", i=" + aSpectra.getImaginary() + ", mag=" + aSpectra.abs());
 		}
 	}
 

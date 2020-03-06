@@ -26,7 +26,7 @@
 			<!-- Connection scheme, either http or https -->
 			<DataServiceProtocol>https</DataServiceProtocol>
 			<DataServiceURL>vmweb01.cr.usgs.gov</DataServiceURL>
-			<FDSNDataPath>/metadata/iris/fdsnws</FDSNDataPath>
+			<FDSNDataPath>metadata/iris/fdsnws</FDSNDataPath>
 			<FDSNPort>443</FDSNPort>
 			<!-- Temporary directory to store decompressed traces in the internal format -->
 			<TempPath>resources/DATA_TEMP</TempPath>
@@ -100,8 +100,9 @@
 <SessionData>
 <Frame>
 <PosY>23</PosY>
-<Width>1280</Width>
-<Heigth>720</Heigth>
+<Width>1920</Width>
+<Heigth>986</Heigth>
+<State>MAXIMIZED_BOTH</State>
 </Frame>
 </SessionData>
 </XMAXSessionConfiguration>

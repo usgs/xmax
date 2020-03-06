@@ -32,11 +32,11 @@ public class RunEvalRespTest {
     assertArrayEquals(expectRespAmp, testRespAmp, 1E-5 * Math.pow(10, exponent));
   }
 
-  @Test
+  // @Test
   public void testLoadStationXMLToRespValuesOnline() throws TraceViewException {
     String folderName = "src/test/resources/";
     String respFilename = folderName + "RESP.IU.ANMO.00.LH1";
-    LocalDate localDate = LocalDate.of(2014, 12, 18);
+    LocalDate localDate = LocalDate.of(2015, 01, 01);
 
     Response respXML = Response.getResponseFromWeb("IU", "ANMO", "00","LH1", XML_SERVICE);
     Response respExpected = Response.getResponse(new File(respFilename));
