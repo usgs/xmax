@@ -8,13 +8,12 @@ import asl.utils.TimeSeriesUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.Response;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
-import edu.sc.seis.fissuresUtil.freq.Cmplx;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -38,9 +37,23 @@ public class TransPSD implements ITransformation {
 	public static final String NAME = "Power spectra density";
 	public static final double SMOOTHING_FACTOR = 8;
 
+	private static final int POINTS_TO_CONSIDER_LIMITING_DATA =
+			20 * 60 * 60 * 24; // length of one day of 25 Hz data (25 * 86400 seconds in a day)
+
+	/**
+	 * Default value to use for window length divisor (i.e., 1/2 of data is in each window)
+	 */
+	public static final int DEFAULT_WINDOW_LENGTH_DIVISOR = 2;
+	/**
+	 * Default value to use for shift length divisor, the fraction of window size that is shifted
+	 * for each iteration of Welch's method (i.e., 1/4 of the window; 1/8 of the total data if
+	 * the default window length of 1/2 is chosen)
+	 */
+	public static final int DEFAULT_SHIFT_LENGTH_DIVISOR = 4;
+
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
-			JFrame parentFrame) {
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter,
+			Object configuration, JFrame parentFrame) {
 
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "PSD computation warning",
@@ -50,10 +63,33 @@ public class TransPSD implements ITransformation {
 					+ "Please select a longer dataset.", "PSD computation warning",
 					JOptionPane.ERROR_MESSAGE);
 		} else {
+
+			boolean doSmoothing = true;
+			for (PlotDataProvider channel : input) {
+				if (channel.getDataLength(ti) >= POINTS_TO_CONSIDER_LIMITING_DATA) {
+
+					String message = "One or more traces of data (" + channel.getName() + ") has at least as "
+							+ "many points as a full day of 20 Hz Data.\nRunning the smoothing on this much data "
+							+ "may take several minutes.\n" +
+							"Do you want to still perform smoothing on these traces?";
+					int selection = JOptionPane.showConfirmDialog(parentFrame, message,
+							"Smoothing duration warning", JOptionPane.YES_NO_OPTION);
+					// only do smoothing if yes is chosen
+					doSmoothing = (selection == JOptionPane.YES_OPTION);
+					break;
+				}
+			}
+
 			try {
-				List<XYSeries> plotData = createData(input, filter, ti, parentFrame);
+				Configuration config = (Configuration) configuration;
+				int windowLength = config.getInt("WindowLength", DEFAULT_WINDOW_LENGTH_DIVISOR);
+				int shiftDivisor = config.getInt("ShiftDivisor", DEFAULT_SHIFT_LENGTH_DIVISOR);
+				logger.debug("Using the following window length and shift divisor values: (" +
+						windowLength + ", " + shiftDivisor + ")");
+				List<XYSeries> plotData = createData(input, filter, ti, doSmoothing,
+						windowLength, shiftDivisor, parentFrame);
 				@SuppressWarnings("unused")
-				ViewPSD vp = new ViewPSD(parentFrame, plotData, ti, (Configuration) configuration, input);
+				ViewPSD vp = new ViewPSD(parentFrame, plotData, ti, config, input);
 			} catch (XMAXException e) {
 				logger.error(e);
 				if (!e.getMessage().equals("Operation cancelled")) {
@@ -78,33 +114,65 @@ public class TransPSD implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-
 	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
-			TimeInterval ti, JFrame parentFrame) throws XMAXException {
+			TimeInterval ti, boolean doSmoothing, JFrame parentFrame) throws XMAXException {
 
-		int windowDivisor = 2; // windows are half the length of full data
-		int shiftDivisor = 4;
+		return createData(input, filter, ti, doSmoothing, DEFAULT_WINDOW_LENGTH_DIVISOR,
+				DEFAULT_SHIFT_LENGTH_DIVISOR, parentFrame);
+	}
+
+	/**
+	 * @param input
+	 *            List of traces to process
+	 * @param filter
+	 *            Filter applied to traces before correlation
+	 * @param ti
+	 *            Time interval to define processed range
+	 * @param parentFrame
+	 *            parent frame
+	 * @param doSmoothing true if the data should be smoothed before plotting
+	 * @param windowDivisor denominator x for which 1/x the data length is used per window
+	 * @param shiftDivisor denominator x for which 1/x the window length is shifted per iteration
+	 * @return list of spectra for selected traces and time ranges
+	 * @throws XMAXException
+	 *             if sample rates differ, gaps in the data, or no data for a
+	 *             channel
+	 */
+	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
+			TimeInterval ti, boolean doSmoothing, int windowDivisor, int shiftDivisor,
+			JFrame parentFrame) throws XMAXException {
 
 		// evalresp doesn't play nicely with threads so let's get that out of the way first
-		StringBuffer respNotFound = new StringBuffer();
-		StringBuffer traceHadError = new StringBuffer();
-		List<Complex[]> responses = generateResponses(input, ti, respNotFound, windowDivisor);
+		// we can use a stringbuilder for error messages because getting the responses is not threaded
+		StringBuilder respNotFound = new StringBuilder();
+		final List<Response> responses = new ArrayList<>();
+		for (PlotDataProvider channel : input) {
+			try {
+				responses.add(channel.getResponse());
+			} catch (TraceViewException | NullPointerException e) {
+					if (respNotFound.length() > 0) {
+						respNotFound.append(", ");
+					}
+					respNotFound.append(channel.getName());
+					// if the response doesn't exist, then
+					responses.add(null);
+			}
+		}
 
+		StringBuffer traceHadError = new StringBuffer();
+		// this list needs to be synchronized because it's written to at the end of each thread
 		List<XYSeries> dataset = Collections.synchronizedList(new ArrayList<>());
 		long startl = System.nanoTime();
-		final int[] emptyResponses = {0};
-		// this is a single-element array to allow value increments during parallel loop
-		// since final primitives would not be able to be incremented
-
 		IntStream.range(0, input.size()).parallel().forEach( i-> {
 			PlotDataProvider channel = input.get(i);
-			Complex[] respCurve = responses.get(i);
+			Complex[] respCurve = generateResponse(responses.get(i), ti, (long) channel.getSampleRate(),
+					windowDivisor);
 			if (respCurve == null) {
-				++emptyResponses[0];
 				return; // skip to next PSD -- this lambda is basically its own method
 			}
 			try {
-				XYSeries[] xys = convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor);
+				XYSeries[] xys =
+						convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor, doSmoothing);
 				Collections.addAll(dataset, xys);
 			} catch (XMAXException e) {
 				logger.error(e);
@@ -118,7 +186,8 @@ public class TransPSD implements ITransformation {
 		double duration = endl * Math.pow(10, -9);
 		logger.info("\nPSD calculation duration = " + duration + " sec");
 
-		if (emptyResponses[0] == responses.size()) {
+		// throw an error if no data could be loaded. otherwise try with what we have
+		if (responses.size() == 0) {
 			throw new XMAXException("Cannot find responses for any channels selected.");
 		} else if (dataset.size() == 0) {
 			String message = "The following errors were caught while trying to produce a PSD:\n" +
@@ -144,7 +213,7 @@ public class TransPSD implements ITransformation {
 		return dataset;
 	}
 
-	private class XYSeriesComparator implements Comparator<XYSeries> {
+	private static class XYSeriesComparator implements Comparator<XYSeries> {
 
 		@Override
 		public int compare(XYSeries o1, XYSeries o2) {
@@ -166,7 +235,8 @@ public class TransPSD implements ITransformation {
 	}
 
 	private static XYSeries[] convertToPlottableSeries(PlotDataProvider channel, TimeInterval ti,
-			Complex[] response, int windowDivisor, int shiftDivisor) throws XMAXException {
+			Complex[] response, int windowDivisor, int shiftDivisor, boolean performSmoothing)
+			throws XMAXException {
 
 		long interval = (long) channel.getSampleRate();
 		long traceLength = (ti.getEnd() - ti.getStart()) / interval;
@@ -178,7 +248,7 @@ public class TransPSD implements ITransformation {
 		Complex[] psd = data.getFFT();
 		double[] dbScaled = new double[psd.length];
 		XYSeries xys = new XYSeries(channel.getName());
-		XYSeries smoothed = new XYSeries(channel.getName() + " smoothed");
+
 		int firstIndexWithPeriodAboveThreshhold = -1;
 		for (int i = 0; i < frequenciesArray.length; ++i) {
 			double period = 1. / frequenciesArray[i];
@@ -191,16 +261,18 @@ public class TransPSD implements ITransformation {
 				xys.add(period, dbScaled[i]);
 			}
 		}
-		int len = frequenciesArray.length;
-		double[] smoothedData = getSmoothedPSD(
-				Arrays.copyOfRange(frequenciesArray, firstIndexWithPeriodAboveThreshhold, len),
-				Arrays.copyOfRange(dbScaled, firstIndexWithPeriodAboveThreshhold, len)
-		);
-		for (int i = 0; i < smoothedData.length; ++i) {
-			double period = 1. / frequenciesArray[i + firstIndexWithPeriodAboveThreshhold];
-			smoothed.add(period, smoothedData[i]);
+		if (performSmoothing) {
+			XYSeries smoothed = new XYSeries(channel.getName() + " smoothed");
+			double[] smoothedData = getSmoothedPSD(
+					frequenciesArray, dbScaled, firstIndexWithPeriodAboveThreshhold
+			);
+			for (int i = firstIndexWithPeriodAboveThreshhold; i < smoothedData.length; ++i) {
+				double period = 1. / frequenciesArray[i];
+				smoothed.add(period, smoothedData[i]);
+			}
+			return new XYSeries[]{xys, smoothed};
 		}
-		return new XYSeries[]{xys, smoothed};
+		return new XYSeries[]{xys};
 	}
 
 	private static FFTResult getPSD(PlotDataProvider channel, TimeInterval ti,
@@ -222,49 +294,32 @@ public class TransPSD implements ITransformation {
 		return TransPSD.NAME;
 	}
 
-	private List<Complex[]> generateResponses(List<PlotDataProvider> channels, TimeInterval ti,
-			StringBuffer respNotFound, int windowDivisor) {
-		// generate the response curve for each channel and compile them into a list
-		List<Complex[]> responses = new ArrayList<>();
+	private Complex[] generateResponse(Response response, TimeInterval ti,
+			long interval, int windowDivisor) {
+		Complex[] respCurve = null;
 
-		for (PlotDataProvider channel : channels) {
-			// first, get the range of data for this channel
-			long interval = (long) channel.getSampleRate();
-			long traceLength = (ti.getEnd() - ti.getStart()) / interval;
-			// divide that length by 4 because the PSD uses windows sized at 1/4 of the data
-			int dataLength = (int) traceLength / windowDivisor;
-			// PSD output is padded to be the largest power of 2 above the length given
-			int padLength = 2;
-			while (padLength < dataLength) {
-				padLength = padLength << 1;
-			}
-			// now get the frequency range for the PSD based on the sample interval in seconds
-			double period = interval / (double) TimeSeriesUtils.ONE_HZ_INTERVAL;
-			// these are in units of Hz
-			double deltaFreq = 1. / (padLength * period);
-			double endFreq = deltaFreq * (padLength - 1);
-
-			Cmplx[] response; // response is initially in a specific complex class from fissures
-			try {
-				response = channel.getResponse().getResp(ti.getStartTime(), 0,
-						endFreq, padLength);
-				// convert this into apache complex class as it's what the PSD calculator uses
-				Complex[] responseAdapted = new Complex[response.length];
-				IntStream.range(0, responseAdapted.length).parallel().forEach(i ->
-						responseAdapted[i] = new Complex(response[i].real(), response[i].imag())
-				);
-				responses.add(responseAdapted);
-			} catch (TraceViewException | NullPointerException e) {
-				if (respNotFound.length() > 0) {
-					respNotFound.append(", ");
-				}
-				respNotFound.append(channel.getName());
-				// if the response doesn't exist, then
-				responses.add(null);
-			}
+		// first, get the range of data for this channel
+		long traceLength = (ti.getEnd() - ti.getStart()) / interval;
+		// divide that length by 4 because the PSD uses windows sized at 1/4 of the data
+		int dataLength = (int) traceLength / windowDivisor;
+		// PSD output is padded to be the largest power of 2 above the length given
+		int padLength = 2;
+		while (padLength < dataLength) {
+			padLength = padLength << 1;
 		}
+		// now get the frequency range for the PSD based on the sample interval in seconds
+		double period = interval / (double) TimeSeriesUtils.ONE_HZ_INTERVAL;
+		// these are in units of Hz
+		double deltaFreq = 1. / (padLength * period);
+		double endFreq = deltaFreq * (padLength - 1);
 
-		return responses;
+		try {
+			respCurve = response.getResp(ti.getStartTime(), 0,
+					endFreq, padLength);
+		} catch (TraceViewException e) {
+			e.printStackTrace();
+		}
+		return respCurve;
 	}
 
 }

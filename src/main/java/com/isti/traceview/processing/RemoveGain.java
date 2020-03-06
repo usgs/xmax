@@ -48,7 +48,8 @@ public class RemoveGain {
 		if(removestate){
 			try{
 				RunEvalResp evalResp = new RunEvalResp(false, false);
-				evalResp.generateResponse(minFreqValue, maxFreqValue, numberFreqs, ti.getStartTime(), channel.getResponse().getContent());
+				evalResp.generateResponse(minFreqValue, maxFreqValue, numberFreqs,
+						channel.getResponse().getEnclosingEpochResponse(ti.getStartTime()));
 				sensitivity = evalResp.sensitivity; 
 			}
 			catch(NullPointerException e){

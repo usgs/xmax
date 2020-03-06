@@ -87,22 +87,22 @@
 		<Plugins>
 			<PSD>
 				<HuttPeriods>0.2,1.0,20.5,110.2</HuttPeriods>
+				<!-->Window length x means 1/x of data is done per PSD window<-->
+				<WindowLength>4</WindowLength>
+				<!-->
+				Shift divisor is fraction of above length to move data on each new PSD window
+				i.e., window length of 2 and shift divisor of 4 means 1/8 of data is shifted per window
+				<-->
+				<ShiftDivisor>4</ShiftDivisor>
 			</PSD>
 		</Plugins>
 	</Configuration>
 <SessionData>
-		<ExportDir/>
-		<Frame>
-			<State>MAXIMIZED_BOTH</State>
-			<PosY>23</PosY>
-			<PosX>0</PosX>
-			<Width>640</Width>
-			<Heigth>480</Heigth>
-		</Frame>
-		<UserDir>
-			<MSEED>/Users/mth/mth/Projects/xmax</MSEED>
-			<ASCII>/Users/mth/mth/Projects/xmax</ASCII>
-			<SAC>/Users/mth/mth/Projects/xmax</SAC>
-		</UserDir>
-	</SessionData>
+<Frame>
+<PosY>23</PosY>
+<Width>1920</Width>
+<Heigth>986</Heigth>
+<State>MAXIMIZED_BOTH</State>
+</Frame>
+</SessionData>
 </XMAXSessionConfiguration>

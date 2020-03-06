@@ -863,7 +863,7 @@ public class DataModule extends Observable {
         }
 
         logger.info("Attempting to download response data from web services.");
-        String webservicesURL = "http://" + config.getDataServiceHost() + config.getMetadataServicePath();
+        String webservicesURL = config.getDataServiceProtocol() + "://" + config.getDataServiceHost() + "/" + config.getMetadataServicePath();
         // note that above should be non-null
         resp = Response.getResponseFromWeb(network, station, location, channel, webservicesURL);
         if (resp != null) {
@@ -893,7 +893,7 @@ public class DataModule extends Observable {
   }
 
   /**
-   * Gets response for given SNCL, and cashes it in memory
+   * Gets response for given SNCL, and caches it in memory
    *
    * @param channel name of channel
    * @param station station
@@ -901,8 +901,9 @@ public class DataModule extends Observable {
    * @param location name of location
    * @return response class
    */
-  public Response getResponseCashed(String network, String station, String location,
+  public Response getResponseCached(String network, String station, String location,
       String channel) {
+
     Response resp = new Response(network, station, location, channel, null, null);
     int i = responses.indexOf(resp);
     if (i >= 0) {
