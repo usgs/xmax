@@ -87,13 +87,9 @@
 		<Plugins>
 			<PSD>
 				<HuttPeriods>0.2,1.0,20.5,110.2</HuttPeriods>
-				<!-->Window length x means 1/x of data is done per PSD window<-->
-				<WindowLength>4</WindowLength>
-				<!-->
-				Shift divisor is fraction of above length to move data on each new PSD window
-				i.e., window length of 2 and shift divisor of 4 means 1/8 of data is shifted per window
-				<-->
-				<ShiftDivisor>4</ShiftDivisor>
+				<!-->If false, will use windows of 25% trace length with 75% overlap (default)<-->
+				<!-->If true, will use windows of 50% length with 87.5% overlap<-->
+				<LongWindows>false</LongWindows>
 			</PSD>
 		</Plugins>
 	</Configuration>
