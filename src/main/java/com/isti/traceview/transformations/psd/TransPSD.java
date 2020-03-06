@@ -38,16 +38,15 @@ public class TransPSD implements ITransformation {
 	public static final double SMOOTHING_FACTOR = 8;
 
 	private static final int POINTS_TO_CONSIDER_LIMITING_DATA =
-			20 * 60 * 60 * 24; // length of one day of 25 Hz data (25 * 86400 seconds in a day)
+			20 * 60 * 60 * 24; // length of one day of 20 Hz data (25 * 86400 seconds in a day)
 
 	/**
-	 * Default value to use for window length divisor (i.e., 1/2 of data is in each window)
+	 * Default value to use for window length divisor (i.e., 25% of data is in each window)
 	 */
-	public static final int DEFAULT_WINDOW_LENGTH_DIVISOR = 2;
+	public static final int DEFAULT_WINDOW_LENGTH_DIVISOR = 4;
 	/**
 	 * Default value to use for shift length divisor, the fraction of window size that is shifted
-	 * for each iteration of Welch's method (i.e., 1/4 of the window; 1/8 of the total data if
-	 * the default window length of 1/2 is chosen)
+	 * for each iteration of Welch's method, i.e., 75% of data is common between sequential windows
 	 */
 	public static final int DEFAULT_SHIFT_LENGTH_DIVISOR = 4;
 
@@ -73,7 +72,12 @@ public class TransPSD implements ITransformation {
 							+ "may take several minutes.\n" +
 							"Do you want to still perform smoothing on these traces?";
 					int selection = JOptionPane.showConfirmDialog(parentFrame, message,
-							"Smoothing duration warning", JOptionPane.YES_NO_OPTION);
+							"Smoothing duration warning", JOptionPane.YES_NO_CANCEL_OPTION);
+					if (selection == JOptionPane.CANCEL_OPTION) {
+						JOptionPane.showMessageDialog(parentFrame, "Operation cancelled",
+								"Warning", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					// only do smoothing if yes is chosen
 					doSmoothing = (selection == JOptionPane.YES_OPTION);
 					break;
@@ -82,8 +86,13 @@ public class TransPSD implements ITransformation {
 
 			try {
 				Configuration config = (Configuration) configuration;
-				int windowLength = config.getInt("WindowLength", DEFAULT_WINDOW_LENGTH_DIVISOR);
-				int shiftDivisor = config.getInt("ShiftDivisor", DEFAULT_SHIFT_LENGTH_DIVISOR);
+				boolean useRinglersMethod = config.getBoolean("LongWindows");
+				if (!config.containsKey("LongWindows")) {
+					useRinglersMethod = config.getBoolean("RinglersMethod", false);
+				}
+				int windowLength = useRinglersMethod ? 2 : DEFAULT_WINDOW_LENGTH_DIVISOR;
+				int shiftDivisor = useRinglersMethod ? 8 : DEFAULT_SHIFT_LENGTH_DIVISOR;
+				logger.debug("Using Ringler's method? " + useRinglersMethod);
 				logger.debug("Using the following window length and shift divisor values: (" +
 						windowLength + ", " + shiftDivisor + ")");
 				List<XYSeries> plotData = createData(input, filter, ti, doSmoothing,
