@@ -86,7 +86,7 @@ public class TransPSD implements ITransformation {
 
 			try {
 				Configuration config = (Configuration) configuration;
-				boolean useRinglersMethod = config.getBoolean("LongWindows");
+				boolean useRinglersMethod = config.getBoolean("LongWindows", false);
 				if (!config.containsKey("LongWindows")) {
 					useRinglersMethod = config.getBoolean("RinglersMethod", false);
 				}
