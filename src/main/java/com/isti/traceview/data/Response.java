@@ -3,7 +3,6 @@ package com.isti.traceview.data;
 import static asl.utils.input.InstrumentResponse.getRespFileEpochs;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-import asl.utils.input.InstrumentResponse;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.RunEvalResp;
@@ -141,6 +140,10 @@ public class Response {
     return null;
   }
 
+  public Map<Date, edu.iris.Fissures.IfNetwork.Response> getResponseEpochMap() {
+    return parsedEpochs;
+  }
+
   public Map<Date, Double> getAzimuthMap() {
     return azimuthMap;
   }
@@ -183,7 +186,11 @@ public class Response {
     try {
       List<Pair<Instant, Instant>> epochMap = getRespFileEpochs(contentReader);
       for (Pair<Instant, Instant> startAndEnd : epochMap) {
-        Instant startInstant = startAndEnd.getFirst();
+        // sometimes evalResp has issues with getting the wrong response when epochs have the
+        // same start and end times. We can correct for this by offsetting the start time by
+        // a small amount. We don't expect epochs to last less than a second, so this
+        // should prevent collision errors.
+        Instant startInstant = startAndEnd.getFirst().plusMillis(500);
         Date date = Date.from(startInstant);
         RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
         edu.iris.Fissures.IfNetwork.Response resp = evalResp.getResponseFromFile(date, content);
