@@ -208,7 +208,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
                 "Output operation cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
           }
           try {
-            stream = new BufferedOutputStream(new FileOutputStream(fileName, false));
+            stream = new BufferedOutputStream(new FileOutputStream(outFile, false));
             for (int j = 0; j < dataset.getItemCount(i); j++) {
               stream.write((psnFormat1.format(dataset.getXValue(i, j)) + "  "
                   + psnFormat2.format(dataset.getYValue(i, j)) + "\n").getBytes());
@@ -245,7 +245,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
           }
 
           try {
-            ds = new DataOutputStream(new FileOutputStream(new File(fileName)));
+            ds = new DataOutputStream(new FileOutputStream(outFile, false));
             float[] ydata = new float[dataset.getItemCount(i)];
             float[] xdata = new float[dataset.getItemCount(i)];
             for (int j = 0; j < dataset.getItemCount(i); j++) {
