@@ -228,6 +228,7 @@ public class XMAXconfiguration extends Configuration {
 	 */
 	public void setOutputPath(String outputPath) {
 		this.outputPath = outputPath;
+		config.setProperty("Configuration.OutputPath", outputPath);
 	}
 
 	/**
