@@ -9,17 +9,29 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
 import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.seisFile.SeisFileException;
+import edu.sc.seis.seisFile.fdsnws.FDSNStationQuerier;
+import edu.sc.seis.seisFile.fdsnws.FDSNStationQueryParams;
+import edu.sc.seis.seisFile.fdsnws.FDSNWSException;
+import edu.sc.seis.seisFile.fdsnws.stationxml.FDSNStationXML;
+import edu.sc.seis.seisFile.fdsnws.stationxml.Network;
+import edu.sc.seis.seisFile.fdsnws.stationxml.NetworkIterator;
+import edu.sc.seis.seisFile.fdsnws.stationxml.Station;
+import edu.sc.seis.seisFile.fdsnws.stationxml.StationIterator;
+import edu.sc.seis.seisFile.fdsnws.stationxml.StationXMLException;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
+import javax.xml.stream.XMLStreamException;
+import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.Logger;
 
 public class SourceSocketFDSN extends SourceSocket {
@@ -59,9 +71,18 @@ public class SourceSocketFDSN extends SourceSocket {
     String path = config.getDataServicePath();
     int port = config.getDataServicePort();
     try {
-      cachedData =  TimeSeriesUtils.getDataFromFDSNQuery(scheme, host, port, path,
-          network, station, location, channel, startTime, endTime);
+      cachedData = new HashMap<>();
+      List<Pair<String, String>> networkAndStations = getStationsViaMetadata(
+          network, station, location, channel, startTime, scheme, host, port, path
+      );
 
+      // get data for each station separately to prevent timeouts on particularly long queries
+      for (Pair<String, String> networkAndStation : networkAndStations) {
+        String net = networkAndStation.getFirst();
+        String sta = networkAndStation.getSecond();
+        cachedData.putAll(TimeSeriesUtils.getDataFromFDSNQuery(scheme, host, port, path,
+            net, sta, location, channel, startTime, endTime));
+      }
       dataNames = new ArrayList<>(cachedData.keySet());
       // here the index into datanames list is used as start offset
       // snclData has format {network [0], station [1], location [2], channel [3]}
@@ -84,10 +105,44 @@ public class SourceSocketFDSN extends SourceSocket {
           pdp.addSegment(segment);
         }
       });
-    } catch(SeisFileException | IOException | CodecException e) {
+    } catch(SeisFileException | IOException | CodecException | XMLStreamException e) {
       logger.error(e);
     }
     return ret;
+  }
+
+  private List<Pair<String, String>> getStationsViaMetadata(String network, String station,
+      String location, String channel, long startTime, String scheme, String host, int port,
+      String path) throws FDSNWSException, XMLStreamException, StationXMLException {
+
+    List<Pair<String, String>> stationNetworkPairs = new ArrayList<>();
+
+    java.util.Date epochAsDate = java.util.Date.from(Instant.ofEpochMilli(startTime));
+
+    // TODO: implement as a 'getQuerier' method in asl-java-utils?
+    FDSNStationQueryParams params = new FDSNStationQueryParams();
+    params.setScheme(scheme);
+    params.setPort(port);
+    params.setHost(host);
+    params.setFdsnwsPath(path);
+    params.setLevel(FDSNStationQueryParams.LEVEL_RESPONSE);
+    params.setStartBefore(epochAsDate).setEndAfter(epochAsDate).appendToNetwork(network)
+        .appendToStation(station).appendToLocation(location).appendToChannel(channel);
+    FDSNStationQuerier querier = new FDSNStationQuerier(params);
+    FDSNStationXML xml = querier.getFDSNStationXML();
+
+    NetworkIterator nIt = xml.getNetworks();
+    while (nIt.hasNext()) {
+      Network n = nIt.next();
+      StationIterator sIt = n.getStations();
+      while (sIt.hasNext()) {
+        Station s = sIt.next();
+        stationNetworkPairs.add(new Pair<>(n.getCode(), s.getCode()));
+      }
+    }
+    querier.close();
+
+    return stationNetworkPairs;
   }
 
   @Override
