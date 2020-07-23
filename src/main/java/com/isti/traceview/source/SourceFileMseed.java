@@ -306,13 +306,15 @@ public class SourceFileMseed extends SourceFile implements Serializable {
           + "<br><i>Type:</i> " + ch.getTypeCode();
       if (ch.getTypeCode() == (byte) 'D' || ch.getTypeCode() == (byte) 'R'
           || ch.getTypeCode() == (byte) 'Q') {
-        DataRecord dr = (DataRecord) sr;
         DataHeader dh = (DataHeader) ch;
+        // if there's a data header the record is a data record
+        DataRecord dr = (DataRecord) sr;
         ret = ret + "<br><i>Size:</i> " + dh.getSize()
             // + "<br><i>Channel:</i> " + dh.getNetworkCode() + "/" + dh.getStationIdentifier() + "/" + dh.getLocationIdentifier() + "/" + dh.getChannelIdentifier()
             + "<br><i>Start time:</i> " + TimeInterval.formatDate(new Date(getBlockStartTime(dh)),
             TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
             + "<br><i>Num samples:</i> " + dh.getNumSamples()
+            // get the sample rate from the record because the header method is deprecated
             + "<br><i>Sample rate:</i> " + dr.getSampleRate()
             + "<br><i>Time correction:</i> " + dh.getTimeCorrection()
             + "<br><i>Activity flags:</i> " + dh.getActivityFlags()
