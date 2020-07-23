@@ -1,7 +1,6 @@
 # This is the Gradle build system for JVM applications
 # https://gradle.org/
 # https://github.com/gradle/gradle
-image: asl:java
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
@@ -22,8 +21,16 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
-test:
+.job_template: &test_definition
   stage: test
   script: gradle check
   cache:
     key: "$CI_COMMIT_REF_NAME"
+
+test:1804:
+  image: asl:1804
+  <<: *test_definition
+
+test:latest:
+  image: asl:latest
+  <<: *test_definition
