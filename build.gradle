@@ -67,11 +67,6 @@ dependencies {
 
     compile files('./lib/JEvalResp.jar', './lib/ekit-1.4.jar')
 
-    // used to deal with annotations in jevalresp on newer versions of java
-    // https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.4.0-b180830.0359'
-
-
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 

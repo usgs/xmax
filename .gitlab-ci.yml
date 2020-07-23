@@ -31,6 +31,6 @@ test:1804:
   image: asl:1804
   <<: *test_definition
 
-test:latest:
-  image: asl:latest
-  <<: *test_definition
+#test:latest:
+#  image: asl:latest
+#  <<: *test_definition
