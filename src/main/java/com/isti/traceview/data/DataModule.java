@@ -845,31 +845,16 @@ public class DataModule extends Observable {
    * @return response class
    */
   public Response getResponse(String network, String station, String location, String channel) {
-    Response resp;
+    Response resp = null;
 
     if (TraceView.getConfiguration() != null) {
       Configuration config = TraceView.getConfiguration();
       if (config.stationXMLPreferred()) {
         logger.info("Attempting to get XML metadata based on user preferences.");
-
-        // default to local copy to allow user to override data based on preferences
-        if (config.getStationXMLPath() != null) {
-          String xmlFilename = network + "." + station + "." + location + "." + channel + ".xml";
-          logger.info("Attempting to read response from file: " + xmlFilename);
-          resp = Response.getResponseFromXML(network, station, location, channel, xmlFilename);
-          if (resp != null) {
-            return resp;
-          }
-        }
-
-        logger.info("Attempting to download response data from web services.");
-        String webservicesURL = config.getDataServiceProtocol() + "://" + config.getDataServiceHost() + "/" + config.getMetadataServicePath();
-        // note that above should be non-null
-        resp = Response.getResponseFromWeb(network, station, location, channel, webservicesURL);
+        resp = getResponseFromXML(network, station, location, channel, config);
         if (resp != null) {
           return resp;
         }
-
       }
     }
 
@@ -885,11 +870,39 @@ public class DataModule extends Observable {
         }
       }
     } catch (TraceViewException e) {
+      // try to load the XML again if the RESP isn't available
+      if (TraceView.getConfiguration() != null) {
+        Configuration config = TraceView.getConfiguration();
+        resp = getResponseFromXML(network, station, location, channel, config);
+        if (resp != null) {
+          return resp;
+        }
+      }
+      // if neither RESP nor XML get is possible, then produce an error
       logger.error("TraceViewException:", e);
     }
+    return resp;
+  }
 
-    return null;
+  private Response getResponseFromXML(String network, String station, String location,
+      String channel, Configuration config) {
+    Response resp = null;
+    // default to local copy to allow user to override data based on preferences
+    if (config.getStationXMLPath() != null) {
+      String xmlFilename = network + "." + station + "." + location + "." + channel + ".xml";
+      logger.info("Attempting to read response from file: " + xmlFilename);
+      resp = Response.getResponseFromXML(network, station, location, channel, xmlFilename);
+      if (resp != null) {
+        return resp;
+      }
+    }
 
+    logger.info("Attempting to download response data from web services.");
+    String webservicesURL = config.getDataServiceProtocol() + "://" +
+        config.getDataServiceHost() + "/" + config.getMetadataServicePath();
+    // note that above should be non-null
+    resp = Response.getResponseFromWeb(network, station, location, channel, webservicesURL);
+    return resp;
   }
 
   /**
