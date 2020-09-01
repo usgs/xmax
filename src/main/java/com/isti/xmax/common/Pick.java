@@ -293,22 +293,22 @@ public class Pick extends AbstractEvent implements IEvent {
 		File f = new File(XMAXconfiguration.getInstance().getPickPath());
 		if (f.isDirectory()) {
 			dir = f.listFiles();
-			if (dir.length > 0) {
-				for (int i = 0; i < dir.length; i++) {
-					if (!dir[i].isDirectory()) {
+			if (dir != null) {
+				for (File file : dir) {
+					if (!file.isDirectory()) {
 						try {
 							SAXParserFactory spf = SAXParserFactory.newInstance();
 							SAXParser sp = spf.newSAXParser();
-							sp.parse(dir[i], new SAXHandler());
+							sp.parse(file, new SAXHandler());
 						} catch (ParserConfigurationException e) {
 							// TODO Auto-generated catch block
-							logger.error("ParseConfigurationException:", e);	
+							logger.error("ParseConfigurationException:", e);
 						} catch (SAXException e) {
 							// TODO Auto-generated catch block
-							logger.error("SAXException:", e);	
+							logger.error("SAXException:", e);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
-							logger.error("IOException:", e);	
+							logger.error("IOException:", e);
 						}
 					}
 				}
