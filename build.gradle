@@ -1,14 +1,17 @@
+import groovy.json.JsonSlurper
 import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
     id 'application'
+    id 'java-library'
 }
 
 mainClassName = "com.isti.xmax.XMAX"
 
 /* Get first three version numbers from code.json */
-def codeJson = new groovy.json.JsonSlurper().parseText(new File("code.json").text)
+def codeJson = new JsonSlurper().parseText(new File("code.json").text)
+// NOTE: codeJson.version is a String[], and any IDE warning here can be safely ignored
 def jsonVersion = codeJson.version[0]
 /* Get last version number from commit counts */
 def lastTagHash = "git rev-list --tags --max-count=1".execute().text
@@ -30,8 +33,16 @@ repositories {
 }
 
 dependencies {
-    compile project(':asl-java-utils')
-    
+    // this will include seisfile and seedcodec as dependencies, exposed with api tag here
+    api project(':asl-java-utils')
+
+    // some library components require xml bindings to function which we'll include explicitly here
+    // (in particular stuff related to picks and the jevalresp library)
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3+'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3+'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3+'
+    compile group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0'
+
     compile group: 'org.jfree', name: 'jfreechart', version: '1.0.+'
     compile group: 'org.jfree', name: 'jcommon', version: '1.0.+'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
@@ -50,9 +61,7 @@ dependencies {
 
     compile group: 'uk.me.berndporr', name: 'iirj', version: '1.0'
 
-    compile group: 'edu.sc.seis', name: 'seedCodec', version: '1.0.11'
     compile group: 'edu.sc.seis', name: 'TauP', version: '2.4.5'
-    compile group: 'edu.sc.seis', name: 'seisFile', version: '1.8.0'
 
 //seis.sc.edu maven dependencies
 
@@ -64,7 +73,7 @@ dependencies {
         exclude group: 'edu.sc.seis', module: 'fissuresIDL'
     }
     compile group: 'xerces', name: 'xml-apis', version: '2.10.0'
-
+    // jevalresp here is what uses the above jaxb stuff
     compile files('./lib/JEvalResp.jar', './lib/ekit-1.4.jar')
 
     testCompile group: 'junit', name: 'junit', version: '4.+'
@@ -122,7 +131,9 @@ test {
         exceptionFormat "full"
         afterSuite { desc, result ->
             if (!desc.parent) {
-                println "Result: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                println "Result: ${result.resultType} (${result.testCount} tests, " +
+                        "${result.successfulTestCount} successes, ${result.failedTestCount} " +
+                        "failures, ${result.skippedTestCount} skipped)"
             }
         }
     }
