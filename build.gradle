@@ -1,8 +1,9 @@
 import java.text.SimpleDateFormat
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'application'
+plugins {
+    id 'java'
+    id 'application'
+}
 
 mainClassName = "com.isti.xmax.XMAX"
 
