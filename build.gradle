@@ -29,13 +29,17 @@ targetCompatibility = '1.8'
 repositories {
     mavenCentral()
     maven {
-       url "http://www.seis.sc.edu/software/maven2"
+        // used to use http:, but that is not going to be supported in gradle 7
+        url "https://www.seis.sc.edu/software/maven2"
     }
 }
 
 dependencies {
-    // this will include seisfile and seedcodec as dependencies, exposed with api tag here
+    // this will include seisfile, seedcodec, and commons math3 as dependencies, hence 'api' tag
+    // to allow access to those by the project as necessary
     api project(':asl-java-utils')
+    // jevalresp here uses jaxb stuff and includes some additional edu.seis stuff (fissuresIDL)
+    api files('./lib/JEvalResp.jar', './lib/ekit-1.4.jar')
 
     // some library components require xml bindings to function which we'll include explicitly here
     // (in particular stuff related to picks and the jevalresp library)
@@ -44,8 +48,14 @@ dependencies {
     implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3+'
     implementation group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0'
 
+    // both of these jfree libraries are also in fissuresUtil so may want to tag that as 'api'
+    // and not 'implementation'
     implementation group: 'org.jfree', name: 'jfreechart', version: '1.0.+'
     implementation group: 'org.jfree', name: 'jcommon', version: '1.0.+'
+
+    // note that this would be redundant if we declare commons-math3 as an api in asl-java-utils
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.2'
     implementation group: 'commons-configuration', name: 'commons-configuration', version: '1.7'
     implementation group: 'commons-codec', name: 'commons-codec', version: '1.5'
@@ -54,28 +64,22 @@ dependencies {
     implementation group: 'commons-logging', name: 'commons-logging', version: '1.1.1'
     implementation group: 'org.jdom', name: 'jdom', version: '1.1'
     implementation group: 'edu.emory.mathcs', name: 'JTransforms', version: '2.4'
-    // implementation group: 'log4j', name: 'log4j', version: '1.2.16' redundant?
+    implementation group: 'log4j', name: 'log4j', version: '1.2.16' // redundant, possibly
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.10'
-    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
-
     implementation group: 'edu.iris.dmc', name: 'java-seed', version: '3.8.5'
-
+    // in TransformationUtils.java which might be replaceable with asl-java-utils filter mthds
     implementation group: 'uk.me.berndporr', name: 'iirj', version: '1.0'
 
     implementation group: 'edu.sc.seis', name: 'TauP', version: '2.4.5'
 
-//seis.sc.edu maven dependencies
+    //seis.sc.edu maven dependencies
 
-    //FissureIDL is bundled in jevalresp
-    //compile group: 'edu.sc.seis', name: 'fissuresIDL', version: '1.0'
-    implementation (group: 'edu.sc.seis', name: 'fissuresUtil', version: '1.1.5'){
-        exclude group: 'jfreechart', module: 'jcommon'
-        exclude group: 'jfreechart', module: 'jfreechart'
-        exclude group: 'edu.sc.seis', module: 'fissuresIDL'
-    }
+    // note that when compiling jar we choose to exclude duplicate dependencies, so while
+    // fissuresUtil here has previously-cited libraries, we don't need to manually exclude them
+    // (these libraries are jfreechart, jcommon, and fissuresIDL -- note that fissuresIDL is
+    //  bundled in jevalresp which is included as an API and thus already available)
+    implementation group: 'edu.sc.seis', name: 'fissuresUtil', version: '1.1.5'
     implementation group: 'xerces', name: 'xml-apis', version: '2.10.0'
-    // jevalresp here is what uses the above jaxb stuff
-    api files('./lib/JEvalResp.jar', './lib/ekit-1.4.jar')
 
     testImplementation group: 'junit', name: 'junit', version: '4.+'
 }
