@@ -2888,11 +2888,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				if (graphPanel.getPickState()) {
-					graphPanel.setPickState(false);
-				} else {
-					graphPanel.setPickState(true);
-				}
+				graphPanel.setPickState(!graphPanel.getPickState());
 			} finally {
 				statusBar.setMessage("");
 			}

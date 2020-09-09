@@ -249,11 +249,7 @@ public class DataModule extends Observable {
    * Returns flag if already loaded channels contain this source
    */
   public boolean isSourceLoaded(ISource ds) {
-    if (getAllSources().contains(ds)) {
-      return true;
-    } else {
-      return false;
-    }
+    return getAllSources().contains(ds);
   }
 
   /**
@@ -576,7 +572,6 @@ public class DataModule extends Observable {
           }
           ret++;
         }
-        return ret;
       } else {
         for (i = markerPosition - windowSize - 1; i >= 0; i--) {
           String channel = channels.get(i).getName();
@@ -589,8 +584,8 @@ public class DataModule extends Observable {
           }
           ret++;
         }
-        return ret;
       }
+      return ret;
     } else if (unit.equals(Configuration.PanelCountUnit.CHANNEL_TYPE)) {
       int i = 0;
       int typeCount = 0;
@@ -642,7 +637,6 @@ public class DataModule extends Observable {
           }
           ret++;
         }
-        return ret;
       } else {
         for (i = markerPosition - windowSize - 1; i >= 0; i--) {
           Station station = channels.get(i).getStation();
@@ -655,8 +649,8 @@ public class DataModule extends Observable {
           }
           ret++;
         }
-        return ret;
       }
+      return ret;
     } else {
       return -1;
     }
