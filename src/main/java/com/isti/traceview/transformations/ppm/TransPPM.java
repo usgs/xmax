@@ -66,7 +66,7 @@ public class TransPPM implements ITransformation {
 								+ " " + inputRepositioned.get(1).getName());
 
 				// OK, also make sure to calculate the expected orientation of the data
-				double backAzimuth = estimateBackAzimuth(bothData[0], bothData[1]);
+				double backAzimuth = estimateBackAzimuth(bothData[0], bothData[1], dataset);
 
 				@SuppressWarnings("unused")
 				ViewPPM vr = new ViewPPM(parentFrame, dataset, ti,
@@ -150,7 +150,7 @@ public class TransPPM implements ITransformation {
 	 * @param east Data from sensor in east-facing direction
 	 * @return Estimated azimuth of the sensor based on the inputs's slope and phasing
 	 */
-	static double estimateBackAzimuth (int[] north, int[] east) {
+	static double estimateBackAzimuth (int[] north, int[] east, XYDataset dataset) {
 		// we don't care about the intercept, only the slope
 		SimpleRegression slopeCalculation = new SimpleRegression(false);
 		for (int i = 0; i < north.length; ++i) {
@@ -159,14 +159,35 @@ public class TransPPM implements ITransformation {
 		double backAzimuth = Math.atan(1. / slopeCalculation.getSlope());
 		backAzimuth = Math.toDegrees(backAzimuth);
 
-		// get a data point out from start to see if the inputs are in phase or not
-		// we assume that a single point near the end of the window will be all we need
-		int signumIndex = north.length - 19;
+		// we will now get the maximum length point in the particle motion and use that to derive qdrt.
+		double maxAmp = 0;
+		double angleAtPeak = 0;
+		for (int i = 0; i < dataset.getItemCount(0); ++i) {
+			if ((double) dataset.getY(0, i) > maxAmp) {
+				maxAmp = (double) dataset.getY(0, i);
+				angleAtPeak = (double) dataset.getX(0, i);
+			}
+		}
 
-		int signumN = (int) Math.signum(north[0] - north[signumIndex]);
-		int signumE = (int) Math.signum(east[0] - east[signumIndex]);
+		if (angleAtPeak > 360 || angleAtPeak < 0) {
+			angleAtPeak = ((angleAtPeak % 360) + 360) % 360;
+		}
+		double minAngle = 0;
+		double maxAngle = 360;
+		if (angleAtPeak < 90) {
+			maxAngle = 90;
+		} else if (angleAtPeak < 180) {
+			minAngle = 90;
+			maxAngle = 180;
+		} else if (angleAtPeak < 270) {
+			minAngle = 180;
+			maxAngle = 270;
+		} else {
+			minAngle = 270;
+			maxAngle = 360;
+		}
 
-		return correctBackAzimuthQuadrant(backAzimuth, signumN, signumE);
+		return correctBackAzimuthQuadrant(backAzimuth, minAngle, maxAngle);
 	}
 
 	/**
@@ -174,24 +195,16 @@ public class TransPPM implements ITransformation {
 	 * Note that data can still be out by 180 degrees and "correct" due to how slope works, which
 	 * would depend on vertical data not used in these calculations.
 	 * @param azimuth Estimated back azimuth value calculated from particle motion slope best-fit
-	 * @param signumN North data sign value
-	 * @param signumE East data sign value
+	 * @param minValue Lower boundary of quadrant (0, 90, 180, 270)
+	 * @param maxValue Upper boundary of quadrant (90, 180, 270, 360)
 	 * @return Angle corrected to the proper quadrants based on whether signs match or not
 	 */
-	static double correctBackAzimuthQuadrant(double azimuth, int signumN, int signumE) {
-		double minValue = 0;
-		double maxValue = 90;
-		// due to how cursor works, fit angle is in either both quadrants 1 and 3 or 2 and 4
-		// so we'll focus range of resulting angle to be between 0 and 180 (q. 1 vs. q. 2)
-		// The quadrant pair chosen depends on whether or not the data has the same sign or not
-		if (signumN != signumE) {
-				minValue = 90;
-				maxValue = 180;
-		}
+	static double correctBackAzimuthQuadrant(double azimuth, double minValue, double maxValue) {
+
 		while (azimuth < minValue) {
 			azimuth += 90;
 		}
-		while (azimuth > maxValue) {
+		while (azimuth >= maxValue) {
 			azimuth -= 90;
 		}
 		return azimuth;
