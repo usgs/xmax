@@ -13,6 +13,9 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,9 +47,14 @@ public class TransPPMTest {
     long endTime = ZonedDateTime.parse(endTimeString, dtf).toInstant().toEpochMilli();
     TimeInterval ti = new TimeInterval(startTime, endTime);
 
+    XYSeriesCollection dataset = new XYSeriesCollection();
+    XYSeries series = new XYSeries("series", false);
+    series.add(45, 1);
+    dataset.addSeries(series);
+
     TransPPM ppm = new TransPPM();
     int[][] data = ppm.createDataset(pdpList, null, ti);
-    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1], dataset);
 
     assertEquals(73.1489, bAzimuth, 1E-3);
 
@@ -70,7 +78,12 @@ public class TransPPMTest {
     for (int i = 0; i < data[0].length; ++i) {
       data[0][i] *= -1.;
     }
-    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    XYSeriesCollection dataset = new XYSeriesCollection();
+    XYSeries series = new XYSeries("series", false);
+    series.add(120, 1);
+    dataset.addSeries(series);
+
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1], dataset);
 
     assertEquals(180 - 73.1489, bAzimuth, 1E-3);
   }
