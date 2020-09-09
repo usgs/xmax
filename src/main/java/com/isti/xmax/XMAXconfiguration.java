@@ -3,7 +3,11 @@ package com.isti.xmax;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.gui.ColorModeBW;
+import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.ColorModeBySegment;
+import com.isti.traceview.gui.ColorModeBySource;
+import com.isti.traceview.gui.ColorModeGray;
 import com.isti.xmax.gui.XMAXframe;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -242,24 +246,28 @@ public class XMAXconfiguration extends Configuration {
 	}
 	
 	private void setColorModeState(String colorMode, boolean needsave) throws XMAXException{
+		// TODO: is ColorModeFixed used?
 		switch (colorMode.toUpperCase()) {
+			case "SOURCE":
+				setColorModeState(new ColorModeBySource());
+				break;
 			case "SEGMENT":
 				setColorModeState(new ColorModeBySegment());
 				break;
 			case "GAP":
-				setColorModeState(new ColorModeBySegment());
+				setColorModeState(new ColorModeByGap());
 				break;
 			case "BW":
-				setColorModeState(new ColorModeBySegment());
+				setColorModeState(new ColorModeBW());
 				break;
 			case "GRAY":
-				setColorModeState(new ColorModeBySegment());
+				setColorModeState(new ColorModeGray());
 				break;
 			default:
 				throw new XMAXException("Illegal color mode marker");
 		}
 		if(needsave)
-		config.setProperty("Configuration.View.ColorMode", colorMode);
+			config.setProperty("Configuration.View.ColorMode", colorMode);
 	}
 
 	/**
