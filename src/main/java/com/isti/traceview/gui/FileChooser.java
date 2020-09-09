@@ -64,11 +64,7 @@ public class FileChooser extends JFileChooser {
 			}
 			String extension = SourceFile.getExtension(f);
 			if (extension != null) {
-				if (extension.equals("png") || extension.equals("PNG")) {
-					return true;
-				} else {
-					return false;
-				}
+				return extension.equals("png") || extension.equals("PNG");
 			}
 			return false;
 		}
@@ -86,11 +82,8 @@ public class FileChooser extends JFileChooser {
 			}
 			String extension = SourceFile.getExtension(f);
 			if (extension != null) {
-				if (extension.equals("jpg") || extension.equals("JPG") || extension.equals("jpeg") || extension.equals("JPEG")) {
-					return true;
-				} else {
-					return false;
-				}
+				return extension.equals("jpg") || extension.equals("JPG") || extension.equals("jpeg")
+						|| extension.equals("JPEG");
 			}
 			return false;
 		}
@@ -108,11 +101,7 @@ public class FileChooser extends JFileChooser {
 			}
 			String extension = SourceFile.getExtension(f);
 			if (extension != null) {
-				if (extension.equals("bmp") || extension.equals("BMP")) {
-					return true;
-				} else {
-					return false;
-				}
+				return extension.equals("bmp") || extension.equals("BMP");
 			}
 			return false;
 		}
@@ -130,11 +119,8 @@ public class FileChooser extends JFileChooser {
 			}
 			String extension = SourceFile.getExtension(f);
 			if (extension != null) {
-				if (extension.equals("html") || extension.equals("HTML") || extension.equals("htm") || extension.equals("HTM")) {
-					return true;
-				} else {
-					return false;
-				}
+				return extension.equals("html") || extension.equals("HTML") || extension.equals("htm")
+						|| extension.equals("HTM");
 			}
 			return false;
 		}

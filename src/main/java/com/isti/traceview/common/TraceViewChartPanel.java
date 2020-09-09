@@ -1021,16 +1021,14 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 					Rectangle2D zoomArea = new Rectangle2D.Double(x, y, w, h);
 					zoom(zoomArea);
 				}
-				this.zoomPoint = null;
-				this.zoomRectangle = null;
 			} else {
 				// Erase the zoom rectangle
 				Graphics2D g2 = (Graphics2D) getGraphics();
 				drawZoomRectangle(g2);
 				g2.dispose();
-				this.zoomPoint = null;
-				this.zoomRectangle = null;
 			}
+			this.zoomPoint = null;
+			this.zoomRectangle = null;
 		}
 
 		else if (e.isPopupTrigger()) {
