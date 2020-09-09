@@ -69,10 +69,10 @@ public class SourceFileSeed extends SourceFile implements Serializable {
 			ExportTemplate template = jseedr.getNewTemplate();
 			dataInputStream = new DataInputStream(new FileInputStream(getFile()));
 			jseedr.importFrom(dataInputStream);
-			ExportBuilder exportBuilder = new TraceViewSacExportBuilder();
+			TraceViewSacExportBuilder exportBuilder = new TraceViewSacExportBuilder();
 			ExportDirector exportDirector = new SeedExportDirector();
 			exportDirector.assignContainer(jseedr.getContainer());
-			((TraceViewSacExportBuilder) exportBuilder).splitToFiles(verboseMode);
+			exportBuilder.splitToFiles(verboseMode);
 			exportDirector.assignBuilder(exportBuilder);
 			exportDirector.assignTemplate(template);
 			exportDirector.fillTemplate(null);
