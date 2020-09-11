@@ -49,7 +49,7 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION,  null, options, options[0]);
 
 		// make sure that altAngle changes along with starting value -- 180 out from gotten azimuth
-		altAngle = estimatedBackAzimuth + 180;
+		altAngle = (estimatedBackAzimuth + 180) % 360;
 
 
 		TextTitle subTitle =
