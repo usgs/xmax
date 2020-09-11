@@ -157,7 +157,7 @@ public class TransPPM implements ITransformation {
 			slopeCalculation.addData(east[i], north[i]);
 		}
 		double backAzimuth = Math.atan(1. / slopeCalculation.getSlope());
-		backAzimuth = Math.toDegrees(backAzimuth);
+		backAzimuth = Math.toDegrees(backAzimuth) + 360;
 
 		// we will now get the maximum length point in the particle motion and use that to derive qdrt.
 		double maxAmp = 0;
@@ -176,15 +176,26 @@ public class TransPPM implements ITransformation {
 		double maxAngle = 360;
 		if (angleAtPeak < 90) {
 			maxAngle = 90;
+			if (angleAtPeak < 45) {
+				backAzimuth *= -1;
+			}
 		} else if (angleAtPeak < 180) {
 			minAngle = 90;
 			maxAngle = 180;
+			if (angleAtPeak > 135) {
+				backAzimuth *= -1;
+			}
 		} else if (angleAtPeak < 270) {
 			minAngle = 180;
 			maxAngle = 270;
+			if (angleAtPeak < 225) {
+				backAzimuth *= -1;
+			}
 		} else {
 			minAngle = 270;
-			maxAngle = 360;
+			if (angleAtPeak > 315) {
+				backAzimuth *= -1;
+			}
 		}
 
 		return correctBackAzimuthQuadrant(backAzimuth, minAngle, maxAngle);
