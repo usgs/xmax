@@ -13,7 +13,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.junit.Before;
@@ -31,6 +30,22 @@ public class TransPPMTest {
     TraceView.getConfiguration().setDataPath(mask);
     TraceView.setDataModule(new DataModule());
     TraceView.getDataModule().loadAndParseDataForTesting();
+  }
+
+  public static void assertModCongruent(double expected, double result, double error, int modulus) {
+    while (expected < 0) {
+      expected += modulus;
+    } while (expected >= modulus) {
+      expected -= modulus;
+    }
+
+    while (result < 0) {
+      result += modulus;
+    } while (result >= modulus) {
+      result -= modulus;
+    }
+
+    assertEquals(expected, result, error);
   }
 
   @Test
@@ -53,11 +68,10 @@ public class TransPPMTest {
     dataset.addSeries(series);
 
     TransPPM ppm = new TransPPM();
-    int[][] data = ppm.createDataset(pdpList, null, ti);
-    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1], dataset);
+    double[][] data = ppm.createDataset(pdpList, null, ti);
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
 
-    assertEquals(73.1489, bAzimuth, 1E-3);
-
+    assertEquals(72.94367, bAzimuth, 1E-3);
   }
 
   @Test
@@ -74,7 +88,7 @@ public class TransPPMTest {
     TimeInterval ti = new TimeInterval(startTime, endTime);
 
     TransPPM ppm = new TransPPM();
-    int[][] data = ppm.createDataset(pdpList, null, ti);
+    double[][] data = ppm.createDataset(pdpList, null, ti);
     for (int i = 0; i < data[0].length; ++i) {
       data[0][i] *= -1.;
     }
@@ -83,9 +97,58 @@ public class TransPPMTest {
     series.add(120, 1);
     dataset.addSeries(series);
 
-    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1], dataset);
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    assertModCongruent(-72.94367, bAzimuth, 1E-3, 180);
+  }
 
-    assertEquals(180 - 73.1489, bAzimuth, 1E-3);
+  // some particularly basic tests to ensure that quadrant correction is unnecessary
+
+  @Test
+  public void testQuadrantCorrection0() {
+    double[][] data = new double[][] {{0, 1}, {0, 0}};
+
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    assertModCongruent(0, bAzimuth, 1E-3, 180);
+  }
+
+  @Test
+  public void testQuadrantCorrection45() {
+    double[][] data = new double[][] {{0, 1},{0, 1}};
+
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    assertModCongruent(45, bAzimuth, 1E-3, 180);
+  }
+
+  @Test
+  public void testQuadrantCorrection90() {
+    double[][] data = new double[][] {{0, 0}, {0, 1}};
+
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    assertModCongruent(90, bAzimuth, 1E-3, 180);
+  }
+
+  @Test
+  public void testQuadrantCorrection135() {
+    double[][] data = new double[][] {{1, 0}, {-1, 0}};
+
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    assertModCongruent(135, bAzimuth, 1E-3, 180);
+  }
+
+  @Test
+  public void testQuadrantCorrection180() {
+    double[][] data = new double[][]{{0, -1}, {0, 0}};
+
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    assertModCongruent(180, bAzimuth, 1E-3, 180);
+  }
+
+  @Test
+  public void testQuadrantCorrection270() {
+    double[][] data = new double[][]{{0, 0}, {0, -1}};
+
+    double bAzimuth = TransPPM.estimateBackAzimuth(data[0], data[1]);
+    assertModCongruent(270, bAzimuth, 1E-3, 180);
   }
 
 }
