@@ -39,8 +39,6 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 
 		super(owner, "Particle Motion", true);
 
-
-
 		Object[] options = { "Close", "Print", "Enter Angle", "+1", "+5", "+30", "-1", "-5", "-30" };
 		// Create the JOptionPane. Have to instantiate textTitle w/ default angle here
 		// which will be set to the value calculated by the back-azimuth estimation
@@ -50,11 +48,10 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 
 		// make sure that altAngle changes along with starting value -- 180 out from gotten azimuth
 		altAngle = (estimatedBackAzimuth + 180) % 360;
-
-
 		TextTitle subTitle =
-				new TextTitle("Back Azimuth Est.: " + estimatedBackAzimuth + "\u00b0/" +
-						altAngle + "\u00b0", ret.getFont());
+				new TextTitle("Back Azimuth Est.: " +
+						Math.min(estimatedBackAzimuth, altAngle) + "\u00b0/" +
+						Math.max(estimatedBackAzimuth, altAngle) + "\u00b0", ret.getFont());
 		cp.getChart().addSubtitle(1, subTitle);
 
 		// Make this dialog display it.
@@ -143,8 +140,12 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 				altAngle = altAngle + 360;
 			else if (altAngle >= 360)
 				altAngle = altAngle - 360;
-			
-			TextTitle subTitle = new TextTitle("Angle: " + renderer.getRulerAngle() + "\u00b0/" + altAngle + "\u00b0", ret.getFont());
+
+			double firstAngle = Math.min(altAngle, renderer.getRulerAngle());
+			double secondAngle = Math.max(altAngle, renderer.getRulerAngle());
+
+			TextTitle subTitle = new TextTitle("Angle: " + firstAngle + "\u00b0/" +
+					secondAngle + "\u00b0", ret.getFont());
 			cp.getChart().removeSubtitle(cp.getChart().getSubtitle(0));
 			cp.getChart().addSubtitle(0, subTitle);
 			cp.chartChanged(new ChartChangeEvent(cp.getChart()));
@@ -180,9 +181,10 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 
 		PolarPlot plot = (PolarPlot) chart.getPlot();
 		plot.setRenderer(renderer);
-		renderer.setRulerAngle(bAzimuth);
+		double rulerAngle = bAzimuth % 180;
+		renderer.setRulerAngle(rulerAngle);
 		TextTitle subTitle = new TextTitle("Angle: " + renderer.getRulerAngle() +
-				"\u00b0/" + (bAzimuth + 180) + "\u00b0", ret.getFont());
+				"\u00b0/" + (rulerAngle + 180) + "\u00b0", ret.getFont());
 		chart.addSubtitle(0, subTitle);
 		plot.addCornerTextItem(annotation);
 		cp = new TraceViewChartPanel(chart, true);

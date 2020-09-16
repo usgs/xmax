@@ -21,7 +21,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 /**
  * Particle motion transformation. Prepares data for presentation in
  * {@link ViewPPM}
- * 
+ *
  */
 public class TransPPM implements ITransformation {
 
@@ -59,14 +59,14 @@ public class TransPPM implements ITransformation {
 
 				// first index of outer array is north data, second is east
 				// (inner data is, of course, the actual data associated with the trace & filters)
-				int[][] bothData = createDataset(inputRepositioned, filter, ti);
+				double[][] bothData = createDataset(inputRepositioned, filter, ti);
 
 				XYDataset dataset = populateDataset(bothData[0], bothData[1],
 						inputRepositioned.get(0).getName()
 								+ " " + inputRepositioned.get(1).getName());
 
 				// OK, also make sure to calculate the expected orientation of the data
-				double backAzimuth = estimateBackAzimuth(bothData[0], bothData[1], dataset);
+				double backAzimuth = estimateBackAzimuth(bothData[0], bothData[1]);
 
 				@SuppressWarnings("unused")
 				ViewPPM vr = new ViewPPM(parentFrame, dataset, ti,
@@ -92,7 +92,7 @@ public class TransPPM implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	int[][] createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
+	double[][] createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
 			throws XMAXException {
 
 		PlotDataProvider channel1 = input.get(0); // N/S
@@ -100,40 +100,46 @@ public class TransPPM implements ITransformation {
 		if (channel1.getSampleRate() != channel2.getSampleRate())
 			throw new XMAXException("Channels have different sample rate");
 
-		List<int[]> output = new ArrayList<>();
-
+		// not a synchronized list because we use a forEachOrdered stream loo=XX
+		List<double[]> output = new ArrayList<>();
 		Stream.of(channel1, channel2).parallel().forEachOrdered(channel -> {
 			try {
 				int[] intData = channel.getContinuousGaplessDataOverRange(ti);
 				if (filter != null) {
 					intData = new FilterFacade(filter, channel).filter(intData);
 				}
-				output.add(intData);
+				// haven't tried doing a stream in a stream, might be faster
+				double avg = 0;
+				for (int intDatum : intData) {
+					avg += intDatum;
+				}
+				avg /= intData.length;
+				double[] doubleData = new double[intData.length];
+				for (int i = 0; i < intData.length; ++i) {
+					doubleData[i] = intData[i] - avg;
+				}
+				output.add(doubleData);
 			} catch (XMAXException e) {
 				logger.error("Caught exception while iterating through transformation: ", e);;
 				throw new RuntimeException(e.getMessage());
 			}
 		});
 
-		return output.toArray(new int[][]{});
+		return output.toArray(new double[][]{});
 	}
 
-	XYDataset populateDataset(int[] intData1, int[] intData2, String seriesName) throws XMAXException {
+	XYDataset populateDataset(double[] data1, double[] data2, String seriesName) throws XMAXException {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		XYSeries series = new XYSeries(seriesName, false);
 
-		int dataSize = Math.min(intData1.length, intData2.length);
+		int dataSize = Math.min(data1.length, data2.length);
 		if (dataSize > maxDataLength) {
 			throw new XMAXException("Too many datapoints are selected.");
 		}
 
-		double firstAverage = new ArrayValues(intData1, dataSize).getAverage();
-		double secondAverage = new ArrayValues(intData2, dataSize).getAverage();
-
-
-		for (int i = 0; i < intData1.length; ++i) {
-			double x = intData1[i] - firstAverage;
-			double y = intData2[i] - secondAverage;
+		for (int i = 0; i < data1.length; ++i) {
+			double x = data1[i];
+			double y = data2[i];
 			double radius = Math.sqrt(x * x + y * y);
 			double theta = 180 * Math.atan2(y, x) / Math.PI;
 			series.add(theta, radius);
@@ -145,111 +151,32 @@ public class TransPPM implements ITransformation {
 	/**
 	 * Calculates regression on event particle motion to get slope and then uses arctan to
 	 * calculate the actual slope angle as back azimuth value (i.e., either the azimuth value
-	 * or out by 180 degrees) which is then set to the correct quadrant based on input signs.
+	 * or out by 180 degrees); .
 	 * @param north Data from sensor in north-facing direction
 	 * @param east Data from sensor in east-facing direction
 	 * @return Estimated azimuth of the sensor based on the inputs's slope and phasing
 	 */
-	static double estimateBackAzimuth (int[] north, int[] east, XYDataset dataset) {
+	static double estimateBackAzimuth(double[] north, double[] east) {
+
 		// we don't care about the intercept, only the slope
 		SimpleRegression slopeCalculation = new SimpleRegression(false);
 		for (int i = 0; i < north.length; ++i) {
 			slopeCalculation.addData(east[i], north[i]);
 		}
-		double backAzimuth = Math.atan(1. / slopeCalculation.getSlope());
-		backAzimuth = Math.toDegrees(backAzimuth) + 360;
+		double slope = slopeCalculation.getSlope();
+		System.out.println(slope);
 
-		// we will now get the maximum length point in the particle motion and use that to derive qdrt.
-		double maxAmp = 0;
-		double angleAtPeak = 0;
-		for (int i = 0; i < dataset.getItemCount(0); ++i) {
-			if ((double) dataset.getY(0, i) > maxAmp) {
-				maxAmp = (double) dataset.getY(0, i);
-				angleAtPeak = (double) dataset.getX(0, i);
-			}
-		}
 
-		if (angleAtPeak > 360 || angleAtPeak < 0) {
-			angleAtPeak = ((angleAtPeak % 360) + 360) % 360;
-		}
-		double minAngle = 0;
-		double maxAngle = 360;
-		if (angleAtPeak < 90) {
-			maxAngle = 90;
-			if (angleAtPeak < 45) {
-				backAzimuth *= -1;
-			}
-		} else if (angleAtPeak < 180) {
-			minAngle = 90;
-			maxAngle = 180;
-			if (angleAtPeak > 135) {
-				backAzimuth *= -1;
-			}
-		} else if (angleAtPeak < 270) {
-			minAngle = 180;
-			maxAngle = 270;
-			if (angleAtPeak < 225) {
-				backAzimuth *= -1;
-			}
+		double backAzimuth;
+		// if this is the case, signal is pure north, so azimuth is zero
+		if (Double.isNaN(slope)) {
+			backAzimuth = 0;
 		} else {
-			minAngle = 270;
-			if (angleAtPeak > 315) {
-				backAzimuth *= -1;
-			}
+			backAzimuth = Math.atan(1. / slope);
+			backAzimuth = (Math.toDegrees(backAzimuth) + 360) % 360;
 		}
 
-		return correctBackAzimuthQuadrant(backAzimuth, minAngle, maxAngle);
-	}
-
-	/**
-	 * Correct the back azimuth quadrant based on whether the phase of north and east data matches
-	 * Note that data can still be out by 180 degrees and "correct" due to how slope works, which
-	 * would depend on vertical data not used in these calculations.
-	 * @param azimuth Estimated back azimuth value calculated from particle motion slope best-fit
-	 * @param minValue Lower boundary of quadrant (0, 90, 180, 270)
-	 * @param maxValue Upper boundary of quadrant (90, 180, 270, 360)
-	 * @return Angle corrected to the proper quadrants based on whether signs match or not
-	 */
-	static double correctBackAzimuthQuadrant(double azimuth, double minValue, double maxValue) {
-
-		while (azimuth < minValue) {
-			azimuth += 90;
-		}
-		while (azimuth >= maxValue) {
-			azimuth -= 90;
-		}
-		return azimuth;
-	}
-
-	private class ArrayValues {
-		int max = Integer.MIN_VALUE;
-		int min = Integer.MAX_VALUE;
-		int average = 0;
-
-		public ArrayValues(int[] array, int size) {
-			for (int i = 0; i < size; i++) {
-				if (array[i] > max)
-					max = array[i];
-				if (array[i] < min)
-					min = array[i];
-				average = average + array[i];
-			}
-			average = average / size;
-		}
-
-		@SuppressWarnings("unused")
-		public int getMax() {
-			return max;
-		}
-
-		@SuppressWarnings("unused")
-		public int getMin() {
-			return min;
-		}
-
-		public double getAverage() {
-			return average;
-		}
+		return backAzimuth;
 	}
 
 	@Override
