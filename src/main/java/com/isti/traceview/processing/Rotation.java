@@ -84,21 +84,25 @@ public class Rotation {
 
   private static final Logger logger = Logger.getLogger(Rotation.class);
 
-  private static double[][] UVWtoXMAXsts2 = { { -Math.sqrt(2.0 / 3.0), Math.sqrt(1.0 / 6.0), Math.sqrt(1.0 / 6.0) },
+  private static double[][] UVWtoXMAXsts2 = {
+      { -Math.sqrt(2.0 / 3.0), Math.sqrt(1.0 / 6.0), Math.sqrt(1.0 / 6.0) },
       { 0.0,                   Math.sqrt(0.5),      -Math.sqrt(0.5)      },
       { Math.sqrt(1.0 / 3.0),  Math.sqrt(1.0 / 3.0), Math.sqrt(1.0 / 3.0) }
   };
-  private static double[][] XMAXtoUVWsts2 = { { -Math.sqrt(2.0 / 3.0), 0.0,                  Math.sqrt(1.0 / 3.0) },
+  private static double[][] XMAXtoUVWsts2 = {
+      { -Math.sqrt(2.0 / 3.0), 0.0,                  Math.sqrt(1.0 / 3.0) },
       { Math.sqrt(1.0 / 6.0),  Math.sqrt(0.5),       Math.sqrt(1.0 / 3.0) },
       { Math.sqrt(1.0 / 6.0), -Math.sqrt(0.5),       Math.sqrt(1.0 / 3.0) }
   };
 
-  private static double[][] UVWtoXMAXtrill = { { Math.sqrt(2. / 3.), -Math.sqrt(1. / 6.), -Math.sqrt(1. / 6.) },
+  private static double[][] UVWtoXMAXtrill = {
+      { Math.sqrt(2. / 3.), -Math.sqrt(1. / 6.), -Math.sqrt(1. / 6.) },
       { 0.0,                 Math.sqrt(1. / 2.), -Math.sqrt(1. / 2.) },
       { Math.sqrt(1. / 3.),  Math.sqrt(1. / 3.),  Math.sqrt(1. / 3.) }
   };
 
-  private static double[][] XMAXtoUVWtrill = { {  Math.sqrt(2. / 3.),  0.0,                Math.sqrt(1. / 3.) },
+  private static double[][] XMAXtoUVWtrill = {
+      {  Math.sqrt(2. / 3.),  0.0,                Math.sqrt(1. / 3.) },
       { -Math.sqrt(1. / 6.),  Math.sqrt(1. / 2.), Math.sqrt(1. / 3.) },
       { -Math.sqrt(1. / 6.), -Math.sqrt(1. / 2.), Math.sqrt(1. / 3.) }
   };

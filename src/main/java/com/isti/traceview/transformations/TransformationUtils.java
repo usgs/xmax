@@ -1,6 +1,6 @@
 package com.isti.traceview.transformations;
 
-import uk.me.berndporr.iirj.Butterworth;
+import asl.utils.FilterUtils;
 
 /**
  * This class includes helper functions used by multiple transformation examples.
@@ -139,17 +139,10 @@ public class TransformationUtils {
    * @return lowpass-filtered timeseries data
    */
   public static double[] lowPassFilter(double[] toFilt, double sps, double corner) {
-    uk.me.berndporr.iirj.Butterworth casc = new Butterworth();
-    // order 1 filter
-    casc.lowPass(2, sps, corner);
-
-    double[] filtered = new double[toFilt.length];
-    for (int i = 0; i < toFilt.length; ++i) {
-      filtered[i] = casc.filter(toFilt[i]);
-    }
-
-    return filtered;
+    return FilterUtils.lowPassFilter(toFilt, sps, corner, 2);
   }
+
+
 
 
 
