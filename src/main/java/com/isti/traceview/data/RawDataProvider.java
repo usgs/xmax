@@ -51,7 +51,7 @@ public class RawDataProvider extends Channel {
 
   private static final Logger logger = Logger.getLogger(RawDataProvider.class);
 
-  protected final List<SegmentCache> rawData;
+  protected List<SegmentCache> rawData;
 
   private boolean loadingStarted = false;
   private boolean loaded = false;
@@ -137,12 +137,7 @@ public class RawDataProvider extends Channel {
         new TimeInterval((long) time, (long) time));
     if (ret.size() > 0) {
       Segment segment = ret.get(0);
-      int[] data = segment.getData(time, time).data;
-      if (data.length > 0) {
-        return data[0];
-      } else {
-        return Integer.MIN_VALUE;
-      }
+      return segment.getPointAtTime(time);
     } else {
       return Integer.MIN_VALUE;
     }
@@ -163,6 +158,31 @@ public class RawDataProvider extends Channel {
         }
       }
       return ret;
+    }
+  }
+
+  private void setContinuationNumbers() {
+    synchronized (rawData) {
+      Collections.sort(rawData); // almost certainly redundant safety check
+      // lg.debug("getRawData:" + toString() + ti);
+      Segment previousSegment = null;
+      for (SegmentCache sc : rawData) {
+        // skip over the first one
+        if (previousSegment == null) {
+          previousSegment = sc.getSegment();
+          previousSegment.setContinueAreaNumber(0);
+          continue;
+        }
+
+        int continueAreaNumber = previousSegment.getContinueAreaNumber();
+        Segment segment = sc.getSegment();
+        long segmentExpectedStart = previousSegment.getEndTimeMillis();
+        if (segment.getStartTimeMillis() > segmentExpectedStart) {
+          ++continueAreaNumber;
+        }
+        segment.setContinueAreaNumber(continueAreaNumber);
+        previousSegment = segment;
+      }
     }
   }
 
@@ -404,6 +424,37 @@ public class RawDataProvider extends Channel {
           e.getSegment().load();
           e.getSegment().setIsLoaded(true);
         });
+
+    // now that all the data is loaded, we merge in contiguous regions so filtering, etc. works
+    // correctly for it -- filters applied to sets of data in a segment all together
+    List<SegmentCache> segmentCacheList = new ArrayList<>();
+    segmentCacheList.add(rawData.get(0));
+    List<SegmentCache> contiguousSegments = new ArrayList<>();
+    contiguousSegments.add(rawData.get(0));
+    for (int i = 1; i < rawData.size(); ++i) {
+      SegmentCache curCache = segmentCacheList.get(segmentCacheList.size() - 1);
+      Segment prevSeg = rawData.get(i - 1).getSegment();
+      Segment curSeg = rawData.get(i).getSegment();
+      // if this one is a break, then merge in all the segments we've found contiguous up to now
+      // and clear out the list of contiguous segments (re-initialize)
+      if (!prevSeg.getDataSource().equals(curSeg.getDataSource()) ||
+          prevSeg.getSampleRate() != curSeg.getSampleRate() ||
+          Segment.isDataGap(prevSeg.getEndTimeMillis(), curSeg.getStartTimeMillis(),
+              curSeg.getSampleRate())) {
+        curCache.mergeSegmentCaches(contiguousSegments);
+        contiguousSegments = new ArrayList<>();
+        // this is a newly discontiguous segment, so add it in separately
+        segmentCacheList.add(rawData.get(i));
+      }
+      // this is either contiguous with the old data or is an entirely new set
+      contiguousSegments.add(rawData.get(i));
+    }
+    if (contiguousSegments.size() > 0) {
+      segmentCacheList.get(segmentCacheList.size() - 1).mergeSegmentCaches(contiguousSegments);
+    }
+    rawData = segmentCacheList;
+    Collections.sort(rawData);
+    sort();
   }
 
   /**
@@ -829,5 +880,14 @@ public class RawDataProvider extends Channel {
         }
       }
       return -1;
+    }
+
+    public void mergeSegmentCaches(List<SegmentCache> contiguousSegments) {
+      Collections.sort(contiguousSegments);;
+      Segment[] segments = new Segment[contiguousSegments.size()];
+      for (int i = 0; i < segments.length; ++i) {
+        segments[i] = contiguousSegments.get(i).getSegment();
+      }
+      this.initialData = Segment.mergeSegments(segments);
     }
   }

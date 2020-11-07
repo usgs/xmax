@@ -61,9 +61,9 @@ public class SourceFileMseed extends SourceFile implements Serializable {
     long blockNumber = 0;
     long endPointer = 0;
     RandomAccessFile dis = null;
+    int segmentCountForDebug = 0;
     try {
       dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
-      long segmentEndTime;
       double sampleRate;
       long segmentStartTime;
       try {
@@ -101,11 +101,11 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
                 sampleRate = 1000.0 / dh.calcSampleRateFromMultipilerFactor();
                 segmentStartTime = getBlockStartTime(dh);
-                segmentEndTime = getBlockEndTime(dh, sampleRate);
 
                 addSegment(currentChannel, currentOffset, sampleRate,
                     currentChannel.getSegmentCount(), dh.getNumSamples(),
-                    segmentStartTime, segmentEndTime);
+                    segmentStartTime);
+                ++segmentCountForDebug;
               } else {
                 logger.debug("Skipping 0-length block #" + blockNumber);
               }
@@ -326,7 +326,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
   // Is a segment a trace from the Seed/DataRecord?
   // Is a trace split into multiple segments depending on time and gaps?
   private void addSegment(RawDataProvider channel, long currentOffset,
-      double sampleRate, int serialNumber, int segmentSampleCount, long segmentStartTime, long segmentEndTime) {
+      double sampleRate, int serialNumber, int segmentSampleCount, long segmentStartTime) {
     if (segmentSampleCount != 0) {
       Segment segment = new Segment(this, currentOffset, new Date(segmentStartTime), sampleRate,
           segmentSampleCount, serialNumber);
