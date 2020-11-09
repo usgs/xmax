@@ -119,9 +119,6 @@ public class DataModule extends Observable {
     }
 
     channels.sort(Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
-    for (RawDataProvider channel : channels) {
-      channel.sort(); // properly numerate segments, gaps, etc. for channel plot coloration
-    }
     return filesProducingError.toArray(new File[]{});
   }
 

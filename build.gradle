@@ -67,8 +67,6 @@ dependencies {
     implementation group: 'log4j', name: 'log4j', version: '1.2.16' // redundant, possibly
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.10'
     implementation group: 'edu.iris.dmc', name: 'java-seed', version: '3.8.5'
-    // in TransformationUtils.java which might be replaceable with asl-java-utils filter mthds
-    implementation group: 'uk.me.berndporr', name: 'iirj', version: '1.0'
 
     implementation group: 'edu.sc.seis', name: 'TauP', version: '2.4.5'
 

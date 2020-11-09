@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Level;
@@ -83,11 +84,13 @@ public class RawDataProviderTest {
     RawDataProvider data = dm.getAllChannels().get(0);
     List<Segment> segments = data.getRawData();
     assertEquals(1, segments.size());
+    int dataPointCount = 0;
     for (Segment segment : segments) {
       assertEquals(segment.getSampleRate(), 1000., 0.1);
-      assertEquals(86400, segment.getSampleCount());
+      dataPointCount += segment.getSampleCount();
       assertNotNull(segment.getData().data);
     }
+    assertEquals(86400, dataPointCount);
     assertEquals(1538006400069L, data.getTimeRange().getStart());
   }
 
@@ -117,7 +120,13 @@ public class RawDataProviderTest {
     assertTrue(start < initial.getEnd());
     assertTrue(end > initial.getStart());
     TimeInterval cut = new TimeInterval(start, end);
-    int[] trimmedFromFirstFile = data.getRawData().get(0).getData(cut).data;
+    List<Segment> segs = data.getRawData(cut);
+    List<Integer> points = new ArrayList<>();
+    for (Segment seg : segs) {
+      for (int point : seg.getData(cut).data) {
+        points.add(point);
+      }
+    }
 
     String filename2 = "src/test/resources/trimmed_00_LHZ.512.mseed";
     // make sure data from a previous test isn't lingering
@@ -138,15 +147,21 @@ public class RawDataProviderTest {
 
     long secondStart = dm.getAllChannels().get(0).getTimeRange().getStart();
     long secondEnd = dm.getAllChannels().get(0).getTimeRange().getEnd();
-    int[] dataFromSecondFile = dm.getAllChannels().get(0).getUncutSegmentData(0);
+    List<Integer> dataFromSecondFile = new ArrayList<>();
+    List<Segment> secondData = dm.getAllChannels().get(0).getRawData();
+    for (Segment seg : secondData) {
+      for (int point : seg.getData().data) {
+        dataFromSecondFile.add(point);
+      }
+    }
 
     // clean up written file
     outputFile = new File(filename2);
     outputFile.delete();
 
 
-    assertEquals(trimmedFromFirstFile.length, dataFromSecondFile.length);
-    assertArrayEquals(trimmedFromFirstFile, dataFromSecondFile);
+    assertEquals(points.size(), dataFromSecondFile.size());
+    assertEquals(points, dataFromSecondFile);
     assertEquals(end-start, secondEnd-secondStart);
     assertEquals(start, secondStart); // small correction for leap-seconds?
 
@@ -170,25 +185,32 @@ public class RawDataProviderTest {
     RawDataProvider data = dm.getAllChannels().get(0);
     List<Segment> segments = data.getRawData();
     assertEquals(1, segments.size());
+    int sampleCount = 0;
     for (Segment segment : segments) {
-      assertEquals(86400, segment.getSampleCount());
+      sampleCount += segment.getSampleCount();
       assertNotNull(segment.getData().data);
     }
+    assertEquals(86400, sampleCount);
     TimeInterval ti = data.getTimeRange();
-    int sampleCount = segments.get(0).getSampleCount();
 
     FilterLP lowPass = new FilterLP();
     lowPass.init(data);
 
+    int lastArrayPoint = 0;
     double[] unfilteredExpected = new double[sampleCount];
-    for (int i = 0; i < unfilteredExpected.length; ++i) {
-      unfilteredExpected[i] = segments.get(0).getData().data[i];
-    }
-    double[] filteredExpected = lowPass.filter(unfilteredExpected, sampleCount);
-    for (int i = 0; i < filteredExpected.length; ++i) {
-      assertNotEquals(segments.get(0).getData().data[i], filteredExpected[i]);
+    for (Segment seg : segments) {
+      for (int point : seg.getData(ti).data) {
+        unfilteredExpected[lastArrayPoint++] = (double) point;
+      }
     }
 
+    double[] filteredExpected = lowPass.filter(unfilteredExpected, sampleCount);
+    for (int i = 0; i < filteredExpected.length; ++i) {
+      assertNotEquals(unfilteredExpected[i], filteredExpected[i]);
+    }
+
+    lowPass = new FilterLP();
+    lowPass.init(data);
     String filename2 = "src/test/resources/filtered_00_LHZ.512.mseed";
     // make sure data from a previous test isn't lingering
     File outputFile = new File(filename2);
@@ -208,15 +230,19 @@ public class RawDataProviderTest {
     data = dm.getAllChannels().get(0);
     segments = data.getRawData();
     assertEquals(1, segments.size());
+    sampleCount = 0;
     for (Segment segment : segments) {
-      assertEquals(86400, segment.getSampleCount());
-      assertNotNull(segment.getData().data);
+      sampleCount += segment.getSampleCount();
+      assertNotNull(segment.getData(ti).data);
     }
-    double[] filteredLoaded = new double[segments.get(0).getData().data.length];
-    for (int i = 0; i < filteredLoaded.length; ++i) {
-      filteredLoaded[i] = segments.get(0).getData().data[i];
+    assertEquals(86400, sampleCount);
+    double[] filteredLoaded = new double[sampleCount];
+    lastArrayPoint = 0;
+    for (Segment seg : segments) {
+      for (int point : seg.getData().data) {
+        filteredLoaded[lastArrayPoint++] = (double) point;
+      }
     }
-
     assertArrayEquals(filteredExpected, filteredLoaded, 1.);
 
 
