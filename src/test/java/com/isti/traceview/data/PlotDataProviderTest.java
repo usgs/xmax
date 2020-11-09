@@ -69,7 +69,8 @@ public class PlotDataProviderTest {
     };
 
     for (int i = 0; i < filteredExpected.length; ++i) {
-      assertEquals(filteredExpected[i] + mean, filteredCalculated[i], 1E-5);
+      assertEquals("discrepancy at index " + i,
+          filteredExpected[i] + mean, filteredCalculated[i], 1E-3);
     }
   }
 
@@ -120,14 +121,21 @@ public class PlotDataProviderTest {
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     List<Segment> segments = dataProvider.getRawData();
-    assertEquals(2, segments.size());
-    Segment firstSegment = segments.get(0);
-    Segment lastSegment = segments.get(segments.size() - 1);
-    assertTrue(Segment.isDataBreak(
-        firstSegment.getEndTime().toInstant().toEpochMilli(),
-        lastSegment.getStartTime().toInstant().toEpochMilli(),
-        dataProvider.getSampleRate()
-    ));
+    System.out.println(segments);
+    int gaps = 0;
+    int firstSegAfterGapIdx = 0;
+    for (int i = 1; i < segments.size(); ++i) {
+      Segment currentSeg = segments.get(i);
+      Segment prevSeg = segments.get(i - 1);
+      if (Segment.isDataBreak(prevSeg.getEndTimeMillis(),
+          currentSeg.getStartTimeMillis(), segments.get(i).getSampleRate())) {
+        assertEquals(prevSeg.getContinueAreaNumber() + 1, currentSeg.getContinueAreaNumber());
+        ++gaps;
+        firstSegAfterGapIdx = i;
+      }
+    }
+    assertEquals(1, gaps);
+    assertEquals(1, firstSegAfterGapIdx);
   }
 
   @Test

@@ -478,14 +478,13 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 						intervalPoints[k] = new PlotDataPoint(top, bottom, sum / rawDataPointCount, segData.channelSerialNumber, segData.sourceSerialNumber, segData.continueAreaNumber, null);
 						//lg.debug("Data present, point " + k + " added: " + intervalPoints[k]);
 					} else {
-						
 						if (currentSegmentDataTI.isContain((long) time)) {
 							double value = segData.interpolateValue(time);
 							intervalPoints[k] = new PlotDataPoint(value, value, value, segData.channelSerialNumber, segData.sourceSerialNumber, segData.continueAreaNumber, null);
-
 						} else {
 							//lg.debug("Interpolated value, point " + k + " absent");
-							intervalPoints[k] = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1, -1, -1, null);
+							intervalPoints[k] = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+									segData.channelSerialNumber, segData.sourceSerialNumber, segData.continueAreaNumber, null);
 						}
 					}
 					k++;
@@ -791,7 +790,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		
 		PlotDataPoint getPoint(SortedSet<EventWrapper> evts){
 			double mean = dataPointCount == 0.0 ? Double.POSITIVE_INFINITY : sum / (double) dataPointCount;
-			return new PlotDataPoint(top, bottom, mean, segmentNumber, continueAreaNumber, rdpNumber, evts);
+			return new PlotDataPoint(top, bottom, mean, segmentNumber, rdpNumber, continueAreaNumber, evts);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.isti.traceview.data;
 
@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 /**
  * Represent continuous set of raw trace data without gaps belongs to same data source. A Seismic trace
  * therefore is defined as a sorted (by time) list of segments.
- * 
+ *
  * @author Max Kokoulin
  */
 public class Segment implements Externalizable, Cloneable {
@@ -78,7 +78,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * segment can lay in several data sources if it hasn't gaps between
 	 */
 	private int channelSerialNumber;
-	
+
 	/**
 	 * Sequential number of continue data area in trace, to which this segment belongs. 
 	 * Similar to channelSerialNumber, but takes into account only gaps, not overlaps 
@@ -86,14 +86,14 @@ public class Segment implements Externalizable, Cloneable {
 	private int continueAreaNumber;
 
 	private RawDataProvider rdp = null;
-	
+
 	// map of time-offset pairs for blocks to quick find block by time
 	private SortedMap<Long, Long> blockMap = null;
 
 	private transient RandomAccessFile dataStream = null;
 
-    // MTH: Use to combine segments read with -t and -d within a single PlotDataProvider
-    private boolean isLoaded = false;
+	// MTH: Use to combine segments read with -t and -d within a single PlotDataProvider
+	private boolean isLoaded = false;
 
 	/**
 	 * @param dataSource
@@ -188,16 +188,20 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Getter of the property <tt>startTime</tt>
-	 * 
+	 *
 	 * @return segment data start time
 	 */
 	public Date getStartTime() {
 		return new Date(startTime);
 	}
 
+	public long getStartTimeMillis() {
+		return startTime;
+	}
+
 	/**
 	 * Getter of the property <tt>endTime</tt>
-	 * 
+	 *
 	 * @return segment data end time
 	 */
 	public Date getEndTime() {
@@ -207,13 +211,17 @@ public class Segment implements Externalizable, Cloneable {
 		return new Date(getStartTime().getTime() + time);
 	}
 
+	public long getEndTimeMillis() {
+		return getStartTimeMillis() + (long) (sampleCount * sampleRate);
+	}
+
 	/**
 	 * Gets ordinal number of segment in the data source
 	 */
 	public int getSourceSerialNumber() {
 		return sourceSerialNumber;
 	}
-	
+
 	/**
 	 * Sets ordinal number of segment in the data source
 	 */
@@ -236,7 +244,7 @@ public class Segment implements Externalizable, Cloneable {
 	public void setChannelSerialNumber(int serialNumber) {
 		this.channelSerialNumber = serialNumber;
 	}
-	
+
 	/**
 	 * Gets sequential number of continue data area in the trace, to which this segment belongs.
 	 * We takes into account only gaps, not overlaps in this case.
@@ -269,16 +277,16 @@ public class Segment implements Externalizable, Cloneable {
 	}
 
 	/**
-     * MTH: Currently not using this since serialized data is being
-     *      {@literal read in dumpData() --> InitCache --> Segment.getData()}
-     *
+	 * MTH: Currently not using this since serialized data is being
+	 *      {@literal read in dumpData() --> InitCache --> Segment.getData()}
+	 *
 	 * Load the int[] data from a .DATA file into this Segment data[]
-     *      Needed so that -T will work with existing serialized data
+	 *      Needed so that -T will work with existing serialized data
 	 */
 	public int[] loadDataInt() {
-        int[] ret = null;
+		int[] ret = null;
 		if (dataStream == null) {
-           	logger.error("dataStream == null!! --> Exiting");	
+			logger.error("dataStream == null!! --> Exiting");
 			System.exit(0);
 		} else {
 			ret = new int[sampleCount];
@@ -290,17 +298,17 @@ public class Segment implements Externalizable, Cloneable {
 			} catch (IOException e) {
 				logger.error("IOException:", e);
 			}
-            // Copy into this Segment's int[] data:
-            data = new int[sampleCount];
-            System.arraycopy(ret, trimStart, data, 0, sampleCount);
+			// Copy into this Segment's int[] data:
+			data = new int[sampleCount];
+			System.arraycopy(ret, trimStart, data, 0, sampleCount);
 		}
-	    return ret;
+		return ret;
 	}
 
 
 	/**
 	 * Reads all data from loaded segment
-	 * 
+	 *
 	 * NOTE: Will add {@code ArrayList<Integer>} dataList constructor for SegmentData (for future use)
 	 */
 	public SegmentData getData() {
@@ -327,16 +335,27 @@ public class Segment implements Externalizable, Cloneable {
 		return getData(ti.getStart(), ti.getEnd());
 	}
 
+	public int getPointAtTime(double start) {
+		if (start < getStartTimeMillis() || start > getEndTimeMillis())
+			return Integer.MIN_VALUE;
+
+		int startIndex = new Double((start - startTime) / sampleRate).intValue();
+		return data[startIndex];
+	}
+
 	/**
 	 * returns array of data in requested time range, from loaded segment.
-	 * 
+	 *
 	 * @param start
 	 *            start time in milliseconds
 	 * @param end
 	 *            end time in milliseconds
 	 */
-	@SuppressWarnings("null")	
+	@SuppressWarnings("null")
 	public SegmentData getData(double start, double end) {
+		double temp = Math.min(start, end);
+		end = Math.max(start, end);
+		start = temp;
 		if (data == null) {
 			logger.debug("== Underlying array has not been initialized");
 		} else {
@@ -355,11 +374,11 @@ public class Segment implements Externalizable, Cloneable {
 			ret = new int[endIndex - startIndex];
 			logger.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
 			if (dataStream == null) {
-                		logger.debug("== dataStream == null --> Get points from RAM data[] " +
-                "startTime=" + startTime + " endTime=" + getEndTime().getTime());
+				logger.debug("== dataStream == null --> Get points from RAM data[] " +
+						"startTime=" + startTime + " endTime=" + getEndTime().getTime());
 				// we use internal data in the ram
 				ret = Arrays.copyOfRange(data, startIndex, endIndex);
-				
+
 				if (startIndex > 0) {
 					previous = data[startIndex-1];
 				}
@@ -368,8 +387,8 @@ public class Segment implements Externalizable, Cloneable {
 				}
 			} else {
 				// we use serialized data file
-                logger.debug("== dataStream is NOT null --> Load points from dataStream.readInt() to data[] " +
-                		"startTime=" + startTime + " endTime=" + getEndTime().getTime());
+				logger.debug("== dataStream is NOT null --> Load points from dataStream.readInt() to data[] " +
+						"startTime=" + startTime + " endTime=" + getEndTime().getTime());
 				try {
 					if(startIndex>0){
 						dataStream.seek(startOffsetSerial + startIndex * 4 - 4);
@@ -381,50 +400,24 @@ public class Segment implements Externalizable, Cloneable {
 						ret[i - startIndex] = dataStream.readInt();
 					}
 					if(endIndex<sampleCount){
-						next = dataStream.readInt(); 
+						next = dataStream.readInt();
 					}
 					// MTH: Use this if we are in the -T mode and we need to load existing serialized data (from .DATA)
-                    if (com.isti.traceview.TraceView.getConfiguration().getDumpData()) {
-                        logger.debug("We are in -T dataDump mode --> read this Segment from dataStream");
-                        if (data == null) {
-                            if (ret.length != sampleCount) {
-                            	//System.out.format("== Segment.getData(): Warning: sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length);
-                            	logger.warn(String.format("sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length));
-                            }
-                            //data = new int[sampleCount];
-                            data = new int[ret.length];
-                            System.arraycopy(ret, 0, data, 0, ret.length);
-                        }
-                        else {
-                        	//System.out.println("== Segment.getData(): We are in -T dataDump mode but data IS NOT null!!!");
-                       		logger.debug("We are in -T dataDump mode but data IS NOT null!!!");
-                        }
-                    }
-				} catch (IOException e) {
-					logger.error("IOException:", e);
-				}
-			}
-		} else {
-			if (dataStream == null) {
-				ret = new int[1];
-				ret[0] = data[startIndex];
-				if(startIndex>0) {
-					previous = data[startIndex-1];
-				}
-				if (endIndex<sampleCount) {
-					next = data[endIndex];
-				}
-			} else {
-				try {
-					if(startIndex>0){
-						dataStream.seek(startOffsetSerial + startIndex * 4 - 4);
-						previous = dataStream.readInt();
-					} else {
-						dataStream.seek(startOffsetSerial);
-					}	
-					ret[0] = dataStream.readInt();
-					if(endIndex<sampleCount){
-						next = dataStream.readInt(); 
+					if (com.isti.traceview.TraceView.getConfiguration().getDumpData()) {
+						logger.debug("We are in -T dataDump mode --> read this Segment from dataStream");
+						if (data == null) {
+							if (ret.length != sampleCount) {
+								//System.out.format("== Segment.getData(): Warning: sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length);
+								logger.warn(String.format("sampleCount=[%d pnts] BUT data.length=[%d pnts]\n", sampleCount, ret.length));
+							}
+							//data = new int[sampleCount];
+							data = new int[ret.length];
+							System.arraycopy(ret, 0, data, 0, ret.length);
+						}
+						else {
+							//System.out.println("== Segment.getData(): We are in -T dataDump mode but data IS NOT null!!!");
+							logger.debug("We are in -T dataDump mode but data IS NOT null!!!");
+						}
 					}
 				} catch (IOException e) {
 					logger.error("IOException:", e);
@@ -457,7 +450,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Getter of the property <tt>sampleRate</tt>
-	 * 
+	 *
 	 * @return Returns the sample rate.
 	 */
 	public double getSampleRate() {
@@ -466,7 +459,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Getter of the property <tt>startOffset</tt>
-	 * 
+	 *
 	 * @return Starting position of this segment in the data source
 	 */
 	public long getStartOffset() {
@@ -482,7 +475,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Getter of the property <tt>sampleCount</tt>
-	 * 
+	 *
 	 * @return the count of samples in the segment data
 	 */
 	public int getSampleCount() {
@@ -502,7 +495,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Getter of the property <tt>maxValue</tt>
-	 * 
+	 *
 	 * @return maximum raw data value in the segment
 	 */
 	public int getMaxValue() {
@@ -511,7 +504,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Setter of the property <tt>maxValue</tt>
-	 * 
+	 *
 	 * @param maxValue
 	 *            The maxValue to set.
 	 */
@@ -523,7 +516,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Getter of the property <tt>minValue</tt>
-	 * 
+	 *
 	 * @return minimum raw data value in the segment
 	 */
 	public int getMinValue() {
@@ -532,7 +525,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Setter of the property <tt>minValue</tt>
-	 * 
+	 *
 	 * @param minValue
 	 *            The minValue to set.
 	 */
@@ -541,14 +534,14 @@ public class Segment implements Externalizable, Cloneable {
 			this.minValue = minValue;
 		}
 	}
-	
+
 	public void addBlockDescription(long startTime, long offset){
 		if(blockMap == null){
 			blockMap = new TreeMap<>();
 		}
 		blockMap.put(startTime, offset);
 	}
-	
+
 	public String getBlockHeaderText(long time){
 		if(blockMap != null){
 			long blockStartTime = blockMap.headMap(time).lastKey();
@@ -563,10 +556,10 @@ public class Segment implements Externalizable, Cloneable {
 				+ TimeInterval.formatDate(new Date(startTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 				+ ", endTime "
 				+ TimeInterval.formatDate(new Date(new Double(startTime + sampleRate * sampleCount).longValue()),
-						TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + ", sampleRate " + sampleRate + ", sampleCount " + sampleCount
+				TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + ", sampleRate " + sampleRate + ", sampleCount " + sampleCount
 				+ ", startOffset " + startOffset + ", maxValue " + maxValue + ", minValue " + minValue + ", rdpNumber " + sourceSerialNumber
 				+ ", serialNumber " + channelSerialNumber + ", isLoaded=" + isLoaded + ";";
-				//+ ", serialNumber " + channelSerialNumber + ";";
+		//+ ", serialNumber " + channelSerialNumber + ";";
 	}
 
 	/**
@@ -577,14 +570,14 @@ public class Segment implements Externalizable, Cloneable {
 	public void setDataStream(RandomAccessFile dataStream) {
 		this.dataStream = dataStream;
 	}
-    // MTH:
+	// MTH:
 	public RandomAccessFile getDataStream() {
 		return dataStream;
 	}
 
 	/**
 	 * Special deserialization handler
-	 * 
+	 *
 	 * @param in
 	 *            stream to deserialize object
 	 * @see Serializable
@@ -592,7 +585,7 @@ public class Segment implements Externalizable, Cloneable {
 	 * @throws ClassNotFoundException if thrown while reading the dataSource object
 	 */
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        logger.debug("== ENTER");
+		logger.debug("== ENTER");
 		dataSource = (ISource) in.readObject();
 		currentPos = in.readInt();
 		startTime = in.readLong();
@@ -616,19 +609,19 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Special serialization handler
-	 * 
+	 *
 	 * @param out
 	 *            stream to serialize this object
 	 * @see Serializable
 	 * @throws IOException if there are problems writing the serialized file
 	 */
 	public void writeExternal(ObjectOutput out) throws IOException {
-    	logger.debug("==  Output the Segment to serial stream:");
-    	logger.debug("    Segment:" + this.toString() );
-    	logger.debug("    Segment: ObjectOutputStream:" + out.toString() );
-    	logger.debug("    Segment: dataSource:"  + dataSource );
-    	logger.debug("    Segment: dataStream:"  + dataStream );
-    	logger.debug("    Segment: sampleCount:" + sampleCount );
+		logger.debug("==  Output the Segment to serial stream:");
+		logger.debug("    Segment:" + this.toString() );
+		logger.debug("    Segment: ObjectOutputStream:" + out.toString() );
+		logger.debug("    Segment: dataSource:"  + dataSource );
+		logger.debug("    Segment: dataStream:"  + dataStream );
+		logger.debug("    Segment: sampleCount:" + sampleCount );
 
 		out.writeObject(dataSource);
 		out.writeInt(currentPos);
@@ -645,7 +638,7 @@ public class Segment implements Externalizable, Cloneable {
 		for (int i = 0; i < sampleCount; i++) {
 			dataStream.writeInt(data[i]);
 		}
-        logger.debug("== DONE");
+		logger.debug("== DONE");
 	}
 
 	public Object clone() throws CloneNotSupportedException {
@@ -654,7 +647,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * Sets gap tolerance to detect gaps between segments. 1.0 is a gap of 2*sample rate
-	 * 
+	 *
 	 * @param tolerance the new gapTolerance
 	 */
 	public static void setGapTolerance(double tolerance) {
@@ -663,7 +656,7 @@ public class Segment implements Externalizable, Cloneable {
 
 	/**
 	 * detect is there is data break (gap or overlay) between two time points
-	 * 
+	 *
 	 * @param firstEndTime
 	 *            first time point
 	 * @param secondStartTime
@@ -677,14 +670,14 @@ public class Segment implements Externalizable, Cloneable {
 		boolean compare = timediff > gap;
 		return compare;
 	}
-	
+
 	public static boolean isDataGap(long firstEndTime, long secondStartTime, double sampleRate) {
 		double gap = gapTolerance * 2.0 * sampleRate;
 		long timediff = secondStartTime - firstEndTime;
 		boolean compare = timediff > gap;
 		return compare;
 	}
-	
+
 	public static boolean isDataOverlay(long firstEndTime, long secondStartTime, double sampleRate) {
 		double gap = gapTolerance * 2.0 * sampleRate;
 		long timediff = firstEndTime - secondStartTime;
@@ -697,5 +690,39 @@ public class Segment implements Externalizable, Cloneable {
 	}
 	public void setIsLoaded(boolean isLoaded) {
 		this.isLoaded = isLoaded;
+	}
+
+	public static Segment mergeSegments(Segment... segs) {
+		long startTime = segs[0].startTime;
+		double sampleRate = segs[0].getSampleRate();
+		int[][] allSamples = new int[segs.length][];
+		allSamples[0] = segs[0].getData().data;
+		int totalLength = allSamples[0].length;
+		long currentEndTime = startTime + (long) (totalLength * sampleRate);
+		for (int i = 1; i < segs.length; ++i) {
+			Segment seg = segs[i];
+			assert (seg.getSampleRate() == sampleRate);
+			assert (!isDataGap(segs[i-1].getEndTimeMillis(), seg.getStartTimeMillis(), sampleRate));
+			TimeInterval ti = new TimeInterval(seg.getStartTimeMillis(), seg.getEndTimeMillis());
+			if (seg.getStartTimeMillis() < currentEndTime) {
+				ti = new TimeInterval(currentEndTime, seg.getEndTimeMillis());
+			}
+			allSamples[i] = seg.getData(ti).data;
+			if (allSamples[i] == null) continue;
+			totalLength += allSamples[i].length;
+			currentEndTime = startTime + (long) (totalLength * sampleRate);
+		}
+
+		int[] data = new int[totalLength];
+		int startingIndex = 0;
+		for (int[] mergeIn : allSamples) {
+			if (mergeIn == null) continue;
+			System.arraycopy(mergeIn, 0, data, startingIndex, mergeIn.length);
+			startingIndex += mergeIn.length;
+		}
+		Segment returnValue = new Segment(segs[0].dataSource, segs[0].startOffset,
+				segs[0].getStartTime(), sampleRate, totalLength, segs[0].sourceSerialNumber);
+		returnValue.data = data;
+		return returnValue;
 	}
 }

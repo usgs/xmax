@@ -1,8 +1,8 @@
 package com.isti.traceview.source;
 
 import com.isti.traceview.TraceView;
-import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.RawDataProvider;
@@ -25,7 +25,9 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
 
@@ -39,11 +41,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private static final Logger logger = Logger.getLogger(SourceFileMseed.class);
-
-  // used during parsing
-  private int segmentSampleCount = 0;
-  private long segmentStartTime = 0;
-  private long segmentOffset = 0;
 
   // -----
   public SourceFileMseed(File file) {
@@ -60,23 +57,20 @@ public class SourceFileMseed extends SourceFile implements Serializable {
    * (i.e. new segment for each gap)
    */
   public synchronized Set<PlotDataProvider> parse() {
-    Set<PlotDataProvider> ret = new HashSet<>();
+    Map<Channel, PlotDataProvider> map = new HashMap<>();
     long blockNumber = 0;
     long endPointer = 0;
     RandomAccessFile dis = null;
+    int segmentCountForDebug = 0;
     try {
       dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
-      PlotDataProvider currentChannel = new PlotDataProvider("", new Station(""), "", "");
-      long blockEndTime = 0;
-      double sampleRate = -1.0;
-      boolean skipChannel = true;
-
-      segmentSampleCount = 0;
-      segmentStartTime = 0;
-      segmentOffset = 0;
+      double sampleRate;
+      long segmentStartTime;
       try {
         if (getFile().length() > 0) {
           while (true) {
+            // parsing until we get an exception isn't ideal but how the example seisfile case
+            // was implemented
             long currentOffset = dis.getFilePointer();
             SeedRecord sr = SynchronizedSeedRecord
                 .read(dis, TraceView.getConfiguration().getDefaultBlockLength());
@@ -84,60 +78,34 @@ public class SourceFileMseed extends SourceFile implements Serializable {
             if (sr instanceof DataRecord) {
               DataHeader dh = (DataHeader) sr.getControlHeader();
 
-              // to exclude out of order blocks with events, which has 0 data length
+              // exclude blocks that don't actually have any timeseries data in them
               if (dh.getNumSamples() > 0) {
-                if ((!currentChannel.getStation().getName()
-                    .equals(dh.getStationIdentifier().trim()))
-                    || (!currentChannel.getChannelName().equals(dh.getChannelIdentifier().trim()))
-                    || (!currentChannel.getNetworkName().equals(dh.getNetworkCode().trim()))
-                    || (!currentChannel.getLocationName()
-                    .equals(dh.getLocationIdentifier().trim()))) {
-                  // New channel detected
-                  if (!skipChannel) {
-                    // Add current segment to current channel and start new segment
-                    if (segmentSampleCount == 0) {
-                      segmentStartTime = getBlockStartTime(dh);
-                    } else {
-                      addSegment(currentChannel, dh, currentOffset, sampleRate,
-                          currentChannel.getSegmentCount());
-                    }
-                  }
-                  sampleRate = 0.0;
-                  // If new channels matches filters
-                  if (matchFilters(dh.getNetworkCode(), dh.getStationIdentifier(),
-                      dh.getLocationIdentifier(), dh
-                          .getChannelIdentifier())) {
-                    // Starts new channel
-                    currentChannel = new PlotDataProvider(dh.getChannelIdentifier(),
-                        DataModule.getOrAddStation(dh
-                            .getStationIdentifier()), dh.getNetworkCode(),
-                        dh.getLocationIdentifier());
-                    ret.add(currentChannel);
-                    skipChannel = false;
-                  } else {
-                    currentChannel = new PlotDataProvider(dh.getChannelIdentifier().trim(),
-                        new Station(dh.getStationIdentifier()
-                            .trim()), dh.getNetworkCode().trim(),
-                        dh.getLocationIdentifier().trim());
-                    skipChannel = true;
-                  }
+                // our goals here:
+                // - if the channel does not pass filters, skip this record
+                // - if the channel specified here doesn't exist, create a new channel
+                // - add the current data segment to the channel
+                if (!matchFilters(dh.getNetworkCode(), dh.getStationIdentifier(),
+                    dh.getLocationIdentifier(), dh.getChannelIdentifier())) {
+                  continue; // skip record -- it's not going to be loaded in
                 }
-                if (sampleRate == 0.0) {
-                  sampleRate = 1000.0 / dh.calcSampleRateFromMultipilerFactor();
+
+                Channel key = new Channel(dh.getChannelIdentifier().trim(),
+                    DataModule.getOrAddStation(dh.getStationIdentifier().trim()),
+                    dh.getNetworkCode().trim(), dh.getLocationIdentifier().trim());
+                if (!map.containsKey(key)) {
+                  map.put(key, new PlotDataProvider(key.getChannelName(),
+                      key.getStation(), key.getNetworkName(),
+                      key.getLocationName()));
                 }
-                if (blockEndTime != 0) {
-                  if (Segment.isDataBreak(blockEndTime, getBlockStartTime(dh), sampleRate)) {
-                    // Gap detected, new segment starts
-                    if (!skipChannel) {
-                      addSegment(currentChannel, dh, currentOffset, sampleRate,
-                          currentChannel.getSegmentCount());
-                    }
-                  }
-                } else {
-                  segmentStartTime = getBlockStartTime(dh);
-                }
-                blockEndTime = getBlockEndTime(dh, sampleRate);
-                segmentSampleCount = segmentSampleCount + dh.getNumSamples();
+                PlotDataProvider currentChannel = map.get(key);
+
+                sampleRate = 1000.0 / dh.calcSampleRateFromMultipilerFactor();
+                segmentStartTime = getBlockStartTime(dh);
+
+                addSegment(currentChannel, currentOffset, sampleRate,
+                    currentChannel.getSegmentCount(), dh.getNumSamples(),
+                    segmentStartTime);
+                ++segmentCountForDebug;
               } else {
                 logger.debug("Skipping 0-length block #" + blockNumber);
               }
@@ -150,9 +118,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
         }
       } catch (EOFException ex) {
         logger.debug("EOF: " + ex.getMessage());
-        if (!skipChannel) {
-          addSegment(currentChannel, null, 0, sampleRate, currentChannel.getSegmentCount());
-        }
         logger.debug("Read " + blockNumber + " blocks");
       }
     } catch (FileNotFoundException e) {
@@ -173,7 +138,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
     }
     logger.debug(this + " end position " + endPointer);
     setParsed(true);
-    return ret;
+    return new HashSet<>(map.values());
   }
 
   // Loads current segment from RawDataProvider (this will be multithreaded)
@@ -360,17 +325,12 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
   // Is a segment a trace from the Seed/DataRecord?
   // Is a trace split into multiple segments depending on time and gaps?
-  private void addSegment(RawDataProvider channel, DataHeader dh, long currentOffset,
-      double sampleRate, int serialNumber) {
+  private void addSegment(RawDataProvider channel, long currentOffset,
+      double sampleRate, int serialNumber, int segmentSampleCount, long segmentStartTime) {
     if (segmentSampleCount != 0) {
-      Segment segment = new Segment(this, segmentOffset, new Date(segmentStartTime), sampleRate,
+      Segment segment = new Segment(this, currentOffset, new Date(segmentStartTime), sampleRate,
           segmentSampleCount, serialNumber);
       channel.addSegment(segment);
-      if (dh != null) {
-        segmentSampleCount = 0;
-        segmentStartTime = getBlockStartTime(dh);
-        segmentOffset = currentOffset;
-      }
     }
   }
 }
