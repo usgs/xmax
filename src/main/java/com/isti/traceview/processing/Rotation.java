@@ -20,6 +20,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
 import org.apache.log4j.Logger;
 
 /**
@@ -107,7 +111,7 @@ public class Rotation {
       { -Math.sqrt(1. / 6.), -Math.sqrt(1. / 2.), Math.sqrt(1. / 3.) }
   };
 
-  private Matrix matrix = null;
+  private RealMatrix matrix = null;
 
   private RotationType type = null;
 
@@ -174,7 +178,7 @@ public class Rotation {
     * Gets current rotation matrix
     * @return Matrix - current rotation matrix
     */
-   public Matrix getMatrix(){
+   public RealMatrix getMatrix(){
      return matrix;
    }
 
@@ -195,7 +199,7 @@ public class Rotation {
          { Math.sin(angle), Math.cos(angle),  0},
          { 0               ,               0,  1}
      };
-     matrix = new Matrix(matrixData);
+     matrix = MatrixUtils.createRealMatrix(matrixData);
    }
 
    /**
@@ -205,16 +209,16 @@ public class Rotation {
      type = RotationType.STANDARD;
      switch (standardRotation) {
        case STS2_UVW_TO_XMAX:
-         matrix = new Matrix(UVWtoXMAXsts2);
+         matrix = MatrixUtils.createRealMatrix(UVWtoXMAXsts2);
          break;
        case STS2_XMAX_TO_UVW:
-         matrix = new Matrix(XMAXtoUVWsts2);
+         matrix = MatrixUtils.createRealMatrix(XMAXtoUVWsts2);
          break;
        case TRIL_UVW_TO_XMAX:
-         matrix = new Matrix(UVWtoXMAXtrill);
+         matrix = MatrixUtils.createRealMatrix(UVWtoXMAXtrill);
          break;
        case TRIL_XMAX_TO_UVW:
-         matrix = new Matrix(XMAXtoUVWtrill);
+         matrix = MatrixUtils.createRealMatrix(XMAXtoUVWtrill);
          break;
      }
      //matrix.show();
@@ -355,15 +359,10 @@ public class Rotation {
        if (allDataFound) {
          double[][][] rotatedCubicle = new double[8][3][1];
          double[][] rotatedMean = new double[3][1];
-         try {
-           for (int j = 0; j < 8; j++) {
-             rotatedCubicle[j] = matrix.times(new Matrix(cubicle[j])).getData();
-           }
-           rotatedMean = matrix.times(new Matrix(mean)).getData();
-         } catch (MatrixException e) {
-           logger.error("MatrixException:", e);
-           System.exit(0);
+         for (int j = 0; j < 8; j++) {
+           rotatedCubicle[j] = matrix.multiply(MatrixUtils.createRealMatrix(cubicle[j])).getData();
          }
+         rotatedMean = matrix.multiply(MatrixUtils.createRealMatrix(mean)).getData();
          int index = 0; // set correctly if channel type is E, U, or 2
          if (channelType == 'N' || channelType == 'V' || channelType == '1') {
            index = 1;
@@ -433,7 +432,7 @@ public class Rotation {
      List<Segment> first = new ArrayList<>();
      List<Segment> second = new ArrayList<>();
      List<Segment> third = new ArrayList<>();
-     double[][] pointPosition = new double[3][1];
+     double[] pointPosition = new double[3];
 
      for (Segment segment: channel.getRawData(ti)) {
        Segment firstRotated = new Segment(null, segment.getStartOffset(),
@@ -445,27 +444,25 @@ public class Rotation {
        Segment thirdRotated = new Segment(null, segment.getStartOffset(),
            segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
            segment.getSourceSerialNumber());
-       double currentTime = segment.getStartTime().getTime();
-       for (@SuppressWarnings("unused") int value: segment.getData().data) {
-         currentTime = currentTime + segment.getStartOffset() + segment.getSampleRate();
-         pointPosition[0][0] = triplet[0].getRawData(currentTime); //x
-         pointPosition[1][0] = triplet[1].getRawData(currentTime); //y
-         pointPosition[2][0] = triplet[2].getRawData(currentTime); //z
-         if (pointPosition[0][0] == Integer.MIN_VALUE ||
-             pointPosition[1][0] == Integer.MIN_VALUE ||
-             pointPosition[2][0] == Integer.MIN_VALUE) {
+       long currentTime = segment.getStartTime().getTime();
+       int[] data = segment.getData().data;
+       for (int i = 0; i < data.length; i++) {
+         // int value = data[i];
+         currentTime = currentTime + (long) (i * segment.getSampleRate());
+         pointPosition[0] = triplet[0].getRawData(currentTime); //x
+         pointPosition[1] = triplet[1].getRawData(currentTime); //y
+         pointPosition[2] = triplet[2].getRawData(currentTime); //z
+         if (pointPosition[0] == Integer.MIN_VALUE ||
+             pointPosition[1] == Integer.MIN_VALUE ||
+             pointPosition[2] == Integer.MIN_VALUE) {
+
            continue;
          }
-         try {
-           double[][] rotatedPointPosition =
-               this.getMatrix().times(new Matrix(pointPosition)).getData();
-           firstRotated.addDataPoint((int) rotatedPointPosition[0][0]);
-           secondRotated.addDataPoint((int) rotatedPointPosition[1][0]);
-           thirdRotated.addDataPoint((int) rotatedPointPosition[2][0]);
-         } catch (MatrixException e) {
-           logger.error("MatrixException:", e);
-           System.exit(0);
-         }
+         RealVector rotatedPointPosition =
+              matrix.operate(MatrixUtils.createRealVector(pointPosition));
+         firstRotated.addDataPoint((int) rotatedPointPosition.getEntry(0));
+         secondRotated.addDataPoint((int) rotatedPointPosition.getEntry(1));
+         thirdRotated.addDataPoint((int) rotatedPointPosition.getEntry(2));
        }
        if (firstRotated.getData().data.length > 0) {
          first.add(firstRotated);

@@ -4,6 +4,7 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
+import com.isti.traceview.filters.AbstractFilter;
 import com.isti.traceview.filters.IFilter;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -15,7 +16,6 @@ import org.apache.log4j.Logger;
  */
 public class FilterFacade {
 	private static final Logger logger = Logger.getLogger(FilterFacade.class);
-
 	private IFilter filter;
 
 	/**
@@ -26,7 +26,9 @@ public class FilterFacade {
 	 */
 	public FilterFacade(IFilter filter, RawDataProvider channel) {
 		this.filter = filter;
-		filter.init(channel);
+		if (!filter.isInitialized()) {
+			this.filter.init(channel);
+		}
 	}
 
 	/**
@@ -49,6 +51,7 @@ public class FilterFacade {
 				data = clone.getData(ti).data;
 			}
 			data = filter(data);
+			clone.getData().data = data;
 		} catch (CloneNotSupportedException e) {
 			logger.error("Can't filter segment: " + e);
 			return segment;

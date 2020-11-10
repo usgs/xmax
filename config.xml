@@ -96,9 +96,10 @@
 <SessionData>
 <Frame>
 <PosY>23</PosY>
-<Width>1920</Width>
-<Heigth>986</Heigth>
+<Width>1440</Width>
+<Heigth>802</Heigth>
 <State>MAXIMIZED_BOTH</State>
+<PosX>0</PosX>
 </Frame>
 </SessionData>
 </XMAXSessionConfiguration>

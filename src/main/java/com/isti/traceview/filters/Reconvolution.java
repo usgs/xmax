@@ -48,6 +48,8 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 	private JComboBox<Object> convolveCB;
 	private static String respFile = null;
 
+	// TODO: make sure that having the initialization re-trigger per segment is correct
+
 	/**
 	 * Default constructor
 	 */
@@ -88,6 +90,11 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 	synchronized public void init(RawDataProvider channel) {
 		this.channel = channel;
 		warningWasShown = false;
+	}
+
+	@Override
+	public boolean isInitialized() {
+		return false;
 	}
 
 	/**

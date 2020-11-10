@@ -3,6 +3,7 @@ package com.isti.traceview.data;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
+import com.isti.traceview.common.TimeInterval.DateFormatType;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.Rotation;
@@ -132,14 +133,46 @@ public class RawDataProvider extends Channel {
   /**
    * @return Returns one point for given time value, or Integer.MIN_VALUE if value not found
    */
-  public int getRawData(double time) {
-    List<Segment> ret = getRawData(
-        new TimeInterval((long) time, (long) time));
-    if (ret.size() > 0) {
-      Segment segment = ret.get(0);
+  public int getRawData(long time) {
+    int index = findIndexOfSegmentContainingTime(time);
+    if (index >= 0) {
+      Segment segment = rawData.get(index).getSegment();
       return segment.getPointAtTime(time);
     } else {
       return Integer.MIN_VALUE;
+    }
+  }
+
+  /**
+   * binary search for a given time in this object's collection of data segments
+   * @param time
+   * @return
+   */
+  public int findIndexOfSegmentContainingTime(long time) {
+    Collections.sort(rawData);
+    return findSegmentContainingTime(time, 0, rawData.size());
+  }
+
+  private int findSegmentContainingTime(long time, int lowerBound, int upperBound) {
+    // base case
+    if (upperBound - lowerBound <= 5) {
+      for (int i = lowerBound; i < upperBound; ++i) {
+        Segment seg = rawData.get(i).getSegment();
+        if (time >= seg.getStartTimeMillis() && time < seg.getEndTimeMillis()) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    int midPoint = ((upperBound - lowerBound) / 2) + lowerBound;
+    Segment seg = rawData.get(midPoint).getSegment();
+    if (time >= seg.getStartTimeMillis() && time < seg.getEndTimeMillis()) {
+      return midPoint;
+    } else if (time < seg.getStartTimeMillis()) {
+      return findSegmentContainingTime(time, lowerBound, midPoint);
+    } else {
+      return findSegmentContainingTime(time, midPoint, upperBound);
     }
   }
 
@@ -425,6 +458,7 @@ public class RawDataProvider extends Channel {
           e.getSegment().setIsLoaded(true);
         });
 
+    /*
     // now that all the data is loaded, we merge in contiguous regions so filtering, etc. works
     // correctly for it -- filters applied to sets of data in a segment all together
     List<SegmentCache> segmentCacheList = new ArrayList<>();
@@ -453,6 +487,7 @@ public class RawDataProvider extends Channel {
       segmentCacheList.get(segmentCacheList.size() - 1).mergeSegmentCaches(contiguousSegments);
     }
     rawData = segmentCacheList;
+    */
     Collections.sort(rawData);
     sort();
   }
@@ -556,8 +591,27 @@ public class RawDataProvider extends Channel {
   @SuppressWarnings("unchecked")
   public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter, Rotation rotation)
       throws IOException {
-    for (Segment segment : getRawData(rotation, ti)) {
-      int[] data = segment.getData(ti).data;
+
+    Segment previousSegment = null;
+    List<Segment> segments = getRawData(rotation, ti);
+    for (int j = 0; j < segments.size(); j++) {
+      if (j > 0) {
+        previousSegment = segments.get(j - 1);
+      }
+      Segment segment = segments.get(j);
+      if (filter != null && previousSegment != null &&
+          Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
+              segment.getSampleRate())) {
+        // reset the filter due to data gap -- data is not continuous
+        filter.init(this);
+      }
+
+      long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
+      if (previousSegment != null) {
+        currentTime = Math.max(currentTime, previousSegment.getEndTime().getTime());
+      }
+      TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
+      int[] data = segment.getData(dataInterval).data;
       if (filter != null) {
         data = new FilterFacade(filter, this).filter(data);
       }
@@ -608,17 +662,34 @@ public class RawDataProvider extends Channel {
   public void dumpASCII(FileWriter fw, TimeInterval ti, IFilter filter, Rotation rotation)
       throws IOException {
     int i = 1;
-    for (Segment segment : getRawData(rotation, ti)) {
+    List<Segment> segments = getRawData(rotation, ti);
+    Segment previousSegment = null;
+    for (int j = 0; j < segments.size(); j++) {
+      if (j > 0) {
+        previousSegment = segments.get(j - 1);
+      }
+      Segment segment = segments.get(j);
+      if (filter != null && previousSegment != null &&
+          Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
+              segment.getSampleRate())) {
+        // reset the filter due to data gap -- data is not continuous
+        filter.init(this);
+      }
+
       double sampleRate = segment.getSampleRate();
       long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
-      int[] data = segment.getData(ti).data;
+      if (previousSegment != null) {
+        currentTime = Math.max(currentTime, previousSegment.getEndTime().getTime());
+      }
+      TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
+      int[] data = segment.getData(dataInterval).data;
       if (filter != null) {
         data = new FilterFacade(filter, this).filter(data);
       }
       for (int value : data) {
         if (ti.isContain(currentTime)) {
           fw.write(i + " " + TimeInterval
-              .formatDate(new Date(currentTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+              .formatDate(new Date(currentTime), DateFormatType.DATE_FORMAT_NORMAL)
               + " " + value
               + "\n");
         }
@@ -642,14 +713,27 @@ public class RawDataProvider extends Channel {
     fw.write("<Trace network=\"" + getNetworkName() + "\" station=\"" + getStation().getName()
         + "\" location=\"" + getLocationName()
         + "\" channel=\"" + getChannelName() + "\">\n");
-    for (Segment segment : getRawData(rotation, ti)) {
-      double sampleRate = segment.getSampleRate();
-      long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
-      boolean segmentStarted = false;
-      int[] data = segment.getData(ti).data;
-      if (filter != null) {
-        data = new FilterFacade(filter, this).filter(data);
+    List<Segment> segments = getRawData(rotation, ti);
+    Segment previousSegment = null;
+    for (int j = 0; j < segments.size(); j++) {
+      if (j > 0) {
+        previousSegment = segments.get(j - 1);
       }
+      Segment segment = segments.get(j);
+      if (filter != null && previousSegment != null &&
+          Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
+              segment.getSampleRate())) {
+        // reset the filter due to data gap -- data is not continuous
+        filter.init(this);
+      }
+
+      long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
+      if (previousSegment != null) {
+        currentTime = Math.max(currentTime, previousSegment.getEndTime().getTime());
+      }
+      TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
+      int[] data = segment.getData(dataInterval).data;
+      boolean segmentStarted = false;
       for (int value : data) {
         if (ti.isContain(currentTime)) {
           if (!segmentStarted) {
@@ -661,7 +745,7 @@ public class RawDataProvider extends Channel {
           }
           fw.write("<Value>" + value + "</Value>\n");
         }
-        currentTime = (long) (currentTime + sampleRate);
+        currentTime = (long) (currentTime + segment.getSampleRate());
       }
       i++;
       fw.write("</Segment>\n");
