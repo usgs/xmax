@@ -83,7 +83,7 @@ public class RawDataProviderTest {
 
     RawDataProvider data = dm.getAllChannels().get(0);
     List<Segment> segments = data.getRawData();
-    assertEquals(1, segments.size());
+    assertEquals(279, segments.size());
     int dataPointCount = 0;
     for (Segment segment : segments) {
       assertEquals(segment.getSampleRate(), 1000., 0.1);
@@ -184,7 +184,7 @@ public class RawDataProviderTest {
 
     RawDataProvider data = dm.getAllChannels().get(0);
     List<Segment> segments = data.getRawData();
-    assertEquals(1, segments.size());
+    assertEquals(279, segments.size());
     int sampleCount = 0;
     for (Segment segment : segments) {
       sampleCount += segment.getSampleCount();
@@ -229,7 +229,7 @@ public class RawDataProviderTest {
 
     data = dm.getAllChannels().get(0);
     segments = data.getRawData();
-    assertEquals(1, segments.size());
+    assertEquals(279, segments.size());
     sampleCount = 0;
     for (Segment segment : segments) {
       sampleCount += segment.getSampleCount();
@@ -244,8 +244,6 @@ public class RawDataProviderTest {
       }
     }
     assertArrayEquals(filteredExpected, filteredLoaded, 1.);
-
-
   }
 
   @Test
@@ -364,7 +362,6 @@ public class RawDataProviderTest {
     }
 
     TraceView.setDataModule(dm); // step used to get matching pairs for horiz. rotation
-
     RawDataProvider dataNorth = dm.getAllChannels().get(0);
     TimeInterval ti = dataNorth.getTimeRange();
     assertEquals("BH1", dataNorth.getChannelName());
@@ -382,8 +379,27 @@ public class RawDataProviderTest {
     dataNorth = dm.getAllChannels().get(0);
     dataEast = dm.getAllChannels().get(1);
 
-    int[] rawDataNorth = dataNorth.getRawData(ti).get(0).getData().data;
-    int[] rawDataEast = dataEast.getRawData(ti).get(0).getData().data;
+    List<Segment> northSegmentsRaw = dataNorth.getRawData(ti);
+    List<Segment> eastSegmentsRaw = dataEast.getRawData(ti);
+    int sampleCount = 0;
+    for (Segment segment : northSegmentsRaw) {
+      sampleCount += segment.getSampleCount();
+      assertNotNull(segment.getData(ti).data);
+    }
+    int[] rawDataNorth = new int[sampleCount];
+    int lastArrayPoint = 0;
+    for (Segment seg : northSegmentsRaw) {
+      for (int point : seg.getData().data) {
+        rawDataNorth[lastArrayPoint++] = point;
+      }
+    }
+    int[] rawDataEast = new int[sampleCount];
+    lastArrayPoint = 0;
+    for (Segment seg : eastSegmentsRaw) {
+      for (int point : seg.getData().data) {
+        rawDataEast[lastArrayPoint++] = point;
+      }
+    }
 
     // delete the files now that we've read them in
     outputFileNorth = new File(filenameNorth);
@@ -405,20 +421,42 @@ public class RawDataProviderTest {
     DataModule holdsExpectedData = new DataModule();
     holdsExpectedData.loadAndParseDataForTesting(expectedDataNorthFile, expectedDataEastFile);
 
-    int[] expectedDataNorth =
-        holdsExpectedData.getAllChannels().get(0).getRawData(ti).get(0).getData().data;
+
+    RawDataProvider expectedDataNorth = dm.getAllChannels().get(0);
+    List<Segment> northSegments = expectedDataNorth.getRawData();
+    sampleCount = 0;
+    for (Segment segment : northSegments) {
+      sampleCount += segment.getSampleCount();
+      assertNotNull(segment.getData(ti).data);
+    }
+    double[] northRotated = new double[sampleCount];
+    lastArrayPoint = 0;
+    for (Segment seg : northSegments) {
+      for (int point : seg.getData().data) {
+        northRotated[lastArrayPoint++] = (double) point;
+      }
+    }
+
     assertEquals("BH1", holdsExpectedData.getAllChannels().get(0).getChannelName());
-    int[] expectedDataEast =
-        holdsExpectedData.getAllChannels().get(1).getRawData(ti).get(0).getData().data;
+
+    double[] eastRotated = new double[sampleCount];
+    lastArrayPoint = 0;
+    RawDataProvider expectedDataEast = dm.getAllChannels().get(1);
+    List<Segment> eastSegments = expectedDataEast.getRawData();
+    for (Segment seg : eastSegments) {
+      for (int point : seg.getData().data) {
+        eastRotated[lastArrayPoint++] = (double) point;
+      }
+    }
 
     // we'll skip over every 40 points
-    for (int i = 0; i < expectedDataNorth.length; i+=40) {
+    for (int i = 0; i < northRotated.length; i+=40) {
       assertEquals("Discrepancy found at north data index " + i + "(of " +
-          expectedDataNorth.length + ")", (double) expectedDataNorth[i],
-          (double) rawDataNorth[i], 220);
+          northRotated.length + ")", northRotated[i],
+          rawDataNorth[i], 220);
       assertEquals("Discrepancy found at east data index " + i + "(of " +
-          expectedDataNorth.length + ")", (double) expectedDataEast[i],
-          (double) rawDataEast[i], 220);
+          eastRotated.length + ")", eastRotated[i],
+          rawDataEast[i], 220);
     }
 
   }
