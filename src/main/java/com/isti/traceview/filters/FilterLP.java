@@ -3,6 +3,7 @@ package com.isti.traceview.filters;
 import asl.utils.FilterUtils;
 import com.isti.traceview.processing.LPFilterException;
 import org.apache.log4j.Logger;
+import uk.me.berndporr.iirj.Butterworth;
 
 /**
  * Low-pass Butterworth filter Algorithm is from Stearns, 1975
@@ -27,6 +28,7 @@ public class FilterLP extends AbstractFilter {
 	public FilterLP(int order, double cutFrequency) {
 		this.order = order;
 		this.cutFrequency = cutFrequency;
+		reinitializeFilter();
 	}
 
 	/**
@@ -42,11 +44,9 @@ public class FilterLP extends AbstractFilter {
 	}
 
 	@Override
-	double[] filterBackend(double[] data, int length) throws LPFilterException {
-		if (data.length > length)
-			throw new LPFilterException("Requested filtering length exceeds provided array length");
-
-		return FilterUtils.lowPassFilter(data, sampleRate, cutFrequency, order);
+	public void reinitializeFilter() {
+		casc = new Butterworth();
+		casc.lowPass(order, sampleRate, cutFrequency);
 	}
 
 	public boolean needProcessing() {

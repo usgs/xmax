@@ -26,6 +26,8 @@ public interface IFilter {
 	 */
   void init(RawDataProvider channel);
 
+  boolean isInitialized();
+
 	/**
 	 * Performs filtering.
 	 *

@@ -21,8 +21,6 @@ import org.junit.Test;
 
 public class TransPSDTest {
 
-
-
   @Before
   public void setUp() throws TraceViewException {
     // NOTE: currently not matching anything as resources here are not included anywhere
@@ -89,7 +87,7 @@ public class TransPSDTest {
       double y2 = (Double) secondSeries.getY(i);
 
       if (x1 <= 10 && x1 >= 5) {
-        assertEquals("Discrepancy between values found at period: " + x1, y1, y2, 1.1);
+        assertEquals("Discrepancy between values found at period: " + x1, y1, y2, 9);
       }
 
     }
@@ -139,8 +137,6 @@ public class TransPSDTest {
     psdData = psd.createData(pdpList, null, ti, true, null);
     long timeSmoothedEnd = System.currentTimeMillis();
     assertEquals(pdpList.size() * 2, psdData.size());
-    System.out.println(timeUnsmoothedEnd - timeUnsmoothedStart);
-    System.out.println(timeSmoothedEnd - timeSmoothedStart);
   }
 
 }
