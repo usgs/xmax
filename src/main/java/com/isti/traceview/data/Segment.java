@@ -335,9 +335,10 @@ public class Segment implements Externalizable, Cloneable {
 		return getData(ti.getStart(), ti.getEnd());
 	}
 
-	public int getPointAtTime(double start) {
-		if (start < getStartTimeMillis() || start > getEndTimeMillis())
+	public int getPointAtTime(long start) {
+		if (start < getStartTimeMillis() || start >= getEndTimeMillis()) {
 			return Integer.MIN_VALUE;
+		}
 
 		int startIndex = new Double((start - startTime) / sampleRate).intValue();
 		return data[startIndex];

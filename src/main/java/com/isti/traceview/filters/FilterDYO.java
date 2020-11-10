@@ -89,6 +89,10 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		return filter.getMaxDataLength();
 	}
 
+	public boolean isInitialized() {
+		return filter.isInitialized();
+	}
+
 	private JPanel createDesignPanel(int order, double cutLowFrequency, double cutHighFrequency) {
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));

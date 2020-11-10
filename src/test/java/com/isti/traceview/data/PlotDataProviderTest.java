@@ -58,9 +58,6 @@ public class PlotDataProviderTest {
       initData[i] = pdp.getRawData().get(0).getData().data[i];
     }
 
-    double mean = initData[0];
-    mean -= NumericUtils.demean(Arrays.copyOfRange(initData, 0, sampleCount))[0];
-
     double[] filteredCalculated = defaultLPFilter.filter(initData, sampleCount);
     double[] filteredExpected = new double[]{
         0.000000, 0.000000, 0.000001,
@@ -70,7 +67,7 @@ public class PlotDataProviderTest {
 
     for (int i = 0; i < filteredExpected.length; ++i) {
       assertEquals("discrepancy at index " + i,
-          filteredExpected[i] + mean, filteredCalculated[i], 1E-3);
+          filteredExpected[i], filteredCalculated[i], 1E-3);
     }
   }
 
@@ -121,7 +118,6 @@ public class PlotDataProviderTest {
 
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     List<Segment> segments = dataProvider.getRawData();
-    System.out.println(segments);
     int gaps = 0;
     int firstSegAfterGapIdx = 0;
     for (int i = 1; i < segments.size(); ++i) {
@@ -135,7 +131,8 @@ public class PlotDataProviderTest {
       }
     }
     assertEquals(1, gaps);
-    assertEquals(1, firstSegAfterGapIdx);
+    assertEquals(653, segments.size());
+    assertEquals(382, firstSegAfterGapIdx);
   }
 
   @Test

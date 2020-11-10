@@ -2740,7 +2740,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 								if (azi != null) {
 									initialRotation = azi;
 								}
-							} catch (TraceViewException e1) {
+							} catch (TraceViewException | NullPointerException e1) {
 								logger.warn("Error getting azimuth for selected data: ", e1);
 							}
 							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel,

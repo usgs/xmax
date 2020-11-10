@@ -2,6 +2,7 @@ package com.isti.traceview.filters;
 
 import asl.utils.FilterUtils;
 import com.isti.traceview.processing.BPFilterException;
+import uk.me.berndporr.iirj.Butterworth;
 
 /**
  * <p>
@@ -38,12 +39,12 @@ public class FilterBP extends AbstractFilter {
 	}
 
 	@Override
-	double[] filterBackend(double[] data, int length)
-			throws BPFilterException {
-		if (data.length > length)
-			throw new BPFilterException("Requested filtering length exceeds provided array length");
-
-		return FilterUtils.bandFilter(data, sampleRate, cutLowFrequency, cutHighFrequency, order);
+	public void reinitializeFilter() {
+		casc = new Butterworth();
+		double width = cutHighFrequency - cutLowFrequency;
+		double center = cutLowFrequency + (width) / 2.;
+		// filter library defines bandpass with center frequency and notch width
+		casc.bandPass(order, sampleRate, center, width);
 	}
 
 	/**
@@ -59,6 +60,7 @@ public class FilterBP extends AbstractFilter {
 		this.order = order;
 		this.cutLowFrequency = cutLowFrequency;
 		this.cutHighFrequency = cutHighFrequency;
+		reinitializeFilter();
 	}
 
 	/**

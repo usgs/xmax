@@ -2,6 +2,7 @@ package com.isti.traceview.filters;
 
 import asl.utils.FilterUtils;
 import com.isti.traceview.processing.HPFilterException;
+import uk.me.berndporr.iirj.Butterworth;
 
 /**
  * High-pass Butterworth filter Algorithm is from Stearns, 1975
@@ -18,13 +19,6 @@ public class FilterHP extends AbstractFilter {
 	private int order;
 	private double cutFrequency;
 
-	@Override
-	double[] filterBackend(double[] data, int length) throws HPFilterException {
-		if (data.length > length)
-			throw new HPFilterException("Requested filtering length exceeds provided array length");
-
-		return FilterUtils.highPassFilter(data, sampleRate, cutFrequency, order);
-	}
 
 	/**
 	 * @param order
@@ -35,6 +29,7 @@ public class FilterHP extends AbstractFilter {
 	public FilterHP(int order, double cutFrequency) {
 		this.order = order;
 		this.cutFrequency = cutFrequency;
+		reinitializeFilter();
 	}
 
 	/**
@@ -47,6 +42,12 @@ public class FilterHP extends AbstractFilter {
 	@Override
 	public String getName() {
 		return FilterHP.NAME;
+	}
+
+	@Override
+	public void reinitializeFilter() {
+		casc = new Butterworth();
+		casc.highPass(order, sampleRate, cutFrequency);
 	}
 
 	public boolean needProcessing() {
