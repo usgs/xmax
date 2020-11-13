@@ -1,7 +1,5 @@
 package com.isti.traceview.filters;
 
-import asl.utils.FilterUtils;
-import com.isti.traceview.processing.HPFilterException;
 import uk.me.berndporr.iirj.Butterworth;
 
 /**

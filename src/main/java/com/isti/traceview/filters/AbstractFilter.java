@@ -1,12 +1,9 @@
 package com.isti.traceview.filters;
 
-import asl.utils.NumericUtils;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
 import com.isti.traceview.processing.HPFilterException;
 import com.isti.traceview.processing.LPFilterException;
-import java.util.Arrays;
-import java.util.stream.IntStream;
 import uk.me.berndporr.iirj.Butterworth;
 
 public abstract class AbstractFilter implements IFilter {
