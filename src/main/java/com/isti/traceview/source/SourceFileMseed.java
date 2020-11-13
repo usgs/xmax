@@ -2,7 +2,6 @@ package com.isti.traceview.source;
 
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.RawDataProvider;
@@ -11,14 +10,18 @@ import com.isti.traceview.data.SynchronizedSeedRecord;
 import edu.iris.Fissures.FissuresException;
 import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
 import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
+import edu.sc.seis.seisFile.mseed.Blockette;
+import edu.sc.seis.seisFile.mseed.Blockette1000;
 import edu.sc.seis.seisFile.mseed.Btime;
 import edu.sc.seis.seisFile.mseed.ControlHeader;
 import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.mseed.SeedRecord;
+import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -57,11 +60,28 @@ public class SourceFileMseed extends SourceFile implements Serializable {
    * (i.e. new segment for each gap)
    */
   public synchronized Set<PlotDataProvider> parse() {
-    Map<Channel, PlotDataProvider> map = new HashMap<>();
+    Map<String, PlotDataProvider> map = new HashMap<>();
     long blockNumber = 0;
     long endPointer = 0;
     RandomAccessFile dis = null;
     int segmentCountForDebug = 0;
+    int blockLength = TraceView.getConfiguration().getDefaultBlockLength();
+    try (DataInputStream temp = new DataInputStream(new FileInputStream(this.file))) {
+      outerloop:
+      while (true) {
+        SeedRecord sr = SeedRecord.read(temp, 4096);
+
+        Blockette[] blockettes = sr.getBlockettes(1000);
+        for (Blockette blockette : blockettes) {
+          Blockette1000 b1000 = (Blockette1000) blockette;
+          blockLength = b1000.getDataRecordLength();
+          break outerloop;
+        }
+      }
+    } catch (IOException | SeedFormatException e) {
+      e.printStackTrace();
+    }
+
     try {
       dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
       double sampleRate;
@@ -73,8 +93,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
             // was implemented
             long currentOffset = dis.getFilePointer();
             SeedRecord sr = SynchronizedSeedRecord
-                .read(dis, TraceView.getConfiguration().getDefaultBlockLength());
-            blockNumber++;
+                .read(dis, blockLength);
             if (sr instanceof DataRecord) {
               DataHeader dh = (DataHeader) sr.getControlHeader();
 
@@ -89,13 +108,14 @@ public class SourceFileMseed extends SourceFile implements Serializable {
                   continue; // skip record -- it's not going to be loaded in
                 }
 
-                Channel key = new Channel(dh.getChannelIdentifier().trim(),
-                    DataModule.getOrAddStation(dh.getStationIdentifier().trim()),
-                    dh.getNetworkCode().trim(), dh.getLocationIdentifier().trim());
+
+                String key = dh.getChannelIdentifier() + "."
+                    + DataModule.getOrAddStation(dh.getStationIdentifier().trim()).toString()
+                    + "." + dh.getNetworkCode() + "." + dh.getLocationIdentifier();
                 if (!map.containsKey(key)) {
-                  map.put(key, new PlotDataProvider(key.getChannelName(),
-                      key.getStation(), key.getNetworkName(),
-                      key.getLocationName()));
+                  map.put(key, new PlotDataProvider(dh.getChannelIdentifier(),
+                      DataModule.getOrAddStation(dh.getStationIdentifier()), dh.getNetworkCode(),
+                      dh.getLocationIdentifier()));
                 }
                 PlotDataProvider currentChannel = map.get(key);
 
