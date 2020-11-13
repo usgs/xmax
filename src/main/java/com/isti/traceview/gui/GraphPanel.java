@@ -659,18 +659,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					}
 					
 					// Loops through ChannelView objects and loads segment data
-					List<PlotDataProvider> pdpList = new ArrayList<>();
 					// TimeInterval ti = null;
-					System.out.println("Loading channel segment data:");
-
-					long startl = System.nanoTime();
 					channelShowSet.parallelStream().forEach(
 							e -> e.getPlotDataProviders().forEach(RawDataProvider::load));
-					long endl = System.nanoTime() - startl;
-
-					double end = endl * Math.pow(10, -9);
 					//logger.debug("Channels are done loading");
-					System.out.println("Channel segment data load time = " + end + " sec\n");
 				} else {
 					List<PlotDataProvider> toAdd = new ArrayList<>();
 					PlotDataProvider prevChannel = null;

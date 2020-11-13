@@ -8,7 +8,6 @@ import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.ColorModeBySegment;
 import com.isti.traceview.gui.ColorModeBySource;
 import com.isti.traceview.gui.ColorModeGray;
-import com.isti.xmax.gui.XMAXframe;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;

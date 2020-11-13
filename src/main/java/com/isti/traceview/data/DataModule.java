@@ -531,13 +531,12 @@ public class DataModule extends Observable {
   private int getWindowSize(boolean isForward) {
     Configuration.PanelCountUnit unit = TraceView.getConfiguration().getPanelCountUnit();
     int unitsInFrame = TraceView.getConfiguration().getUnitsInFrame();
-    logger.debug("Units in frame: " + unitsInFrame);
+    logger.debug("Units in frame: " + unitsInFrame + " of type " + unit);
     if (unit.equals(Configuration.PanelCountUnit.ALL)) {
       return channels.size();
     } else if (unit.equals(Configuration.PanelCountUnit.TRACE)) {
       if (isForward) {
         if (markerPosition + unitsInFrame < channels.size()) {
-
           // return markerPosition + windowSize +
           // unitsInFrame<channels.size() ?
           // unitsInFrame : channels.size() - markerPosition -
@@ -951,9 +950,8 @@ public class DataModule extends Observable {
     }
 
     channels.sort(Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
-    for (RawDataProvider channel : channels) {
-      channel.sort(); // properly numerate segments, gaps, etc. for channel plot coloration
-    }
+    // properly numerate segments, gaps, etc. for channel plot coloration
+    channels.parallelStream().forEach(RawDataProvider::sort);
   }
 
 }
