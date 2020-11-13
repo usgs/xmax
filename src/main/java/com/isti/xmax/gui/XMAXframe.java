@@ -78,6 +78,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -2507,10 +2508,15 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				} catch (TraceViewException ex) {
 					JOptionPane.showMessageDialog(XMAX.getFrame(), ex.getMessage(), "Information",
 							JOptionPane.INFORMATION_MESSAGE);
+					Instant start = Instant.now();
+					System.out.println("Starting repaint of data...");
 					getGraphPanel().forceRepaint();
+					Instant end = Instant.now();
+					System.out.println("Repaint took " +
+							(end.toEpochMilli() - start.toEpochMilli())/1000. + " seconds");
 				}
 
-				statusBar .setChannelCountMessage(
+				statusBar.setChannelCountMessage(
 						dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
 						dm.getAllChannels().size());
 			} catch (TraceViewException e1) {

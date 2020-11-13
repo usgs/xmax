@@ -525,7 +525,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		if (ret.size() == 0) {
 			return null;
 		} else {
-			return ret.toArray(new SegmentData[1]);
+			return ret.toArray(new SegmentData[]{});
 		}
 	}
 	
