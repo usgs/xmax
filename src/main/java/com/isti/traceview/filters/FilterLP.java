@@ -1,7 +1,5 @@
 package com.isti.traceview.filters;
 
-import asl.utils.FilterUtils;
-import com.isti.traceview.processing.LPFilterException;
 import org.apache.log4j.Logger;
 import uk.me.berndporr.iirj.Butterworth;
 
