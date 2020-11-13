@@ -52,7 +52,7 @@ public abstract class SourceFile implements ISource {
 	private static final long serialVersionUID = 1L;	
 	private static final Logger logger = Logger.getLogger(SourceFile.class);
 
-	private File file;
+	protected File file;
 	
 	private boolean parsed = false;
 

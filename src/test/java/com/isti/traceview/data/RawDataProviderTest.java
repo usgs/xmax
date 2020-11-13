@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Level;
@@ -363,7 +362,11 @@ public class RawDataProviderTest {
 
     TraceView.setDataModule(dm); // step used to get matching pairs for horiz. rotation
     RawDataProvider dataNorth = dm.getAllChannels().get(0);
-    TimeInterval ti = dataNorth.getTimeRange();
+    // we'll compare over a couple segments only so this doesn't take a long time
+    TimeInterval ti = new TimeInterval(
+        dataNorth.getRawData().get(0).getStartTimeMillis(),
+        dataNorth.getRawData().get(1).getEndTimeMillis()
+    );
     assertEquals("BH1", dataNorth.getChannelName());
     DataOutputStream dsNorth = new DataOutputStream(new FileOutputStream(outputFileNorth));
     dataNorth.dumpMseed(dsNorth, ti, null, twentyDegreesRotation);
@@ -423,7 +426,7 @@ public class RawDataProviderTest {
 
 
     RawDataProvider expectedDataNorth = dm.getAllChannels().get(0);
-    List<Segment> northSegments = expectedDataNorth.getRawData();
+    List<Segment> northSegments = expectedDataNorth.getRawData(ti);
     sampleCount = 0;
     for (Segment segment : northSegments) {
       sampleCount += segment.getSampleCount();
@@ -442,21 +445,20 @@ public class RawDataProviderTest {
     double[] eastRotated = new double[sampleCount];
     lastArrayPoint = 0;
     RawDataProvider expectedDataEast = dm.getAllChannels().get(1);
-    List<Segment> eastSegments = expectedDataEast.getRawData();
+    List<Segment> eastSegments = expectedDataEast.getRawData(ti);
     for (Segment seg : eastSegments) {
       for (int point : seg.getData().data) {
-        eastRotated[lastArrayPoint++] = (double) point;
+        eastRotated[lastArrayPoint++] = point;
       }
     }
 
-    // we'll skip over every 40 points
-    for (int i = 0; i < northRotated.length; i+=40) {
+    for (int i = 0; i < northRotated.length; ++i) {
       assertEquals("Discrepancy found at north data index " + i + "(of " +
           northRotated.length + ")", northRotated[i],
-          rawDataNorth[i], 220);
+          rawDataNorth[i], 0);
       assertEquals("Discrepancy found at east data index " + i + "(of " +
           eastRotated.length + ")", eastRotated[i],
-          rawDataEast[i], 220);
+          rawDataEast[i], 0);
     }
 
   }
