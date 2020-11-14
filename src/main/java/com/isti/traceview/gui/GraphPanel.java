@@ -33,7 +33,9 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -1374,61 +1376,53 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			
 			// Only pixelize and paint data if initial load or when data is changed
 			//!mouseRepaint
-			if (initialPaint ||  forceRepaint || !mouseRepaint || ChannelView.tooltipVisible) {
+			if (initialPaint || forceRepaint || !mouseRepaint || ChannelView.tooltipVisible) {
 				//RepaintManager rm = RepaintManager.currentManager(this);
 				//rm.markCompletelyDirty(this);
 				
 				// Pixelization should only occur for data changes 
 				// (i.e. filtering, spectral density, zooming, etc.)
-				long startl = System.nanoTime();
+				Instant start = Instant.now();
 				// need to create a boolean for mouseDragging (i.e. zooming)
 				// mouse clicked, pressed, released, dragged
 				if (initialPaint || forceRepaint) {
-					if (initialPaint) {
-						System.out.print("Pixelizing channel data...");
-					}
-					
+					logger.info("Start plotting data update routine...");
 					final List<String> channelsWithErrors = new ArrayList<>();
-					for (Component component: drawAreaPanel.getComponents()) {
-						ChannelView view = (ChannelView) component;
-						if (view.getHeight() == 0 || view.getWidth() == 0) {
-							// Ugly hack to avoid lack of screen redraw sometimes
-							//logger.debug("DrawAreaPanel: rebuilding corrupted layout");
-							drawAreaPanel.doLayout();
-							for (Component comp: drawAreaPanel.getComponents()) {
-								comp.doLayout();
-							}
-						}
-						if (initialPaint) {
-							System.out.print("...");
-						}
-						String errorChannel = view.updateData();
-						if(!errorChannel.equals(""))
-							channelsWithErrors.add(errorChannel);
-						
-					}
+					Arrays.stream(drawAreaPanel.getComponents()).map(component -> (ChannelView) component)
+							.parallel().forEach(view -> {
+								if (view.getHeight() == 0 || view.getWidth() == 0) {
+									// Ugly hack to avoid lack of screen redraw sometimes
+									//logger.debug("DrawAreaPanel: rebuilding corrupted layout");
+									drawAreaPanel.doLayout();
+									for (Component comp : drawAreaPanel.getComponents()) {
+										comp.doLayout();
+									}
+								}
+								String errorChannel = view.updateData();
+								if (!errorChannel.equals("")) {
+									channelsWithErrors.add(errorChannel);
+								}
+							});
 					if(channelsWithErrors.size() > 0){
 						SwingUtilities.invokeLater(new Runnable() {
 						    public void run() {
-						    	JOptionPane.showMessageDialog(TraceView.getFrame(), "Error with:" + "\n" + StringUtils.join(channelsWithErrors, "\n"), "Warning", JOptionPane.WARNING_MESSAGE);
+						    	JOptionPane.showMessageDialog(TraceView.getFrame(),
+											"Error with:" + "\n" + StringUtils.join(channelsWithErrors,
+													"\n"), "Warning", JOptionPane.WARNING_MESSAGE);
 						    }
 						  });
 	
 					}
-					if (initialPaint) {
-						System.out.print("\n");
-					}
 				}
-				if (initialPaint) {
-					System.out.print("Drawing channel data...");
+				if (initialPaint || forceRepaint) {
+					logger.info("Drawing channel data...");
 				}
 				super.paint(g);	// calls ChannelView.paint(Graphics g)
-				long endl = System.nanoTime() - startl;
-				double end = endl * Math.pow(10, -9);
-				if (initialPaint) {
-					System.out.println("\nPixelizing/painting duration = " + end + " sec");
+				if (initialPaint || forceRepaint) {
+					Instant end = Instant.now();
+					double seconds = (end.toEpochMilli() - start.toEpochMilli()) / 1000.;
+					logger.info("Plotting data operation finished after " + seconds + " seconds.");
 				}
-
 				// Drawing cursor
 				g.setXORMode(new Color(204, 204, 51));
 				if (mouseX > infoPanelWidth && mouseY < getHeight() - southPanel.getHeight() && showBigCursor) {
@@ -1445,9 +1439,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaXend = selectedAreaXend;
 				previousSelectedAreaYbegin = selectedAreaYbegin;
 				previousSelectedAreaYend = selectedAreaYend;
-				if (initialPaint) {
-					System.out.print("\n");	// skip to next line for next repaint() readout
-				}
 				initialPaint = false;
 				forceRepaint = false;
 			} else {	// Regular MouseMovements in and between ChannelView and GraphPanel panels

@@ -25,6 +25,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -335,43 +336,47 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	 * Prepares pixelized data for PlotDataProviders to draw. Should be called before paint.
 	 */
 	public synchronized String updateData() {
-
 		int width = graphAreaPanel.getWidth();// - graphAreaPanel.getInsets().left -
 		
 		// graphAreaPanel.getInsets().right;
 		logger.debug("Updating data " + this + "Width = " + width);
 		graphs = new ArrayList<>();
 		List<String> errorChannels = new ArrayList<>();
-		for (PlotDataProvider channel: plotDataProviders) {
-			// lg.debug("processing channel: " + channel);
+		// probably not worth parallelizing as each channelview is likely to have very few
+		// plotdataproviders in it -- unlikely (maybe impossible?) to be more than one
+		logger.debug("How many plot data providers in this view object? " + plotDataProviders.size());
+		for (PlotDataProvider channel : plotDataProviders) {
+			logger.debug("Processing channel: " + channel.getName());
 			PlotData data = null;
 			try {
-				data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
+				data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(),
+						graphPanel.getRemoveGain(), graphPanel.getColorMode());
 			} catch (TraceViewException e) {
 				channel.setRotation(null);
 				try {
-					errorChannels.add(channel.getNetworkName()+"/"+channel.getStation()+"/"+channel.getLocationName()+"/"+channel.getChannelName() + " - " + e.getMessage());
-					data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(), graphPanel.getRemoveGain(), graphPanel.getColorMode());
+					errorChannels.add(channel.getNetworkName() + "/" + channel.getStation() + "/" +
+							channel.getLocationName() + "/" + channel.getChannelName() + " - " + e.getMessage());
+					data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(),
+							graphPanel.getRemoveGain(), graphPanel.getColorMode());
 				} catch (TraceViewException | RemoveGainException e1) {
 					// do nothing
-					logger.error("TraceViewException:", e1);	
+					logger.error("TraceViewException:", e1);
 				}
 			} catch (RemoveGainException e) {
 				try {
-					errorChannels.add(channel.getNetworkName()+"/"+channel.getStation()+"/"+channel.getLocationName()+"/"+channel.getChannelName() + " - " + e.getMessage());
-					data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(), null, graphPanel.getColorMode());
+					errorChannels.add(channel.getNetworkName() + "/" + channel.getStation() + "/" +
+							channel.getLocationName() + "/" + channel.getChannelName() + " - " + e.getMessage());
+					data = channel.getPlotData(graphPanel.getTimeRange(), width, graphPanel.getFilter(),
+							null, graphPanel.getColorMode());
 				} catch (TraceViewException | RemoveGainException e1) {
 					// do nothing
-					logger.error("TraceViewException:", e1);	
+					logger.error("TraceViewException:", e1);
 				}
 			}
-
 			graphs.add(data);
 			meanValue = data.getMeanValue();
 		}
-		
 		Collections.sort(graphs);
-		
 		if(errorChannels.size() > 0)
 			return errorChannels.get(0);
 		else

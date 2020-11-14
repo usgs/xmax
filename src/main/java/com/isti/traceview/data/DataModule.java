@@ -100,7 +100,7 @@ public class DataModule extends Observable {
     List<File> filesProducingError = new ArrayList<>(files.length);
     for (File file : files) {
       try {
-        logger.info("Loading in " + file.getCanonicalPath());
+        logger.info("Initial parse of " + file.getCanonicalPath());
       } catch (IOException e) {
         filesProducingError.add(file);
         logger.error(e);
@@ -117,8 +117,8 @@ public class DataModule extends Observable {
             channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
       }
     }
-
     channels.sort(Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
+    logger.info("Initial file parses completed");
     return filesProducingError.toArray(new File[]{});
   }
 
@@ -198,21 +198,20 @@ public class DataModule extends Observable {
       storage.delAllTempFiles();
     }
 
-    Iterator<PlotDataProvider> it = getAllChannels().iterator();
-    while (it.hasNext()) {
-      PlotDataProvider channel = it.next();
+
+    getAllChannels().parallelStream().forEach(
+        channel -> {
+      // PlotDataProvider channel = it.next();
       logger.debug("== call channel.load() for channel=" + channel);
       channel.load();
       logger.debug("== call channel.load() DONE for channel=" + channel);
       channel.initPointCache(colorMode);
       System.out.format("\tSerialize to file:%s\n", storage.getSerialFileName(channel));
       channel.dump(storage.getSerialFileName(channel));
-      it.remove();
-
       //MTH: not sure why this is needed
       //channel.drop();
       //channel = null;
-    }
+    });
     //printAllChannels();
   }
 

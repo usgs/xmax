@@ -30,6 +30,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.IntStream;
 import org.apache.log4j.Logger;
 
 /**
@@ -211,6 +212,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 */
 	private PlotData getPlotData(TimeInterval ti, int pointCount,
 			IFilter filter, IColorModeState colorMode) {
+		// TODO: can we actually speed this up somehow
 		logger.debug(this + "; " + ti + "(" + ti.getStart() + "-" + ti.getEnd() + ")" + "; pointCount " + pointCount);
 
 		// This list used when we cannot use pointsCache due to too small zoom, calculated every
@@ -405,37 +407,29 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				logger.error("InterruptedException:", e);	
 			}
 		}
-		List<SegmentData> rawData = new ArrayList<>();
 		List<Segment> segments = getRawData(ti);
 		int numSegments = segments.size();
+		final SegmentData[] rawData = new SegmentData[numSegments];
 		
 		// Combine segments if no gap and colormode is not by source, to correct filtering
-		for (int i = 0; i < numSegments; i++) {
+		IntStream.range(0, numSegments).parallel().forEach( i -> {
+		//for (int i = 0; i < numSegments; i++) {
 			//ALL requested for pixelization time range in this segment
 			Segment segment = segments.get(i);
-			TimeInterval currentSegmentDataTI = TimeInterval.getIntersect(ti, new TimeInterval(segment.getStartTime(), segment.getEndTime()));
+			TimeInterval currentSegmentDataTI = TimeInterval.getIntersect(ti,
+					new TimeInterval(segment.getStartTime(), segment.getEndTime()));
 			SegmentData segmentData = segment.getData(currentSegmentDataTI);
-			if(i==0 || colorMode instanceof ColorModeBySource || Segment.isDataBreak(segments.get(i-1).getEndTime().getTime(), segmentData.startTime, segmentData.sampleRate)){
-				rawData.add(segmentData);
-			} else {
-				// concatenate previous data and current data
-				// replace with array copying (src, srcPos, dest, destPost, srcLen)
-				SegmentData last = rawData.get(rawData.size()-1);
-				int lastLength = last.data.length;
-				int currentLength = segmentData.data.length;
-				last.data = Arrays.copyOf(last.data, lastLength+currentLength);	// allocate space for copy
-				System.arraycopy(segmentData.data, 0, last.data, lastLength, currentLength);	// replaces loop
-			}
-		}
-		
+			rawData[i] = segmentData;
+		});
+		List<SegmentData> rawDataList = Arrays.asList(rawData);
 		//filtering
 		if(filter != null){
 			FilterFacade ff = new FilterFacade(filter, this);
 			List<SegmentData> filteredRawData = new ArrayList<>();
-			for(SegmentData segmentData: rawData){
+			for(SegmentData segmentData: rawDataList){
 				filteredRawData.add(new SegmentData(segmentData.startTime, segmentData.sampleRate, segmentData.sourceSerialNumber, segmentData.channelSerialNumber, segmentData.continueAreaNumber, segmentData.previous, segmentData.next, ff.filter(segmentData.data)));
 			}
-			rawData = filteredRawData;
+			rawDataList = filteredRawData;
 		}
 		
 		double interval = (ti.getDuration()) / (double) pointCount;
@@ -444,7 +438,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			//lg.debug("Iteration # "+ i + ", processing interval " + time + " - " + (time+interval));
 			
 			// Get segmentData objects in the interval (time, time+interval)
-			SegmentData[] intervalData = getSegmentData(rawData, time, time+interval);
+			SegmentData[] intervalData = getSegmentData(rawDataList, time, time+interval);
 			if (intervalData != null) {
 				int k = 0;
 				int intervalDataLength = intervalData.length;	// number of continuous segmentData objects
