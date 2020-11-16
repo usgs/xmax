@@ -3,7 +3,7 @@
     "name": "xmax",
     "organization": "U.S. Geological Survey",
     "description": "XMAX waveform display for seismic data",
-    "version": "2.4.0",
+    "version": "2.4.1",
     "status": "Production",
 
     "permissions": {
@@ -41,7 +41,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2019-06-18"
+      "metadataLastUpdated": "2020-11-16"
     }
   }
 ]
