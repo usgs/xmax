@@ -229,6 +229,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	private JMenuItem aboutMenuItem = null;
 
+	private boolean hasDataOnLoad = true;
+
 	private ActionMap actionMap;
 
 	static {
@@ -556,6 +558,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		phaseMenuCheckBox.setState(graphPanel.getPhaseState());
 		meanMenuCheckBox.setState(graphPanel.getMeanState() instanceof MeanModeEnabled);
 		XMAXDataModule dm = XMAX.getDataModule();
+		hasDataOnLoad = true;
 		try {
 			graphPanel.setChannelShowSet(dm.getNextChannelSet());
 		} catch (TraceViewException e) {
@@ -563,19 +566,24 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				JOptionPane.showMessageDialog(this, "This is the last set", "Information",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
-				String message = "No data specified in configuration or command-line on startup.\n"
-						+ "Please select the load data option from the menu in order to load data.";
-				JOptionPane.showMessageDialog(this, message, "Information", JOptionPane.INFORMATION_MESSAGE);
+				hasDataOnLoad = false;
 			}
 		}
 		statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
 				dm.getAllChannels().size());
+
 		logger.debug("== Exit");
 	}
 
 	public static synchronized XMAXframe getInstance() {
 		if (instance == null) {
 			instance = new XMAXframe();
+			if (!instance.hasDataOnLoad) {
+				Action action = instance.actionMap.get("Add data");
+				action.actionPerformed(new ActionEvent(
+						instance, 0, (String) action.getValue(Action.NAME)));
+				instance.hasDataOnLoad = true;
+			}
 		}
 		return instance;
 	}
@@ -2501,7 +2509,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		void resetPlottedData() {
 			try {
 				XMAXDataModule dm = XMAXDataModule.getInstance();
-				XMAX.getFrame().getGraphPanel().removeAll();
+				graphPanel.removeAll();
 				dm.reLoadData();
 				try {
 					graphPanel.setChannelShowSet(dm.getNextChannelSet());
@@ -2573,6 +2581,10 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			int selectionState = jfc.showOpenDialog(XMAXframe.getInstance());
 			if (selectionState == JFileChooser.APPROVE_OPTION) {
 				File[] files = jfc.getSelectedFiles();
+				// set the directory we loaded data from as where we start if we load more data
+				if (files.length > 0) {
+					XMAXconfiguration.getInstance().setDataPath(files[0].getPath());
+				}
 				File[] errors = XMAXDataModule.getInstance().loadNewDataFromSources(files);
 
 				if (errors.length > 0) {
@@ -3677,7 +3689,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		private JButton getAddDataButton() {
 			if (addDataButton == null) {
-				addDataButton = new JButton("Load (more) data");
+				addDataButton = new JButton("Add data");
 				addDataButton.addActionListener(this);
 			}
 			return addDataButton;
