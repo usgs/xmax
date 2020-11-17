@@ -89,7 +89,7 @@ public class XMAX extends TraceView {
 				HelpFormatter formatter = new HelpFormatter();
 				formatter
 						.printHelp(
-								"xmax [-h | -v | -T] {-t -u<units> -o<order>} [-c<config file> -d<data mask> -s<station file> -k<earthquakes mask> -q<QC file> -b<begin time> -e<end time> -f<units count>]",
+								"xmax [-h | -v | -T] {-t -u<units> -o<order>} [-g <config file> -d<data mask> -s<station file> -k<earthquakes mask> -q<QC file> -b<begin time> -e<end time> -f<units count>]",
 								options);
 			} else if (cmd.hasOption("v")) {
 				if (cmd.getOptions().length > 1) {
