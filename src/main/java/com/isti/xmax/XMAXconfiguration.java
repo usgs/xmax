@@ -92,8 +92,7 @@ public class XMAXconfiguration extends Configuration {
 		File confFile = new File(confFileName);
 		if (!confFile.exists()) {
 			JOptionPane.showMessageDialog(null,
-					"XML file specified at load does not exist.\n" +
-							"The program will likely not be able to run.\n" +
+					"Could not find a valid XML configuration.\n" +
 					"We will attempt to load data using default parameters.",
 				"Configuration file load error", JOptionPane.ERROR_MESSAGE);
 			config = new XMLConfiguration();
@@ -104,7 +103,7 @@ public class XMAXconfiguration extends Configuration {
 		ti = null;
 		try {
 			setUseTempData(false);
-
+			String currentDir = System.getProperty("user.dir");
 			setStationXMLPath(config.getString("Configuration.Data.XMLPath", null));
 			String dataServiceProtocol = config.getString("Configuration.Data.DataServiceProtocol");
 			if (dataServiceProtocol != null &&
@@ -137,9 +136,17 @@ public class XMAXconfiguration extends Configuration {
 			setDataPath(config.getString("Configuration.Data.DataMask", "!"));
 			setDataTempPath(config.getString("Configuration.Data.TempPath"));
 			setQCdataFileName(config.getString("Configuration.Data.QCdataFile", "qc.xml"));
-			setPickPath(config.getString("Configuration.Data.PickPath", "./resources/Picks"));
-			setStationInfoFileName(config.getString("Configuration.Data.StationInfoFile", "./resources/gsn_sta_list"));
-			setEarthquakeFileMask(config.getString("Configuration.Data.EventFileMask", "*.ndk"));
+			String defaultPicksPath = currentDir;
+			File defaultPicksDir = new File("./resources/Picks");
+			if (defaultPicksDir.exists() && defaultPicksDir.isDirectory()) {
+				defaultPicksPath = defaultPicksDir.getPath();
+			}
+			setPickPath(config.getString("Configuration.Data.PickPath",
+					defaultPicksPath));
+			setStationInfoFileName(config.getString("Configuration.Data.StationInfoFile",
+					"./resources/gsn_sta_list"));
+			setEarthquakeFileMask(config.getString("Configuration.Data.EventFileMask",
+					"*.ndk"));
 			setResponsePath(config.getString("Configuration.Data.ResponsePath", "./Responses"));
 			// setAllowMultiplexedData(config.getBoolean("Configuration.Data.AllowMultiplexedData"));
 			setOutputPath(config.getString("Configuration.OutputPath"));
