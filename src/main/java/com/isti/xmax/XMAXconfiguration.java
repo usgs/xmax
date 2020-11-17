@@ -143,13 +143,32 @@ public class XMAXconfiguration extends Configuration {
 			}
 			setPickPath(config.getString("Configuration.Data.PickPath",
 					defaultPicksPath));
+			String defaultStaInfoPath = currentDir;
+			File defaultStaInfoDir = new File("./resources/gsn_sta_list");
+			if (defaultStaInfoDir.exists() && defaultStaInfoDir.isDirectory()) {
+				defaultStaInfoPath = defaultStaInfoDir.getPath();
+			}
 			setStationInfoFileName(config.getString("Configuration.Data.StationInfoFile",
-					"./resources/gsn_sta_list"));
+					defaultStaInfoPath));
 			setEarthquakeFileMask(config.getString("Configuration.Data.EventFileMask",
 					"*.ndk"));
-			setResponsePath(config.getString("Configuration.Data.ResponsePath", "./Responses"));
+			String defaultRespPath;
+			File defaultRespDir = new File("./Responses");
+			if (defaultRespDir.exists() && defaultRespDir.isDirectory()) {
+				defaultRespPath = defaultStaInfoDir.getPath();
+			} else {
+				// try to construct the folder if it doesn't exist
+				boolean madeDir = defaultRespDir.mkdirs();
+				// since we already checked existence, see if we can create the folder
+				defaultRespPath = madeDir ? defaultRespDir.getPath() : currentDir;
+				// also, we won't have any responses to load so we'll try to use the stationXML getter
+				// otherwise we won't be able to do anything like PSD plots that requires a response
+				setStationXMLPreferred(true);
+			}
+			setResponsePath(config.getString("Configuration.Data.ResponsePath",
+					defaultRespPath));
 			// setAllowMultiplexedData(config.getBoolean("Configuration.Data.AllowMultiplexedData"));
-			setOutputPath(config.getString("Configuration.OutputPath"));
+			setOutputPath(config.getString("Configuration.OutputPath", currentDir));
 			String startTimeStr = config.getString("Configuration.StartTime");
 			if (startTimeStr != null) {
 				setStartTime(TimeInterval.parseDate(startTimeStr, TimeInterval.DateFormatType.DATE_FORMAT_MIDDLE));
