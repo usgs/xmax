@@ -25,7 +25,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,8 +41,8 @@ import javax.swing.ToolTipManager;
 import javax.swing.event.MouseInputListener;
 import org.apache.log4j.Logger;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.RangeType;
-import org.jfree.ui.RectangleEdge;
 
 /**
  * Graphics panel to plot several traces in the same time and values coordinate axis on a single

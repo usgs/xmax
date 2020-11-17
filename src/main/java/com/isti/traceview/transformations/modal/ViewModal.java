@@ -46,7 +46,7 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.Range;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.TextAnchor;
+import org.jfree.chart.ui.TextAnchor;
 
 public class ViewModal extends JDialog implements PropertyChangeListener, ChangeListener {
 

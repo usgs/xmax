@@ -34,58 +34,123 @@ repositories {
     }
 }
 
+configurations {
+    sourceOnly
+}
+
+
 dependencies {
     // this will include seisfile, seedcodec, and commons math3 as dependencies, hence 'api' tag
     // to allow access to those by the project as necessary
     api project(':asl-java-utils')
     // jevalresp here uses jaxb stuff and includes some additional edu.seis stuff (fissuresIDL)
     api files('./lib/JEvalResp.jar', './lib/ekit-1.4.jar')
+    // we don't need to worry about sources for these as they will be automatically included
 
     // some library components require xml bindings to function which we'll include explicitly here
     // (in particular stuff related to picks and the jevalresp library)
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3+'
+    sourceOnly group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3+', classifier: 'sources'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3+'
+    sourceOnly group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3+', classifier: 'sources'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3+'
+    sourceOnly group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3+', classifier: 'sources'
     implementation group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0'
+    sourceOnly group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0',
+            classifier: 'sources'
 
-    // both of these jfree libraries are also in fissuresUtil so may want to tag that as 'api'
-    // and not 'implementation'
-    implementation group: 'org.jfree', name: 'jfreechart', version: '1.0.+'
+    // both of these jfree libraries are also in fissuresUtil
+    implementation group: 'org.jfree', name: 'jfreechart', version: '1.5.+'
+    sourceOnly group: 'org.jfree', name: 'jfreechart', version: '1.5.+', classifier: 'sources'
+    /*
     implementation group: 'org.jfree', name: 'jcommon', version: '1.0.+'
-
+    sourceOnly group: 'org.jfree', name: 'jcommon', version: '1.0.+', classifier: 'sources'
+     */
     // note that this would be redundant if we declare commons-math3 as an api in asl-java-utils
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
-
+    sourceOnly group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1',
+            classifier: 'sources'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.2'
+    sourceOnly group: 'commons-cli', name: 'commons-cli', version: '1.2', classifier: 'sources'
     implementation group: 'commons-configuration', name: 'commons-configuration', version: '1.7'
+    sourceOnly group: 'commons-configuration', name: 'commons-configuration', version: '1.7',
+            classifier: 'sources'
     implementation group: 'commons-codec', name: 'commons-codec', version: '1.5'
+    sourceOnly group: 'commons-codec', name: 'commons-codec', version: '1.5', classifier: 'sources'
     implementation group: 'commons-lang', name: 'commons-lang', version: '2.6'
+    sourceOnly group: 'commons-lang', name: 'commons-lang', version: '2.6', classifier: 'sources'
+    /*
     implementation group: 'commons-collections', name: 'commons-collections', version: '3.2.1'
+    sourceOnly group: 'commons-collections', name: 'commons-collections', version: '3.2.1',
+            classifier: 'sources'
+     */
     implementation group: 'commons-logging', name: 'commons-logging', version: '1.1.1'
+    sourceOnly group: 'commons-logging', name: 'commons-logging', version: '1.1.1',
+            classifier: 'sources'
     implementation group: 'org.jdom', name: 'jdom', version: '1.1'
+    sourceOnly group: 'org.jdom', name: 'jdom', version: '1.1', classifier: 'sources'
     implementation group: 'edu.emory.mathcs', name: 'JTransforms', version: '2.4'
-    implementation group: 'log4j', name: 'log4j', version: '1.2.16' // redundant, possibly
+    sourceOnly group: 'edu.emory.mathcs', name: 'JTransforms', version: '2.4',
+            classifier: 'sources'
+    // implementation group: 'log4j', name: 'log4j', version: '1.2.16' // redundant, possibly
+    // sourceOnly group: 'log4j', name: 'log4j', version: '1.2.16', classifier: 'sources'
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.10'
+    sourceOnly group: 'org.reflections', name: 'reflections', version: '0.9.10',
+            classifier: 'sources'
     implementation group: 'edu.iris.dmc', name: 'java-seed', version: '3.8.5'
+    sourceOnly group: 'edu.iris.dmc', name: 'java-seed', version: '3.8.5', classifier: 'sources'
 
     implementation group: 'edu.sc.seis', name: 'TauP', version: '2.4.5'
-
+    sourceOnly group: 'edu.sc.seis', name: 'TauP', version: '2.4.5'
     //seis.sc.edu maven dependencies
-
     // note that when compiling jar we choose to exclude duplicate dependencies, so while
     // fissuresUtil here has previously-cited libraries, we don't need to manually exclude them
     // (these libraries are jfreechart, jcommon, and fissuresIDL -- note that fissuresIDL is
     //  bundled in jevalresp which is included as an API and thus already available)
     implementation group: 'edu.sc.seis', name: 'fissuresUtil', version: '1.1.5'
-    implementation group: 'xerces', name: 'xml-apis', version: '2.10.0'
-
+    sourceOnly group: 'edu.sc.seis', name: 'fissuresUtil', version: '1.1.5', classifier: 'sources'
+    implementation group: 'xerces', name: 'xml-apis', version: '2.10+'
+    sourceOnly group: 'xerces', name: 'xml-apis', version: '2.10+'
+    /*
+    sourceOnly group: 'xerces', name: 'xml-apis', version: '2.10+',
+            classifier: 'sources'
+    */
     testImplementation group: 'junit', name: 'junit', version: '4.+'
 }
 
+tasks.withType(Jar){
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // from sourceSets.main.allSource
+}
 
+task sourcesJar(type: Jar, dependsOn: configurations.sourceOnly){
+    classifier = 'sources'
+    // archiveBaseName = rootProject.name
+    archiveVersion = version
+    manifest {
+        attributes 'Implementation-Title': 'XMAX',
+                'Implementation-Version': archiveVersion,
+                'Build-Timestamp': new SimpleDateFormat("yyyy.MM.dd").format(new Date())
+    }
+    from sourceSets.main.allSource
+    from project(':asl-java-utils').sourceSets.main.allSource
+    // Adds all dependent libraries
+    dependsOn configurations.sourceOnly
+    from {
+        configurations.sourceOnly.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    from {
+        configurations.sourceOnly.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    with jar
+}
 
 jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     /* Adds all dependent libraries*/
     dependsOn configurations.runtimeClasspath
     from {
@@ -102,13 +167,13 @@ jar {
 
     archiveVersion = version
     archiveBaseName = rootProject.name
-
     manifest {
         attributes 'Implementation-Title': 'XMAX',
                    'Implementation-Version': archiveVersion,
                    'Main-Class': mainClassName,
                    'Build-Timestamp': new SimpleDateFormat("yyyy.MM.dd").format(new Date())
     }
+    // with jar
 }
 
 /*Turn off doclint since it is far too strict and breaks the javadoc everytime*/
@@ -122,6 +187,10 @@ if (JavaVersion.current().isJava8Compatible()) {
 
 task copyJar(type: Copy) {
     from jar
+    into rootDir
+}
+task copySourcesJar(type: Copy, dependsOn: sourcesJar) {
+    from sourcesJar
     into rootDir
 }
 
@@ -164,6 +233,7 @@ gradle.beforeProject {
 }
 
 build.dependsOn(copyJar)
+sourcesJar.dependsOn(build)
 
 javadoc {
     options.memberLevel = JavadocMemberLevel.PRIVATE

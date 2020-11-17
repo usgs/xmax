@@ -57,8 +57,8 @@ import org.apache.log4j.Logger;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.RectangleInsets;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
 
 /**
  * This is graphics container; it contains a list of ChannelView(s) (panels) and renders them as a

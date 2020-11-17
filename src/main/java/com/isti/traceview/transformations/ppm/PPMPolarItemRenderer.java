@@ -54,8 +54,8 @@ class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 			if (radius > maxRadius) {
 				maxRadius = radius;
 			}
-			@SuppressWarnings("deprecation")
-			Point p = plot.translateValueThetaRadiusToJava2D(theta, radius, dataArea);
+
+			Point p = plot.translateToJava2D(theta, radius, plot.getAxis(), dataArea);
 			if (i == 0) {
 				gp.moveTo(new Float(p.getX()), new Float(p.getY()));
 				begin = p;
@@ -72,10 +72,10 @@ class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 		// Drawing ruler
 		g2.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(2));
-		@SuppressWarnings("deprecation")
-		Point ruler1 = plot.translateValueThetaRadiusToJava2D(rulerTheta, maxRadius, dataArea);
-		@SuppressWarnings("deprecation")
-		Point ruler2 = plot.translateValueThetaRadiusToJava2D(rulerTheta + 180, maxRadius, dataArea);
+
+		Point ruler1 = plot.translateToJava2D(rulerTheta, maxRadius, plot.getAxis(), dataArea);
+		Point ruler2 = plot.translateToJava2D(rulerTheta + 180, maxRadius, plot.getAxis(),
+				dataArea);
 		g2.drawLine(ruler1.x, ruler1.y, ruler2.x, ruler2.y);
 	}
 }
