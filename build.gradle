@@ -9,6 +9,7 @@ plugins {
 }
 
 mainClassName = "com.isti.xmax.XMAX"
+def progTitle = "XMAX"
 
 /* Get first three version numbers from code.json */
 def codeJson = new JsonSlurper().parseText(new File("code.json").text)
@@ -128,7 +129,7 @@ task sourcesJar(type: Jar, dependsOn: configurations.sourceOnly){
     // archiveBaseName = rootProject.name
     archiveVersion = version
     manifest {
-        attributes 'Implementation-Title': 'XMAX',
+        attributes 'Implementation-Title': progTitle,
                 'Implementation-Version': archiveVersion,
                 'Build-Timestamp': new SimpleDateFormat("yyyy.MM.dd").format(new Date())
     }
@@ -168,7 +169,7 @@ jar {
     archiveVersion = version
     archiveBaseName = rootProject.name
     manifest {
-        attributes 'Implementation-Title': 'XMAX',
+        attributes 'Implementation-Title': progTitle,
                    'Implementation-Version': archiveVersion,
                    'Main-Class': mainClassName,
                    'Build-Timestamp': new SimpleDateFormat("yyyy.MM.dd").format(new Date())
