@@ -50,6 +50,7 @@ import com.isti.xmax.XMAXconfiguration;
 import com.isti.xmax.common.Pick;
 import com.isti.xmax.data.XMAXDataModule;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -90,6 +91,8 @@ import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -229,7 +232,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 	private JMenuItem aboutMenuItem = null;
 
-	private boolean hasDataOnLoad = true;
+	private boolean hasDataOnLoad = false;
 
 	private ActionMap actionMap;
 
@@ -376,7 +379,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				logger.error("Filter Initializing failed");
 			}
 		}
-		initialize();
+
 		CommandHandler.getInstance().addObserver(this);
 		addMouseListener(new MouseListener() {
 			@Override
@@ -453,6 +456,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			public void windowOpened(WindowEvent e) {
 			}
 		});
+
+		initialize();
 	}
 
 	/**
@@ -558,20 +563,24 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		phaseMenuCheckBox.setState(graphPanel.getPhaseState());
 		meanMenuCheckBox.setState(graphPanel.getMeanState() instanceof MeanModeEnabled);
 		XMAXDataModule dm = XMAX.getDataModule();
-		hasDataOnLoad = true;
-		try {
-			graphPanel.setChannelShowSet(dm.getNextChannelSet());
-		} catch (TraceViewException e) {
-			if (dm.getAllSources().size() > 0) {
-				JOptionPane.showMessageDialog(this, "This is the last set", "Information",
-						JOptionPane.INFORMATION_MESSAGE);
-			} else {
-				hasDataOnLoad = false;
+		hasDataOnLoad = dm.getAllSources().size() > 0;
+		Component parentComponent = this;
+		Runnable worker = () -> {
+			try {
+				graphPanel.setChannelShowSet(dm.getNextChannelSet());
+			} catch (TraceViewException e) {
+				if (dm.getAllSources().size() > 0) {
+					JOptionPane.showMessageDialog(parentComponent,
+							"This is the last set", "Information",
+							JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					hasDataOnLoad = false;
+				}
 			}
-		}
-		statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
-				dm.getAllChannels().size());
-
+			statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
+					dm.getAllChannels().size());
+		};
+		new Thread(worker).start();
 		logger.debug("== Exit");
 	}
 

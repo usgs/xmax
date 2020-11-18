@@ -54,6 +54,8 @@ public class RawDataProvider extends Channel {
 
   protected final List<SegmentCache> rawData;
 
+  private List<ContiguousSegmentRange> contiguousRanges;
+
   private boolean loadingStarted = false;
   private boolean loaded = false;
 
@@ -68,6 +70,7 @@ public class RawDataProvider extends Channel {
       String locationName) {
     super(channelName, station, networkName, locationName);
     rawData = new ArrayList<>();
+    contiguousRanges = new ArrayList<>();
   }
 
 
@@ -149,20 +152,26 @@ public class RawDataProvider extends Channel {
    * @return
    */
   private int findIndexOfSegmentContainingTime(long time) {
-    Collections.sort(rawData);
+    // Collections.sort(rawData);
     return findSegmentContainingTime(time, 0, rawData.size());
   }
 
   private int findSegmentContainingTime(long time, int lowerBound, int upperBound) {
     // base case
     if (upperBound - lowerBound <= 5) {
+      if (time < rawData.get(lowerBound).getSegment().getStartTimeMillis()) {
+        return -(lowerBound + 1);
+      }
       for (int i = lowerBound; i < upperBound; ++i) {
         Segment seg = rawData.get(i).getSegment();
         if (time >= seg.getStartTimeMillis() && time < seg.getEndTimeMillis()) {
           return i;
+        } else if (time < seg.getStartTimeMillis() &&
+            time >= rawData.get(i-1).getSegment().getEndTimeMillis()) {
+          return -(i + 1);
         }
       }
-      return -1;
+      return -(upperBound + 1);
     }
 
     int midPoint = ((upperBound - lowerBound) / 2) + lowerBound;
@@ -181,17 +190,16 @@ public class RawDataProvider extends Channel {
    */
   public List<Segment> getRawData(TimeInterval ti) {
     List<Segment> ret = Collections.synchronizedList(new ArrayList<>());
-    synchronized (rawData) {
-      // lg.debug("getRawData:" + toString() + ti);
-      for (SegmentCache sc : rawData) {
-        Segment segment = sc.getSegment();
-        if ((segment != null) && ti
-            .isIntersect(new TimeInterval(segment.getStartTime(), segment.getEndTime()))) {
-          ret.add(segment);
-        }
+    for (int i = 0; i < rawData.size(); ++i) {
+      Segment seg = rawData.get(i).getSegment();
+      if ((seg != null) && ti.isIntersect(
+          new TimeInterval(seg.getStartTime(), seg.getEndTime()))) {
+        ret.add(seg);
+      } else if (seg.getStartTimeMillis() > ti.getEnd()) {
+        break;
       }
-      return ret;
     }
+    return ret;
   }
 
   /**
@@ -240,12 +248,27 @@ public class RawDataProvider extends Channel {
       return;
     }
     synchronized (rawData) {
+      boolean notContinuous = rawData.size() == 0 ||
+          Segment.isDataBreak(rawData.get(rawData.size() - 1).getSegment().getEndTimeMillis(),
+              segment.getStartTimeMillis(), segment.getSampleRate());
       rawData.add(new SegmentCache(segment));
+      int newestSegmentIndex = rawData.size() - 1;
       segment.setRawDataProvider(this);
-      Collections.sort(rawData);
+
+      if (contiguousRanges.size() == 0 || notContinuous) {
+        contiguousRanges.add(
+            new ContiguousSegmentRange(newestSegmentIndex, newestSegmentIndex,
+                segment.getStartTimeMillis()));
+      } else {
+        contiguousRanges.get(contiguousRanges.size() - 1).setEndingIndex(newestSegmentIndex);
+      }
     }
     setSampleRate(segment.getSampleRate());
     logger.debug(segment + " added to " + this);
+  }
+
+  protected List<SegmentCache> getSegmentCache() {
+    return rawData;
   }
 
   /**
@@ -262,14 +285,15 @@ public class RawDataProvider extends Channel {
 
     resetCaches = false;
     synchronized (rawData) {
-      List<Segment> segments = mergeIn.getRawData();
+      List<SegmentCache> segments = mergeIn.getSegmentCache();
       // now go through the data we're merging in and see if they overlap/duplicate
-      Collections.sort(rawData); // sort segment cache by start time to speed up search step
+      sort(); // do full sort to ensure contiguous segment list is correct
       // i.e., this allows us to do binary search operations on the data
       outerLoop:
-      for (Segment segment : segments) {
+      for (SegmentCache cachedSegment : segments) {
+        Segment segment = cachedSegment.getSegment();
         // end time of data refers to the point at which the next sample would be taken
-        // so if a segment ends at the same time that another one begins, they represent a continuous
+        // so if a segment ends at the same time that another one begins, they are a continuous
         // trace over that length of time. as a result we can perform trim operations by setting
         // the data-to-merge's start and end times to the end and start of data between gaps
 
@@ -364,12 +388,28 @@ public class RawDataProvider extends Channel {
    * @return time range of contained data
    */
   public TimeInterval getTimeRange() {
-    if (rawData.size() == 0) {
-      return null;
-    } else {
-      return new TimeInterval(rawData.get(0).getSegment().getStartTime(),
-          rawData.get(rawData.size() - 1).getSegment().getEndTime());
+    synchronized (rawData) {
+      if (rawData.size() == 0) {
+        return null;
+      } else {
+        if (!sorted()) {
+          sort();
+        }
+        return new TimeInterval(rawData.get(0).getSegment().getStartTime(),
+            rawData.get(rawData.size() - 1).getSegment().getEndTime());
+      }
     }
+  }
+
+  public boolean sorted() {
+    for (int i = 1; i < contiguousRanges.size(); ++i) {
+      if (contiguousRanges.get(i-1).compareTo(contiguousRanges.get(i)) > 0) {
+        return false;
+      }
+    }
+    long start = rawData.get(0).getSegment().getStartTimeMillis();
+    long end = rawData.get(rawData.size() - 1).getSegment().getEndTimeMillis();
+    return start < end;
   }
 
   /**
@@ -377,7 +417,8 @@ public class RawDataProvider extends Channel {
    */
   public int getMaxValue() {
     int ret = Integer.MIN_VALUE;
-    for (Segment segment : getRawData()) {
+    for (SegmentCache cached : rawData) {
+      Segment segment = cached.getSegment();
       if (segment.getMaxValue() > ret) {
         ret = segment.getMaxValue();
       }
@@ -390,7 +431,8 @@ public class RawDataProvider extends Channel {
    */
   public int getMinValue() {
     int ret = Integer.MAX_VALUE;
-    for (Segment segment : getRawData()) {
+    for (SegmentCache cached : rawData) {
+      Segment segment = cached.getSegment();
       if (segment.getMinValue() < ret) {
         ret = segment.getMinValue();
       }
@@ -425,14 +467,13 @@ public class RawDataProvider extends Channel {
    * @param ti The TimeInterval to load
    */
   private void loadData(TimeInterval ti) {
-
-    rawData.stream()
+    rawData.parallelStream()
         .filter(e -> !e.getSegment().getIsLoaded())
         .forEach(e -> {
           e.getSegment().load();
           e.getSegment().setIsLoaded(true);
         });
-    sort();
+    // sort();
   }
 
   /**
@@ -497,28 +538,26 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * Loads all data to this provider from it's data sources
+   * Loads all data to this provider from its data sources
    */
   public void load() {
-    synchronized (rawData) {
-      loadingStarted = true;
-      loadData(null);
-      loaded = true;
-      setChanged();
-    }
+    if (loaded) return;
+
+    loadingStarted = true;
+    loadData(null);
+    loaded = true;
+    setChanged();
     notifyObservers(getTimeRange());
   }
 
   /**
-   * Loads data inside given time interval to this provider from it's data sources
+   * Loads data inside given time interval to this provider from its data sources
    */
   public void load(TimeInterval ti) {
-    synchronized (rawData) {
-      loadingStarted = true;
-      loadData(ti);
-      loaded = true;
-      setChanged();
-    }
+    loadingStarted = true;
+    loadData(ti);
+    loaded = true;
+    setChanged();
     notifyObservers(getTimeRange());
   }
 
@@ -730,17 +769,49 @@ public class RawDataProvider extends Channel {
     return "RawDataProvider:" + super.toString();
   }
 
+  public void sortRawData() {
+    if (sorted()) return;
+
+    synchronized (rawData) {
+      Collections.sort(contiguousRanges);
+      List<SegmentCache> sortedSegmentCache = new ArrayList<>(rawData.size());
+      for (ContiguousSegmentRange segmentRange : contiguousRanges) {
+        int lowerIndex = segmentRange.startingIndex;
+        int upperIndex = segmentRange.getEndingIndex();
+        // note that upperIndex IS INCLUSIVE here
+        for (int i = lowerIndex; i <= upperIndex; ++i) {
+          sortedSegmentCache.add(rawData.get(i));
+        }
+      }
+      for (int i = 0; i < sortedSegmentCache.size(); ++i) {
+        rawData.set(i, sortedSegmentCache.get(i));
+      }
+    }
+  }
+
+
   /**
    * Sorts data provider after loading
    */
   public void sort() {
-    Collections.sort(rawData);
+    // empty data is already sorted -- will happen on first load operation after construction
+    if (rawData.size() == 0)
+      return;
+
+    sortRawData();
+    // now we reset contiguous ranges if we need to do more sorting in the future
+    contiguousRanges = new ArrayList<>();
+    contiguousRanges.add(
+        new ContiguousSegmentRange(0, 0, rawData.get(0).getSegment().getStartTimeMillis()));
+    // Collections.sort(rawData);
     // setting channel serial numbers in segments
     Segment previousSegment = null;
     int segmentNumber = 0;
     int sourceNumber = 0;
     int continueAreaNumber = 0;
-    for (Segment segment : getRawData()) {
+    // rawData should already be in order at this point
+    for (int i = 0; i < rawData.size(); i++) {
+      Segment segment = rawData.get(i).getSegment();
       if (previousSegment != null) {
         if (Segment
             .isDataBreak(previousSegment.getEndTime().getTime(), segment.getStartTime().getTime(),
@@ -756,6 +827,12 @@ public class RawDataProvider extends Channel {
           sourceNumber++;
         }
       }
+      if (segmentNumber == contiguousRanges.size()) {
+        contiguousRanges.add(
+            new ContiguousSegmentRange(i, i, segment.getStartTimeMillis()));
+      } else {
+        contiguousRanges.get(segmentNumber).setEndingIndex(i);
+      }
       previousSegment = segment;
       segment.setChannelSerialNumber(segmentNumber);
       segment.setSourceSerialNumber(sourceNumber);
@@ -768,7 +845,8 @@ public class RawDataProvider extends Channel {
    */
   public void printout() {
     System.out.println("  " + toString());
-    for (Segment segment : getRawData()) {
+    for (SegmentCache cached : rawData) {
+      Segment segment = cached.getSegment();
       System.out.println("    " + segment.toString());
     }
   }
@@ -841,55 +919,31 @@ public class RawDataProvider extends Channel {
     }
     logger.debug("== EXIT");
   }
-}
 
-  /**
-   * internal class to hold original segment (cache(0)) and it's images processed by filters. Also
-   * may define caching policy.
-   */
-  class SegmentCache implements Serializable, Comparable<Object> {
+  static class ContiguousSegmentRange implements Comparable<Object> {
+    public final int startingIndex;
+    public final long startEpochMillis;
+    private int endingIndex;
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    private Segment initialData;
-
-    SegmentCache(Segment segment) {
-      initialData = segment;
+    ContiguousSegmentRange(int start, int end, long startEpochMillis) {
+      startingIndex = Math.min(start, end);
+      endingIndex = Math.max(start, end);
+      this.startEpochMillis = startEpochMillis;
     }
 
-    /**
-     * Setter for raw data
-     *
-     * @param segment The new initial data
-     */
-    @SuppressWarnings("unused")  //Why is this here?
-    public void setData(Segment segment) {
-      initialData = segment;
+    public int getEndingIndex() {
+      return endingIndex;
     }
 
-    /**
-     * Sets data stream to serialize this SegmentCache
-     *
-     * @param dataStream stream to serialize
-     */
-    public void setDataStream(RandomAccessFile dataStream) {
-      initialData.setDataStream(dataStream);
+    public void setEndingIndex(int endingIndex) {
+      this.endingIndex = endingIndex;
     }
 
-    /**
-     * Getter for segment with raw, unprocessed data
-     *
-     * @return the initial data
-     */
-    public Segment getSegment() {
-      return initialData;
+    public String toString() {
+      return String.valueOf(startEpochMillis);
     }
 
-    /**
-     * Standard comparator - by start time
-     */
+    @Override
     public int compareTo(Object o) {
       if (this.equals(o)) {
         return 0;
@@ -897,16 +951,84 @@ public class RawDataProvider extends Channel {
       if (o == null) {
         return -1;
       }
-      if (o instanceof SegmentCache) {
-        SegmentCache sc = (SegmentCache) o;
-        if (getSegment().getStartTime().getTime() > sc.getSegment().getStartTime().getTime()) {
+      if (o instanceof ContiguousSegmentRange) {
+        ContiguousSegmentRange csr = (ContiguousSegmentRange) o;
+        if (this.startEpochMillis > csr.startEpochMillis) {
           return 1;
-        } else if (getSegment().getStartTime().getTime() == sc.getSegment().getStartTime()
-            .getTime()) {
+        } else if (this.startEpochMillis == csr.startEpochMillis) {
           return 0;
         }
       }
       return -1;
     }
-
   }
+}
+
+/**
+ * internal class to hold original segment (cache(0)) and it's images processed by filters. Also
+ * may define caching policy.
+ */
+class SegmentCache implements Serializable, Comparable<Object> {
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+  private Segment initialData;
+
+  SegmentCache(Segment segment) {
+    initialData = segment;
+  }
+
+  /**
+   * Setter for raw data
+   *
+   * @param segment The new initial data
+   */
+  @SuppressWarnings("unused")  //Why is this here?
+  public void setData(Segment segment) {
+    initialData = segment;
+  }
+
+  /**
+   * Sets data stream to serialize this SegmentCache
+   *
+   * @param dataStream stream to serialize
+   */
+  public void setDataStream(RandomAccessFile dataStream) {
+    initialData.setDataStream(dataStream);
+  }
+
+  /**
+   * Getter for segment with raw, unprocessed data
+   *
+   * @return the initial data
+   */
+  public Segment getSegment() {
+    return initialData;
+  }
+
+  /**
+   * Standard comparator - by start time
+   */
+  public int compareTo(Object o) {
+    if (this.equals(o)) {
+      return 0;
+    }
+    if (o == null) {
+      return -1;
+    }
+    if (o instanceof SegmentCache) {
+      SegmentCache sc = (SegmentCache) o;
+      if (getSegment().getStartTime().getTime() > sc.getSegment().getStartTime().getTime()) {
+        return 1;
+      } else if (getSegment().getStartTime().getTime() == sc.getSegment().getStartTime()
+          .getTime()) {
+        return 0;
+      }
+    }
+    return -1;
+  }
+
+}
+

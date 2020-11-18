@@ -628,9 +628,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			// Graph's number, used to separate graphs then overlay mode is activated
 			int graphNum = 0;
 			Color segmentColor = null;
-			if (graphPanel.initialPaint) {
-				System.out.print("...");
-			}	
 
 			for (PlotData data: graphs) {
 				int i = 0;

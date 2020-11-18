@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -117,7 +116,7 @@ public class DataModule extends Observable {
             channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
       }
     }
-    channels.sort(Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
+    channels.parallelStream().forEach(RawDataProvider::sort);
     logger.info("Initial file parses completed");
     return filesProducingError.toArray(new File[]{});
   }
@@ -205,7 +204,7 @@ public class DataModule extends Observable {
       logger.debug("== call channel.load() for channel=" + channel);
       channel.load();
       logger.debug("== call channel.load() DONE for channel=" + channel);
-      channel.initPointCache(colorMode);
+      channel.initPointCache();
       System.out.format("\tSerialize to file:%s\n", storage.getSerialFileName(channel));
       channel.dump(storage.getSerialFileName(channel));
       //MTH: not sure why this is needed
@@ -714,8 +713,9 @@ public class DataModule extends Observable {
     boolean ret = false;
     TimeInterval newTI = new TimeInterval();
     for (PlotDataProvider channel : channels) {
-      newTI.setMinValue(channel.getTimeRange().getStartTime());
-      newTI.setMaxValue(channel.getTimeRange().getEndTime());
+      TimeInterval ti = channel.getTimeRange();
+      newTI.setMinValue(ti.getStartTime());
+      newTI.setMaxValue(ti.getEndTime());
     }
     if (!newTI.equals(allChannelsTI)) {
       allChannelsTI = newTI;

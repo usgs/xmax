@@ -64,7 +64,7 @@ import org.jfree.chart.ui.RectangleInsets;
  * This is graphics container; it contains a list of ChannelView(s) (panels) and renders them as a
  * 1-column table; responsible for ChannelView selecting and ordering selecting time and values
  * ranges, holds information about current representation state.
- * 
+ *
  * @author Max Kokoulin
  */
 public class GraphPanel extends JPanel implements Printable, MouseInputListener, Observer {
@@ -77,13 +77,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/** The Constant selectionColor. */
 	private static final Color selectionColor = Color.YELLOW;
-	
+
 	/** The axis font. */
 	private static Font axisFont = null; // @jve:decl-index=0:
-	
+
 	/** The hidden cursor. */
 	private static Cursor hiddenCursor = null;
-	
+
 	/** The cross cursor. */
 	private static Cursor crossCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
@@ -98,22 +98,22 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/** List of graphs */
 	private List<ChannelView> channelShowSet = null; // @jve:decl-index=0:
-	
+
 	/** The selected channel show set. */
 	private List<ChannelView> selectedChannelShowSet = null;
-	
+
 	/** The previously selected channels with the level that they were selected */
 	private List<SelectionContainer> previousSelectedChannels = new ArrayList<>();
-	
+
 	/** The current level of channel selection */
-	private int selectionLevel = 0; 
-	
+	private int selectionLevel = 0;
+
 	/** Amount of units to show simultaneously in this graph panel. */
 	private int unitsShowCount;
 
 	/** The draw area panel. */
 	private DrawAreaPanel drawAreaPanel = null;
-	
+
 	/** The south panel. */
 	private SouthPanel southPanel = null;
 
@@ -139,7 +139,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * Mouse position during previous repaint() call, Y coordinate.
 	 */
 	protected int previousMouseY = -1;
-	
+
 	/** Flag if we need to repaint mouse cross cursor. */
 	private boolean mouseRepaint = false;
 
@@ -152,7 +152,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	protected boolean initialPaint = false;
 
 	/** Flag for ChannelView mouse movements (draw crosshair). */
-	protected boolean cvMouseMoved = false;	
+	protected boolean cvMouseMoved = false;
 
 	/** Flag when exiting ChannelView panel (erase prev crosshair). */
 	private boolean cvMouseExited = false;
@@ -178,25 +178,25 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/** The selected area xbegin. */
 	private long selectedAreaXbegin = Long.MAX_VALUE;
-	
+
 	/** The selected area xend. */
 	private long selectedAreaXend = Long.MIN_VALUE;
-	
+
 	/** The selected area ybegin. */
 	private double selectedAreaYbegin = Double.NaN;
-	
+
 	/** The selected area yend. */
 	private double selectedAreaYend = Double.NaN;
 
 	/** The previous selected area xbegin. */
 	private long previousSelectedAreaXbegin = Long.MAX_VALUE;
-	
+
 	/** The previous selected area xend. */
 	private long previousSelectedAreaXend = Long.MIN_VALUE;
-	
+
 	/** The previous selected area ybegin. */
 	private double previousSelectedAreaYbegin = Double.NaN;
-	
+
 	/** The previous selected area yend. */
 	private double previousSelectedAreaYend = Double.NaN;
 
@@ -228,54 +228,54 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/** The phase state. */
 	private boolean phaseState = false;
-	
+
 	/** The pick state. */
 	private boolean pickState = false;
-	
+
 	/** The overlay. */
 	private boolean overlay = false;
-	
+
 	/** The select. */
 	private boolean select = false;
-	
+
 	/** The filter. */
 	private IFilter filter = null;
-	
+
 	/** The rotation. */
 	private Rotation rotation = null;
-	
+
 	/** The gain */
 	private RemoveGain gain = new RemoveGain(false);
 
 	/** Visible earthquakes to draw on the graphs. */
 	private Set<IEvent> selectedEarthquakes = null; // @jve:decl-index=0:
-	
+
 	/** Visible phases to draw on the graphs. */
 
 	private Set<String> selectedPhases = null; // @jve:decl-index=0:
-	
+
 	/** The mouse adapter. */
 	private IMouseAdapter mouseAdapter = null;
-	
+
 	/** The time range adapter. */
 	private ITimeRangeAdapter timeRangeAdapter = null;
-	
+
 	/** The channel view factory. */
 	protected IChannelViewFactory channelViewFactory = new DefaultChannelViewFactory();
-	
+
 	/** The mark position image. */
 	private Image markPositionImage = null;
-	
+
 	/** if we need show block header as tooltip. */
 	private boolean isShowBlockHeader = false;
-	
+
 	/**
 	 * Default constructor.
 	 */
 	public GraphPanel() {
 		this(true);
 	}
-	
+
 	/**
 	 * Instantiates a new graph panel.
 	 *
@@ -319,29 +319,29 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		URL url = null;
 		try {
 			url = GraphPanel.class.getResource("/defaultMarkPosition.gif");
-			logger.info(String.format("== MTH: file=%s\n", url.getFile()));	
+			logger.info(String.format("== MTH: file=%s\n", url.getFile()));
 			markPositionImage = javax.imageio.ImageIO.read(url);
 			//} catch (MalformedURLException e) {
 		} catch (Exception e) {
-	     		// Do something appropriate
-			logger.error("Exception:", e);	
+			// Do something appropriate
+			logger.error("Exception:", e);
 		}
 
 		/** ----------------- MTH ---------------- **/
-		
+
 		/**
-				try {
-					markPositionImage = javax.imageio.ImageIO.read(ClassLoader.getSystemResource("defaultMarkPosition.gif"));
-				} catch (IOException e) {
-					markPositionImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-					lg.error("Can't read mark position image: " + e);
-				}
-		**/
+		 try {
+		 markPositionImage = javax.imageio.ImageIO.read(ClassLoader.getSystemResource("defaultMarkPosition.gif"));
+		 } catch (IOException e) {
+		 markPositionImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+		 lg.error("Can't read mark position image: " + e);
+		 }
+		 **/
 	}
-	
+
 	/**
 	 * Pixelizes and paints new data
-	 * 
+	 *
 	 * NOTE: This should only be used with changed data (i.e. zoom, filter, etc.)
 	 */
 	public void forceRepaint(){
@@ -352,7 +352,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	/**
 	 * Sets factory to produce ChannelViews. Library user can define his own factory to produce
 	 * customized ChannelViews.
-	 * 
+	 *
 	 * @param cvf
 	 *            User's factory
 	 */
@@ -385,13 +385,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		southPanel.getInfoPanel().update(ti);
 		getObservable().setChanged();
 		getObservable().notifyObservers(ti);
-		forceRepaint();	
+		forceRepaint();
 	}
 
 	/**
 	 * If true, graph panel itself changes time range after data set changing to show all loaded
 	 * data. If false, given time range used.
-	 * 
+	 *
 	 * @param value
 	 *            Flag if graphPanel should manage its TimeInterval itself
 	 */
@@ -402,7 +402,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	/**
 	 * If true, graph panel itself changes time range after data set changing to show all loaded
 	 * data. If false, given time range used.
-	 * 
+	 *
 	 * @return Flag if graphPanel should manage its TimeInterval itself
 	 */
 	public boolean isShouldManageTimeRange() {
@@ -520,7 +520,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		ScaleModeAbstract.setManualValueMax(manualValueMax);
 		forceRepaint();
 	}
-	
+
 	/**
 	 * Gets the show block header.
 	 *
@@ -529,7 +529,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public boolean getShowBlockHeader(){
 		return isShowBlockHeader;
 	}
-	
+
 	/**
 	 * Sets the show block header.
 	 *
@@ -560,7 +560,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	/**
 	 * Getter of the property <tt>channelShowSet</tt>. Returns list of views for current page
 	 * without influence of selection commands, like select or overlay
-	 * 
+	 *
 	 * @return Returns the channelShowSet.
 	 */
 	public List<ChannelView> getChannelShowSet() {
@@ -609,14 +609,14 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		Collections.sort(ret);
 		return ret;
 	}
-	
+
 	/**
 	 * Unchecks all selected ChannelView's in the GraphPanel
 	 */
 	public void clearSelectedChannels() {
 		List<ChannelView> cvList = getCurrentChannelShowSet();
 		for(ChannelView cv : cvList){
-			cv.clearCheckBox(); 
+			cv.clearCheckBox();
 		}
 	}
 
@@ -632,7 +632,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Setter of the property <tt>channelShowSet</tt> each channel in it's own graph or group by
 	 * location in each graph.
@@ -644,7 +644,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (channels != null) {
 				clearChannelShowSet();
 				CommandHandler.getInstance().clearCommandHistory();
-				
+
 				// This is the main method for all station channels for one
 				// GraphPanel (i.e. one station multiple channels per panel)
 				if (!TraceView.getConfiguration().getMergeLocations()) {
@@ -654,16 +654,23 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// **NOTE: addChannelShowSet() calls the addGraph() method which
 					//		   creates a graph panel for each channel submitted
 					for (PlotDataProvider channel: channels) {
-                        			//logger.debug("== handle channel=" + channel);
+						//logger.debug("== handle channel=" + channel);
 						List<PlotDataProvider> toAdd = new ArrayList<>();
 						toAdd.add(channel);
 						addChannelShowSet(toAdd);
 					}
-					
+
 					// Loops through ChannelView objects and loads segment data
 					// TimeInterval ti = null;
+					logger.info("Performing initial load of data from files");
+					Instant start = Instant.now();
 					channelShowSet.parallelStream().forEach(
 							e -> e.getPlotDataProviders().forEach(RawDataProvider::load));
+					Instant end = Instant.now();
+					double duration = (end.toEpochMilli() - start.toEpochMilli()) / 1000.;
+					logger.info("Data point loading completed after " + duration + " seconds.");
+
+
 					//logger.debug("Channels are done loading");
 				} else {
 					List<PlotDataProvider> toAdd = new ArrayList<>();
@@ -676,8 +683,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						// 		   make sense when only one channel is being submitted
 						if (prevChannel != null
 								&& (!prevChannel.getNetworkName().equals(channel.getNetworkName())
-										|| !prevChannel.getStation().getName().equals(channel.getStation().getName()) || !prevChannel
-										.getChannelName().equals(channel.getChannelName()))) {
+								|| !prevChannel.getStation().getName().equals(channel.getStation().getName()) || !prevChannel
+								.getChannelName().equals(channel.getChannelName()))) {
 							ChannelView cv = channelViewFactory.getChannelView(toAdd);
 							addGraph(cv);
 							toAdd = new ArrayList<>();
@@ -730,7 +737,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					setTimeRange(TimeInterval.getAggregate(timeRange, cv.getLoadedTimeRange()));
 				}
 			}
-			repaint();	// why repaint when adding channels to set?
+			// repaint();	// why repaint when adding channels to set?
 			getObservable().setChanged();
 			getObservable().notifyObservers(channels);
 		}
@@ -965,7 +972,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * Sets filter. Null means filter doesn't affected. Shown traces will be redrawn with filtering.
-	 * 
+	 *
 	 * @param filter
 	 *            IFilter to set
 	 */
@@ -978,7 +985,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					getObservable().setChanged();
 					getObservable().notifyObservers(filter);
 					forceRepaint();
-				} 
+				}
 			} else {
 				this.filter = filter;
 				getObservable().setChanged();
@@ -1005,7 +1012,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	/**
 	 * Sets rotation. Null means rotation doesn't affected. Selected traces will be redrawn with
 	 * rotation with using of "selection" mode.
-	 * 
+	 *
 	 * @param rotation
 	 *            rotation to set to set
 	 */
@@ -1041,7 +1048,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				} 
 		}
 	}*/
-	
+
 	/**
 	 * Gets the rotation.
 	 *
@@ -1050,31 +1057,31 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	/*public Rotation getRotation() {
 		return rotation;
 	}*/
-	
+
 	/**
 	 * Sets gain factor to scale data by.
-	 * 
+	 *
 	 * @param gain
 	 *            gain to set
 	 */
 	public void setRemoveGainState(RemoveGain gain) {
-			List<ChannelView> currentChannelShowSet = getCurrentChannelShowSet();
-			drawAreaPanel.removeAll();
-			for (ChannelView cv: currentChannelShowSet) {
-				drawAreaPanel.add(cv);
-			}
-			select = false;
-			overlay = false;
-			this.gain = gain;
-			getObservable().setChanged();
-			getObservable().notifyObservers("REMOVE GAIN");
-			forceRepaint();	
+		List<ChannelView> currentChannelShowSet = getCurrentChannelShowSet();
+		drawAreaPanel.removeAll();
+		for (ChannelView cv: currentChannelShowSet) {
+			drawAreaPanel.add(cv);
+		}
+		select = false;
+		overlay = false;
+		this.gain = gain;
+		getObservable().setChanged();
+		getObservable().notifyObservers("REMOVE GAIN");
+		forceRepaint();
 	}
-	
+
 	public RemoveGain getRemoveGain(){
 		return this.gain;
 	}
-	
+
 	/**
 	 * Gets the max data length.
 	 *
@@ -1196,11 +1203,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				drawAreaPanel.add(overlay);
 			} else {
 				SwingUtilities.invokeLater(new Runnable() {
-				    public void run() {
+					public void run() {
 						JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for panels to overlay", "Selection missing",
 								JOptionPane.WARNING_MESSAGE);
-				    }
-				  });
+					}
+				});
 			}
 		}
 		getObservable().setChanged();
@@ -1268,11 +1275,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				}
 			} else {
 				SwingUtilities.invokeLater(new Runnable() {
-				    public void run() {
+					public void run() {
 						JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for panels to select", "Selection missing",
 								JOptionPane.WARNING_MESSAGE);
-				    }
-				  });
+					}
+				});
 			}
 		}
 		getObservable().setChanged();
@@ -1336,7 +1343,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	/**
 	 * Sets earthquakes and phase names to draw on the graphs. Will be drawn only phases which
 	 * satisfy both sets.
-	 * 
+	 *
 	 * @param earthquakes
 	 *            set of earthquakes
 	 * @param phases
@@ -1373,13 +1380,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		if(!paintNow){
 			paintNow = true;
 			int infoPanelWidth = channelViewFactory.getInfoAreaWidth();
-			
+
 			// Only pixelize and paint data if initial load or when data is changed
 			//!mouseRepaint
 			if (initialPaint || forceRepaint || !mouseRepaint || ChannelView.tooltipVisible) {
 				//RepaintManager rm = RepaintManager.currentManager(this);
 				//rm.markCompletelyDirty(this);
-				
+
 				// Pixelization should only occur for data changes 
 				// (i.e. filtering, spectral density, zooming, etc.)
 				Instant start = Instant.now();
@@ -1390,28 +1397,28 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					final List<String> channelsWithErrors = new ArrayList<>();
 					Arrays.stream(drawAreaPanel.getComponents()).map(component -> (ChannelView) component)
 							.parallel().forEach(view -> {
-								if (view.getHeight() == 0 || view.getWidth() == 0) {
-									// Ugly hack to avoid lack of screen redraw sometimes
-									//logger.debug("DrawAreaPanel: rebuilding corrupted layout");
-									drawAreaPanel.doLayout();
-									for (Component comp : drawAreaPanel.getComponents()) {
-										comp.doLayout();
-									}
-								}
-								String errorChannel = view.updateData();
-								if (!errorChannel.equals("")) {
-									channelsWithErrors.add(errorChannel);
-								}
-							});
+						if (view.getHeight() == 0 || view.getWidth() == 0) {
+							// Ugly hack to avoid lack of screen redraw sometimes
+							//logger.debug("DrawAreaPanel: rebuilding corrupted layout");
+							drawAreaPanel.doLayout();
+							for (Component comp : drawAreaPanel.getComponents()) {
+								comp.doLayout();
+							}
+						}
+						String errorChannel = view.updateData();
+						if (!errorChannel.equals("")) {
+							channelsWithErrors.add(errorChannel);
+						}
+					});
 					if(channelsWithErrors.size() > 0){
 						SwingUtilities.invokeLater(new Runnable() {
-						    public void run() {
-						    	JOptionPane.showMessageDialog(TraceView.getFrame(),
-											"Error with:" + "\n" + StringUtils.join(channelsWithErrors,
-													"\n"), "Warning", JOptionPane.WARNING_MESSAGE);
-						    }
-						  });
-	
+							public void run() {
+								JOptionPane.showMessageDialog(TraceView.getFrame(),
+										"Error with:" + "\n" + StringUtils.join(channelsWithErrors,
+												"\n"), "Warning", JOptionPane.WARNING_MESSAGE);
+							}
+						});
+
 					}
 				}
 				if (initialPaint || forceRepaint) {
@@ -1429,10 +1436,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					// g.setXORMode(selectionColor); Hack for java 6
 					g.drawLine(infoPanelWidth, mouseY, getWidth(), mouseY);
 					g.drawLine(mouseX, 0, mouseX, getHeight());
-					
+
 					previousMouseX = mouseX;
 					previousMouseY = mouseY;
-				} 
+				}
 				// Drawing selection area
 				paintSelection(g, selectedAreaXbegin, selectedAreaXend, selectedAreaYbegin, selectedAreaYend, "Drawing");
 				previousSelectedAreaXbegin = selectedAreaXbegin;
@@ -1474,7 +1481,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				previousSelectedAreaYend = selectedAreaYend;
 				forceRepaint = false;
 				mouseRepaint = false;
-				cvMouseMoved = false;	
+				cvMouseMoved = false;
 			}
 			paintNow = false;
 		}
@@ -1511,7 +1518,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			// getScaleMode().getY(Yend));
 			if (Yend > Ybegin) {
 				g.fillRect(infoPanelWidth, getScaleMode().getY(Yend), getWidth(), getScaleMode().getY(Ybegin)
-								- getScaleMode().getY(Yend));
+						- getScaleMode().getY(Yend));
 			} else {
 				g.fillRect(infoPanelWidth, getScaleMode().getY(Ybegin), getWidth(), getScaleMode().getY(Yend)
 						- getScaleMode().getY(Ybegin));
@@ -1661,7 +1668,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 
 	/**
 	 * Method is called when the mouse enters the chart area. 
-	 * 
+	 *
 	 * @param e the event
 	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
 	 */
@@ -1686,18 +1693,18 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	// Method for XMAXframe mouse exiting (later use)
 	public void xframeMouseExited(MouseEvent e) {
 	}
-	
+
 	/**
 	 * Cv mouse exited.
 	 *
 	 * @param e the e
 	 */
 	// Method for ChannelView mouse exiting
-	public void cvMouseExited(MouseEvent e) {	
-		cvMouseExited = true;	
+	public void cvMouseExited(MouseEvent e) {
+		cvMouseExited = true;
 		mouseX = -1;
 		mouseY = -1;
-		repaint(); 	
+		repaint();
 	}
 
 	/* (non-Javadoc)
@@ -1708,13 +1715,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		if (mouseX != -1 || mouseY != -1) {
 			mouseX = -1;
 			mouseY = -1;
-			repaint(); 	
+			repaint();
 		}
 	}
 
-	/** 
+	/**
 	 * Mouse clicked.
-	 * 
+	 *
 	 * @param e the event
 	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
 	 */
@@ -1747,14 +1754,14 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			if (mouseDragged) {	// forceRepaint() when zooming
 				//mouseRepaint = false;	
 				//forceRepaint();	// forceRepaint=true, repaint()
-				mouseRepaint = true; 
-				repaint(); 
+				mouseRepaint = true;
+				repaint();
 				mouseDragged = false; //reset mouse dragged to false after repainting
 			} else {	// mouse clicked => erase cursor
-				forceRepaint = false;	
-				mouseRepaint = false;	
+				forceRepaint = false;
+				mouseRepaint = false;
 				repaint();
-			}	
+			}
 		}
 	}
 
@@ -1824,7 +1831,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			return new Date(nearestSegment);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see javax.swing.JComponent#setBackground(java.awt.Color)
 	 */
@@ -1838,14 +1845,14 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	/**
 	 * Time-axis panel used by GraphPanel.
 	 */
-	class AxisPanel extends JPanel {	
+	class AxisPanel extends JPanel {
 
 		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
-		
+
 		/** The axis. */
 		private DateAxis axis = null;
-		
+
 		/**
 		 * Instantiates a new axis panel.
 		 */
@@ -1857,10 +1864,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			axis = new DateAxis();
 			axis.setTimeZone(TimeZone.getTimeZone("GMT"));
 			axis.setDateFormatOverride(TimeInterval.df_long);
-            //axis.setMinorTickCount(10);
-            axis.setMinorTickMarksVisible(true);
-            axis.setTickMarkOutsideLength(6F);
-            axis.setTickLabelInsets( new RectangleInsets(6., 4., 2., 4.) );
+			//axis.setMinorTickCount(10);
+			axis.setMinorTickMarksVisible(true);
+			axis.setTickMarkOutsideLength(6F);
+			axis.setTickLabelInsets( new RectangleInsets(6., 4., 2., 4.) );
 		}
 
 		/**
@@ -1869,7 +1876,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		 * @param df            date format to use in axis
 		 * @see TimeInterval
 		 */
-		@SuppressWarnings("unused")	
+		@SuppressWarnings("unused")
 		private void setDateFormat(SimpleDateFormat df) {
 			if (!axis.getDateFormatOverride().equals(df)) {
 				axis.setDateFormatOverride(df);
@@ -1882,15 +1889,15 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		 * @param ti            time interval of axis
 		 */
 		public void setTimeRange(TimeInterval ti) {
-            final long ONE_DAY    = 1L*86400000;
-            final long TWO_DAYS   = 2L*86400000;
-            final long THREE_DAYS = 3L*86400000;
-            final long FOUR_DAYS  = 4L*86400000;
-            final long ONE_WEEK   = 7L*86400000;
-            //final long TWO_WEEKS  = 14L*86400000;
-            //final long FOUR_WEEKS = 28L*86400000;
-            //final long EIGHT_WEEKS= 56L*86400000;
-           
+			final long ONE_DAY    = 1L*86400000;
+			final long TWO_DAYS   = 2L*86400000;
+			final long THREE_DAYS = 3L*86400000;
+			final long FOUR_DAYS  = 4L*86400000;
+			final long ONE_WEEK   = 7L*86400000;
+			//final long TWO_WEEKS  = 14L*86400000;
+			//final long FOUR_WEEKS = 28L*86400000;
+			//final long EIGHT_WEEKS= 56L*86400000;
+
 			boolean needwait = false;
 			if (axis.getMinimumDate().getTime() == 0 && axis.getMaximumDate().getTime() == 1) {
 				needwait = true;
@@ -1916,81 +1923,81 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					Thread.sleep(60);
 				} catch (InterruptedException e) {
 					// do nothing
-					logger.error("InterruptedException:", e);	
+					logger.error("InterruptedException:", e);
 				}
 			}
 
 			if (ti != null) {
-                int minorTickCount = 4;
-                double nDays = ti.getDuration()/(double)ONE_DAY;
-                int interval = (int)(nDays/11.);
-                double remainder = nDays%11.;
-                double x = remainder/(double)interval;
-                if (x > 0.5) {
-                    interval++;
-                }
+				int minorTickCount = 4;
+				double nDays = ti.getDuration()/(double)ONE_DAY;
+				int interval = (int)(nDays/11.);
+				double remainder = nDays%11.;
+				double x = remainder/(double)interval;
+				if (x > 0.5) {
+					interval++;
+				}
 
-			    if (ti.getDuration() > ONE_WEEK) {                  // tD > 1 Week
+				if (ti.getDuration() > ONE_WEEK) {                  // tD > 1 Week
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.DAY, interval) );
 					axis.setMinorTickCount(minorTickCount);
-                }
-			    else if (ti.getDuration() > FOUR_DAYS) {            // 4 Days < tD <= 1 Week
+				}
+				else if (ti.getDuration() > FOUR_DAYS) {            // 4 Days < tD <= 1 Week
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 12) );
 					axis.setMinorTickCount(minorTickCount);
-                }
-			    else if (ti.getDuration() > THREE_DAYS) {           // 3 Days < tD <= 4 Days
+				}
+				else if (ti.getDuration() > THREE_DAYS) {           // 3 Days < tD <= 4 Days
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 8) );
 					axis.setMinorTickCount(minorTickCount);
-                }
-			    else if (ti.getDuration() > TWO_DAYS) {             // 2 Days < tD <= 3 Days
+				}
+				else if (ti.getDuration() > TWO_DAYS) {             // 2 Days < tD <= 3 Days
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 6) );
 					axis.setMinorTickCount(minorTickCount);
-                }
-			    else if (ti.getDuration() > ONE_DAY) {              // 1 Day < tD <= 2 Days
+				}
+				else if (ti.getDuration() > ONE_DAY) {              // 1 Day < tD <= 2 Days
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 4) );
 					axis.setMinorTickCount(minorTickCount);
-                }
-			    else if (ti.getDuration() > 36000000) { // 8 - 24hrs
+				}
+				else if (ti.getDuration() > 36000000) { // 8 - 24hrs
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 2) );
 					axis.setMinorTickCount(minorTickCount);
-                }
-			    else if (ti.getDuration() > 18000000) { // 4 - 8 hrs
+				}
+				else if (ti.getDuration() > 18000000) { // 4 - 8 hrs
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.HOUR, 1) );
 					axis.setMinorTickCount(minorTickCount);
-                }
-			    else if (ti.getDuration() > 7200000) { // 2 - 4 hrs
+				}
+				else if (ti.getDuration() > 7200000) { // 2 - 4 hrs
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 30) );
 					axis.setMinorTickCount(15);
-                }
-			    else if (ti.getDuration() > 3600000) { // 1 - 2 hrs
+				}
+				else if (ti.getDuration() > 3600000) { // 1 - 2 hrs
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 15) );
 					axis.setMinorTickCount(15);
-                }
-			    else if (ti.getDuration() > 1600000) { // 30min - 1 hr
+				}
+				else if (ti.getDuration() > 1600000) { // 30min - 1 hr
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 5) );
 					axis.setMinorTickCount(5);
-                }
-			    else if (ti.getDuration() > 600000) { // 10min - 30min
+				}
+				else if (ti.getDuration() > 600000) { // 10min - 30min
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 2) );
 					axis.setMinorTickCount(4);
-                }
-			    else if (ti.getDuration() > 120000) { // 2 min < tD <= 10 min
+				}
+				else if (ti.getDuration() > 120000) { // 2 min < tD <= 10 min
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.MINUTE, 1) );
 					axis.setMinorTickCount(4);
-                }
-			    else if (ti.getDuration() > 30000) { // 30 sec < tD <= 2 min
+				}
+				else if (ti.getDuration() > 30000) { // 30 sec < tD <= 2 min
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 30) );
 					axis.setMinorTickCount(30);
-                }
-			    else if (ti.getDuration() > 12000) { // 12 sec < tD <= 30 sec
+				}
+				else if (ti.getDuration() > 12000) { // 12 sec < tD <= 30 sec
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 3) );
 					axis.setMinorTickCount(1);
-                }
-			    else { // tD < 12 sec
+				}
+				else { // tD < 12 sec
 					axis.setTickUnit( new DateTickUnit(DateTickUnitType.SECOND, 1) );
 					axis.setMinorTickCount(10);
-                }
-            }
+				}
+			}
 
 			repaint();
 		}
@@ -2006,7 +2013,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				logger.debug("min date " + axis.getMinimumDate() + ", max date " + axis.getMaximumDate());
 
 				//axis.draw((Graphics2D) g, 0, new Rectangle(infoPanelWidth + getInsets().left, 0, getWidth(), getHeight()), new Rectangle(
-						//infoPanelWidth + getInsets().left, 0, getWidth(), 10), RectangleEdge.BOTTOM, null);
+				//infoPanelWidth + getInsets().left, 0, getWidth(), 10), RectangleEdge.BOTTOM, null);
 // MTH: The line above is incorrect: The Rectangle width should = (axisPanel - infoPanelWidth) 
 //      Where infoPanel is the leftmost panel (showing the trace amplitude values)
 // Rectangle(int x, int y, int width, int height) - (x,y)=upper-left corner
@@ -2016,10 +2023,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 //     time (given by left clicking on the trace) 
 // jfreechart:  DateAxis.draw( Graphics2D, double cursor, Rectangle2D plotArea, Rectangle2D drawArea, ...)
 
-				axis.draw((Graphics2D) g, 0, 
-                  new Rectangle(infoPanelWidth+getInsets().left, 0, getWidth()-infoPanelWidth + 2, getHeight()), 
-                  new Rectangle(infoPanelWidth+getInsets().left, 0, getWidth()-infoPanelWidth + 2, 10), 
-                  RectangleEdge.BOTTOM, null);
+				axis.draw((Graphics2D) g, 0,
+						new Rectangle(infoPanelWidth+getInsets().left, 0, getWidth()-infoPanelWidth + 2, getHeight()),
+						new Rectangle(infoPanelWidth+getInsets().left, 0, getWidth()-infoPanelWidth + 2, 10),
+						RectangleEdge.BOTTOM, null);
 			}
 		}
 	}
@@ -2029,19 +2036,19 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * GraphPanel.
 	 */
 	class TimeInfoPanel extends JPanel {
-		
+
 		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
-		
+
 		/** The start. */
 		private JLabel start = null;
-		
+
 		/** The duration. */
 		private JLabel duration = null;
-		
+
 		/** The end. */
 		private JLabel end = null;
-		
+
 		/** The grid layout. */
 		GridLayout gridLayout = null;
 
@@ -2082,13 +2089,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * The Class SouthPanel.
 	 */
 	class SouthPanel extends JPanel {
-		
+
 		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
-		
+
 		/** The axis panel. */
 		private AxisPanel axisPanel;
-		
+
 		/** The info panel. */
 		private TimeInfoPanel infoPanel;
 
@@ -2132,19 +2139,19 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		public TimeInfoPanel getInfoPanel() {
 			return infoPanel;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see javax.swing.JComponent#setBackground(java.awt.Color)
 		 */
 		public void setBackground(Color color){
 			super.setBackground(color);
 			if(axisPanel!=null){
-			axisPanel.setBackground(color);
-			//axisPanel.setBackground(Color.BLUE);
+				axisPanel.setBackground(color);
+				//axisPanel.setBackground(Color.BLUE);
 			}
 			if(infoPanel!=null){
-			    infoPanel.setBackground(color);
-			    //infoPanel.setBackground(Color.RED);
+				infoPanel.setBackground(color);
+				//infoPanel.setBackground(Color.RED);
 			}
 		}
 	}
@@ -2153,7 +2160,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * The Class DrawAreaPanel.
 	 */
 	class DrawAreaPanel extends JPanel {
-		
+
 		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
 
@@ -2205,7 +2212,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * The Class GraphPanelObservable.
 	 */
 	public class GraphPanelObservable extends Observable {
-		
+
 		/* (non-Javadoc)
 		 * @see java.util.Observable#setChanged()
 		 */
