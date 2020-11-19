@@ -640,7 +640,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @param channels            list of traces
 	 */
 	public void setChannelShowSet(List<PlotDataProvider> channels) {
-		synchronized (TraceView.getDataModule().getAllChannels()) {
 			if (channels != null) {
 				clearChannelShowSet();
 				CommandHandler.getInstance().clearCommandHistory();
@@ -718,7 +717,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			}
 			getObservable().setChanged();
 			getObservable().notifyObservers(channels);
-		}
 	}
 
 	/**
