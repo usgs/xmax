@@ -312,6 +312,7 @@ public class DataModule extends Observable {
    */
   public List<PlotDataProvider> getAllChannels() {
     synchronized (channels) {
+      channels.sort(Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
       logger.debug("getting channels");
       return channels;
     }
