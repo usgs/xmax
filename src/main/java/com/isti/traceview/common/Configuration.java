@@ -855,10 +855,6 @@ public class Configuration extends Observable {
 	 */
 	public String getConfigFileDir() {
 		File confFile = new File(confFileName);
-		if (!confFile.exists()) {
-			confFileName = "sample.config.xml";
-			confFile = new File(confFileName);
-		}
 		String ret = confFile.getAbsolutePath().substring(0, confFile.getAbsolutePath().
 				lastIndexOf(confFile.getName()));
 		logger.debug("== fileDir: " + ret);

@@ -91,10 +91,14 @@ public class XMAXconfiguration extends Configuration {
 		setDefaultHTMLPattern("<html><head><title>XMAX report</title></head><body><h1>XMAX report</h1> </body></html>");
 		File confFile = new File(confFileName);
 		if (!confFile.exists()) {
-			JOptionPane.showMessageDialog(null,
-					"Could not find a valid XML configuration.\n" +
-					"We will attempt to load data using default parameters.",
-				"Configuration file load error", JOptionPane.ERROR_MESSAGE);
+			confFileName = "sample.config.xml";
+			confFile = new File(confFileName);
+			if (!confFile.exists()) {
+				JOptionPane.showMessageDialog(null,
+						"Could not find a valid XML configuration.\n" +
+								"We will attempt to load data using default parameters.",
+						"Configuration file load error", JOptionPane.ERROR_MESSAGE);
+			}
 			config = new XMLConfiguration();
 		} else {
 			config = new XMLConfiguration(confFileName);
