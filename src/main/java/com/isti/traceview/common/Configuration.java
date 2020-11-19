@@ -82,7 +82,7 @@ public class Configuration extends Observable {
 		/**
 		 * Trace name is what you see on a plot, i.e
 		 * network/station/location/channel. See
-		 * {@link com.isti.traceview.data.NameComparator} for details
+		 * {@link com.isti.traceview.data.Channel.NameComparator} for details
 		 */
 		TRACENAME,
 
@@ -93,14 +93,14 @@ public class Configuration extends Observable {
 
 		/**
 		 * Really Channel - network - station - location order See
-		 * {@link com.isti.traceview.data.ChannelComparator} for details
+		 * {@link com.isti.traceview.data.Channel.ChannelComparator} for details
 		 */
 		CHANNEL,
 
 		/**
 		 * Channel type is last character of channel name. Channel type -
 		 * channel - network - station order.
-		 * @see com.isti.traceview.data.ChannelTypeComparator
+		 * @see com.isti.traceview.data.Channel.ChannelTypeComparator
 		 */
 		CHANNEL_TYPE
 	}
@@ -855,7 +855,12 @@ public class Configuration extends Observable {
 	 */
 	public String getConfigFileDir() {
 		File confFile = new File(confFileName);
-		String ret = confFile.getAbsolutePath().substring(0, confFile.getAbsolutePath().lastIndexOf(confFile.getName()));
+		if (!confFile.exists()) {
+			confFileName = "sample.config.xml";
+			confFile = new File(confFileName);
+		}
+		String ret = confFile.getAbsolutePath().substring(0, confFile.getAbsolutePath().
+				lastIndexOf(confFile.getName()));
 		logger.debug("== fileDir: " + ret);
 		return ret;
 	}

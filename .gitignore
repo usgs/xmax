@@ -1,3 +1,6 @@
+# configuration tool re-written each time
+config.xml
+
 #Standard files
 *.swp
 *.DS_Store

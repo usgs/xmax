@@ -24,10 +24,15 @@
 			<!--DataMask>seed/IU_MACI/2014_236</DataMask-->
 			<!--DataMask>/tr1/telemetry_days/XX_AFMO/2014/2014_10*,2014_20*,2014_30*/*.seed</DataMask-->
 			<!-- Connection scheme, either http or https -->
+			<!-- here are some sample values for data services that can be used based on IRIS -->
 			<DataServiceProtocol>https</DataServiceProtocol>
-			<DataServiceURL>vmweb01.cr.usgs.gov</DataServiceURL>
-			<FDSNDataPath>metadata/iris/fdsnws</FDSNDataPath>
+			<DataServiceURL>service.iris.edu</DataServiceURL>
+			<FDSNDataPath>fdsnws</FDSNDataPath>
 			<FDSNPort>443</FDSNPort>
+			<!-- if FDSNDataPath is defined, that value is prepended to this result; this is a subpath -->
+			<!-- this full path is used specifically because we call a webquery directly whereas
+					 data calls would be intermediated by the seisfile library -->
+			<FDSNMetaPath>/station/1/query</FDSNMetaPath>
 			<!-- Temporary directory to store decompressed traces in the internal format -->
 			<TempPath>resources/DATA_TEMP</TempPath>
 
@@ -93,13 +98,4 @@
 			</PSD>
 		</Plugins>
 	</Configuration>
-<SessionData>
-<Frame>
-<PosY>23</PosY>
-<Width>1440</Width>
-<Heigth>802</Heigth>
-<State>MAXIMIZED_BOTH</State>
-<PosX>0</PosX>
-</Frame>
-</SessionData>
 </XMAXSessionConfiguration>
