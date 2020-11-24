@@ -67,11 +67,6 @@ Authors and Affiliation:
 ###### Commons Collections
 	License:		Apache License, Version 2.0  
 	Website:		http://commons.apache.org/proper/commons-collections/  
-###### FissuresUtil
-	Source:			 xmax/lib/fissuresUtil-1.0.19.jar
-	Author:			Phillip Crotwell - University of South Carolina 
-	License:		GPL v2.0
-	Website:		http://www.seis.sc.edu/fissures/geninfo.html
 ###### Commons Lang
 	License:		Apache License, Version 2.0  
 	Website:		https://commons.apache.org/proper/commons-lang/  

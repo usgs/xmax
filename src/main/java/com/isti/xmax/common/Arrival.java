@@ -22,21 +22,18 @@ public class Arrival extends AbstractEvent implements IEvent {
 	 * @param phase
 	 *            Wave phase
 	 * @param angle
-	 *            angle distance between earthquake and registration point
+	 *            angle (arc length) distance between earthquake and registration point
 	 * @param azimuth
 	 *            azimuth from earthquake to registration point
-	 * @param azimuth_back
-	 *            azimuth from registration point to earthquake
 	 * @param distance
-	 *            distance between earthquake and registration point
+	 *            distance between points (angle scaled as fraction of earth's circumference)
 	 */
-	public Arrival(Date localTime, Earthquake eq, String phase, Double angle, Double azimuth, Double azimuth_back, Double distance) {
+	public Arrival(Date localTime, Earthquake eq, String phase, Double angle, Double azimuth, Double distance) {
 		super(localTime, 0);
 		setParameter("PHASE", phase);
 		setParameter("EARTHQUAKE", eq);
 		setParameter("ANGLE", angle);
 		setParameter("AZIMUTH", azimuth);
-		setParameter("AZIMUTH_BACK", azimuth_back);
 		setParameter("DISTANCE", distance);
 		logger.debug("Created " + this);
 	}
@@ -62,16 +59,12 @@ public class Arrival extends AbstractEvent implements IEvent {
 		return (Double) getParameterValue("AZIMUTH");
 	}
 
-	public Double getAzimuth_back() {
-		return (Double) getParameterValue("AZIMUTH_BACK");
-	}
-
 	public Double getDistance() {
 		return (Double) getParameterValue("DISTANCE");
 	}
 
 	public String toString() {
 		return "Arrival: Earthquake " + getEarthquake().getSourceCode() + ", phase " + getPhase() + ", angle " + getAngle() + ", azimuth "
-				+ getAzimuth() + ", back azimuth " + getAzimuth_back() + ", distance " + getDistance() + ", time " + getStartTime();
+				+ getAzimuth() + ", distance " + getDistance() + ", time " + getStartTime();
 	}
 }

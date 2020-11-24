@@ -8,8 +8,6 @@ import com.isti.traceview.data.ISource;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.data.SegyTimeSeries;
-import edu.iris.Fissures.seed.builder.SeedObjectBuilder;
-import edu.iris.Fissures.seed.director.SeedImportDirector;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import edu.sc.seis.seisFile.mseed.SeedRecord;
@@ -44,16 +42,16 @@ import org.apache.log4j.Logger;
 
 /**
  * Data source, data placed in the file
- * 
+ *
  * @author Max Kokoulin
  */
 public abstract class SourceFile implements ISource {
 
-	private static final long serialVersionUID = 1L;	
+	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(SourceFile.class);
 
 	protected File file;
-	
+
 	private boolean parsed = false;
 
 	/**
@@ -71,7 +69,7 @@ public abstract class SourceFile implements ISource {
 
 	/**
 	 * Getter of the property <tt>file</tt>
-	 * 
+	 *
 	 * @return Returns the file.
 	 */
 	protected File getFile() {
@@ -85,7 +83,7 @@ public abstract class SourceFile implements ISource {
 	public SourceType getSourceType() {
 		return SourceType.FILE;
 	}
-	
+
 	public synchronized boolean isParsed() {
 		return parsed;
 	}
@@ -102,26 +100,26 @@ public abstract class SourceFile implements ISource {
 			return false;
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Class to call data file type task
 	 */
 	private static class FileType implements Callable<ISource> {
 		private File file;
-		
+
 		/**
 		 * Constructor: sets input file
-		 * 
+		 *
 		 * @param inputFile
 		 *            input File to process
 		 */
 		private FileType(File inputFile) {
 			this.file = inputFile;
 		}
-		
+
 		/**
 		 * Callable method to determine file type
-		 * 
+		 *
 		 * @return ISource
 		 * 		data file for type
 		 */
@@ -145,10 +143,7 @@ public abstract class SourceFile implements ISource {
 			} else if (isSEGD(file)) {
 				datafile = new SourceFileSEGD(file);
 				logger.debug("SEGD data file added: " + file.getAbsolutePath());
-			} /* else if (isSEED(file)) {
-				datafile = new SourceFileSEGD(file);
-				logger.debug("SEED data file added: " + file.getAbsolutePath());
-			}*/ else {
+			} else {
 				logger.warn("Unknown file format: " + file.getName());
 			}
 			return datafile;
@@ -157,7 +152,7 @@ public abstract class SourceFile implements ISource {
 
 	/**
 	 * Searches for files according wildcarded path
-	 * 
+	 *
 	 * @param wildcardedMask
 	 *            wildcarded path to search
 	 */
@@ -179,13 +174,13 @@ public abstract class SourceFile implements ISource {
 
 	/**
 	 * tests given list of file for content format and initialize according data sources
-	 * 
+	 *
 	 * @param files
 	 *            list of files to test
 	 * @return List of data sources
 	 */
 	public static List<ISource> getDataFiles(List<File> files){
-		
+
 		// Setup pool of workers to set data types for each file (using loop)
 		// Submits FileType() tasks to multi-threaded executor
 		int numProc = Runtime.getRuntime().availableProcessors();
@@ -198,13 +193,13 @@ public abstract class SourceFile implements ISource {
 		ExecutorService executor = Executors.newFixedThreadPool(threadCount);	// multi-thread executor
 		List<Future<ISource>> tasks = new ArrayList<>(filelen);	// list of future tasks
 		List<ISource> dataFileList = new ArrayList<>(filelen);	// main datafiles list
-		try {	
+		try {
 			long start = System.nanoTime();
 			for (File file: files) {
 				Future<ISource> future = executor.submit(new FileType(file));
 				tasks.add(future);	// add future filetype to tasks list
 			}
-		
+
 			// Loop through tasks and get futures	
 			// ** May want to include future.get() in files loop
 			// this will eliminate extra loop for getting futures
@@ -234,7 +229,7 @@ public abstract class SourceFile implements ISource {
 		}
 		// Shutdown executor and cancel lingering tasks
 		shutdownExecutor(executor);
-		
+
 		return dataFileList;
 	}
 
@@ -272,7 +267,7 @@ public abstract class SourceFile implements ISource {
 
 	/**
 	 * Get extension of file
-	 * 
+	 *
 	 * @param f
 	 *            file to explore
 	 * @return file's extension
@@ -289,7 +284,7 @@ public abstract class SourceFile implements ISource {
 
 	/**
 	 * Tests if file is mseed file
-	 * 
+	 *
 	 * @param file
 	 *            file to test
 	 * @return flag
@@ -301,21 +296,21 @@ public abstract class SourceFile implements ISource {
 			try {
 				dis = new RandomAccessFile(file.getCanonicalPath(), "r");
 				long blockNumber = 0;
- 
-			    while (blockNumber < 5) {
-			    	SeedRecord sr = SeedRecord.read(dis, 4096);
-			        if (sr instanceof DataRecord) {
-			        	//DataRecord dr = (DataRecord)sr;
-			        } else {
-			            //control record, skip...
-			        }
-			        blockNumber++;
-			    }
+
+				while (blockNumber < 5) {
+					SeedRecord sr = SeedRecord.read(dis, 4096);
+					if (sr instanceof DataRecord) {
+						//DataRecord dr = (DataRecord)sr;
+					} else {
+						//control record, skip...
+					}
+					blockNumber++;
+				}
 			} catch (EOFException ex) {
 				//System.out.format("==     [file:%s] Caught EOFException:%s\n", file.getName(), ex.toString());
 				StringBuilder message = new StringBuilder();
 				message.append(String.format("== CheckData: [file:%s] Caught EOFException:\n", file.getName()));
-				logger.debug(message.toString(), ex);	
+				logger.debug(message.toString(), ex);
 				return true;
 			} catch (FileNotFoundException e) {
 				StringBuilder message = new StringBuilder();
@@ -333,16 +328,16 @@ public abstract class SourceFile implements ISource {
 				message.append(String.format("== CheckData: [file:%s] Caught SeedFormatException:\n", file.getName()));
 				logger.debug(message.toString(), e);
 				return false;
-            } catch (RuntimeException e) {
-               	StringBuilder message = new StringBuilder();
-               	message.append(String.format("== CheckData: [file:%s] Caught RuntimeException:\n", file.getName()));
-               	logger.debug(message.toString(), e);
-               	return false;
+			} catch (RuntimeException e) {
+				StringBuilder message = new StringBuilder();
+				message.append(String.format("== CheckData: [file:%s] Caught RuntimeException:\n", file.getName()));
+				logger.debug(message.toString(), e);
+				return false;
 			} finally {
 				try {
 					dis.close();
 				} catch (IOException e) {
-					logger.debug("IOException:", e);	
+					logger.debug("IOException:", e);
 				}
 			}
 		} else {
@@ -350,10 +345,10 @@ public abstract class SourceFile implements ISource {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Tests if file is sac file
-	 * 
+	 *
 	 * @param file
 	 *            file to test
 	 * @return flag
@@ -375,7 +370,7 @@ public abstract class SourceFile implements ISource {
 			try {
 				ras.close();
 			} catch (IOException e) {
-				logger.debug("IOException:", e);	
+				logger.debug("IOException:", e);
 			}
 		}
 		ByteBuffer bb = ByteBuffer.wrap(buffer);
@@ -392,7 +387,7 @@ public abstract class SourceFile implements ISource {
 
 	/**
 	 * Tests if file is segy file
-	 * 
+	 *
 	 * @param file
 	 *            file to test
 	 * @return flag
@@ -409,10 +404,10 @@ public abstract class SourceFile implements ISource {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Tests if file is segd file
-	 * 
+	 *
 	 * @param file
 	 *            file to test
 	 * @return flag
@@ -421,7 +416,7 @@ public abstract class SourceFile implements ISource {
 		BufferedInputStream inputStream = null;
 		try {
 			inputStream = new BufferedInputStream(new FileInputStream(file));
-			SegdRecord rec = new SegdRecord(file); 
+			SegdRecord rec = new SegdRecord(file);
 			rec.readHeader1(new DataInputStream(inputStream));
 		} catch (IOException e) {
 			StringBuilder message = new StringBuilder();
@@ -442,48 +437,15 @@ public abstract class SourceFile implements ISource {
 			try{
 				inputStream.close();
 			} catch (IOException ex){
-				logger.debug("IOException:", ex);	
+				logger.debug("IOException:", ex);
 			}
 		}
 		return true;
 	}
 
 	/**
-	 * Tests if file is seed file
-	 * 
-	 * @param file
-	 *            file to test
-	 * @return flag
-	 */
-	public static boolean isSEED(File file) {
-		FileInputStream fileInputStream = null;
-		SeedImportDirector importDirector = null;
-		try {
-			fileInputStream = new FileInputStream(file);
-			importDirector = new SeedImportDirector();
-			importDirector.assignBuilder(new SeedObjectBuilder());
-			importDirector.open(fileInputStream);
-			// read record, build objects, and optionally store the objects in a container
-			importDirector.read(false);
-		} catch (Exception e) {
-			StringBuilder message = new StringBuilder();
-			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
-			logger.debug(message.toString(), e);
-			return false;
-		} finally {
-			try{
-				importDirector.close();
-				fileInputStream.close();
-			} catch (IOException ex){
-				logger.debug("IOException:", ex);	
-			}
-		}
-		return true;
-	}
-	
-	/**
 	 * Tests if file is IMS file
-	 * 
+	 *
 	 * @param file
 	 *            file to test
 	 * @return flag
@@ -509,7 +471,7 @@ public abstract class SourceFile implements ISource {
 			try{
 				input.close();
 			} catch (IOException ex){
-				logger.debug("IOException:", ex);	
+				logger.debug("IOException:", ex);
 			}
 		}
 		return false;
@@ -549,7 +511,7 @@ public abstract class SourceFile implements ISource {
 		}
 		return true;
 	}
-	
+
 	public String getBlockHeaderText(long blockStartOffset){
 		return "<html><i>File type:</i>" + getFormatType() + "<br>Header block text is unavailable</html>";
 	}
@@ -576,10 +538,10 @@ public abstract class SourceFile implements ISource {
 					logger.error("Pool did not terminate: Shutting down!!");
 			}
 		} catch (InterruptedException e) {
-			pool.shutdownNow();	
+			pool.shutdownNow();
 		}
 	}
-	
+
 	/*
 	 * private void writeObject(ObjectOutputStream out) throws IOException { lg.debug("Serializing
 	 * SourceFile" + toString()); dataSource = (ISource)in.readObject(); currentPos = in.readInt();

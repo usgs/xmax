@@ -449,6 +449,15 @@ public class Segment implements Externalizable, Cloneable {
 		setMinValue(value);
 	}
 
+	public synchronized void setData(int[] intData) {
+		if (data == null){
+			currentPos = 0;
+			this.data = new int[sampleCount];
+		}
+		System.arraycopy(intData, 0, this.data, currentPos, data.length);
+		currentPos += intData.length;
+	}
+
 	/**
 	 * Getter of the property <tt>sampleRate</tt>
 	 *

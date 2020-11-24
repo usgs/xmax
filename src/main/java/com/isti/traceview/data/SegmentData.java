@@ -94,4 +94,13 @@ public class SegmentData {
 				/ (sampleRate * (nextIndex - prevIndex));
 
 	}
+
+	/**
+	 * Return the last value (used to get bias for steim encoding for seed file writing)
+	 * @return value of last point in data array (length - 1)
+	 */
+  public int getLastValue() {
+		return data[data.length - 1];
+  }
+
 }

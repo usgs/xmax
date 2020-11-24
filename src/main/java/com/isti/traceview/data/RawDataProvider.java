@@ -7,16 +7,13 @@ import com.isti.traceview.common.TimeInterval.DateFormatType;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.Rotation;
-import edu.iris.Fissures.IfNetwork.ChannelId;
-import edu.iris.Fissures.IfNetwork.NetworkId;
-import edu.iris.Fissures.IfTimeSeries.EncodedData;
-import edu.iris.Fissures.Time;
-import edu.iris.Fissures.model.MicroSecondDate;
-import edu.iris.Fissures.model.SamplingImpl;
+import edu.iris.dmc.seedcodec.B1000Types;
+import edu.iris.dmc.seedcodec.Steim1;
 import edu.iris.dmc.seedcodec.SteimException;
 import edu.iris.dmc.seedcodec.SteimFrameBlock;
-import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
-import edu.sc.seis.fissuresUtil.mseed.Recompress;
+import edu.sc.seis.seisFile.mseed.Blockette1000;
+import edu.sc.seis.seisFile.mseed.Btime;
+import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
@@ -30,12 +27,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
-
-//import java.util.concurrent.ExecutorService;
-//import java.util.concurrent.Executors;
 
 /**
  * Class for trace representation, holds raw trace data and introduces an abstract way to get it.
@@ -190,8 +183,8 @@ public class RawDataProvider extends Channel {
    */
   public List<Segment> getRawData(TimeInterval ti) {
     List<Segment> ret = Collections.synchronizedList(new ArrayList<>());
-    for (int i = 0; i < rawData.size(); ++i) {
-      Segment seg = rawData.get(i).getSegment();
+    for (SegmentCache rawDatum : rawData) {
+      Segment seg = rawDatum.getSegment();
       if ((seg != null) && ti.isIntersect(
           new TimeInterval(seg.getStartTime(), seg.getEndTime()))) {
         ret.add(seg);
@@ -564,21 +557,22 @@ public class RawDataProvider extends Channel {
   /**
    * Dumps content of this provider in miniseed format
    *
-   * @param ds stream to dump
+   * @param ds stream to dump (must be closed by calling method; not closed here)
    * @param ti content's time interval
    * @param filter filter being applied to the data
    * @param rotation system of rotation applied to the data (can be null)
    * @throws IOException if there are problems writing the miniseed dump
    */
-  @SuppressWarnings("unchecked")
   public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter, Rotation rotation)
       throws IOException {
 
     Segment previousSegment = null;
     List<Segment> segments = getRawData(rotation, ti);
     for (int j = 0; j < segments.size(); j++) {
+      int biasValue = 0;
       if (j > 0) {
         previousSegment = segments.get(j - 1);
+        biasValue = previousSegment.getData().getLastValue();
       }
       Segment segment = segments.get(j);
       if (filter != null && previousSegment != null &&
@@ -589,6 +583,7 @@ public class RawDataProvider extends Channel {
       }
 
       long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
+      // prevent overlap
       if (previousSegment != null) {
         currentTime = Math.max(currentTime, previousSegment.getEndTime().getTime());
       }
@@ -601,37 +596,39 @@ public class RawDataProvider extends Channel {
           .getIntersect(ti, new TimeInterval(segment.getStartTime(), segment.getEndTime()));
       if (data.length > 0) {
         try {
-          List<SteimFrameBlock> lst = Recompress.steim1(data);
+          DataHeader header = new DataHeader(j, 'D', j>0);
+          header.setStationIdentifier(getStation().getName());
+          header.setChannelIdentifier(getChannelName());
+          header.setNetworkCode(getNetworkName());
+          header.setLocationIdentifier(getLocationName());
+          header.setSampleRate((float) (segment.getSampleRate()/1000.));
+          Btime btime = new Btime(exportedRange.getStartTime());
+          header.setStartBtime(btime);
+          int frameCount = (int) Math.ceil(data.length/16.);
+          SteimFrameBlock block = Steim1.encode(data, frameCount, biasValue);
 
-          EncodedData[] edata = new EncodedData[lst.size()];
-          for (int i = 0; i < edata.length; i++) {
-            //(SteimFrameBlock)
-            SteimFrameBlock block = lst.get(i);
-            edata[i] = new EncodedData((short) 10, block.getEncodedData(), block.getNumSamples(),
-                false);
+          if (block.getNumSamples() < data.length) {
+            // real usage would loop, creating multiple data records,
+            // but to keep this example simple we only create the first one
+            System.err.println("Can't fit all data into one record, "
+                +block.getNumSamples()+" out of "+data.length);
           }
-          Time channelStartTime = new Time(
-              FissuresConvert.getISOTime(FissuresConvert.getBtime(new MicroSecondDate(exportedRange
-                  .getStartTime()))), 0);
+          DataRecord record = new DataRecord(header);
+          Blockette1000 blockette1000 = new Blockette1000();
+          blockette1000.setEncodingFormat((byte) B1000Types.STEIM1);
+          blockette1000.setWordOrder(Blockette1000.SEED_BIG_ENDIAN);
+          blockette1000.setDataRecordLength((byte) 12); // log2 of 4096
+          record.addBlockette(blockette1000);
+          record.setData(block.getEncodedData());
+          header.setNumSamples((short)block.getNumSamples());
 
-          LinkedList<DataRecord> dataRecords = FissuresConvert
-              .toMSeed(edata, new ChannelId(new NetworkId(getNetworkName(),
-                      channelStartTime), getStation().getName(), getLocationName(), getChannelName(),
-                      channelStartTime), new MicroSecondDate(
-                      exportedRange.getStartTime()),
-                  new SamplingImpl(data.length, new edu.iris.Fissures.model.TimeInterval(
-                      new MicroSecondDate(exportedRange.getStartTime()),
-                      new MicroSecondDate(exportedRange.getEndTime()))), 1);
-
-          for (DataRecord rec : dataRecords) {
-            rec.write(ds);
-          }
+          record.write(ds);
         } catch (SteimException | SeedFormatException e) {
           logger.error("Can't encode data: " + ti + ", " + this + e);
         }
       }
-
     }
+    // closing ds is handled by calling method
   }
 
   /**

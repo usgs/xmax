@@ -177,7 +177,7 @@ import org.apache.log4j.Logger;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartRenderingInfo;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.editor.ChartEditor;
 import org.jfree.chart.editor.ChartEditorManager;
@@ -1370,7 +1370,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 					filename = filename + ".png";
 				}
 			}
-			ChartUtilities.saveChartAsPNG(new File(filename), this.chart, getWidth(), getHeight());
+			ChartUtils.saveChartAsPNG(new File(filename), this.chart, getWidth(), getHeight());
 		}
 	}
 

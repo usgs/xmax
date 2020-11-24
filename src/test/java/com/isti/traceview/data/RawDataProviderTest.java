@@ -259,8 +259,8 @@ public class RawDataProviderTest {
     // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
+    double sampleRate = dm.getAllChannels().get(0).getSampleRate();
     int[] dataFromFirstFile = dm.getAllChannels().get(0).getUncutSegmentData(0);
-
     TimeInterval initial = data.getTimeRange();
     long start = initial.getStart();
     long end = initial.getEnd();
@@ -282,16 +282,18 @@ public class RawDataProviderTest {
 
     long secondStart = dm.getAllChannels().get(0).getTimeRange().getStart();
     long secondEnd = dm.getAllChannels().get(0).getTimeRange().getEnd();
+    double secondSampleRate = dm.getAllChannels().get(0).getSampleRate();
     int[] dataFromSecondFile = dm.getAllChannels().get(0).getUncutSegmentData(0);
-
     // clean up the written in file
     outputFile = new File(filename2);
     outputFile.delete();
 
     assertEquals(dataFromFirstFile.length, dataFromSecondFile.length);
     assertArrayEquals(dataFromFirstFile, dataFromSecondFile);
-    assertEquals(end-start, secondEnd-secondStart);
     assertEquals(start, secondStart); // small correction for leap-seconds?
+    assertEquals(sampleRate, secondSampleRate, 0.);
+    assertEquals(end, secondEnd);
+    assertEquals(end-start, secondEnd-secondStart);
   }
 
   @Test
@@ -381,13 +383,16 @@ public class RawDataProviderTest {
     // now the data in dataNorth, dataEast is rotated data (by 20 degrees)
     dataNorth = dm.getAllChannels().get(0);
     dataEast = dm.getAllChannels().get(1);
-
+    ti = new TimeInterval(
+        dataNorth.getSegmentCache().get(0).getSegment().getStartTimeMillis(),
+        dataEast.getSegmentCache().get(0).getSegment().getStartTimeMillis());
     List<Segment> northSegmentsRaw = dataNorth.getRawData(ti);
     List<Segment> eastSegmentsRaw = dataEast.getRawData(ti);
     int sampleCount = 0;
-    for (Segment segment : northSegmentsRaw) {
+    for (int i = 1, northSegmentsRawSize = northSegmentsRaw.size(); i < northSegmentsRawSize; i++) {
+      Segment segment = northSegmentsRaw.get(i);
       sampleCount += segment.getSampleCount();
-      assertNotNull(segment.getData(ti).data);
+      assertNotNull("null error at segment " + i, segment.getData(ti).data);
     }
     int[] rawDataNorth = new int[sampleCount];
     int lastArrayPoint = 0;

@@ -7,9 +7,7 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.data.SynchronizedSeedRecord;
-import edu.iris.Fissures.FissuresException;
-import edu.iris.Fissures.seismogramDC.LocalSeismogramImpl;
-import edu.sc.seis.fissuresUtil.mseed.FissuresConvert;
+import edu.iris.dmc.seedcodec.CodecException;
 import edu.sc.seis.seisFile.mseed.Blockette;
 import edu.sc.seis.seisFile.mseed.Blockette1000;
 import edu.sc.seis.seisFile.mseed.Btime;
@@ -26,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -165,8 +162,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
   public synchronized void load(Segment segment) {
     logger.debug(this + " " + segment);
 
-    int segmentSampleCount = segment.getSampleCount();  // sample count of current segment
-    int[] data = new int[segmentSampleCount];  // testing for memory usage
     RandomAccessFile dis = null;
     int currentSampleCount = 0; //Counter on the basis of data values
     int headerSampleCount = 0; //Counter on the basis of header information
@@ -177,7 +172,9 @@ public class SourceFileMseed extends SourceFile implements Serializable {
       dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
       dis.seek(segment.getStartOffset());
       logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
-      while (currentSampleCount < segmentSampleCount) {
+      // each segment should only contain one data record's set of points. So this conditional
+      // is almost certainly not actually needed
+      // (currentSampleCount < segmentSampleCount) {
         long blockStartOffset = dis.getFilePointer();
         SeedRecord sr = SynchronizedSeedRecord
             .read(dis, TraceView.getConfiguration().getDefaultBlockLength());
@@ -187,45 +184,17 @@ public class SourceFileMseed extends SourceFile implements Serializable {
           drSampleCount = dr.getHeader().getNumSamples();  // current DataRecord sample count
           headerSampleCount += drSampleCount;  // total sample count from all headers
           segment.addBlockDescription(getBlockStartTime(dr.getHeader()), blockStartOffset);
-          if (drSampleCount > 0) {
-            LocalSeismogramImpl lsi; // stores seed data as seis id, num samples, sample rate
-            // channel id, and byte[] data (EncodedData)
-            int[] intData = new int[drSampleCount];  // testing memory usage for normal array[]
-            try {
-              if (dr.getBlockettes(1000).length == 0) {
-                DataRecord[] dra = new DataRecord[1];
-                dra[0] = dr;
-                int defaultCompression = TraceView.getConfiguration().getDefaultCompression();
-                byte dataCompression = (byte) defaultCompression;
-                byte byteOrder = (byte) 1;  // big endian byte order
 
-                // Time Fissures, this is taking awhile to convert
-                lsi = FissuresConvert.toFissures(dra, dataCompression, byteOrder);
-              } else {
-                // Time Fissures conversion
-                lsi = FissuresConvert.toFissures(dr);  // set LocalSeismogramImpl
-              }
-              //intData = lsi.get_as_longs();	// testing for memory leaks using array[]
-              double[] tempData;
-              tempData = lsi.get_as_doubles();
-							for (int i = 0; i < intData.length; i++) {
-								intData[i] = (int) tempData[i];
-							}
-            } catch (FissuresException fe) {
-              logger.error(
-                  ("File " + getFile().getName() + ": Can't decompress data of block " +
-                      dr.getHeader().getSequenceNum() + ", setting block data to 0: "),
-                  fe);
-              Arrays.fill(intData, 0);
-            }
-            // Test int[] array for memory leaks
-            for (int sample : intData) {
-              if (currentSampleCount < segment.getSampleCount()) {
-                data[currentSampleCount++] = sample;
-              } else {
-                logger.warn("currentSampleCount > segmentSampleCount: " + currentSampleCount + ", "
-                    + segmentSampleCount + "block " + sr.getControlHeader().getSequenceNum());
-              }
+          if (drSampleCount > 0) {
+            // stores seed data as seis id, num samples, sample rate
+            // channel id, and byte[] data (EncodedData)
+            int[] intData;
+            try {
+              intData = dr.decompress().getAsInt();
+              segment.setData(intData);
+              currentSampleCount += intData.length;
+            } catch (CodecException unsupportedCompressionType) {
+              unsupportedCompressionType.printStackTrace();
             }
           } else {
             logger.warn("File " + getFile().getName() + ": Skipping block " + dr.getHeader()
@@ -235,7 +204,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
           logger.warn("File " + getFile().getName() + ": Skipping block " + sr.getControlHeader()
               .getSequenceNum() + " so as no-data record");
         }
-      }
     } catch (FileNotFoundException e) {
       logger.error("Can't find file: ", e);
       System.exit(0);
@@ -264,10 +232,6 @@ public class SourceFileMseed extends SourceFile implements Serializable {
         logger.error("IOException:", e);
       }
     }
-    // Test int[] array adding
-		for (int value : data) {
-			segment.addDataPoint(value);
-		}
   }
 
   public String toString() {
@@ -285,7 +249,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
           .read(dis, TraceView.getConfiguration().getDefaultBlockLength());
       ControlHeader ch;
       ch = sr.getControlHeader();
-      //ret = ret + "<br><i>Query time: </i> " + TimeInterval.formatDate(new Date(time), TimeInterval.DateFormatType.DATE_FORMAT_MIDDLE);
+      //ret = ret + "<br><i>Query time: </i> " + TimeInterval.formatDate(new Date(time),
+      // TimeInterval.DateFormatType.DATE_FORMAT_MIDDLE);
       ret = ret + "<br><i>Seq number:</i> " + ch.getSequenceNum()
           + "<br><i>Is continuation:</i> " + ch.isContinuation()
           + "<br><i>Type:</i> " + ch.getTypeCode();
@@ -295,7 +260,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
         // if there's a data header the record is a data record
         DataRecord dr = (DataRecord) sr;
         ret = ret + "<br><i>Size:</i> " + dh.getSize()
-            // + "<br><i>Channel:</i> " + dh.getNetworkCode() + "/" + dh.getStationIdentifier() + "/" + dh.getLocationIdentifier() + "/" + dh.getChannelIdentifier()
+            // + "<br><i>Channel:</i> " + dh.getNetworkCode() + "/" + dh.getStationIdentifier() +
+            // "/" + dh.getLocationIdentifier() + "/" + dh.getChannelIdentifier()
             + "<br><i>Start time:</i> " + TimeInterval.formatDate(new Date(getBlockStartTime(dh)),
             TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
             + "<br><i>Num samples:</i> " + dh.getNumSamples()

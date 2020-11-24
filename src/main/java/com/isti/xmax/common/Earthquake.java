@@ -1,5 +1,7 @@
 package com.isti.xmax.common;
 
+import static asl.utils.NumericUtils.TAU;
+
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.AbstractEvent;
 import com.isti.traceview.common.IEvent;
@@ -9,9 +11,9 @@ import com.isti.traceview.common.Wildcard;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.xmax.XMAX;
 import com.isti.xmax.XMAXconfiguration;
+import edu.sc.seis.TauP.SphericalCoords;
 import edu.sc.seis.TauP.TauModelException;
 import edu.sc.seis.TauP.TauP_Time;
-import edu.sc.seis.fissuresUtil.bag.DistAz;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -230,21 +232,32 @@ public class Earthquake extends AbstractEvent implements IEvent {
 			for (IEvent earthquake : XMAX.getDataModule().getEarthquakes()) {
 				timeTool.setSourceDepth((Double) earthquake
 						.getParameterValue("DEPTH"));
-				DistAz da = new DistAz(
-						(Double) earthquake.getParameterValue("LATITUDE"),
-						(Double) earthquake.getParameterValue("LONGITUDE"), 
-						station.getLatitude(), station.getLongitude());
-				double angle = da.getDelta();
+
+				double angle = SphericalCoords
+						.azimuth(station.getLatitude(), station.getLongitude(),
+								(Double) earthquake.getParameterValue("LATITUDE"),
+								(Double) earthquake.getParameterValue("LONGITUDE"));
+				double arcBetween = SphericalCoords
+						.distance(station.getLatitude(), station.getLongitude(),
+								(Double) earthquake.getParameterValue("LATITUDE"),
+								(Double) earthquake.getParameterValue("LONGITUDE"));
+				// this is still an angle -- we need to get the actual distance
+				double distance;
+				{
+					double earthRadiusKM = 6378;
+					double earthCircumference = TAU * earthRadiusKM;
+					// converts distance from degrees to radians, which is a fraction of earth's circumf.
+					distance = (arcBetween * earthCircumference) / 360;
+				}
 				timeTool.calculate(angle);
 				List<edu.sc.seis.TauP.Arrival> arrivals = timeTool.getArrivals();
 				for (edu.sc.seis.TauP.Arrival arrival : arrivals){
+
 					ret.add(new Arrival(new Date(earthquake.getStartTime()
 							.getTime() 
 							+ new Double(arrival.getTime() * 1000)
 									.longValue()), (Earthquake) earthquake,
-							arrival.getName(), angle, da.getAz(), da
-									.getBaz(), DistAz
-									.degreesToKilometers(angle)));
+							arrival.getName(), arcBetween, angle, distance));
 				}
 			}
 		} catch (TauModelException e) {
