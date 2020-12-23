@@ -1,6 +1,7 @@
 package com.isti.traceview.transformations.response;
 
-import com.isti.jevalresp.RespUtils;
+import static com.isti.traceview.processing.IstiUtilsMath.generateFreqArray;
+
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
@@ -54,7 +55,7 @@ public class TransResp implements ITransformation {
 			double maxFreqValue = 500.0 / channel.getRawData().get(0).getSampleRate();
 			final double sampFreq = (maxFreqValue - minFreqValue) / (numberFreqs - 1.0);
 			FreqParameters fp = new FreqParameters(minFreqValue, maxFreqValue, sampFreq, numberFreqs);
-			final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
+			final double[] frequenciesArray = generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq);
 			Response resp = channel.getResponse();
 			if (resp == null)
 				throw new XMAXException("Can't load response for channel " + channel.getName());

@@ -69,7 +69,7 @@ dependencies {
     sourceOnly group: 'edu.sc.seis', name: 'seedCodec', version: '1.0.11+', classifier: 'sources'
 
     // jevalresp here uses jaxb stuff and includes some additional edu.seis stuff (fissuresIDL)
-    implementation files('./lib/JEvalResp.jar')
+    // implementation files('./lib/JEvalResp.jar')
 
     // we don't need to worry about sources for these as they will be automatically included
 

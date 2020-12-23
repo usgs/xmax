@@ -2,7 +2,6 @@ package com.isti.traceview;
 
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.data.DataModule;
-import com.isti.util.UtilFns;
 import java.util.SimpleTimeZone;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -66,7 +65,8 @@ public class TraceView {
 		}
 		if (javaVersionString != null) {
 			// Java version string fetched OK
-			if (UtilFns.parseVersionNumbers(javaVersionString).length > 0 && UtilFns.compareVersionStrings(javaVersionString, minJavaVersion) < 0) {
+			if (parseVersionNumbers(javaVersionString).length > 0 &&
+					compareVersionStrings(javaVersionString, minJavaVersion) < 0) {
 				// version string format OK and version is too low; build error msg
 				javaVerString = "This program requires a newer version of " + "Java (Java \"" + javaVersionString + "\" in use, Java \""
 						+ minJavaVersion + "\" or later required). OS " + osNameString;
@@ -79,6 +79,28 @@ public class TraceView {
 			javaVersionString = "(Unknown)"; // indicate unable to fetch
 		logger.debug("" + javaVersionString);
 
+	}
+
+	public static int[] parseVersionNumbers(String versionString) {
+		String[] versionComponents =
+				versionString.replace("_",".").split("\\.");
+		int[] components = new int[versionComponents.length];
+		for (int i = 0; i < versionComponents.length; ++i) {
+			components[i] = Integer.parseInt(versionComponents[i]);
+		}
+		return components;
+	}
+
+	public static int compareVersionStrings(String versionString, String minJavaVersionString) {
+		int[] versionComponents = parseVersionNumbers(versionString);
+		int[] minJavaVersion = parseVersionNumbers(minJavaVersionString);
+		for (int i = 0; i < minJavaVersion.length; ++i) {
+			if (versionComponents[i] == minJavaVersion[i]) {
+				continue;
+			}
+			return Integer.compare(versionComponents[i], minJavaVersion[i]);
+		}
+		return 0;
 	}
 
 	public TraceView() {

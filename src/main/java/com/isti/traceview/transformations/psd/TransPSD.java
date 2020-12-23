@@ -4,7 +4,7 @@ package com.isti.traceview.transformations.psd;
 import static com.isti.traceview.processing.IstiUtilsMath.getSmoothedPSD;
 
 import asl.utils.FFTResult;
-import asl.utils.TimeSeriesUtils;
+import asl.utils.timeseries.TimeSeriesUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
@@ -59,7 +59,7 @@ public class TransPSD implements ITransformation {
 					JOptionPane.ERROR_MESSAGE);
 		} else if (input.get(0).getDataLength(ti) < 32) {
 			JOptionPane.showMessageDialog(parentFrame, "One or more of the traces you selected does not contain enough datapoints (<32). "
-					+ "Please select a longer dataset.", "PSD computation warning",
+							+ "Please select a longer dataset.", "PSD computation warning",
 					JOptionPane.ERROR_MESSAGE);
 		} else {
 
@@ -159,12 +159,13 @@ public class TransPSD implements ITransformation {
 			try {
 				responses.add(channel.getResponse());
 			} catch (TraceViewException | NullPointerException e) {
-					if (respNotFound.length() > 0) {
-						respNotFound.append(", ");
-					}
-					respNotFound.append(channel.getName());
-					// if the response doesn't exist, then
-					responses.add(null);
+				logger.error("error with responses: " + e);
+				if (respNotFound.length() > 0) {
+					respNotFound.append(", ");
+				}
+				respNotFound.append(channel.getName());
+				// if the response doesn't exist, then
+				responses.add(null);
 			}
 		}
 

@@ -2,7 +2,9 @@ package com.isti.traceview.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import asl.utils.response.ChannelMetadata;
 import java.time.Instant;
 import java.util.Date;
 import org.junit.Test;
@@ -21,10 +23,12 @@ public class ResponseTest {
     // (27 Mar 2020) was open (starting at 2017). The point of this test is to assure that we can
     // get the correct sensitivity value for that time.
     assertNotNull(resp);
-    edu.iris.Fissures.IfNetwork.Response fissuresResp = resp
+    ChannelMetadata fissuresResp = resp
         .getEnclosingEpochResponse(Date.from(Instant.ofEpochMilli(1585334122156L)));
+    assertNull(fissuresResp.getEpochEnd());
     double expectedSensitivity = 1.820070016E9;
-    double gottenSensitivity = fissuresResp.the_sensitivity.sensitivity_factor;
+    double gottenSensitivity =
+        fissuresResp.getResponse().getInstrumentSensitivity().getSensitivityValue();
     assertEquals(expectedSensitivity, gottenSensitivity, 0.);
   }
 

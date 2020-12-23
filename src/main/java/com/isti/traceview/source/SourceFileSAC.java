@@ -6,7 +6,6 @@ import com.isti.traceview.TraceView;
 import com.isti.traceview.data.DataModule;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
-import edu.iris.Fissures.Time;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +23,8 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(SourceFileSAC.class);
-	private static final SimpleDateFormat fissTime = new SimpleDateFormat("yyyyDDD'T'HH:mm:ss.SSS'Z'"); 
+	private static final SimpleDateFormat fissTime =
+			new SimpleDateFormat("yyyyDDD'T'HH:mm:ss.SSS'Z'");
 	static {
 		fissTime.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
@@ -85,10 +85,12 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 	public String toString() {
 		return "SourceFileSAC: file " + (getFile() == null ? "absent" : getFile().getName()) + ";";
 	}
-	
+
+	/*
 	public static Time getFissuresTime(long time){
 		return new Time(fissTime.format(new Date(time)), 0); 
 	}
+	 */
 
 	private static long getSACtime(SacTimeSeries sac) {
 		GregorianCalendar cal = new GregorianCalendar(TraceView.timeZone);

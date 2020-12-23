@@ -1,13 +1,10 @@
 package com.isti.traceview.data;
 
-import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.Station;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -16,7 +13,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Observable;
-import java.util.Properties;
 import org.apache.log4j.Logger;
 
 /**
@@ -204,7 +200,8 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 	 * @return Returns the channel response.
 	 */
 	public Response getResponse() throws TraceViewException {
-		return TraceView.getDataModule().getResponseCached(getNetworkName(), getStation().getName(), getLocationName(), getChannelName());
+		return TraceView.getDataModule().getResponseCached(getNetworkName(), getStation().getName(),
+				getLocationName(), getChannelName());
 	}
 	
 	public boolean isSelected(){
@@ -229,35 +226,6 @@ public class Channel extends Observable implements Comparable<Object>, Serializa
 
 	public void setStatus(Status status) {
 		this.status = status;
-	}
-
-	@SuppressWarnings("unused")
-	private void loadProperties() {
-		Properties propsObj = new Properties();// System.getProperties();
-		InputStream inStm = null;
-		try {
-			// open input stream to properites file:
-			inStm = ClassLoader.getSystemResourceAsStream(fissuresPropFileName);
-
-			// inStm = new BufferedInputStream(new FileInputStream(new File(fissuresPropFileName)));
-			// load data from properties file:
-			propsObj.load(inStm);
-			// if CORBA properties not specified in loaded properites file
-			// then put in values for ORBacus ORB:
-			RespUtils.enterDefaultPropValue(propsObj, "org.omg.CORBA.ORBClass", "com.ooc.CORBA.ORB");
-			RespUtils.enterDefaultPropValue(propsObj, "org.omg.CORBA.ORBSingletonClass", "com.ooc.CORBA.ORBSingleton");
-		} catch (FileNotFoundException e) {
-			logger.error(("Unable to open FISSURES property file \"" + fissuresPropFileName + "\":"), e);
-		} catch (IOException e) {
-			logger.error(("Error loading FISSURES property file \"" + fissuresPropFileName + "\":"), e);
-		} finally {
-			try {
-				inStm.close();
-			} catch (Exception ex) {
-				// ignore any exceptions on close
-				logger.error("Exception:", ex);
-			}
-		}
 	}
 
 	/**

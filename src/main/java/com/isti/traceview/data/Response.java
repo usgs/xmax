@@ -1,26 +1,22 @@
 package com.isti.traceview.data;
 
-import static asl.utils.input.InstrumentResponse.getRespFileEpochs;
-import static java.nio.charset.StandardCharsets.US_ASCII;
+import static asl.utils.response.ResponseParser.getAllEpochsFromXML;
+import static asl.utils.response.ResponseParser.getResponseFromXMLInput;
+import static asl.utils.response.ResponseParser.listEpochsForSelection;
+import static asl.utils.response.ResponseParser.parseResponse;
+import static asl.utils.response.ResponseParser.parseXMLForEpochs;
+import static com.isti.traceview.processing.IstiUtilsMath.generateFreqArray;
 
+import asl.utils.response.ChannelMetadata;
+import asl.utils.response.ResponseParser.EpochIdentifier;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.processing.IstiUtilsMath;
-import com.isti.traceview.processing.RunEvalResp;
-import edu.iris.dmc.fdsn.station.model.Network;
-import edu.iris.dmc.fdsn.station.model.Station;
-import edu.iris.dmc.service.ServiceUtil;
-import edu.iris.dmc.ws.util.RespUtil;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
+import edu.sc.seis.seisFile.SeisFileException;
+import edu.sc.seis.seisFile.fdsnws.stationxml.FDSNStationXML;
+import edu.sc.seis.seisFile.fdsnws.stationxml.GainSensitivity;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -31,8 +27,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.stream.XMLStreamException;
 import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.Logger;
 
 /**
@@ -50,55 +46,83 @@ public class Response {
   String location;
   String channel;
   String fileName;
-  Map<Date, Double> azimuthMap;
-  Map<Date, edu.iris.Fissures.IfNetwork.Response> parsedEpochs;
+  Map<Date, ChannelMetadata> parsedEpochs;
 
   /**
    * @param network network code
    * @param station station code
    * @param location location code
    * @param channel channel code
-   * @param content String with content of evalresp response file
-   * @param fileName name of file from which response was loaded
+   * @param filename name of file from which response was loaded
    */
-  public Response(String network, String station, String location, String channel, String content,
-      String fileName) {
+  public Response(String network, String station, String location, String channel,
+      String filename) {
     this.network = network;
     this.station = station;
     this.location = location;
     this.channel = channel;
-    this.fileName = fileName;
-    this.azimuthMap = new HashMap<>();
-    parsedEpochs = populateResponseMap(content);
+    this.fileName = filename;
+    parsedEpochs = populateResponseMap(filename, network, station, location, channel);
   }
 
   /**
-   * Construct response object from parameters taken from stationXML parse/conversion
-   *
+   * Create a dummy (empty) response to test for existence in cached response lists
    * @param network network code
    * @param station station code
    * @param location location code
    * @param channel channel code
-   * @param content String with content of evalresp response file
-   * @param fileName name of file from which response was loaded
-   * @param azimuthMap Azimuths keyed by epoch date as parsed in from stationXML
    */
-  public Response(String network, String station, String location, String channel, String content,
-      String fileName, Map<Date, Double> azimuthMap) {
+  public Response(String network, String station, String location, String channel) {
+    // creates a dummy response
     this.network = network;
     this.station = station;
     this.location = location;
     this.channel = channel;
-    this.fileName = fileName;
-    this.azimuthMap = azimuthMap;
-    parsedEpochs = populateResponseMap(content);
+  }
+
+  /**
+   * Construct a response from FDSN Station XML data
+   * @param network network code
+   * @param station station code
+   * @param location location code
+   * @param channel channel code
+   * @param filename name of file from which response was loaded
+   * @param xml xml data
+   */
+  private Response(String network, String station, String location, String channel, String filename,
+      FDSNStationXML xml) {
+    this.network = network;
+    this.station = station;
+    this.location = location;
+    this.channel = channel;
+    this.fileName = filename;
+    parsedEpochs = populateResponseMapXML(network, station, location, channel, filename);
+  }
+
+  /**
+   * Construct a response from FDSN Station XML data from an inputsream and not a file
+   * @param network network code
+   * @param station station code
+   * @param location location code
+   * @param channel channel code
+   * @param filename name of file from which response was loaded
+   * @param stream data stream for xml (i.e., from FDSN query)
+   */
+  private Response(String network, String station, String location, String channel, String filename,
+      InputStream stream) {
+    this.network = network;
+    this.station = station;
+    this.location = location;
+    this.channel = channel;
+    this.fileName = filename;
+    parsedEpochs = populateResponseMapXML(network, station, location, channel, stream);
   }
 
   public Double getEpochStartAzimuth(Date date) {
-    if (azimuthMap == null) {
+    if (parsedEpochs == null || parsedEpochs.get(date) == null) {
       return null;
     }
-    return azimuthMap.get(date);
+    return parsedEpochs.get(date).getAzimuth();
   }
 
   /**
@@ -109,22 +133,11 @@ public class Response {
    * exists or the date comes before any specified epochs in the parsed metadata
    */
   public Double getEnclosingEpochAzimuth(Date date) {
-    List<Date> epochStartDates = new ArrayList<>(azimuthMap.keySet());
-    Collections.sort(epochStartDates);
-    int location = Collections.binarySearch(epochStartDates, date);
-    if (location >= 0) {
-      return azimuthMap.get(epochStartDates.get(location));
-    } else if (location < -1) {
-      // if location = -1, then insertion point is 0, so date is before even first epoch in list
-      // location = -(insertion point) -1, so invert to get insertion point
-      // then insertion point is point of first epoch AFTER date, so go back by 1 to get epoch
-      location = ((location + 1) * -1) -1;
-      return azimuthMap.get(epochStartDates.get(location));
-    }
-    return null;
+    ChannelMetadata metadata = getEnclosingEpochResponse(date);
+    return metadata == null ? null : metadata.getAzimuth();
   }
 
-  public edu.iris.Fissures.IfNetwork.Response getEnclosingEpochResponse(Date date) {
+  public ChannelMetadata getEnclosingEpochResponse(Date date) {
     List<Date> epochStartDates = new ArrayList<>(parsedEpochs.keySet());
     Collections.sort(epochStartDates);
     int location = Collections.binarySearch(epochStartDates, date);
@@ -140,12 +153,8 @@ public class Response {
     return null;
   }
 
-  public Map<Date, edu.iris.Fissures.IfNetwork.Response> getResponseEpochMap() {
+  public Map<Date, ChannelMetadata> getResponseEpochMap() {
     return parsedEpochs;
-  }
-
-  public Map<Date, Double> getAzimuthMap() {
-    return azimuthMap;
   }
 
   public String getNetwork() {
@@ -175,29 +184,73 @@ public class Response {
     return "RESP." + getNetwork() + "." + getStation() + "." + getLocation() + "." + getChannel();
   }
 
-  public static Map<Date, edu.iris.Fissures.IfNetwork.Response>
-  populateResponseMap(String content) {
-    Map<Date, edu.iris.Fissures.IfNetwork.Response> parsedEpochs = new HashMap<>();
+  public static Map<Date, ChannelMetadata> populateResponseMap(String filename,
+      String network, String station, String location, String channel) {
+    Map<Date, ChannelMetadata> parsedEpochs = new HashMap<>();
+    File file = new File(filename);
     // sometimes we create a response with empty content to check the cache against
     // in that case we don't need to populate this map -- it's almost a dummy object
-    if (content == null) return null;
+    if (!file.exists()) return null;
 
-    BufferedReader contentReader = new BufferedReader(new StringReader(content));
     try {
-      List<Pair<Instant, Instant>> epochMap = getRespFileEpochs(contentReader);
-      for (Pair<Instant, Instant> startAndEnd : epochMap) {
-        // sometimes evalResp has issues with getting the wrong response when epochs have the
-        // same start and end times. We can correct for this by offsetting the start time by
-        // a small amount. We don't expect epochs to last less than a second, so this
-        // should prevent collision errors.
-        Instant startInstant = startAndEnd.getFirst().plusMillis(500);
-        Date date = Date.from(startInstant);
-        RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
-        edu.iris.Fissures.IfNetwork.Response resp = evalResp.getResponseFromFile(date, content);
-        parsedEpochs.put(date, resp);
+      List<EpochIdentifier> epochList = listEpochsForSelection(filename);
+      for (EpochIdentifier epoch : epochList) {
+        if (location.length() == 0) {
+          location = " ";
+        }
+        String compareAgainst = network + "." + station + "." + location + "." + channel;
+        if (epoch.channelIdentifier.equals(compareAgainst)) {
+          ChannelMetadata resp = parseResponse(filename, epoch.filePointer);
+          parsedEpochs.put(Date.from(epoch.startInstant), resp);
+        }
       }
-    } catch (IOException | TraceViewException e) {
+    } catch (IOException e) {
       logger.error(e);
+    }
+
+    return parsedEpochs;
+  }
+
+  public static Map<Date, ChannelMetadata> populateResponseMapXML(String network, String station,
+      String location, String channel, String filename) {
+    Map<Date, ChannelMetadata> parsedEpochs = new HashMap<>();
+
+    try {
+
+      List<EpochIdentifier> epochList = parseXMLForEpochs(FDSNStationXML.loadStationXML(filename));
+      for (EpochIdentifier epoch : epochList) {
+        if (location.length() == 0) {
+          location = " ";
+        }
+        String compareAgainst = network + "." + station + "." + location + "." + channel;
+        // add 1 ms just to ensure that current time is set *inside* the given epoch
+        Instant startInstant = Instant.ofEpochMilli(epoch.startInstant.toEpochMilli() + 1);
+        if (epoch.channelIdentifier.equals(compareAgainst)) {
+          ChannelMetadata resp = getResponseFromXMLInput(FDSNStationXML.loadStationXML(filename),
+              network, station, location, channel, startInstant);
+          parsedEpochs.put(Date.from(epoch.startInstant), resp);
+        }
+      }
+    } catch (IOException | XMLStreamException | SeisFileException e) {
+      logger.error("Encountered an error:", e);
+    }
+
+    return parsedEpochs;
+  }
+
+  public static Map<Date, ChannelMetadata> populateResponseMapXML(String network, String station,
+        String location, String channel, InputStream stream) {
+    Map<Date, ChannelMetadata> parsedEpochs = new HashMap<>();
+
+    try {
+      FDSNStationXML xml = FDSNStationXML.loadStationXML(stream);
+      Map<Instant, ChannelMetadata> receivedEpochs = getAllEpochsFromXML(xml, network, station,
+          location, channel);
+      for (Instant instant : receivedEpochs.keySet()) {
+        parsedEpochs.put(Date.from(instant), receivedEpochs.get(instant));
+      }
+    } catch (IOException | XMLStreamException | SeisFileException e) {
+      logger.error("Encountered an error:", e);
     }
 
     return parsedEpochs;
@@ -211,33 +264,33 @@ public class Response {
    * @param maxFreqValue maximum requested frequency
    * @param len length of generated response array
    * @return response as array of complex numbers
-   * @throws TraceViewException if thrown in {@link
-   * com.isti.traceview.processing.RunEvalResp#generateResponse(double, double, int, Date, String)}
    */
   public synchronized Complex[] getResp(Date date, double minFreqValue, double maxFreqValue,
       int len) throws TraceViewException {
-    RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
     // find closest epoch to the date
-    edu.iris.Fissures.IfNetwork.Response closestResp = getEnclosingEpochResponse(date);
-    return evalResp.generateResponse(minFreqValue, maxFreqValue, len, closestResp);
+    ChannelMetadata closestResp = getEnclosingEpochResponse(date);
+    double[] frequencies = generateFreqArray(minFreqValue, maxFreqValue, len);
+    return closestResp.applyResponseToInput(frequencies);
   }
 
   public double[] getRespAmp(Date date, double minFreqValue, double maxFreqValue, int len)
       throws TraceViewException {
-    RunEvalResp evalResp = new RunEvalResp(false, verboseDebug);
-    edu.iris.Fissures.IfNetwork.Response closestResp = getEnclosingEpochResponse(date);
+    ChannelMetadata closestResp = getEnclosingEpochResponse(date);
+    double[] frequencies = generateFreqArray(minFreqValue, maxFreqValue, len);
     double[] respAmp = IstiUtilsMath.getSpectraAmplitude(
-        evalResp.generateResponse(minFreqValue, maxFreqValue, len, closestResp));
+        closestResp.applyResponseToInput(frequencies));
     if (respAmp.length != len) {
       throw new TraceViewException(
           getLocalFileName() + ": The length of the RESPONSE AMPLITUDE (" + respAmp.length
               + ") does not match the number of frequencies ("
               + len + ")");
     }
+    GainSensitivity sensitivity = closestResp.getResponse()
+        .getResponseStageList().get(0).getStageSensitivity();
     // Calper = 1/calibration frequency (Frequency of sensitivity)
-    final double calper = Math.pow(evalResp.frequencyOfSensitivity, -1.0);
+    final double calper = Math.pow(sensitivity.getFrequency(), -1.0);
     // Calval = 1/overal sensitivity (Sensitivity)
-    final double calib = Math.pow(evalResp.sensitivity, -1.0);
+    final double calib = Math.pow(sensitivity.getSensitivityValue(), -1.0);
     if (IstiUtilsMath.calibAmpResp(respAmp, calper, calib, minFreqValue, maxFreqValue, len)
         != IstiUtilsMath.ISTI_UTIL_SUCCESS) {
       throw new TraceViewException(
@@ -259,10 +312,6 @@ public class Response {
     }
   }
 
-  public void setAzimuthMap(Map<Date, Double> azimuthMap) {
-    this.azimuthMap = azimuthMap;
-  }
-
   /**
    * Computes frequency parameters which should be used to compute proper response function out of
    * RESP file
@@ -271,20 +320,10 @@ public class Response {
    * @param sampRate the sample rate.
    * @return the frequency parameters.
    */
-	/*
-	public static FreqParameters getFreqParameters(int numSamples, double sampRate) {
-		final double endFreq = sampRate / 2.0;
-		final double startFreq = 1.e-30;
-		final int numFreq = (int) (numSamples / 2.0 + 1.0 + 0.5); // 0.5 for double to int conversion
-		final double sampFreq = (endFreq - startFreq) / ((double) (numFreq - 1.0));
-		return new FreqParameters(startFreq, endFreq, sampFreq, numFreq);
-	}
-	*/
   public static FreqParameters getFreqParameters(int numSamples, double sampRate) {
     final double endFreq = sampRate / 2.0;
     final int numFreq = (int) (numSamples / 2.0 + 1.0 + 0.5); // 0.5 causes int cast to round up
     final double startFreq = endFreq / numFreq;
-    //(double)
     final double sampFreq = (endFreq - startFreq) / (numFreq - 1.0);
     return new FreqParameters(startFreq, endFreq, sampFreq, numFreq);
   }
@@ -294,7 +333,6 @@ public class Response {
    */
   public static Response getResponse(File file) {
     Response resp = null;
-    Reader respReader = null;
     if (!file.getName().startsWith("RESP.")) {
       logger.error("getResponse(" + file.getName() + "): response file should starts with RESP.");
       return null;
@@ -305,20 +343,9 @@ public class Response {
       String station = split[2];
       String location = split[3];
       String channel = split[4];
-      respReader = new BufferedReader(new FileReader(file));
-      int len = (int) file.length();
-      char[] cbuf = new char[len];
-      respReader.read(cbuf, 0, len);
-      resp = new Response(network, station, location, channel, new String(cbuf),
-          file.getCanonicalPath());
+      resp = new Response(network, station, location, channel, file.getCanonicalPath());
     } catch (Exception ex) {
       logger.error(("Could not open file: " + file.getName()), ex);
-    } finally {
-      try {
-        respReader.close();
-      } catch (IOException e) {
-        logger.error("IOException:", e);
-      }
     }
     return resp;
   }
@@ -337,73 +364,44 @@ public class Response {
   public static Response getResponseFromXML(String network, String station, String location,
       String channel, String xmlFilename) {
     try {
-      FileInputStream fileInputStream = new FileInputStream(xmlFilename);
-      return getResponseFromXML(network, station, location, channel, fileInputStream);
-    } catch (FileNotFoundException e) {
-      logger.error("FileNotFoundException:", e);
+      FDSNStationXML xml = FDSNStationXML.loadStationXML(xmlFilename);
+      return getResponseFromXML(network, station, location, channel, xmlFilename, xml);
+    } catch (MalformedURLException e) {
+      logger.error("Problem with constructing URL for " + xmlFilename + ": ", e);
+    } catch (IOException e) {
+      logger.error("Problem with accessing FDSN web services for " + xmlFilename + ": ", e);
+    } catch (XMLStreamException | SeisFileException e) {
+      logger.error("Problem with parsing XML data for " + xmlFilename + ": ", e);
     }
     return null;
   }
 
   private static Response getResponseFromXML(String network, String station, String location,
-      String channel, InputStream inputStream) {
-    String snclString = network + "." + station + "." + location + "." + channel + ".xml";
-    List<edu.iris.dmc.fdsn.station.model.Channel> foundChannels = new ArrayList<>();
-    try {
-      List<Network> networks = ServiceUtil
-          .getInstance().getStationService().load(inputStream);
-      for (Network foundNetwork : networks) {
-        if (foundNetwork.getCode().equals(network)) {
-          for (Station foundStation : foundNetwork.getStations()) {
-            if (foundStation.getCode().equals(station)) {
-              for (edu.iris.dmc.fdsn.station.model.Channel iterChan : foundStation.getChannels()) {
-                if (iterChan.getLocationCode().equals(location) &&
-                    iterChan.getCode().equals(channel)) {
-                  foundChannels.add(iterChan);
-                }
-              }
-            }
-          }
-        }
-      }
-      ByteArrayOutputStream output = new ByteArrayOutputStream();
-      Map<Date, Double> azimuthMap = new HashMap<>();
-      // restricts the stream output to only include the channel of interest to reduce overhead
-      for (edu.iris.dmc.fdsn.station.model.Channel foundChannel : foundChannels) {
-        Date date = foundChannel.getStartDate().toGregorianCalendar().getTime();
-        Double azimuthValue = foundChannel.getAzimuthValue();
-        if (azimuthValue != null) {
-          azimuthMap.put(date, azimuthValue);
-        }
-        RespUtil.write(new PrintWriter(output), network, station, foundChannel);
-      }
-      String respData = new String(output.toByteArray(), US_ASCII);
-      output.close();
-      return new Response(network, station, location, channel, respData, snclString, azimuthMap);
-    } catch (IOException ex) {
-      logger.error(("Could not load data from stream: " + snclString), ex);
-    }
+      String channel, String xmlFilename, FDSNStationXML xml) {
+      return new Response(network, station, location, channel, xmlFilename, xml);
+  }
 
-    return null;
+  private static Response getResponseFromXML(String network, String station, String location,
+      String channel, String xmlFilename, InputStream stream) {
+    return new Response(network, station, location, channel, xmlFilename, stream);
   }
 
   public static Response getResponseFromWeb(String network, String station, String location,
       String channel, String queryURL) {
     String snclString = network + "." + station + "." + location + "." + channel;
-    List<edu.iris.dmc.fdsn.station.model.Channel> foundChannels = new ArrayList<>();
     String webServicesURL = queryURL + "?net=" +
         network + "&sta=" + station + "&loc=" + location + "&cha=" + channel +
         "&level=response&format=xml&includecomments=false&nodata=404";
     try {
       URL xmlWeb = new URL(webServicesURL);
       URLConnection xmlGrabber = xmlWeb.openConnection();
-      return getResponseFromXML(network, station, location, channel, xmlGrabber.getInputStream());
+      InputStream stream = xmlGrabber.getInputStream();
+      return getResponseFromXML(network, station, location, channel, snclString, stream);
     } catch (MalformedURLException e) {
       logger.error("Problem with constructing URL for " + snclString + ": ", e);
     } catch (IOException e) {
       logger.error("Problem with accessing FDSN web services for " + snclString + ": ", e);
     }
-
     return null;
   }
 

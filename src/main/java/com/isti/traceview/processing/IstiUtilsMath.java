@@ -1,6 +1,5 @@
 package com.isti.traceview.processing;
 
-import com.isti.jevalresp.RespUtils;
 import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
@@ -371,6 +370,21 @@ public class IstiUtilsMath {
 		return crosscorr;
 	}
 
+	public static double[] generateFreqArray(double startFreq, double endFreq, int numFreqs) {
+		if (numFreqs < 0) {
+			return new double[0];
+		}
+		double temp = Math.min(startFreq, endFreq);
+		endFreq = Math.max(startFreq, endFreq);
+		startFreq = temp;
+		double[] frequencies = new double[numFreqs];
+		double freqSpacing = (endFreq - startFreq) / numFreqs;
+		for (int i = 0; i < frequencies.length; ++i) {
+			frequencies[i] = startFreq + (freqSpacing * i);
+		}
+		return frequencies;
+	}
+
 	/**
 	 * Builds amplitude spectra of trace. proper response function out of RESP
 	 * file.
@@ -387,7 +401,7 @@ public class IstiUtilsMath {
 		String errString = "";
 
 		final Response.FreqParameters fp = Response.getFreqParameters(trace.length, 1000.0 / channel.getSampleRate());
-		final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
+		final double[] frequenciesArray = generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq);
 
 		// Make a copy of data since we gonna modify it
 		double[] traceCopy = new double[trace.length];

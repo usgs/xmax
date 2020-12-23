@@ -1,6 +1,7 @@
 package com.asl.traceview.transformations.coherence;
 
-import com.isti.jevalresp.RespUtils;
+import static com.isti.traceview.processing.IstiUtilsMath.generateFreqArray;
+
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
@@ -305,7 +306,7 @@ public class TransCoherence implements ITransformation{
     // 1000.0/channel.getSampleRate() = 1000.0/25 = 40Hz)
     final Response.FreqParameters fp = Response.getFreqParameters(finalCoherence.length*2,
         1000.0 / downsampleInterval);
-    final double[] frequenciesArray = RespUtils.generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq, false);
+    final double[] frequenciesArray = generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq);
     double[] sqrtCoherence = new double[frequenciesArray.length];
 
     XYSeries series = new XYSeries("raw series");

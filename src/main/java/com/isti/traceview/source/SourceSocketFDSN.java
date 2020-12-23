@@ -1,7 +1,6 @@
 package com.isti.traceview.source;
 
-import asl.utils.TimeSeriesUtils;
-import asl.utils.input.DataBlock;
+import asl.utils.timeseries.*;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.data.DataModule;

@@ -47,10 +47,9 @@ public class RemoveGain {
 		double sensitivity = 1;
 		if(removestate){
 			try{
-				RunEvalResp evalResp = new RunEvalResp(false, false);
-				evalResp.generateResponse(minFreqValue, maxFreqValue, numberFreqs,
-						channel.getResponse().getEnclosingEpochResponse(ti.getStartTime()));
-				sensitivity = evalResp.sensitivity; 
+				channel.getResponse().getResp(ti.getStartTime(), minFreqValue, maxFreqValue, numberFreqs);
+				sensitivity = channel.getResponse().getEnclosingEpochResponse(ti.getStartTime())
+						.getResponse().getInstrumentSensitivity().getSensitivityValue();
 			}
 			catch(NullPointerException e){
 				throw new RemoveGainException("Unable to remove gain. No response found.");

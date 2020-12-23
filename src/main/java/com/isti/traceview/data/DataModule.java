@@ -907,7 +907,7 @@ public class DataModule extends Observable {
   public Response getResponseCached(String network, String station, String location,
       String channel) {
 
-    Response resp = new Response(network, station, location, channel, null, null);
+    Response resp = new Response(network, station, location, channel);
     int i = responses.indexOf(resp);
     if (i >= 0) {
       return responses.get(i);

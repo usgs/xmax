@@ -1,6 +1,5 @@
 package com.isti.traceview.processing;
 
-import com.isti.jevalresp.OutputGenerator;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.Channel;
@@ -173,18 +172,21 @@ public class Spectra {
 	/**
 	 * Compute PSD for this spectra
 	 */
-	public double[] getPSD(int inputUnits) {
+	public double[] getPSD() {
 		try {
 
-			Complex[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);//Removes the response by dividing it out
-				
+			Complex[] deconvolved = IstiUtilsMath.complexDeconvolution(spectra, resp);
+			//Removes the response by dividing it out
+
 			double[] psd = new double[deconvolved.length];
 			//Computing the PSD
 			for (int i = 0; i < deconvolved.length; i++) {
-				psd[i] = (deconvolved[i].getReal() * deconvolved[i].getReal() + deconvolved[i].getImaginary() * deconvolved[i].getImaginary())
+				psd[i] = (deconvolved[i].getReal() * deconvolved[i].getReal() +
+						deconvolved[i].getImaginary() * deconvolved[i].getImaginary())
 						* (channel.getSampleRate() / (double)deconvolved.length) * (1.0/0.875) / 13.0;
 			}
-		
+
+			/*
 			switch (inputUnits) {
 			case OutputGenerator.DISPLACE_UNIT_CONV:
 				IstiUtilsMath.dispToAccel(psd, sampFreq, spectra.length);
@@ -196,6 +198,7 @@ public class Spectra {
         // Do nothing
 				break;
 			}
+			 */
 			return psd;
 		} catch (IllegalArgumentException e) {
 			logger.error("IllegalArgumentException:", e);
@@ -232,12 +235,12 @@ public class Spectra {
 	/**
 	 * Get PSD as jFreeChart's series
 	 */
-	public XYSeries getPSDSeries(int inputUnits) {
+	public XYSeries getPSDSeries() {
 		XYSeries series = new XYSeries(getName());
-		double[] out = getPSD(inputUnits); //removes response
-		
+		double[] out = getPSD(); //removes response
+
 		for (int i = 1; i < frequenciesArray.length - 1; i++) {
-			double x = 1.0 / frequenciesArray[i]; // put x in terms of period 
+			double x = 1.0 / frequenciesArray[i]; // put x in terms of period
 			double y;
 			if(out[i] != 0)
 			{
@@ -245,7 +248,7 @@ public class Spectra {
 				series.add(x, y);
 			}
 		}
-		
+
 		return series;
 	}
 
