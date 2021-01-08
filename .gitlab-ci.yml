@@ -28,9 +28,9 @@ cache:
     key: "$CI_COMMIT_REF_NAME"
 
 test:1804:
-  image: asl:1804
+  image: code.chs.usgs.gov:5001/asl/asl-main/asl:1804
   <<: *test_definition
 
 #test:latest:
-#  image: asl:latest
+#  image: code.chs.usgs.gov:5001/asl/asl-main/asl:latest
 #  <<: *test_definition
