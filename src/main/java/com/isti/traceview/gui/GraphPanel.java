@@ -550,9 +550,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public List<PlotDataProvider> getChannelSet() {
 		List<PlotDataProvider> ret = new ArrayList<>();
 		for (ChannelView cv: getChannelShowSet()) {
-			for (PlotDataProvider channel: cv.getPlotDataProviders()) {
-				ret.add(channel);
-			}
+			ret.addAll(cv.getPlotDataProviders());
 		}
 		return ret;
 	}

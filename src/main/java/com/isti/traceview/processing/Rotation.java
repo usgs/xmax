@@ -384,18 +384,14 @@ public class Rotation {
              toProcess.getPixels().get(i)[0].getEvents());
 
        } else {
-         pdp = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1, -1, -1, null);
+         pdp = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
+             Double.NaN, -1, -1, -1, null);
        }
        // lg.debug("Result: " + pdp);
        PlotDataPoint[] pdpArray = new PlotDataPoint[1];
        pdpArray[0] = pdp;
        ret.addPixel(pdpArray);
      }
-
-     /*
-      * lg.debug("E: " + tripletPlotData[0]); lg.debug("N: " + tripletPlotData[1]); lg.debug("Z: " +
-      * tripletPlotData[2]); lg.debug("R: " + ret);
-      */
      return ret;
    }
 

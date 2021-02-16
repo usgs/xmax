@@ -118,7 +118,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *            rotation to set to set
 	 */
 	public void setRotation(Rotation rotation) {
-			this.rotation = rotation;
+
+		this.rotation = rotation;
+		initPointCache();
 	}
 	
 	/**
@@ -144,8 +146,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public void update(Observable o, Object arg) {
 		logger.debug(this + ": update request from " + o);
 		TimeInterval ti = (TimeInterval) arg;
-		//logger.debug("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
-		//System.out.println("PlotDataProvider " + this + " updating for range " + ti + " due to request from " + o.getClass().getName());
 		if ((viewingInterval == null) || viewingInterval.isIntersect(ti)) {
 			notifyObservers(ti);
 		}
@@ -169,11 +169,13 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		if (rg != null && rg.removestate && this.rotation == null){
 			return rg.removegain(this, ti, pointCount, filter, colorMode);
 		}
-		else if (this.rotation != null && this.rotation.getRotationType() != null){
+		/*
+		else if (this.rotation != null && this.rotation.getRotationType() != null) {
 			return rotation.rotate(this, ti, pointCount, filter, colorMode);
 		}
+		 */
 		else {
-			return getPlotData(ti, pointCount, filter, colorMode);
+			return getPlotData(ti, pointCount, filter);
 		}
 	}
 	
@@ -193,9 +195,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			RemoveGain rg, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException {
 		if (rg != null) {
-			return  rg.removegain(this, ti, pointCount, filter, colorMode);
+			return rg.removegain(this, ti, pointCount, filter, colorMode);
 		}
-			return getPlotData(ti, pointCount, filter, colorMode);
+			return getPlotData(ti, pointCount, filter);
 	}
 
 	/**
@@ -210,7 +212,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @return generated plot data to draw
 	 */
 	private PlotData getPlotData(TimeInterval ti, int pointCount,
-			IFilter filter, IColorModeState colorMode) {
+			IFilter filter) {
 		logger.debug(this + "; " + ti + "(" + ti.getStart() + "-" + ti.getEnd() + ")" + "; pointCount " + pointCount);
 
 		// This list used when we cannot use pointsCache due to too small zoom, calculated every
@@ -243,10 +245,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 								/ initialTimeRange.getDuration());
 				if (startIndex < 0) {
 					for (int i = -startIndex; i < 0; i++) {
-						// lg.debug("getPlotData: add empty points in the beginning");
 						PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
 						intervalPoints[0] = new PlotDataPoint(Double.NEGATIVE_INFINITY,
-								Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1,
+								Double.POSITIVE_INFINITY, Double.NaN, -1,
 								-1, -1, null);
 						points.add(intervalPoints);
 					}
@@ -261,7 +262,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					for (int i = initPointCount; i < endIndex; i++) {
 						PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
 						intervalPoints[0] = new PlotDataPoint(Double.NEGATIVE_INFINITY,
-								Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1,
+								Double.POSITIVE_INFINITY, Double.NaN, -1,
 								-1, -1, null);
 						points.add(intervalPoints);
 					}
@@ -277,8 +278,8 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				// display for every slice
 				double startSlice = ti.getStart() + i * timeRatio; // start slice time
 				double endSlice = ti.getStart() + ((i + 1.0) * timeRatio); // end slice time
-				if (!((startSlice >= effectiveTimeRange.getEnd() && endSlice >= effectiveTimeRange.getEnd()) || (startSlice <= effectiveTimeRange
-						.getStart() && endSlice <= effectiveTimeRange.getStart()))) {
+				if (!((startSlice >= effectiveTimeRange.getEnd() && endSlice >= effectiveTimeRange.getEnd())
+						|| (startSlice <= effectiveTimeRange.getStart() && endSlice <= effectiveTimeRange.getStart()))) {
 					// if effective time range intersects this time slice
 					int startIndex = new Long(Math.round(
 							(startSlice - effectiveTimeRange.getStart()) * points.size()
@@ -298,31 +299,23 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					}
 					List<PlotDataPoint[]> data = points.subList(startIndex, endIndex);
 					List<SliceData> sliceDataList = new ArrayList<>();
-					@SuppressWarnings("unused")	
-					int j =0;
+					int k = 0;
 					for (PlotDataPoint[] sublist: data) {
-						int k =0;
-						for(PlotDataPoint value: sublist){	// why loop when sublist has 1 value in PlotDataPoint[]
-							//lg.debug("Index " + (startIndex + j) + ", set " + k + ", value " + value);
-							if(sliceDataList.size()<=k){
-								sliceDataList.add(new SliceData());
-							}							
-							if (value.getTop() > sliceDataList.get(k).top) {
-								sliceDataList.get(k).top = value.getTop();
-							}
-							if (value.getBottom() < sliceDataList.get(k).bottom) {
-								sliceDataList.get(k).bottom = value.getBottom();
-							}
-							if (value.getMean() != Double.POSITIVE_INFINITY) {
-								sliceDataList.get(k).sum = sliceDataList.get(k).sum + value.getMean();
+						while (sliceDataList.size() <= k) {
+							sliceDataList.add(new SliceData());
+						}
+						for (PlotDataPoint value: sublist) { // may have 1 or 2 points
+							sliceDataList.get(k).top = Math.max(sliceDataList.get(k).top, value.getTop());
+							sliceDataList.get(k).bottom = Math.min(sliceDataList.get(k).bottom, value.getBottom());
+							if (value.getTop() != Double.NEGATIVE_INFINITY) {
+								sliceDataList.get(k).sum += value.getMean();
 								sliceDataList.get(k).segmentNumber = value.getSegmentNumber();
 								sliceDataList.get(k).continueAreaNumber = value.getContinueAreaNumber();
 								sliceDataList.get(k).rdpNumber = value.getRawDataProviderNumber();
 								sliceDataList.get(k).dataPointCount++;
 							}
-							k++;
 						}
-						j++;
+						k++;
 					}
 					if (events == null) {
 						events = Collections.synchronizedSortedSet(new TreeSet<>()); // class was deserialized
@@ -332,17 +325,11 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 						long eventTime = event.getStartTime().getTime();
 						if (eventTime > startSlice && eventTime <= endSlice) {
 							evts.add(new EventWrapper(event, true));
-						} else if (!((eventTime >= endSlice && eventTime + event.getDuration() >= endSlice || (eventTime <= startSlice && eventTime
-								+ event.getDuration() <= startSlice)))) {
+						} else if (!(eventTime >= endSlice && eventTime + event.getDuration() >= endSlice
+								|| (eventTime <= startSlice && eventTime + event.getDuration() <= startSlice))) {
 							evts.add(new EventWrapper(event, false));
 						}
 					}
-					/*
-					 * if (new Double(endSlice).longValue() - new Double(startSlice).longValue() >
-					 * 0) { evts = events.subSet(new DefaultEvent(new Date(new
-					 * Double(startSlice).longValue())), new DefaultEvent(new Date(new Double(
-					 * endSlice).longValue()))); }
-					 */
 
 					PlotDataPoint[] pdpArray = new PlotDataPoint[sliceDataList.size()];
 					int m = 0;
@@ -358,9 +345,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 								+ "(" + evts.first().getEvent().getStartTime().getTime() + ")" + "; point number " + ret.getPointCount());
 					}
 				} else {
-					//lg.debug("if effective time range doesn't contain this time slice - added empty point");
 					PlotDataPoint[] pdpArray = new PlotDataPoint[1];
-					pdpArray[0] = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1, -1, -1, null);
+					pdpArray[0] = new PlotDataPoint(
+							Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN,
+							-1, -1, -1, null);
 					ret.addPixel(pdpArray);
 				}
 			}
@@ -386,12 +374,18 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, IFilter filter)
 			throws PlotDataException
 	{
+		System.out.println("new pixelization function call (" + getName() + ")");
 		//logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
 		List<PlotDataPoint[]> pointSet = new ArrayList<>(pointCount);
 		// waiting if data still is not loaded
-		List<Segment> segments = getRawData(ti);
+		List<Segment> segments;
+		try {
+			segments = (rotation == null) ? getRawData(ti) : rotation.rotate(this, ti);
+		} catch (TraceViewException e) {
+			throw new PlotDataException("Error when trying to rotate channel " + getName());
+		}
 		int numSegments = segments.size();
-		SegmentData[] rawData;
+		SegmentData[] plottingData;
 		{
 			final SegmentData[] rawDataFinal = new SegmentData[numSegments];
 			// Combine segments if no gap and colormode is not by source, to correct filtering
@@ -403,72 +397,61 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				SegmentData segmentData = segment.getData(currentSegmentDataTI);
 				rawDataFinal[i] = segmentData;
 			});
-			rawData = rawDataFinal;
+			plottingData = rawDataFinal;
 		}
 		//filtering; cannot be parallelized
 		if(filter != null){
 			FilterFacade ff = new FilterFacade(filter, this);
-			SegmentData[] filteredRawData = new SegmentData[rawData.length];
-			for (int i = 0; i < rawData.length; i++) {
-				SegmentData segmentData = rawData[i];
+			SegmentData[] filteredRawData = new SegmentData[plottingData.length];
+			for (int i = 0; i < plottingData.length; i++) {
+				SegmentData segmentData = plottingData[i];
 				filteredRawData[i] = new SegmentData(segmentData.startTime, segmentData.sampleRate,
 						segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
 						segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
 						ff.filter(segmentData.data));
 			}
-			rawData = filteredRawData;
+			plottingData = filteredRawData;
 		}
 		
 		double interval = (ti.getDuration()) / (double) pointCount;
 		double time = ti.getStart();
 
 		for (int i = 0; i < pointCount; i++) {
-			//lg.debug("Iteration # "+ i + ", processing interval " + time + " - " + (time+interval));
 			// Get segmentData objects in the interval (time, time+interval)
-			SegmentData[] intervalData = getSegmentData(rawData, time, time+interval);
+			SegmentData[] intervalData = getSegmentData(plottingData, time, time+interval);
 			if (intervalData != null) {
 				int k = 0;
 				int intervalDataLength = intervalData.length;	// number of continuous segmentData objects
 				PlotDataPoint[] intervalPoints = new PlotDataPoint[intervalDataLength];
 				for (SegmentData segData: intervalData) {
 					TimeInterval currentSegmentDataTI = new TimeInterval(segData.startTime, segData.endTime());
-					//lg.debug("Processing segment " + segment + "on interval " + currentSegmentDataTI);
-					logger.debug("Processing segment [seg] on interval " + currentSegmentDataTI);
 					double top = Double.NEGATIVE_INFINITY;
 					double bottom = Double.POSITIVE_INFINITY;
 					double sum = 0.0;
-					int rawDataPointCount;
 					int[] data;
 					if (i == (pointCount - 1)) {
 						data = segData.getData(time, ti.getEnd()).data;	// last chunk
 					} else {
 						data = segData.getData(time, time + interval).data;	// interval sized chunks
 					}
-					rawDataPointCount = data.length;
+					int rawDataPointCount = data.length;
 					if (rawDataPointCount > 0) {
-						//lg.debug("Data present, meaning interval");
 						for (int value: data) {
-							if (value > top) {
-								top = value;
-							}
-							if (value < bottom) {
-								bottom = value;
-							}
+							top = Math.max(top, value);
+							bottom = Math.min(bottom, value);
 							sum = sum + value;
 						}
 						intervalPoints[k] = new PlotDataPoint(top, bottom, sum / rawDataPointCount,
 								segData.channelSerialNumber, segData.sourceSerialNumber, segData.continueAreaNumber,
 								null);
-						//lg.debug("Data present, point " + k + " added: " + intervalPoints[k]);
 					} else {
 						if (currentSegmentDataTI.isContain((long) time)) {
 							double value = segData.interpolateValue(time);
 							intervalPoints[k] = new PlotDataPoint(value, value, value, segData.channelSerialNumber,
 									segData.sourceSerialNumber, segData.continueAreaNumber, null);
 						} else {
-							//lg.debug("Interpolated value, point " + k + " absent");
 							intervalPoints[k] = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
-									Double.POSITIVE_INFINITY, segData.channelSerialNumber, segData.sourceSerialNumber,
+									Double.NaN, segData.channelSerialNumber, segData.sourceSerialNumber,
 									segData.continueAreaNumber, null);
 						}
 					}
@@ -478,7 +461,9 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			} else {
 				//lg.debug("Pixelizing : segment null");
 				PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
-				intervalPoints[0] = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, -1, -1, -1, null);
+				intervalPoints[0] = new PlotDataPoint(
+						Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN,
+						-1, -1, -1, null);
 				pointSet.add(intervalPoints);
 			}
 			time = time + interval;
@@ -764,7 +749,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * Temporary class to accumulate slice statistics
 	 * 
 	 */
-	private class SliceData {
+	private static class SliceData {
 		double top = Double.NEGATIVE_INFINITY; // max value for slice
 		double bottom = Double.POSITIVE_INFINITY; // min value for slice
 		double sum = 0.0;

@@ -79,7 +79,7 @@ public class SegmentData {
 	 */
 	public double interpolateValue(double time) {
 		// lg.debug("interpolateValue: dataLength " + data.length + ", startTime " + dataTI.getStartTime() + ", time " + time);
-		int nextIndex = new Double((time - startTime ) / sampleRate + 1).intValue();
+		int nextIndex = new Double((time - startTime) / sampleRate + 1).intValue();
 		if (nextIndex >= data.length) {
 			nextIndex = data.length - 1;
 		}

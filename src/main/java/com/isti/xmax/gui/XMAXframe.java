@@ -2735,11 +2735,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					for(PlotDataProvider pdp : cv.getPlotDataProviders())
 					{
 						if (rotatedChannelsList.contains(pdp)) {
-							if(pdp.getRotation() == null || pdp.getRotation().getRotationType() == null) { //for case when the close button was clicked
+							if(pdp.getRotation() == null || pdp.getRotation().getRotationType() == null) {
+								// this is the case when the close button was clicked
 								pdpsToRotate.add(pdp);
 							} else {
 								//Undo a already rotated channel
-								rotatedChannelsList.remove(pdp); //remove from rotated list if trying to rotate an already rotated channel
+								rotatedChannelsList.remove(pdp);
 								pdpsToRotate.add(pdp);
 								RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, null);
 								// Create ExecuteCommand obj for executing Runnable
