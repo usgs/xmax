@@ -374,7 +374,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, IFilter filter)
 			throws PlotDataException
 	{
-		System.out.println("new pixelization function call (" + getName() + ")");
 		//logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
 		List<PlotDataPoint[]> pointSet = new ArrayList<>(pointCount);
 		// waiting if data still is not loaded

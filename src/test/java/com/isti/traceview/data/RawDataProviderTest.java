@@ -346,6 +346,7 @@ public class RawDataProviderTest {
     dm.loadAndParseDataForTesting(originalNorthFile, originalEastFile, originalVertFile);
     // now that we have the data, rotate it
     Rotation twentyDegreesRotation = new Rotation(20.);
+    TraceView.setDataModule(dm);
     for (PlotDataProvider dataProvider : dm.getAllChannels().subList(0, 2)) {
       dataProvider.setRotation(twentyDegreesRotation);
     }
