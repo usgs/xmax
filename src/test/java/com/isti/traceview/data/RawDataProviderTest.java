@@ -1,5 +1,6 @@
 package com.isti.traceview.data;
 
+import static com.isti.traceview.processing.Rotation.StandardRotation.STS2_XMAX_TO_UVW;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -324,6 +325,48 @@ public class RawDataProviderTest {
       assertFalse(Segment.isDataBreak(previousEnd, thisStart, sampleInterval));
     }
 
+  }
+
+  @Test
+  public void rotatedDataValid() throws TraceViewException {
+    // test checks that gaps are not spuriously placed by rotation operations
+    String folderStructure = "src/test/resources/rotation/DGMT-2021-007/";
+
+    DataModule dm = new DataModule();
+    String originalNorthFilename = folderStructure + "00_LH1.512.seed";
+    String originalEastFilename = folderStructure + "00_LH2.512.seed";
+    String originalVertFilename = folderStructure + "00_LHZ.512.seed";
+
+    // first, we need to load in the data (may be moved to set-up method)
+    File originalNorthFile = new File(originalNorthFilename);
+    File originalEastFile = new File(originalEastFilename);
+    File originalVertFile = new File(originalVertFilename);
+    assertTrue(originalEastFile.exists() &&
+        originalNorthFile.exists() && originalVertFile.exists());
+
+    dm.loadAndParseDataForTesting(originalNorthFile, originalEastFile, originalVertFile);
+    // now that we have the data, rotate it
+    Rotation rotateToUVW = new Rotation(STS2_XMAX_TO_UVW);
+    TraceView.setDataModule(dm);
+    for (PlotDataProvider dataProvider : dm.getAllChannels().subList(0, 2)) {
+      dataProvider.setRotation(rotateToUVW);
+    }
+    // if any of the traces winds up with a NaN result somehow, they all will, so we only need
+    // to bother checking one of them to see if it has NaN values
+    PlotDataProvider toRotate = dm.getAllChannels().get(0);
+    List<Segment> segments = rotateToUVW.rotate(toRotate, toRotate.getTimeRange());
+    for (int point : segments.get(0).getData().data) {
+      assertFalse(Double.isNaN(point));
+    }
+
+    for (int i = 1; i < segments.get(0).getSampleCount(); ++i) {
+      long timeDifference =
+          segments.get(i).getStartTimeMillis() - segments.get(i-1).getEndTimeMillis();
+      assertTrue(timeDifference < segments.get(i).getSampleRate());
+      for (int point : segments.get(i).getData().data) {
+        assertFalse(Double.isNaN(point));
+      }
+    }
   }
 
   @Test
