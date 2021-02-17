@@ -129,13 +129,13 @@ public class RawDataProvider extends Channel {
   /**
    * @return Returns one point for given time value, or Integer.MIN_VALUE if value not found
    */
-  public int getRawData(long time) {
+  public double getRawData(long time) {
     int index = findIndexOfSegmentContainingTime(time);
     if (index >= 0) {
       Segment segment = rawData.get(index).getSegment();
       return segment.getPointAtTime(time);
     } else {
-      return Integer.MIN_VALUE;
+      return Double.NaN;
     }
   }
 
@@ -145,31 +145,36 @@ public class RawDataProvider extends Channel {
    * @return
    */
   private int findIndexOfSegmentContainingTime(long time) {
-    // Collections.sort(rawData);
     return findSegmentContainingTime(time, 0, rawData.size());
   }
 
+  // behold, the world's worst binary search, brought to you by bizarre data structure designs
+  // and frustrating issues with the way that the underlying data works (i.e. gap leniency)
   private int findSegmentContainingTime(long time, int lowerBound, int upperBound) {
     // base case
     if (upperBound - lowerBound <= 5) {
-      if (time < rawData.get(lowerBound).getSegment().getStartTimeMillis()) {
-        return -(lowerBound + 1);
+      if (time < rawData.get(lowerBound).getSegment().getStartTimeMillis() && lowerBound == 0) {
+        return -1;
       }
       for (int i = lowerBound; i < upperBound; ++i) {
         Segment seg = rawData.get(i).getSegment();
-        if (time >= seg.getStartTimeMillis() && time < seg.getEndTimeMillis()) {
+        // check to make sure that expected first point is less than a full sample away
+        if (time + (long) getSampleRate() >= seg.getStartTimeMillis()
+            && time < seg.getEndTimeMillis()) {
           return i;
         } else if (time < seg.getStartTimeMillis() &&
             time >= rawData.get(i-1).getSegment().getEndTimeMillis()) {
           return -(i + 1);
         }
       }
-      return -(upperBound + 1);
+      return -1 * (upperBound + 1);
     }
 
     int midPoint = ((upperBound - lowerBound) / 2) + lowerBound;
     Segment seg = rawData.get(midPoint).getSegment();
-    if (time >= seg.getStartTimeMillis() && time < seg.getEndTimeMillis()) {
+
+    // once again, allow flexibility for first point if it's less than a sample away from start
+    if (time + (long) getSampleRate() >= seg.getStartTimeMillis() && time < seg.getEndTimeMillis()) {
       return midPoint;
     } else if (time < seg.getStartTimeMillis()) {
       return findSegmentContainingTime(time, lowerBound, midPoint);

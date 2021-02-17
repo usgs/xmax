@@ -335,13 +335,21 @@ public class Segment implements Externalizable, Cloneable {
 		return getData(ti.getStart(), ti.getEnd());
 	}
 
-	public int getPointAtTime(long start) {
-		if (start < getStartTimeMillis() || start >= getEndTimeMillis()) {
-			return Integer.MIN_VALUE;
+	public Double getPointAtTime(long start) {
+		// The conditional is here because in between segments there may be very slight timing
+		// discrepancies that cause samples to have a slight error compared to their normal sample rate.
+		// Normally we expect the end time of a segment and the start of the next one to be equal, but
+		// sometimes they may be off by a few milliseconds.
+		// We should ignore this discrepancy and just get the next segment's first point when possible
+		// which is why we have the specific gap check and move the start index up to 0
+		boolean isGap = getStartTimeMillis() - start > (long) sampleRate;
+		if (isGap || start >= getEndTimeMillis()) {
+			return Double.NaN;
 		}
 
 		int startIndex = new Double((start - startTime) / sampleRate).intValue();
-		return data[startIndex];
+		startIndex = Math.max(startIndex, 0);
+		return (double) data[startIndex];
 	}
 
 	/**

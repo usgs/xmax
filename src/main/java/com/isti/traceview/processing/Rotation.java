@@ -4,7 +4,6 @@ import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
-import com.isti.traceview.data.PlotDataPoint;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
@@ -233,169 +232,6 @@ public class Rotation {
    }
 
    /**
-    * Rotate pixelized data If we have overlap on the trace we take only first
-    * segment.
-    *
-    * @param channel
-    *            plot data provider to rotate
-    * @param ti
-    *            processed time range
-    * @param pointCount
-    *            requested point count in the resulting plotdata
-    * @param filter
-    *            filter to apply before rotation
-    * @return pixelized rotated data
-    * @throws TraceViewException
-    *             if a variety of issue occurs in called methods, this method
-    *             throws if the channel type can not be determined.
-    */
-   public PlotData rotate(PlotDataProvider channel, TimeInterval ti,
-       int pointCount, IFilter filter, IColorModeState colorMode)
-           throws TraceViewException, RemoveGainException {
-     PlotData[] tripletPlotData = new PlotData[3];
-     char channelType = channel.getType();
-     PlotData toProcess = channel.getOriginalPlotData(ti, pointCount, filter, null, colorMode);
-     PlotData ret = new PlotData(channel.getName(), channel.getColor());
-     if (channelType == 'E' || channelType == '2') {
-       tripletPlotData[0] = toProcess;
-       try{
-         tripletPlotData[1] = getComplementaryPlotData(channel, '1', ti, pointCount, filter, colorMode);
-       } catch (TraceViewException te) {
-         logger.error("TraceViewException:", te);
-         tripletPlotData[1] = getComplementaryPlotData(channel, 'N', ti, pointCount, filter, colorMode);
-       }
-       tripletPlotData[2] = getComplementaryPlotData(channel, 'Z', ti, pointCount, filter, colorMode);
-
-     } else if (channelType == 'N' || channelType == '1') {
-       try{
-         tripletPlotData[0] = getComplementaryPlotData(channel, '2', ti, pointCount, filter, colorMode);
-       } catch (TraceViewException te) {
-         logger.error("TraceViewException:", te);
-         tripletPlotData[0] = getComplementaryPlotData(channel, 'E', ti, pointCount, filter, colorMode);
-       }
-       tripletPlotData[1] = toProcess;
-       tripletPlotData[2] = getComplementaryPlotData(channel, 'Z', ti, pointCount, filter, colorMode);
-
-     } else if (channelType == 'Z') {
-       try{
-         tripletPlotData[0] = getComplementaryPlotData(channel, '2', ti, pointCount, filter, colorMode);
-       } catch (TraceViewException te) {
-         logger.error("TraceViewException:", te);
-         tripletPlotData[0] = getComplementaryPlotData(channel, 'E', ti, pointCount, filter, colorMode);
-       }
-       try{
-         tripletPlotData[1] = getComplementaryPlotData(channel, '1', ti, pointCount, filter, colorMode);
-       } catch (TraceViewException te) {
-         logger.error("TraceViewException:", te);
-         tripletPlotData[1] = getComplementaryPlotData(channel, 'N', ti, pointCount, filter, colorMode);
-       }
-       tripletPlotData[2] = toProcess;
-
-     } else if (channelType == 'U') {
-       tripletPlotData[0] = toProcess;
-       tripletPlotData[1] = getComplementaryPlotData(channel, 'V', ti, pointCount, filter, colorMode);
-       tripletPlotData[2] = getComplementaryPlotData(channel, 'W', ti, pointCount, filter, colorMode);
-
-     } else if (channelType == 'V') {
-       tripletPlotData[0] = getComplementaryPlotData(channel, 'U', ti, pointCount, filter, colorMode);
-       tripletPlotData[1] = toProcess;
-       tripletPlotData[2] = getComplementaryPlotData(channel, 'W', ti, pointCount, filter, colorMode);
-     } else if (channelType == 'W') {
-       tripletPlotData[0] = getComplementaryPlotData(channel, 'U', ti, pointCount, filter, colorMode);
-       tripletPlotData[1] = getComplementaryPlotData(channel, 'V', ti, pointCount, filter, colorMode);
-       tripletPlotData[2] = toProcess;
-     } else {
-       throw new TraceViewException("Can't determine channel type for rotation: " + channel.getName());
-     }
-     for (int i = 0; i < pointCount; i++) {
-       double[][] mean = new double[3][1];
-       double[][][] cubicle = new double[8][3][1];
-       boolean allDataFound = true;
-
-       PlotDataPoint E = tripletPlotData[0].getPixels().get(i)[0];
-       PlotDataPoint N = tripletPlotData[1].getPixels().get(i)[0];
-       PlotDataPoint Z = tripletPlotData[2].getPixels().get(i)[0];
-       if ((E.getRawDataProviderNumber() >= 0) && (N.getRawDataProviderNumber() >= 0) && (Z.getRawDataProviderNumber() >= 0)) {
-         cubicle[0][0][0] = E.getBottom();
-         cubicle[0][1][0] = N.getBottom();
-         cubicle[0][2][0] = Z.getBottom();
-
-         cubicle[1][0][0] = E.getTop();
-         cubicle[1][1][0] = N.getBottom();
-         cubicle[1][2][0] = Z.getBottom();
-
-         cubicle[2][0][0] = E.getTop();
-         cubicle[2][1][0] = N.getTop();
-         cubicle[2][2][0] = Z.getBottom();
-
-         cubicle[3][0][0] = E.getBottom();
-         cubicle[3][1][0] = N.getTop();
-         cubicle[3][2][0] = Z.getBottom();
-
-         cubicle[4][0][0] = E.getTop();
-         cubicle[4][1][0] = N.getTop();
-         cubicle[4][2][0] = Z.getTop();
-
-         cubicle[5][0][0] = E.getBottom();
-         cubicle[5][1][0] = N.getTop();
-         cubicle[5][2][0] = Z.getTop();
-
-         cubicle[6][0][0] = E.getBottom();
-         cubicle[6][1][0] = N.getBottom();
-         cubicle[6][2][0] = Z.getTop();
-
-         cubicle[7][0][0] = E.getTop();
-         cubicle[7][1][0] = N.getBottom();
-         cubicle[7][2][0] = Z.getTop();
-
-         mean[0][0] = E.getMean();
-         mean[1][0] = N.getMean();
-         mean[2][0] = Z.getMean();
-       } else {
-         allDataFound = false;
-       }
-       PlotDataPoint pdp = null;
-       if (allDataFound) {
-         double[][][] rotatedCubicle = new double[8][3][1];
-         double[][] rotatedMean = new double[3][1];
-         for (int j = 0; j < 8; j++) {
-           rotatedCubicle[j] = matrix.multiply(MatrixUtils.createRealMatrix(cubicle[j])).getData();
-         }
-         rotatedMean = matrix.multiply(MatrixUtils.createRealMatrix(mean)).getData();
-         int index = 0; // set correctly if channel type is E, U, or 2
-         if (channelType == 'N' || channelType == 'V' || channelType == '1') {
-           index = 1;
-         } else if (channelType == 'Z' || channelType == 'W') {
-           index = 2;
-         }
-         double top = Double.NEGATIVE_INFINITY;
-         double bottom = Double.POSITIVE_INFINITY;
-         for (int j = 0; j < 8; j++) {
-           if (rotatedCubicle[j][index][0] > top) {
-             top = rotatedCubicle[j][index][0];
-           }
-           if (rotatedCubicle[j][index][0] < bottom) {
-             bottom = rotatedCubicle[j][index][0];
-           }
-         }
-         pdp = new PlotDataPoint(top, bottom, rotatedMean[index][0], toProcess.getPixels().get(i)[0].getSegmentNumber(),
-             toProcess.getPixels().get(i)[0].getRawDataProviderNumber(),
-             toProcess.getPixels().get(i)[0].getContinueAreaNumber(),
-             toProcess.getPixels().get(i)[0].getEvents());
-
-       } else {
-         pdp = new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
-             Double.NaN, -1, -1, -1, null);
-       }
-       // lg.debug("Result: " + pdp);
-       PlotDataPoint[] pdpArray = new PlotDataPoint[1];
-       pdpArray[0] = pdp;
-       ret.addPixel(pdpArray);
-     }
-     return ret;
-   }
-
-   /**
     * Rotates raw data
     *
     * @param channel
@@ -429,7 +265,7 @@ public class Rotation {
      List<Segment> third = new ArrayList<>();
      double[] pointPosition = new double[3];
 
-     for (Segment segment: channel.getRawData(ti)) {
+     for (Segment segment : channel.getRawData(ti)) {
        Segment firstRotated = new Segment(null, segment.getStartOffset(),
            segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
            segment.getSourceSerialNumber());
@@ -439,20 +275,15 @@ public class Rotation {
        Segment thirdRotated = new Segment(null, segment.getStartOffset(),
            segment.getStartTime(), segment.getSampleRate(), segment.getSampleCount(),
            segment.getSourceSerialNumber());
-       long currentTime = segment.getStartTime().getTime();
+       long startingTime = segment.getStartTime().getTime();
        int[] data = segment.getData().data;
        for (int i = 0; i < data.length; i++) {
          // int value = data[i];
-         currentTime = currentTime + (long) (i * segment.getSampleRate());
-         pointPosition[0] = triplet[0].getRawData(currentTime); //x
-         pointPosition[1] = triplet[1].getRawData(currentTime); //y
-         pointPosition[2] = triplet[2].getRawData(currentTime); //z
-         if (pointPosition[0] == Integer.MIN_VALUE ||
-             pointPosition[1] == Integer.MIN_VALUE ||
-             pointPosition[2] == Integer.MIN_VALUE) {
+         long currentTime = startingTime + (long) (i * segment.getSampleRate());
+         pointPosition[0] = triplet[0].getRawData(currentTime);
+         pointPosition[1] = triplet[1].getRawData(currentTime);
+         pointPosition[2] = triplet[2].getRawData(currentTime);
 
-           continue;
-         }
          RealVector rotatedPointPosition =
               matrix.operate(MatrixUtils.createRealVector(pointPosition));
          firstRotated.addDataPoint((int) rotatedPointPosition.getEntry(0));
@@ -465,7 +296,6 @@ public class Rotation {
          third.add(thirdRotated);
        }
      }
-
      cachedData.put(triplet[0].getName(), first);
      cachedData.put(triplet[1].getName(), second);
      cachedData.put(triplet[2].getName(), third);
