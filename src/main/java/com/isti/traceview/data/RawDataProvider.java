@@ -262,7 +262,7 @@ public class RawDataProvider extends Channel {
       }
     }
     setSampleRate(segment.getSampleRate());
-    logger.debug(segment + " added to " + this);
+    // logger.debug(segment + " added to " + this);
   }
 
   protected List<SegmentCache> getSegmentCache() {
@@ -457,14 +457,11 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * Load data into this data provider from data sources
+   * Load data into this data provider from data sources. Segment loading is parallelized.
    *
-   * NOTE: Removed multithreading due to hardware constraints
-   * and clean this method.
    *
-   * @param ti The TimeInterval to load
    */
-  private void loadData(TimeInterval ti) {
+  private void loadData() {
     rawData.parallelStream()
         .filter(e -> !e.getSegment().getIsLoaded())
         .forEach(e -> {
@@ -542,18 +539,9 @@ public class RawDataProvider extends Channel {
     if (loaded) return;
 
     loadingStarted = true;
-    loadData(null);
-    loaded = true;
-    setChanged();
-    notifyObservers(getTimeRange());
-  }
-
-  /**
-   * Loads data inside given time interval to this provider from its data sources
-   */
-  public void load(TimeInterval ti) {
-    loadingStarted = true;
-    loadData(ti);
+    synchronized (rawData) {
+      loadData();
+    }
     loaded = true;
     setChanged();
     notifyObservers(getTimeRange());

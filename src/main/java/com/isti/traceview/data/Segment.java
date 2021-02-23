@@ -121,7 +121,7 @@ public class Segment implements Externalizable, Cloneable {
 		this.minValue = Integer.MAX_VALUE;
 		data = null;
 		currentPos = 0;
-		logger.debug("Created: " + this);
+		// logger.debug("Created: " + this);
 	}
 
 	/**
@@ -366,7 +366,7 @@ public class Segment implements Externalizable, Cloneable {
 		end = Math.max(start, end);
 		start = temp;
 		if (data == null) {
-			logger.debug("== Underlying array has not been initialized");
+			logger.error("== Underlying array has not been initialized");
 		} else {
 			logger.debug("== Length of underlying data array: " + data.length);
 		}
@@ -383,8 +383,8 @@ public class Segment implements Externalizable, Cloneable {
 			ret = new int[endIndex - startIndex];
 			logger.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
 			if (dataStream == null) {
-				logger.debug("== dataStream == null --> Get points from RAM data[] " +
-						"startTime=" + startTime + " endTime=" + getEndTime().getTime());
+				// logger.debug("== dataStream == null --> Get points from RAM data[] " +
+				// 		"startTime=" + startTime + " endTime=" + getEndTime().getTime());
 				// we use internal data in the ram
 				ret = Arrays.copyOfRange(data, startIndex, endIndex);
 
