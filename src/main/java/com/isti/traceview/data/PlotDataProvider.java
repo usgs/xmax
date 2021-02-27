@@ -104,7 +104,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			logger.debug("== ENTER");
 			TimeInterval ti = getTimeRange();
 			pointsCache = pixelize(ti, initPointCount, null);
-        	logger.debug("== EXIT");
+			logger.debug("== EXIT");
 		} catch (PlotDataException e) {
 			logger.error("PlotDataException:", e);
 		}
@@ -161,7 +161,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @param filter -
 	 *            filter to apply
 	 * @return generated plot data to draw
-	 * @throws TraceViewException if thrown in {@link com.isti.traceview.processing.Rotation#rotate(PlotDataProvider, TimeInterval, int, IFilter, IColorModeState)}
+	 * @throws TraceViewException if thrown in {@link RemoveGain#removegain(PlotDataProvider, TimeInterval, int, IFilter, IColorModeState)}
 	 */
 	public PlotData getPlotData(TimeInterval ti, int pointCount, IFilter filter, 
 			RemoveGain rg, IColorModeState colorMode)
@@ -169,16 +169,11 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		if (rg != null && rg.removestate && this.rotation == null){
 			return rg.removegain(this, ti, pointCount, filter, colorMode);
 		}
-		/*
-		else if (this.rotation != null && this.rotation.getRotationType() != null) {
-			return rotation.rotate(this, ti, pointCount, filter, colorMode);
-		}
-		 */
 		else {
 			return getPlotData(ti, pointCount, filter);
 		}
 	}
-	
+
 	/**
 	 * Generate original plot data
 	 * 
@@ -189,7 +184,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * @param filter -
 	 *            filter to apply
 	 * @return generated plot data to draw from original dataset
-	 * @throws TraceViewException if thrown in {@link com.isti.traceview.processing.Rotation#rotate(PlotDataProvider, TimeInterval, int, IFilter, IColorModeState)}
+	 * @throws TraceViewException if thrown in {@link RemoveGain#removegain(PlotDataProvider, TimeInterval, int, IFilter, IColorModeState)}
 	 */
 	public PlotData getOriginalPlotData(TimeInterval ti, int pointCount, IFilter filter, 
 			RemoveGain rg, IColorModeState colorMode)
@@ -245,10 +240,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 								/ initialTimeRange.getDuration());
 				if (startIndex < 0) {
 					for (int i = -startIndex; i < 0; i++) {
-						PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
-						intervalPoints[0] = new PlotDataPoint(Double.NEGATIVE_INFINITY,
-								Double.POSITIVE_INFINITY, Double.NaN, -1,
-								-1, -1, null);
+						PlotDataPoint[] intervalPoints = new PlotDataPoint[] {
+								new PlotDataPoint(Double.NEGATIVE_INFINITY,
+										Double.POSITIVE_INFINITY, Double.NaN, -1,
+										-1, -1, null)};
 						points.add(intervalPoints);
 					}
 					startIndex = 0;
@@ -260,10 +255,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					// MTH: We don't seem to go in here
 					points.addAll(pointsCache.subList(startIndex, initPointCount));
 					for (int i = initPointCount; i < endIndex; i++) {
-						PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
-						intervalPoints[0] = new PlotDataPoint(Double.NEGATIVE_INFINITY,
-								Double.POSITIVE_INFINITY, Double.NaN, -1,
-								-1, -1, null);
+						PlotDataPoint[] intervalPoints = new PlotDataPoint[]{
+								new PlotDataPoint(Double.NEGATIVE_INFINITY,
+										Double.POSITIVE_INFINITY, Double.NaN, -1,
+										-1, -1, null)};
 						points.add(intervalPoints);
 					}
 				} else {
@@ -341,14 +336,15 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					ret.addPixel(pdpArray);
 					if (evts.size() > 0) {
 						logger.debug("Event time: "
-								+ TimeInterval.formatDate(evts.first().getEvent().getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-								+ "(" + evts.first().getEvent().getStartTime().getTime() + ")" + "; point number " + ret.getPointCount());
+								+ TimeInterval.formatDate(evts.first().getEvent().getStartTime(),
+																					TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+								+ "(" + evts.first().getEvent().getStartTime().getTime() + ")"
+								+ "; point number " + ret.getPointCount());
 					}
 				} else {
-					PlotDataPoint[] pdpArray = new PlotDataPoint[1];
-					pdpArray[0] = new PlotDataPoint(
-							Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN,
-							-1, -1, -1, null);
+					PlotDataPoint[] pdpArray = new PlotDataPoint[] {
+							new PlotDataPoint(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN,
+									-1, -1, -1, null)};
 					ret.addPixel(pdpArray);
 				}
 			}
@@ -398,18 +394,21 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			});
 			plottingData = rawDataFinal;
 		}
-		//filtering; cannot be parallelized
-		if(filter != null){
-			FilterFacade ff = new FilterFacade(filter, this);
-			SegmentData[] filteredRawData = new SegmentData[plottingData.length];
-			for (int i = 0; i < plottingData.length; i++) {
-				SegmentData segmentData = plottingData[i];
-				filteredRawData[i] = new SegmentData(segmentData.startTime, segmentData.sampleRate,
-						segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
-						segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
-						ff.filter(segmentData.data));
+
+		// filtering; cannot be parallelized, and the
+		if(filter != null) {
+			synchronized (filter) {
+				FilterFacade ff = new FilterFacade(filter, this);
+				SegmentData[] filteredRawData = new SegmentData[plottingData.length];
+				for (int i = 0; i < plottingData.length; i++) {
+					SegmentData segmentData = plottingData[i];
+					filteredRawData[i] = new SegmentData(segmentData.startTime, segmentData.sampleRate,
+							segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
+							segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
+							ff.filter(segmentData.data));
+				}
+				plottingData = filteredRawData;
 			}
-			plottingData = filteredRawData;
 		}
 		
 		double interval = (ti.getDuration()) / (double) pointCount;

@@ -66,8 +66,6 @@ public abstract class AbstractFilter implements IFilter {
   synchronized public double[] filter(double[] data, int length)
       throws BPFilterException, HPFilterException, LPFilterException {
 
-    /*
-     */
     double[] returnArray = filterBackend(data, length);
     // IntStream.range(0, length).parallel().forEach(i -> returnArray[i] += offset);
     return returnArray;

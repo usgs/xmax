@@ -314,7 +314,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		this.add(getDrawAreaPanel(), BorderLayout.CENTER);
 		this.add(getSouthPanel(showTimePanel), BorderLayout.SOUTH);
 
-		/** ----------------- MTH ---------------- **/
+		/* ----------------- MTH ---------------- */
 		//  defaultMarkPosition.gif is now found with a change to build.xml 
 		URL url = null;
 		try {
@@ -327,16 +327,16 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			logger.error("Exception:", e);
 		}
 
-		/** ----------------- MTH ---------------- **/
+		/* ----------------- MTH ---------------- */
 
-		/**
+		/*
 		 try {
 		 markPositionImage = javax.imageio.ImageIO.read(ClassLoader.getSystemResource("defaultMarkPosition.gif"));
 		 } catch (IOException e) {
 		 markPositionImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 		 lg.error("Can't read mark position image: " + e);
 		 }
-		 **/
+		 */
 	}
 
 	/**
@@ -638,83 +638,83 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @param channels            list of traces
 	 */
 	public void setChannelShowSet(List<PlotDataProvider> channels) {
-			if (channels != null) {
-				clearChannelShowSet();
-				CommandHandler.getInstance().clearCommandHistory();
+		if (channels != null) {
+			clearChannelShowSet();
+			CommandHandler.getInstance().clearCommandHistory();
 
-				// This is the main method for all station channels for one
-				// GraphPanel (i.e. one station multiple channels per panel)
-				if (!TraceView.getConfiguration().getMergeLocations()) {
-					// This submits each single channel as a List<> which doesn't
-					// make sense. Why not submit all channels to addChannelShowSet()?
-					// or submit each channel individually?
-					// **NOTE: addChannelShowSet() calls the addGraph() method which
-					//		   creates a graph panel for each channel submitted
-					for (PlotDataProvider channel: channels) {
-						//logger.debug("== handle channel=" + channel);
-						List<PlotDataProvider> toAdd = new ArrayList<>();
-						toAdd.add(channel);
-						addChannelShowSet(toAdd);
-					}
-
-					// Loops through ChannelView objects and loads segment data
-					// TimeInterval ti = null;
-					logger.info("Performing initial load of data from files");
-					Instant start = Instant.now();
-					channelShowSet.parallelStream().forEach(
-							e -> e.getPlotDataProviders().forEach(RawDataProvider::load));
-					Instant end = Instant.now();
-					double duration = (end.toEpochMilli() - start.toEpochMilli()) / 1000.;
-					logger.info("Data point loading completed after " + duration + " seconds.");
-
-
-					//logger.debug("Channels are done loading");
-				} else {
+			// This is the main method for all station channels for one
+			// GraphPanel (i.e. one station multiple channels per panel)
+			if (!TraceView.getConfiguration().getMergeLocations()) {
+				// This submits each single channel as a List<> which doesn't
+				// make sense. Why not submit all channels to addChannelShowSet()?
+				// or submit each channel individually?
+				// **NOTE: addChannelShowSet() calls the addGraph() method which
+				//		   creates a graph panel for each channel submitted
+				for (PlotDataProvider channel: channels) {
+					//logger.debug("== handle channel=" + channel);
 					List<PlotDataProvider> toAdd = new ArrayList<>();
-					PlotDataProvider prevChannel = null;
-					for (PlotDataProvider channel: channels) {
-						// This block checks for channels with the same location code
-						// regardless of the network, channel, or station name
-						// adds list of channels based on {XX}location to one graph panel
-						// **NOTE: The toAdd List<> still needs to be revised, doesn't
-						// 		   make sense when only one channel is being submitted
-						if (prevChannel != null
-								&& (!prevChannel.getNetworkName().equals(channel.getNetworkName())
-								|| !prevChannel.getStation().getName().equals(channel.getStation().getName()) || !prevChannel
-								.getChannelName().equals(channel.getChannelName()))) {
-							ChannelView cv = channelViewFactory.getChannelView(toAdd);
-							addGraph(cv);
-							toAdd = new ArrayList<>();
-						}
-						toAdd.add(channel);
-						prevChannel = channel;
+					toAdd.add(channel);
+					addChannelShowSet(toAdd);
+				}
+
+				// Loops through ChannelView objects and loads segment data
+				// TimeInterval ti = null;
+				logger.info("Performing initial load of data from files");
+				Instant start = Instant.now();
+				channelShowSet.parallelStream().forEach(
+						e -> e.getPlotDataProviders().forEach(RawDataProvider::load));
+				Instant end = Instant.now();
+				double duration = (end.toEpochMilli() - start.toEpochMilli()) / 1000.;
+				logger.info("Data point loading completed after " + duration + " seconds.");
+
+
+				//logger.debug("Channels are done loading");
+			} else {
+				List<PlotDataProvider> toAdd = new ArrayList<>();
+				PlotDataProvider prevChannel = null;
+				for (PlotDataProvider channel: channels) {
+					// This block checks for channels with the same location code
+					// regardless of the network, channel, or station name
+					// adds list of channels based on {XX}location to one graph panel
+					// **NOTE: The toAdd List<> still needs to be revised, doesn't
+					// 		   make sense when only one channel is being submitted
+					if (prevChannel != null
+							&& (!prevChannel.getNetworkName().equals(channel.getNetworkName())
+							|| !prevChannel.getStation().getName().equals(channel.getStation().getName()) || !prevChannel
+							.getChannelName().equals(channel.getChannelName()))) {
+						ChannelView cv = channelViewFactory.getChannelView(toAdd);
+						addGraph(cv);
+						toAdd = new ArrayList<>();
 					}
-					if (toAdd.size() > 0) {
-						addChannelShowSet(toAdd);
-					}
-					// Will add loop for List<ChannelView> channelShowSet to load
-					// channels in List<PlotDataProvider> (see above)
+					toAdd.add(channel);
+					prevChannel = channel;
 				}
-				selectedChannelShowSet = Collections.synchronizedList(new UniqueList<>());
-				if (overlay) {
-					overlay = false;
-					getObservable().setChanged();
-					getObservable().notifyObservers("OVR OFF");
+				if (toAdd.size() > 0) {
+					addChannelShowSet(toAdd);
 				}
-				if (select) {
-					select = false;
-					getObservable().setChanged();
-					getObservable().notifyObservers("SEL OFF");
-				}
-				if (rotation != null) {
-					rotation = null;
-					getObservable().setChanged();
-					getObservable().notifyObservers("ROT OFF");
-				}
-				repaint();	// why repaint when adding channels to Graph?
+				// Will add loop for List<ChannelView> channelShowSet to load
+				// channels in List<PlotDataProvider> (see above)
 			}
-			getObservable().setChanged();
-			getObservable().notifyObservers(channels);
+			selectedChannelShowSet = Collections.synchronizedList(new UniqueList<>());
+			if (overlay) {
+				overlay = false;
+				getObservable().setChanged();
+				getObservable().notifyObservers("OVR OFF");
+			}
+			if (select) {
+				select = false;
+				getObservable().setChanged();
+				getObservable().notifyObservers("SEL OFF");
+			}
+			if (rotation != null) {
+				rotation = null;
+				getObservable().setChanged();
+				getObservable().notifyObservers("ROT OFF");
+			}
+			repaint();	// why repaint when adding channels to Graph?
+		}
+		getObservable().setChanged();
+		getObservable().notifyObservers(channels);
 	}
 
 	/**
@@ -1006,55 +1006,6 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	}
 
 	/**
-	 * Sets rotation. Null means rotation doesn't affected. Selected traces will be redrawn with
-	 * rotation with using of "selection" mode.
-	 *
-	 * @param rotation
-	 *            rotation to set to set
-	 */
-	/*public void setRotation(Rotation rotation) {
-		if (rotation == null) {
-			select = false;
-			overlay = false;
-			this.rotation = rotation;
-		} 
-		else {
-			if(rotation.getMatrix()==null){
-				forceRepaint();
-			} 
-			else {
-					List<ChannelView> selected = getCurrentSelectedChannelShowSet();
-					boolean dataFound = true;
-					for (ChannelView cv: selected) {
-						for (PlotDataProvider ch: cv.getPlotDataProviders()) {
-							if (!Rotation.isComplementaryChannelTrupleExist(ch)) {
-								dataFound = false;
-								break;
-							}	
-						}
-						if (!dataFound)
-							break;
-					}
-					if (dataFound) {
-						this.rotation = rotation;
-						observable.setChanged();
-						observable.notifyObservers("ROT");
-						forceRepaint();
-					}
-				} 
-		}
-	}*/
-
-	/**
-	 * Gets the rotation.
-	 *
-	 * @return current rotation, null if rotation is not present
-	 */
-	/*public Rotation getRotation() {
-		return rotation;
-	}*/
-
-	/**
 	 * Sets gain factor to scale data by.
 	 *
 	 * @param gain
@@ -1198,12 +1149,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				overlay.setGraphPanel(this);
 				drawAreaPanel.add(overlay);
 			} else {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for panels to overlay", "Selection missing",
-								JOptionPane.WARNING_MESSAGE);
-					}
-				});
+				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
+						"Please click check-boxes for panels to overlay",
+						"Selection missing", JOptionPane.WARNING_MESSAGE));
 			}
 		}
 		getObservable().setChanged();
@@ -1270,12 +1218,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 					}
 				}
 			} else {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						JOptionPane.showMessageDialog(TraceView.getFrame(), "Please click check-boxes for panels to select", "Selection missing",
-								JOptionPane.WARNING_MESSAGE);
-					}
-				});
+				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
+						"Please click check-boxes for panels to select", "Selection missing",
+						JOptionPane.WARNING_MESSAGE));
 			}
 		}
 		getObservable().setChanged();
@@ -1388,6 +1333,13 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				Instant start = Instant.now();
 				// need to create a boolean for mouseDragging (i.e. zooming)
 				// mouse clicked, pressed, released, dragged
+
+				// this lock object exists to ensure that if the filter is not null then any filtering
+				// operations will be synchronized on it, as the filtering code is not thread-safe and
+				// the filter is shared across all traces this is run parallel over
+				// because the filter can be null but synchronization requires a non-null object, we
+				// initialize it into a boolean where it can otherwise be ignored
+				final Object filterLock = (filter != null) ? filter : Boolean.valueOf(true);
 				if (initialPaint || forceRepaint) {
 					logger.info("Start plotting data update routine...");
 					final List<String> channelsWithErrors = new ArrayList<>();
@@ -1401,19 +1353,17 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 								comp.doLayout();
 							}
 						}
-						String errorChannel = view.updateData();
-						if (!errorChannel.equals("")) {
-							channelsWithErrors.add(errorChannel);
+						synchronized (filterLock) {
+							String errorChannel = view.updateData();
+							if (!errorChannel.equals("")) {
+								channelsWithErrors.add(errorChannel);
+							}
 						}
 					});
 					if(channelsWithErrors.size() > 0){
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								JOptionPane.showMessageDialog(TraceView.getFrame(),
-										"Error with:" + "\n" + StringUtils.join(channelsWithErrors,
-												"\n"), "Warning", JOptionPane.WARNING_MESSAGE);
-							}
-						});
+						SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
+								"Error with:" + "\n" + StringUtils.join(channelsWithErrors,
+										"\n"), "Warning", JOptionPane.WARNING_MESSAGE));
 
 					}
 				}

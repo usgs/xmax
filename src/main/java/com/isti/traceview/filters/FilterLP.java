@@ -14,8 +14,8 @@ public class FilterLP extends AbstractFilter {
 	/** The Constant logger. */
 	private static final Logger logger = Logger.getLogger(FilterLP.class); // @jve:decl-index=0:
 
-	private double cutFrequency;
-	private int order;
+	private final double cutFrequency;
+	private final int order;
 
 	/**
 	 * @param order

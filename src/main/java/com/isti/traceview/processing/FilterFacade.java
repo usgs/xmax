@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  */
 public class FilterFacade {
 	private static final Logger logger = Logger.getLogger(FilterFacade.class);
-	private IFilter filter;
+	private final IFilter filter;
 
 	/**
 	 * @param filter
@@ -24,7 +24,7 @@ public class FilterFacade {
 	 */
 	public FilterFacade(IFilter filter, RawDataProvider channel) {
 		this.filter = filter;
-		if (!filter.isInitialized()) {
+		if (!this.filter.isInitialized()) {
 			this.filter.init(channel);
 		}
 	}
@@ -68,7 +68,8 @@ public class FilterFacade {
 		try {
 			toFilt = filter.filter(toFilt, toFilt.length);
 			for (int i = 0; i < data.length; i++) {
-				data[i] = new Double(toFilt[i]).intValue();
+				data[i] = (int) toFilt[i];
+				// data[i] = new Double(toFilt[i]).intValue();
 			}
 		} catch (TraceViewException e) {
 			logger.error("Can't filter data: ", e);
