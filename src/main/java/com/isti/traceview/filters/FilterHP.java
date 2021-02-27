@@ -14,8 +14,8 @@ public class FilterHP extends AbstractFilter {
 	/**
 	 * number of filter sections
 	 */
-	private int order;
-	private double cutFrequency;
+	private final int order;
+	private final double cutFrequency;
 
 
 	/**

@@ -27,9 +27,9 @@ public class FilterBP extends AbstractFilter {
 	public static final String DESCRIPTION = "Apply Band Pass filter for selected channels";
 	public static final String NAME = "BP";
 
-	private int order;
-	private double cutLowFrequency;
-	private double cutHighFrequency;
+	private final int order;
+	private final double cutLowFrequency;
+	private final double cutHighFrequency;
 
 	@Override
 	public String getName() {
