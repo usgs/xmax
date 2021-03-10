@@ -8,7 +8,7 @@ import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.Rotation;
 import edu.iris.dmc.seedcodec.B1000Types;
-import edu.iris.dmc.seedcodec.Steim1;
+import edu.iris.dmc.seedcodec.Steim2;
 import edu.iris.dmc.seedcodec.SteimException;
 import edu.iris.dmc.seedcodec.SteimFrameBlock;
 import edu.sc.seis.seisFile.mseed.Blockette1000;
@@ -598,7 +598,7 @@ public class RawDataProvider extends Channel {
           Btime btime = new Btime(exportedRange.getStartTime());
           header.setStartBtime(btime);
           int frameCount = (int) Math.ceil(data.length/16.);
-          SteimFrameBlock block = Steim1.encode(data, frameCount, biasValue);
+          SteimFrameBlock block = Steim2.encode(data, frameCount, biasValue);
 
           if (block.getNumSamples() < data.length) {
             // real usage would loop, creating multiple data records,
@@ -608,7 +608,7 @@ public class RawDataProvider extends Channel {
           }
           DataRecord record = new DataRecord(header);
           Blockette1000 blockette1000 = new Blockette1000();
-          blockette1000.setEncodingFormat((byte) B1000Types.STEIM1);
+          blockette1000.setEncodingFormat((byte) B1000Types.STEIM2);
           blockette1000.setWordOrder(Blockette1000.SEED_BIG_ENDIAN);
           blockette1000.setDataRecordLength((byte) 12); // log2 of 4096
           record.addBlockette(blockette1000);

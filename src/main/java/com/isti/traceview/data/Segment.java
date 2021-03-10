@@ -366,7 +366,12 @@ public class Segment implements Externalizable, Cloneable {
 		end = Math.max(start, end);
 		start = temp;
 		if (data == null) {
-			logger.error("== Underlying array has not been initialized");
+			// try to load the data if it still hasn't been read in (might happen in test cases)
+			// and then produce the error if that doesn't work correctly
+			load();
+			if (data == null) {
+				logger.error("== Underlying array has not been initialized");
+			}
 		} else {
 			logger.debug("== Length of underlying data array: " + data.length);
 		}
@@ -383,9 +388,6 @@ public class Segment implements Externalizable, Cloneable {
 			ret = new int[endIndex - startIndex];
 			logger.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
 			if (dataStream == null) {
-				// logger.debug("== dataStream == null --> Get points from RAM data[] " +
-				// 		"startTime=" + startTime + " endTime=" + getEndTime().getTime());
-				// we use internal data in the ram
 				ret = Arrays.copyOfRange(data, startIndex, endIndex);
 
 				if (startIndex > 0) {
@@ -396,11 +398,11 @@ public class Segment implements Externalizable, Cloneable {
 				}
 			} else {
 				// we use serialized data file
-				logger.debug("== dataStream is NOT null --> Load points from dataStream.readInt() to data[] " +
-						"startTime=" + startTime + " endTime=" + getEndTime().getTime());
+				logger.debug("== dataStream is NOT null --> Load points from dataStream.readInt() "
+						+ "to data[] | startTime=" + startTime + " endTime=" + getEndTime().getTime());
 				try {
 					if(startIndex>0){
-						dataStream.seek(startOffsetSerial + startIndex * 4 - 4);
+						dataStream.seek(startOffsetSerial + startIndex * 4L - 4);
 						previous = dataStream.readInt();
 					} else {
 						dataStream.seek(startOffsetSerial);
