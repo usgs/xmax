@@ -91,8 +91,6 @@ import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimeZone;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -562,6 +560,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 		phaseMenuCheckBox.setState(graphPanel.getPhaseState());
 		meanMenuCheckBox.setState(graphPanel.getMeanState() instanceof MeanModeEnabled);
+
 		XMAXDataModule dm = XMAX.getDataModule();
 		hasDataOnLoad = dm.getAllSources().size() > 0;
 		Component parentComponent = this;
@@ -577,8 +576,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					hasDataOnLoad = false;
 				}
 			}
-			statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
-					dm.getAllChannels().size());
+			statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1,
+					dm.getChannelSetEndIndex(), dm.getAllChannels().size());
 		};
 		new Thread(worker).start();
 		logger.debug("== Exit");

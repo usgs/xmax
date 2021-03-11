@@ -116,6 +116,7 @@ public class DataModule extends Observable {
             channel.getNetworkName(), channel.getLocationName()).mergeData(channel);
       }
     }
+    channels.sort(Channel.getComparator(TraceView.getConfiguration().getPanelOrder()));
     channels.parallelStream().forEach(RawDataProvider::sort);
     logger.info("Initial file parses completed");
     return filesProducingError.toArray(new File[]{});
