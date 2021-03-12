@@ -90,8 +90,8 @@ dependencies {
     implementation group: 'edu.emory.mathcs', name: 'JTransforms', version: '2.4'
     sourceOnly group: 'edu.emory.mathcs', name: 'JTransforms', version: '2.4',
             classifier: 'sources'
-    // implementation group: 'log4j', name: 'log4j', version: '1.2.16' // redundant, possibly
-    // sourceOnly group: 'log4j', name: 'log4j', version: '1.2.16', classifier: 'sources'
+    implementation group: 'log4j', name: 'log4j', version: '1.2.16'
+    sourceOnly group: 'log4j', name: 'log4j', version: '1.2.16', classifier: 'sources'
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.10'
     sourceOnly group: 'org.reflections', name: 'reflections', version: '0.9.10',
             classifier: 'sources'
@@ -99,13 +99,10 @@ dependencies {
     implementation group: 'edu.sc.seis', name: 'TauP', version: '2.4.5'
     sourceOnly group: 'edu.sc.seis', name: 'TauP', version: '2.4.5', classifier: 'sources'
     //seis.sc.edu maven dependencies
-    // note that when compiling jar we choose to exclude duplicate dependencies, so while
+    // note that when compiling jar we choose to exclude duplicate dependencies
     implementation group: 'xerces', name: 'xml-apis', version: '2.10+'
     sourceOnly group: 'xerces', name: 'xml-apis', version: '2.10+'
-    /*
-    sourceOnly group: 'xerces', name: 'xml-apis', version: '2.10+',
-            classifier: 'sources'
-    */
+
     testImplementation group: 'junit', name: 'junit', version: '4.+'
 }
 

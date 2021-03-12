@@ -24,6 +24,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -595,7 +596,7 @@ public class RawDataProvider extends Channel {
           header.setNetworkCode(getNetworkName());
           header.setLocationIdentifier(getLocationName());
           header.setSampleRate((float) (segment.getSampleRate()/1000.));
-          Btime btime = new Btime(exportedRange.getStartTime());
+          Btime btime = new Btime(Instant.ofEpochMilli(exportedRange.getStart()));
           header.setStartBtime(btime);
           int frameCount = (int) Math.ceil(data.length/16.);
           SteimFrameBlock block = Steim2.encode(data, frameCount, biasValue);

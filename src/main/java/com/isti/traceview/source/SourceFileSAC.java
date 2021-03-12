@@ -40,10 +40,8 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 	public Set<PlotDataProvider> parse() {
 		Set<PlotDataProvider> ret = new HashSet<>();
 		try {
-			SacTimeSeries sac = new SacTimeSeries();
-
-			sac.read(getFile().getCanonicalPath());
-			if (getFile().length() != sac.getHeader().getNpts() * 4 + data_offset) {
+			SacTimeSeries sac = SacTimeSeries.read(getFile().getCanonicalPath());
+			if (getFile().length() != sac.getHeader().getNpts() * 4L + data_offset) {
 				throw new IOException(getFile().getName() + " does not appear to be a SAC file!");
 			} 
 			// sac.read(getFile());
@@ -67,8 +65,7 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 	public void load(Segment segment){
 		int[] data = null;
 		try {
-			SacTimeSeries sac = new SacTimeSeries();
-			sac.read(getFile());
+			SacTimeSeries sac = SacTimeSeries.read(getFile());
 			data = new int[segment.getSampleCount()];
 			int i = 0;
 			for (float val: sac.getY()) {

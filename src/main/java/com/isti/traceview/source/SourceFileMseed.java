@@ -298,7 +298,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
 
   private static long getBlockStartTime(DataHeader dh) {
     Btime startBtime = dh.getStartBtime();
-    return startBtime.convertToCalendar().getTimeInMillis();
+    return startBtime.toInstant().toEpochMilli();
   }
 
   private static long getBlockEndTime(DataHeader dh, double sampleRate) {

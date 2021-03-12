@@ -116,7 +116,7 @@ public class SourceSocketFDSN extends SourceSocket {
 
     List<Pair<String, String>> stationNetworkPairs = new ArrayList<>();
 
-    java.util.Date epochAsDate = java.util.Date.from(Instant.ofEpochMilli(startTime));
+    Instant epochInstant = Instant.ofEpochMilli(startTime);
 
     // TODO: implement as a 'getQuerier' method in asl-java-utils?
     FDSNStationQueryParams params = new FDSNStationQueryParams();
@@ -125,7 +125,7 @@ public class SourceSocketFDSN extends SourceSocket {
     params.setHost(host);
     params.setFdsnwsPath(path);
     params.setLevel(FDSNStationQueryParams.LEVEL_RESPONSE);
-    params.setStartBefore(epochAsDate).setEndAfter(epochAsDate).appendToNetwork(network)
+    params.setStartBefore(epochInstant).setEndAfter(epochInstant).appendToNetwork(network)
         .appendToStation(station).appendToLocation(location).appendToChannel(channel);
     FDSNStationQuerier querier = new FDSNStationQuerier(params);
     FDSNStationXML xml = querier.getFDSNStationXML();

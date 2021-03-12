@@ -22,10 +22,6 @@ import java.util.TimeZone;
 public class SacTimeSeriesASCII extends SacTimeSeries {
 	public static final DecimalFormat floatFormat = new DecimalFormat("######0.0000000"); // G15.7
 	public static final DecimalFormat intFormat = new DecimalFormat("##########"); // I10
-
-	public SacTimeSeriesASCII() {
-		super();
-	}
 	
 	public SacTimeSeriesASCII(SacHeader header, float[] data) {
 		super(header, data);
