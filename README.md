@@ -74,6 +74,25 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
 
 ### Usage
 
+###### Notes on run-time features
+
+XMAX supports loading data into the program while running. 
+If no configuration file is specified or available, XMAX will
+attempt to launch itself with a minimal default configuration.
+A configuration file is strongly recommended but may not be
+necessary for all operations of the program, like viewing traces.
+
+When rotating data, the progam requires that the data region under
+analysis (i.e, what is shown in the graphs) is a contiguous region
+of data, possessing no gaps. This can be verified by the gap
+coloration mode; in this mode if a trace is shown as a single 
+color, then it is able to be rotated. 
+
+Data may have gaps outside the active display region; if so, then
+on zoom-out the program will reset the rotation. Check the data
+names in the graph panel to verify: data that is rotated will have
+a "ROT. STD." or "ROT. (degrees)" message after its name. 
+
 ###### Basic Execution Display
 
    No arguments specified (reads data from resources/DATA in config.xml):
