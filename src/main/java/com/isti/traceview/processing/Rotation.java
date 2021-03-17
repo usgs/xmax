@@ -263,7 +263,7 @@ public class Rotation {
     RawDataProvider[] triplet = getChannelsTriplet(channel);
     for (int i = 0; i < triplet.length; i++) {
       RawDataProvider checkForGaps = triplet[i];
-      if (i == 2 && checkForGaps == null && getRotationType() == RotationType.HORIZONTAL) {
+      if (i == 2 && getRotationType() == RotationType.HORIZONTAL) {
         continue;
       }
       assert(checkForGaps != null);
@@ -295,6 +295,9 @@ public class Rotation {
     int pointIndexSecond = (int)
         Math.round((ti.getStart() - rawSegmentsSecond.get(0).getStartTimeMillis())
             / channel.getSampleRate());
+
+    // this code is only needed if the rotation is standard; otherwise we just populate the
+    // vertical trace with zeros, because it isn't part of the horizontal calculations
     int segIndexThird = 0;
     int pointIndexThird = 0;
     List<Segment> rawSegmentsThird = null;
@@ -328,10 +331,9 @@ public class Rotation {
         segment.getSourceSerialNumber());
 
     while (currentTime < ti.getEnd()) {
-
       pointPosition[0] = rawSegmentsFirst.get(segIndexFirst).getData().data[pointIndexFirst];
       pointPosition[1] = rawSegmentsSecond.get(segIndexSecond).getData().data[pointIndexSecond];
-      if (getRotationType() == RotationType.HORIZONTAL && triplet[2] == null) {
+      if (getRotationType() == RotationType.HORIZONTAL) {
         pointPosition[2] = 0;
       } else {
         assert(rawSegmentsThird != null);
@@ -343,6 +345,9 @@ public class Rotation {
       firstRotated.addDataPoint((int) rotatedPointPosition.getEntry(0));
       secondRotated.addDataPoint((int) rotatedPointPosition.getEntry(1));
       thirdRotated.addDataPoint((int) rotatedPointPosition.getEntry(2));
+
+      // the remaining is basically all iteration steps. that's awful but happens because the data
+      // is in 3 different 2-D data structures and the indices are different for each one
 
       // the outgoing segments will all match the boundaries of the first trace in the triplet
       // when we hit the end of a segment, we add the completed rotated segments to the big list
@@ -386,7 +391,7 @@ public class Rotation {
         ++pointIndexSecond;
       }
 
-      if (triplet[2] != null) {
+      if (getRotationType() != RotationType.HORIZONTAL) {
         if (pointIndexThird == rawSegmentsThird.get(segIndexThird).getSampleCount() - 1) {
           pointIndexThird = 0;
           ++segIndexThird;
@@ -407,7 +412,7 @@ public class Rotation {
 
     cachedData.put(triplet[0].getName(), first);
     cachedData.put(triplet[1].getName(), second);
-    if (triplet[2] != null) {
+    if (getRotationType() != RotationType.HORIZONTAL) {
       cachedData.put(triplet[2].getName(), third);
     }
 
@@ -445,16 +450,14 @@ public class Rotation {
    *            third trace to check
    * @return true if one channel is E, one N, one Z; or if one is 1, one 2, one Z
    */
-  public static boolean isComplementaryChannel(RawDataProvider channel1, RawDataProvider channel2, RawDataProvider channel3) {
+  public static boolean isComplementaryChannel(RawDataProvider channel1, RawDataProvider channel2,
+      RawDataProvider channel3) {
     List<Character> channelNames = new ArrayList<>();
     channelNames.add(channel1.getChannelName().charAt(channel1.getChannelName().length() - 1));
     channelNames.add(channel2.getChannelName().charAt(channel2.getChannelName().length() - 1));
     channelNames.add(channel3.getChannelName().charAt(channel3.getChannelName().length() - 1));
-    if(channelNames.contains('1') && channelNames.contains('2') && channelNames.contains('Z') ||
-        channelNames.contains('N') && channelNames.contains('E')  && channelNames.contains('Z'))
-      return true;
-    else
-      return false;
+    return channelNames.contains('1') && channelNames.contains('2') && channelNames.contains('Z') ||
+        channelNames.contains('N') && channelNames.contains('E') && channelNames.contains('Z');
   }
 
   /**

@@ -205,7 +205,6 @@ public class DataModule extends Observable {
       logger.debug("== call channel.load() for channel=" + channel);
       channel.load();
       logger.debug("== call channel.load() DONE for channel=" + channel);
-      channel.initPointCache();
       System.out.format("\tSerialize to file:%s\n", storage.getSerialFileName(channel));
       channel.dump(storage.getSerialFileName(channel));
       //MTH: not sure why this is needed

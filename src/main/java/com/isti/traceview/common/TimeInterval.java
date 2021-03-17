@@ -4,6 +4,7 @@ import com.isti.traceview.TraceView;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -128,6 +129,16 @@ public class TimeInterval {
 	}
 
 	/**
+	 * Get the start time as Instant
+	 * @return start time of interval as converted to Instant
+	 */
+	public Instant getStartInstant() {
+		return Instant.ofEpochMilli(startTime);
+	}
+
+
+
+	/**
 	 * Getter of endTime
 	 * 
 	 * @return end time of interval
@@ -145,6 +156,15 @@ public class TimeInterval {
 	public long getEnd() {
 		return endTime;
 	}
+
+	/**
+	 * Get the end time as Instant
+	 * @return end time of interval as converted to Instant
+	 */
+	public Instant getEndInstant() {
+		return Instant.ofEpochMilli(endTime);
+	}
+
 
 	/**
 	 * @return duration of interval in milliseconds

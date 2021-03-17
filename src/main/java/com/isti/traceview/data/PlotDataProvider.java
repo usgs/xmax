@@ -74,12 +74,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 * Time range of last query of data
 	 */
 	private transient TimeInterval viewingInterval = null;
-
-	/**
-	 * List of precalculated {@link PlotDataPoint}s on the full time range of channel to use on
-	 * wide zooms
-	 */
-	private List<PlotDataPoint[]> pointsCache = null;
 	
 	/**
 	 * May be used by ColorModeByTrace to color trace in manual mode.
@@ -95,21 +89,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		super(channelName, station, networkName, locationName);
 		events = Collections.synchronizedSortedSet(new TreeSet<>());
 	}
-
-	/**
-	 * Initialize point cache, fill it with initPointCount points, this cache is used to show big
-	 * parts of data, and raw data access during zooming happens only to limited small parts of data
-	 */
-	public void initPointCache() {
-       	try { 
-			logger.debug("== ENTER");
-			TimeInterval ti = getTimeRange();
-			pointsCache = pixelize(ti, initPointCount, null);
-			logger.debug("== EXIT");
-		} catch (PlotDataException e) {
-			logger.error("PlotDataException:", e);
-		}
-	}
 	
 	/**
 	 * Sets rotation. Null means rotation doesn't affected. Selected traces will be redrawn with
@@ -119,9 +98,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 *            rotation to set to set
 	 */
 	public void setRotation(Rotation rotation) {
-
 		this.rotation = rotation;
-		initPointCache();
 	}
 	
 	/**
@@ -211,62 +188,24 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			IFilter filter) {
 		logger.debug(this + "; " + ti + "(" + ti.getStart() + "-" + ti.getEnd() + ")" + "; pointCount " + pointCount);
 
-		// This list used when we cannot use pointsCache due to too small zoom, calculated every
-		// time afresh.
 		List<PlotDataPoint[]> points = null;
-		if (!resetCaches) {
-			initPointCache();
-			resetCaches = true;
-		}
 
 		// Time range need to be pixelized - intersection of requested pixalization range and
 		// channel's time range
 		PlotData ret = new PlotData(this.getName(), this.getColor());
 		TimeInterval initialTimeRange = getTimeRange();
 		TimeInterval effectiveTimeRange = TimeInterval.getIntersect(ti, initialTimeRange);
+
 		if (effectiveTimeRange != null) {
-			if ((pointCount > pointsCache.size() * (double) effectiveTimeRange.getDuration() /
-					(double) initialTimeRange.getDuration()) || filter != null)  {
-				try {				
-					points = pixelize(effectiveTimeRange,
-							(int) (2 * pointCount * effectiveTimeRange.getDuration() / (double) ti.getDuration()),
-							filter);
-				} catch (PlotDataException e) {
-					logger.error("PlotDataException:", e);	
-				}
-			} else {
-				points = new ArrayList<>();
-				int startIndex = (int) (
-						(effectiveTimeRange.getStart() - initialTimeRange.getStart()) * initPointCount
-								/ initialTimeRange.getDuration());
-				if (startIndex < 0) {
-					for (int i = -startIndex; i < 0; i++) {
-						PlotDataPoint[] intervalPoints = new PlotDataPoint[] {
-								new PlotDataPoint(Double.NEGATIVE_INFINITY,
-										Double.POSITIVE_INFINITY, Double.NaN, -1,
-										-1, -1, null)};
-						points.add(intervalPoints);
-					}
-					startIndex = 0;
-				}
-				int endIndex = (int) (
-						(effectiveTimeRange.getEnd() - initialTimeRange.getStart()) * initPointCount
-								/ getTimeRange().getDuration());
-				if (endIndex > initPointCount) {
-					// MTH: We don't seem to go in here
-					points.addAll(pointsCache.subList(startIndex, initPointCount));
-					for (int i = initPointCount; i < endIndex; i++) {
-						PlotDataPoint[] intervalPoints = new PlotDataPoint[]{
-								new PlotDataPoint(Double.NEGATIVE_INFINITY,
-										Double.POSITIVE_INFINITY, Double.NaN, -1,
-										-1, -1, null)};
-						points.add(intervalPoints);
-					}
-				} else {
-					points.addAll(pointsCache.subList(startIndex, endIndex));
-				}
+			try {
+				points = pixelize(effectiveTimeRange,
+						(int) (2 * pointCount * effectiveTimeRange.getDuration() / (double) ti.getDuration()),
+						filter);
+			} catch (PlotDataException e) {
+				logger.error("PlotDataException:", e);
 			}
-			
+
+
 			// Second level of pixelization related to screen size (i.e. width)	
 			double timeRatio = (ti.getDuration()) / (double) pointCount;
 			for (int i = 0; i < pointCount; i++) {
@@ -373,14 +312,16 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	{
 		//logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
 		List<PlotDataPoint[]> pointSet = new ArrayList<>(pointCount);
-		// waiting if data still is not loaded
-		List<Segment> unfinalSegments;
+
+		List<Segment> unfinalSegments; // finalize this only after we determine if rotation is possible
 		try {
 			unfinalSegments = (rotation == null) ? getRawData(ti) : rotation.rotate(this, ti);
 		} catch (TraceViewException e) {
 			throw new PlotDataException("Error when trying to rotate channel " + getName(), e);
 		} catch (RotationGapException e) {
-			logger.error("Cannot rotate due to presence of gap", e);
+			logger.warn("Cannot rotate " + getName() + " due to presence of gap");
+			rotation = null;
+			// reset rotation here; any complement channels will also have rotation nulled
 			unfinalSegments = getRawData(ti);
 		}
 		List<Segment> segments = unfinalSegments;
@@ -769,12 +710,4 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 			return new PlotDataPoint(top, bottom, mean, segmentNumber, rdpNumber, continueAreaNumber, evts);
 		}
 	}
-
-	/**
-	 * MTH: Provide a way for DataModule to set pointsCache=null
-	 *      in order to mix -t and -d data 
-	 */
-    public void nullPointsCache() {
-        pointsCache = null;
-    }
 }

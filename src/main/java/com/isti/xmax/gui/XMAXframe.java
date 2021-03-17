@@ -2518,6 +2518,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		void resetPlottedData() {
 			try {
 				XMAXDataModule dm = XMAXDataModule.getInstance();
+
 				graphPanel.removeAll();
 				dm.reLoadData();
 				try {
@@ -2744,8 +2745,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
-			// TODO: there is a bug here where rotation can be inverted on a single channel and not
-			// its paired values.
 			try {
 				List<PlotDataProvider> pdpsToRotate = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
@@ -3566,6 +3565,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				XMAX.getFrame().getGraphPanel().setVisible(false);
 				XMAX.getFrame().getGraphPanel().removeAll();
 				dm.reLoadData();
+
 				try {
 					graphPanel.setChannelShowSet(dm.getNextChannelSet());
 				} catch (TraceViewException ex) {
