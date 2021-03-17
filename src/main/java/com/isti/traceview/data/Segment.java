@@ -347,7 +347,7 @@ public class Segment implements Externalizable, Cloneable {
 			return Double.NaN;
 		}
 
-		int startIndex = new Double((start - startTime) / sampleRate).intValue();
+		int startIndex = (int) Math.round((start - startTime) / sampleRate);
 		startIndex = Math.max(startIndex, 0);
 		return (double) data[startIndex];
 	}

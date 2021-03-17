@@ -11,6 +11,7 @@ import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.RemoveGainException;
 import com.isti.traceview.processing.Rotation;
+import com.isti.traceview.processing.Rotation.RotationGapException;
 import com.isti.xmax.XMAXException;
 import java.awt.Color;
 import java.io.FileInputStream;
@@ -373,12 +374,16 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		//logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
 		List<PlotDataPoint[]> pointSet = new ArrayList<>(pointCount);
 		// waiting if data still is not loaded
-		List<Segment> segments;
+		List<Segment> unfinalSegments;
 		try {
-			segments = (rotation == null) ? getRawData(ti) : rotation.rotate(this, ti);
+			unfinalSegments = (rotation == null) ? getRawData(ti) : rotation.rotate(this, ti);
 		} catch (TraceViewException e) {
-			throw new PlotDataException("Error when trying to rotate channel " + getName());
+			throw new PlotDataException("Error when trying to rotate channel " + getName(), e);
+		} catch (RotationGapException e) {
+			logger.error("Cannot rotate due to presence of gap", e);
+			unfinalSegments = getRawData(ti);
 		}
+		List<Segment> segments = unfinalSegments;
 		int numSegments = segments.size();
 		SegmentData[] plottingData;
 		{
@@ -429,8 +434,10 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 					int[] data;
 					if (i == (pointCount - 1)) {
 						data = segData.getData(time, ti.getEnd()).data;	// last chunk
-					} else {
+					} else if (segData.getData(time, time + interval) != null) {
 						data = segData.getData(time, time + interval).data;	// interval sized chunks
+					} else {
+						data = new int[]{};
 					}
 					int rawDataPointCount = data.length;
 					if (rawDataPointCount > 0) {
@@ -486,6 +493,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 		for (SegmentData segData : sps) {
 			long retStart = segData.startTime;
 			long retEnd = segData.endTime();
+			retEnd = Math.max(retEnd, retStart + (long) segData.sampleRate);
 			if (!((start >= retEnd && end >= retEnd) || (start <= retStart && end <= retStart))) {
 				ret.add(segData);
 			}
@@ -629,7 +637,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 
 	public int[] getContinuousGaplessDataOverRange(TimeInterval ti)
 			throws XMAXException{
-		List<Segment> segments = getRawData(getRotation(), ti);
+		List<Segment> segments = getDataWithRotation(getRotation(), ti);
 		int[] intData = new int[0];
 		if (segments.size() > 0) {
 			long segment_end_time = 0;

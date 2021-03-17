@@ -98,11 +98,12 @@ public class TransPSDTest {
     DataModule dm = TraceView.getDataModule();
     List<PlotDataProvider> pdpList = dm.getAllChannels();
     pdpList = pdpList.subList(0, 1);
+    String name = pdpList.get(0).getName();
     TimeInterval ti = pdpList.get(0).getTimeRange();
     TransPSD psd = new TransPSD();
     List<XYSeries> psdData = psd.createData(pdpList, null, ti, true, null);
     assertEquals(2, psdData.size());
-    assertEquals("IU/COLA/00/LH1 smoothed", psdData.get(0).getKey().toString());
+    assertEquals(name + " smoothed", psdData.get(0).getKey().toString());
     double[] yValues = psdData.get(1).toArray()[1];
     boolean yValuesAllNonzeroNumeric = true;
     for (double y : yValues) {

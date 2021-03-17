@@ -17,6 +17,7 @@ import com.isti.traceview.processing.BPFilterException;
 import com.isti.traceview.processing.HPFilterException;
 import com.isti.traceview.processing.LPFilterException;
 import com.isti.traceview.processing.Rotation;
+import com.isti.traceview.processing.Rotation.RotationGapException;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -142,7 +143,7 @@ public class RawDataProviderTest {
       dm = new DataModule();
       dm.loadAndParseDataForTesting(outputFile);
       data = dm.getAllChannels().get(0);
-      cut = data.getTimeRange();
+      // cut = data.getTimeRange();
     }
 
     long secondStart = dm.getAllChannels().get(0).getTimeRange().getStart();
@@ -158,7 +159,6 @@ public class RawDataProviderTest {
     // clean up written file
     outputFile = new File(filename2);
     outputFile.delete();
-
 
     assertEquals(points.size(), dataFromSecondFile.size());
     assertEquals(points, dataFromSecondFile);
@@ -328,7 +328,7 @@ public class RawDataProviderTest {
   }
 
   @Test
-  public void rotatedDataValid() throws TraceViewException {
+  public void rotatedDataValid() throws TraceViewException, RotationGapException {
     // test checks that gaps are not spuriously placed by rotation operations
     String folderStructure = "src/test/resources/rotation/DGMT-2021-007/";
 
@@ -413,6 +413,7 @@ public class RawDataProviderTest {
         dataNorth.getRawData().get(0).getStartTimeMillis(),
         dataNorth.getRawData().get(1).getEndTimeMillis()
     );
+
     assertEquals("BH1", dataNorth.getChannelName());
     DataOutputStream dsNorth = new DataOutputStream(new FileOutputStream(outputFileNorth));
     dataNorth.dumpMseed(dsNorth, ti, null, twentyDegreesRotation);
@@ -427,12 +428,14 @@ public class RawDataProviderTest {
     // now the data in dataNorth, dataEast is rotated data (by 20 degrees)
     dataNorth = dm.getAllChannels().get(0);
     dataEast = dm.getAllChannels().get(1);
+
     ti = new TimeInterval(
         dataNorth.getSegmentCache().get(0).getSegment().getStartTimeMillis(),
-        dataEast.getSegmentCache().get(0).getSegment().getStartTimeMillis());
+        dataNorth.getSegmentCache().get(1).getSegment().getStartTimeMillis());
+
     List<Segment> northSegmentsRaw = dataNorth.getRawData(ti);
     List<Segment> eastSegmentsRaw = dataEast.getRawData(ti);
-    int sampleCount = 0;
+    int sampleCount = northSegmentsRaw.get(0).getSampleCount();
     for (int i = 1, northSegmentsRawSize = northSegmentsRaw.size(); i < northSegmentsRawSize; i++) {
       Segment segment = northSegmentsRaw.get(i);
       sampleCount += segment.getSampleCount();
@@ -479,7 +482,7 @@ public class RawDataProviderTest {
     sampleCount = 0;
     for (Segment segment : northSegments) {
       sampleCount += segment.getSampleCount();
-      assertNotNull(segment.getData(ti).data);
+      assertNotNull(segment.getData().data);
     }
     double[] northRotated = new double[sampleCount];
     lastArrayPoint = 0;

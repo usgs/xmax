@@ -18,6 +18,7 @@ import com.isti.traceview.commands.SelectValueCommand;
 import com.isti.traceview.commands.SetScaleModeCommand;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
+import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.filters.FilterBP;
 import com.isti.traceview.filters.FilterDYO;
 import com.isti.traceview.filters.FilterHP;
@@ -2724,12 +2725,31 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 		}
 
+		private boolean isComplementaryChannel(RawDataProvider channel1, RawDataProvider channel2) {
+			List<Character> channelNames = new ArrayList<>();
+			String channel1Name = channel1.getName();
+			channel1Name = channel1Name.substring(0, channel1Name.length()-2);
+			String channel12Name = channel2.getName();
+			channel12Name = channel12Name.substring(0, channel12Name.length()-2);
+			if (!channel1Name.equals(channel12Name)) {
+				return false;
+			}
+			channelNames.add(channel1.getChannelName().charAt(channel1.getChannelName().length() - 1));
+			channelNames.add(channel2.getChannelName().charAt(channel2.getChannelName().length() - 1));
+			return channelNames.contains('1') && channelNames.contains('2') ||
+					channelNames.contains('N') && channelNames.contains('E') ||
+					channelNames.contains('Z');
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			setWaitCursor(true);
+			// TODO: there is a bug here where rotation can be inverted on a single channel and not
+			// its paired values.
 			try {
 				List<PlotDataProvider> pdpsToRotate = new ArrayList<>();
 				List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
+				boolean removeRotation = false;
 				for(ChannelView cv : selectedViews){
 					for(PlotDataProvider pdp : cv.getPlotDataProviders())
 					{
@@ -2739,8 +2759,17 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 								pdpsToRotate.add(pdp);
 							} else {
 								//Undo a already rotated channel
+								removeRotation = true;
 								rotatedChannelsList.remove(pdp);
 								pdpsToRotate.add(pdp);
+								ArrayList<PlotDataProvider> temp = new ArrayList<>();
+								for (PlotDataProvider provider : rotatedChannelsList) {
+									if (provider != pdp && isComplementaryChannel(provider, pdp)) {
+										temp.add(provider);
+										pdpsToRotate.add(provider);
+									}
+								}
+								rotatedChannelsList.removeAll(temp);
 								RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel, null);
 								// Create ExecuteCommand obj for executing Runnable
 								ExecuteCommand executor = new ExecuteCommand(rotateTask);
@@ -2762,10 +2791,12 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 							Date timeToGetAzimuth = pdp.getTimeRange().getStartTime();
 							double initialRotation = 0.;
 							try {
-								Double azi =
-										pdpsToRotate.get(0).getResponse().getEnclosingEpochAzimuth(timeToGetAzimuth);
-								if (azi != null) {
-									initialRotation = azi;
+								if (pdpsToRotate.get(0).getResponse() != null) {
+									Double azi =
+											pdpsToRotate.get(0).getResponse().getEnclosingEpochAzimuth(timeToGetAzimuth);
+									if (azi != null) {
+										initialRotation = azi;
+									}
 								}
 							} catch (TraceViewException | NullPointerException e1) {
 								logger.warn("Error getting azimuth for selected data: ", e1);
@@ -2806,7 +2837,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 										+ "Each rotation action must be done separately.",
 								"Invalid channels selected to rotate", JOptionPane.WARNING_MESSAGE));
 					}
-				} else {
+				} else if (!removeRotation) {
 					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(TraceView.getFrame(),
 							"Please click check-boxes for the complementary "
 									+ "channels that you wish to rotate",

@@ -7,6 +7,7 @@ import com.isti.traceview.common.TimeInterval.DateFormatType;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.Rotation;
+import com.isti.traceview.processing.Rotation.RotationGapException;
 import edu.iris.dmc.seedcodec.B1000Types;
 import edu.iris.dmc.seedcodec.Steim2;
 import edu.iris.dmc.seedcodec.SteimException;
@@ -79,6 +80,33 @@ public class RawDataProvider extends Channel {
   }
 
   /**
+   * Check to see if the trace over a time range has a gap. This is used to determine
+   * whether or not the data can be processed -- only true if the data is free of gaps.
+   * @param ti Time range to check for gaps
+   * @return true if the data contains at least one gap between segments over the time range
+   */
+  public boolean hasGaps(TimeInterval ti) {
+    // TODO: call this to check for gaps for analysis/processing methods, i.e., PSD
+    long start = ti.getStart();
+    int startingIndex = findIndexOfSegmentContainingTime(start);
+    if (startingIndex < 0) {
+      return true;
+    }
+
+    for (int i = startingIndex + 1; i < rawData.size(); ++i) {
+      if (rawData.get(i).getSegment().getStartTimeMillis() > ti.getEnd()) {
+        break;
+      }
+      long previousEnd = rawData.get(i - 1).getSegment().getEndTimeMillis();
+      long currentStart = rawData.get(i).getSegment().getStartTimeMillis();
+      if (Segment.isDataGap(previousEnd, currentStart, getSampleRate())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Runnable class for loadData(TimeInterval ti) NOTE: This is currently not used due to hardware
    * constraints on different machines
    */
@@ -134,7 +162,12 @@ public class RawDataProvider extends Channel {
     int index = findIndexOfSegmentContainingTime(time);
     if (index >= 0) {
       Segment segment = rawData.get(index).getSegment();
-      return segment.getPointAtTime(time);
+      try {
+        return segment.getPointAtTime(time);
+      } catch (IndexOutOfBoundsException e) {
+        segment = rawData.get(index + 1).getSegment();
+        return segment.getPointAtTime(time);
+      }
     } else {
       return Double.NaN;
     }
@@ -189,12 +222,13 @@ public class RawDataProvider extends Channel {
    */
   public List<Segment> getRawData(TimeInterval ti) {
     List<Segment> ret = Collections.synchronizedList(new ArrayList<>());
+    rawData.sort(SegmentCache::compareTo);
     for (SegmentCache rawDatum : rawData) {
       Segment seg = rawDatum.getSegment();
       if ((seg != null) && ti.isIntersect(
           new TimeInterval(seg.getStartTime(), seg.getEndTime()))) {
         ret.add(seg);
-      } else if (seg.getStartTimeMillis() > ti.getEnd()) {
+      } else if (seg != null && seg.getStartTimeMillis() > ti.getEnd()) {
         break;
       }
     }
@@ -207,13 +241,15 @@ public class RawDataProvider extends Channel {
    * @param rotation to process data
    * @return rotated raw data
    */
-  public List<Segment> getRawData(Rotation rotation, TimeInterval ti) {
+  public List<Segment> getDataWithRotation(Rotation rotation, TimeInterval ti) {
     if (rotation != null) {
       try {
         return rotation.rotate(this, ti);
       } catch (TraceViewException e) {
         logger.error("TraceViewException:", e);
         return null;
+      } catch (RotationGapException e) {
+        logger.error("Cannot rotate due to presence of gap", e);
       }
     }
 
@@ -561,7 +597,7 @@ public class RawDataProvider extends Channel {
       throws IOException {
 
     Segment previousSegment = null;
-    List<Segment> segments = getRawData(rotation, ti);
+    List<Segment> segments = getDataWithRotation(rotation, ti);
     for (int j = 0; j < segments.size(); j++) {
       int biasValue = 0;
       if (j > 0) {
@@ -635,7 +671,7 @@ public class RawDataProvider extends Channel {
   public void dumpASCII(FileWriter fw, TimeInterval ti, IFilter filter, Rotation rotation)
       throws IOException {
     int i = 1;
-    List<Segment> segments = getRawData(rotation, ti);
+    List<Segment> segments = getDataWithRotation(rotation, ti);
     Segment previousSegment = null;
     for (int j = 0; j < segments.size(); j++) {
       if (j > 0) {
@@ -686,7 +722,7 @@ public class RawDataProvider extends Channel {
     fw.write("<Trace network=\"" + getNetworkName() + "\" station=\"" + getStation().getName()
         + "\" location=\"" + getLocationName()
         + "\" channel=\"" + getChannelName() + "\">\n");
-    List<Segment> segments = getRawData(rotation, ti);
+    List<Segment> segments = getDataWithRotation(rotation, ti);
     Segment previousSegment = null;
     for (int j = 0; j < segments.size(); j++) {
       if (j > 0) {
@@ -735,7 +771,7 @@ public class RawDataProvider extends Channel {
    */
   public void dumpSacAscii(DataOutputStream ds, TimeInterval ti, IFilter filter, Rotation rotation)
       throws IOException, TraceViewException {
-    List<Segment> segments = getRawData(rotation, ti);
+    List<Segment> segments = getDataWithRotation(rotation, ti);
     if (segments.size() != 1) {
       throw new TraceViewException("You have gaps in the interval to import as SAC");
     }

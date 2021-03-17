@@ -31,6 +31,9 @@ public class SegmentData {
 	}
 
 	public long endTime() {
+		if (data == null || data.length == 0) {
+			return startTime;
+		}
 		return new Double(startTime + sampleRate * data.length).longValue();
 	}
 
@@ -54,20 +57,25 @@ public class SegmentData {
 		if (startvalue > 0.000000001) {
 			startIndex = new Double(startvalue).intValue() + 1;
 		}
-		int endIndex = Math.min(new Double((endt - startTime) / sampleRate).intValue(), data.length - 1);
+		int endIndex = 0;
+		if (data != null && data.length > 0) {
+			endIndex = Math.min(
+					new Double((endt - startTime) / sampleRate).intValue(), data.length - 1);
+		}
 		if (startIndex <= endIndex) {
 			ret = new int[endIndex - startIndex + 1];
 			// lg.debug("PlotDataProvider.getData()-getting segment data: startindex " + startIndex
 			// + ", endindex " + endIndex);
-			for (int i = startIndex; i <= endIndex; i++) {
-				ret[i - startIndex] = data[i];
-			}
+			if (endIndex + 1 - startIndex >= 0)
+				System.arraycopy(data,
+						startIndex, ret, startIndex - startIndex, endIndex + 1 - startIndex);
 		}
-		if (startIndex > 0)
+		if (startIndex > 0 && data != null)
 			_previous = data[startIndex - 1];
-		if (endIndex < data.length-1)
+		if (data != null && endIndex < data.length-1)
 			_next = data[endIndex];
-		return new SegmentData(startTime, sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, _previous, _next, ret);
+		return new SegmentData(startTime, sampleRate, sourceSerialNumber, channelSerialNumber,
+				continueAreaNumber, _previous, _next, ret);
 	}
 
 	/**

@@ -12,4 +12,8 @@ public class PlotDataException extends Exception {
 	public PlotDataException(String str) {
 		super(str);
 	}
+
+	public PlotDataException(String str, Exception e) {
+		super(str, e);
+	}
 }

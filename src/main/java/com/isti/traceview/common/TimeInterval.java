@@ -189,8 +189,8 @@ public class TimeInterval {
 		if (range.getStartTime() == null || range.getEndTime() == null || getStartTime() == null || getEndTime() == null) {
 			return true;
 		} else {
-			return !((startTime >= range.getEndTime().getTime() && endTime >= range.getEndTime().getTime()) || (startTime <= range.getStartTime()
-					.getTime() && endTime <= range.getStartTime().getTime()));
+			return !((startTime >= range.getEndTime().getTime() && endTime >= range.getEndTime().getTime())
+					|| (startTime <= range.getStartTime().getTime() && endTime <= range.getStartTime().getTime()));
 		}
 	}
 
