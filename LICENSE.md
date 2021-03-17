@@ -102,7 +102,7 @@ Authors and Affiliation:
 
 ###### TauP
 	Author:			Crotwell, H. P., T. J. Owens, and J. Ritsema (1999)
-	License:		GPL v2.0 or later (GPL 3.0 text bundled, but source says gplv2.0 or later)  
+	License:		LGPL v. 3.0
 	Website: 		http://www.seis.sc.edu/taup/
 
 ###### Xerces (including xml-apis)
