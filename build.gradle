@@ -6,6 +6,7 @@ plugins {
     id 'application'
     id 'java-library'
     id 'idea'
+    // id "com.github.bjornvester.xjc" version "1.5.0"
 }
 
 mainClassName = "com.isti.xmax.XMAX"
@@ -23,6 +24,9 @@ commitCount = commitCount.substring(0, commitCount.length() - 1)
 
 def version = "$jsonVersion.$commitCount"
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation"
+}
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -98,10 +102,6 @@ dependencies {
 
     implementation group: 'edu.sc.seis', name: 'TauP', version: '2.5.0'
     sourceOnly group: 'edu.sc.seis', name: 'TauP', version: '2.5.0', classifier: 'sources'
-    //seis.sc.edu maven dependencies
-    // note that when compiling jar we choose to exclude duplicate dependencies
-    implementation group: 'xerces', name: 'xml-apis', version: '2.10+'
-    sourceOnly group: 'xerces', name: 'xml-apis', version: '2.10+'
 
     testImplementation group: 'junit', name: 'junit', version: '4.+'
 }
