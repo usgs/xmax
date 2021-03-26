@@ -64,7 +64,7 @@ public class TransCoherence implements ITransformation{
     try {
       XYSeriesCollection plotSeries = createData(input, filter, ti, sampleRate, parentFrame);
       TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
-          ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
+          ti.getStart() + (long) (input.get(0).getSampleRate() * effectiveLength));
       @SuppressWarnings("unused")
       ViewCoherence vc = new ViewCoherence(parentFrame, plotSeries, effectiveInterval);
     } catch (XMAXException e) {
@@ -144,10 +144,10 @@ public class TransCoherence implements ITransformation{
        * using the Welch method with 13 windows 75% overlap. The actual
        * PSD is calculated in the getPSD function within Spectra.java.
        */
-      int dsDataSegment = new Double(Math.round(intData.length / 4.0)).intValue();
+      int dsDataSegment = (int) (Math.round(intData.length / 4.0));
 
-      int smallDataSegmentLimit = new Double(
-          Math.ceil(Math.pow(2, (Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1)))).intValue();
+      int smallDataSegmentLimit = (int) (
+          Math.ceil(Math.pow(2, (Math.ceil(IstiUtilsMath.log2(dsDataSegment)) - 1))));
       // this is one power of 2 less than the dsDataSegment length
 
       int[] data = new int[smallDataSegmentLimit]; // data values in the the time domain
@@ -328,7 +328,7 @@ public class TransCoherence implements ITransformation{
   }
 
   private static int getPower2Length(int length) {
-    return new Double(Math.pow(2, Math.ceil(IstiUtilsMath.log2(length)))).intValue();
+    return (int) (Math.pow(2, Math.ceil(IstiUtilsMath.log2(length))));
   }
 
   /**

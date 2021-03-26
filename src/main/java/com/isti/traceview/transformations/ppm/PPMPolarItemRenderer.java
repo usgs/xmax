@@ -57,10 +57,10 @@ class PPMPolarItemRenderer extends DefaultPolarItemRenderer {
 
 			Point p = plot.translateToJava2D(theta, radius, plot.getAxis(), dataArea);
 			if (i == 0) {
-				gp.moveTo(new Float(p.getX()), new Float(p.getY()));
+				gp.moveTo(p.getX(), p.getY());
 				begin = p;
 			} else {
-				gp.lineTo(new Float(p.getX()), new Float(p.getY()));
+				gp.lineTo(p.getX(), p.getY());
 			}
 		}
 		g2.setPaint(lookupSeriesPaint(seriesIndex));

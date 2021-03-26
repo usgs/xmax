@@ -683,10 +683,10 @@ public class DataModule extends Observable {
           if (station != null) {
             station.setNetwork(network);
             station.setLongName(longName);
-            station.setLatitude(new Double(latitude));
-            station.setLongitude(new Double(longitude));
-            station.setElevation(new Double(elevation));
-            station.setDepth(new Double(depth));
+            station.setLatitude(Double.parseDouble(latitude));
+            station.setLongitude(Double.parseDouble(longitude));
+            station.setElevation(Double.parseDouble(elevation));
+            station.setDepth(Double.parseDouble(depth));
             logger.debug("Station loaded: name " + name + ", network "
                 + network + ", longName " + longName
                 + ", startDate " + startDate + ", endDate "

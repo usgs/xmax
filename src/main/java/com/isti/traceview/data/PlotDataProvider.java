@@ -216,15 +216,15 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 				if (!((startSlice >= effectiveTimeRange.getEnd() && endSlice >= effectiveTimeRange.getEnd())
 						|| (startSlice <= effectiveTimeRange.getStart() && endSlice <= effectiveTimeRange.getStart()))) {
 					// if effective time range intersects this time slice
-					int startIndex = new Long(Math.round(
+					int startIndex = (int) (Math.round(
 							(startSlice - effectiveTimeRange.getStart()) * points.size()
-							/ (double) effectiveTimeRange.getDuration())).intValue();
+							/ (double) effectiveTimeRange.getDuration()));
 					if (startIndex < 0) {
 						startIndex = 0;
 					}
-					int endIndex = new Long(Math.round(
+					int endIndex = (int) (Math.round(
 							(endSlice - effectiveTimeRange.getStart()) * points.size()
-							/ (double) effectiveTimeRange.getDuration())).intValue();
+							/ (double) effectiveTimeRange.getDuration()));
 					if (endIndex > points.size()) {
 						endIndex = points.size();
 					}

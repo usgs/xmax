@@ -49,10 +49,10 @@ public class LimYDialog extends JDialog implements PropertyChangeListener {
 		optionPane = new JOptionPane(createPanel(min, max), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options, options[0]);
 		// Init text fields
 		if (max != Integer.MIN_VALUE) {
-			topValueTE.setText(new Integer(max).toString());
+			topValueTE.setText(String.valueOf(max));
 		}
 		if (min != Integer.MAX_VALUE) {
-			lowValueTE.setText(new Integer(min).toString());
+			lowValueTE.setText(String.valueOf(min));
 		}
 		// Make this dialog display it.
 		setContentPane(optionPane);

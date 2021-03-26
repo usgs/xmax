@@ -68,12 +68,12 @@ class XMAXChannelViewMouseAdapter implements IMouseAdapter {
 		} else {
 			amp = "+";
 		}
-		amp = pointAmp == Double.NEGATIVE_INFINITY ? "" : ":" + amp + new Double(pointAmp).intValue();
+		amp = pointAmp == Double.NEGATIVE_INFINITY ? "" : ":" + amp + (int) pointAmp;
 		long lastClickedTime = graphPanel.getLastClickedTime();
 		String diff = lastClickedTime == Long.MAX_VALUE ? "" : " diff " + new TimeInterval(lastClickedTime, clickedTime).convert();
 		XMAXframe.getInstance().getStatusBar().setMessage(
 				TimeInterval.formatDate(new Date(clickedTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + ":"
-						+ new Double(graphPanel.getScaleMode().getValue(y)).intValue() + diff + amp);
+						+ (int) graphPanel.getScaleMode().getValue(y) + diff + amp);
 
 		if (graphPanel.getPickState()) {
 			PlotDataProvider channel = cv.getPlotDataProviders().get(0);

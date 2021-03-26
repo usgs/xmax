@@ -68,7 +68,7 @@ public class PhasePanel extends JPanel implements ListSelectionListener {
 		initialize();
 		init = true;
 		refreshAvailableEarthQuakes();
-		splitter.setDividerLocation(new Double(gp.getHeight() / 3).intValue());
+		splitter.setDividerLocation(gp.getHeight() / 3);
 		init = false;
 		earthquakesL.setSelectedValues(graphPanel.getAvailableEarthquakes(), false);
 		phasesL.setSelectedValues(initialSelectedPhases, false);

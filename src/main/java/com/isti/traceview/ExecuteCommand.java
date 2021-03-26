@@ -44,7 +44,7 @@ public class ExecuteCommand {
 			executor.awaitTermination(10, TimeUnit.SECONDS);
 			if (!executor.isTerminated())
 				executor.shutdownNow();
-			handler.afterExecute();
+			// handler.afterExecute(); // this called unused code related to the observer interface
 		} catch (InterruptedException e) {
 			logger.error("InterruptedException:", e);	
 		}

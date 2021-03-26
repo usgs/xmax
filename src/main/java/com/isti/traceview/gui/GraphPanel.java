@@ -1459,7 +1459,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				g.fillRect(leftPos, 0, rightPos, getHeight());
 			}
 		}
-		if (!new Double(Ybegin).isNaN() && !new Double(Yend).isNaN()) {
+		if (!Double.isNaN(Ybegin) && !Double.isNaN(Yend)) {
 			// lg.debug(message + " selection Y: " + getScaleMode().getY(Ybegin) + ", " +
 			// getScaleMode().getY(Yend));
 			if (Yend > Ybegin) {
@@ -1511,7 +1511,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		// lg.debug("GraphPanel getTime: " + x);
 		Insets i = getInsets();
 		double sr = (double) getTimeRange().getDuration() / (getWidth() - i.left - i.right - channelViewFactory.getInfoAreaWidth());
-		return new Double(getTimeRange().getStart() + x * sr).longValue();
+		return (long) (getTimeRange().getStart() + x * sr);
 	}
 
 	/**
@@ -1524,8 +1524,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		if (getTimeRange() == null)
 			return Integer.MAX_VALUE;
 		else
-			return new Double((getWidth() - channelViewFactory.getInfoAreaWidth() - getInsets().left - getInsets().right)
-					* (double) (date - getTimeRange().getStart()) / (double) getTimeRange().getDuration()).intValue();
+			return (int) (
+					(getWidth() - channelViewFactory.getInfoAreaWidth() - getInsets().left - getInsets().right)
+					* (double) (date - getTimeRange().getStart()) / (double) getTimeRange().getDuration());
 	}
 
 	/**

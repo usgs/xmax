@@ -381,9 +381,8 @@ public class Segment implements Externalizable, Cloneable {
 		int next = Integer.MAX_VALUE;
 		double startt = Math.max(startTime, start);
 		double endt = Math.min(getEndTime().getTime(), end);
-		int startIndex = new Double((startt - startTime) / sampleRate).intValue();
-		//int startIndex = new Long(Math.round(new Double((startt	- startTime) / sampleRate))).intValue();
-		int endIndex = new Double((endt - startTime) / sampleRate).intValue();
+		int startIndex = (int) ((startt - startTime) / sampleRate);
+		int endIndex = (int) ((endt - startTime) / sampleRate);
 		if (startIndex != endIndex) {
 			ret = new int[endIndex - startIndex];
 			logger.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
@@ -435,7 +434,8 @@ public class Segment implements Externalizable, Cloneable {
 				}
 			}
 		}
-		return new SegmentData(new Double(startTime + startIndex*sampleRate).longValue(), sampleRate, sourceSerialNumber, channelSerialNumber, continueAreaNumber, previous, next, ret);
+		return new SegmentData( (long) (startTime + startIndex*sampleRate), sampleRate,
+				sourceSerialNumber, channelSerialNumber, continueAreaNumber, previous, next, ret);
 	}
 
 	/**
@@ -575,7 +575,7 @@ public class Segment implements Externalizable, Cloneable {
 		return "Segment: startTime "
 				+ TimeInterval.formatDate(new Date(startTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
 				+ ", endTime "
-				+ TimeInterval.formatDate(new Date(new Double(startTime + sampleRate * sampleCount).longValue()),
+				+ TimeInterval.formatDate(new Date((long) (startTime + sampleRate * sampleCount)),
 				TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + ", sampleRate " + sampleRate + ", sampleCount " + sampleCount
 				+ ", startOffset " + startOffset + ", maxValue " + maxValue + ", minValue " + minValue + ", rdpNumber " + sourceSerialNumber
 				+ ", serialNumber " + channelSerialNumber + ", isLoaded=" + isLoaded + ";";

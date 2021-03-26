@@ -29,7 +29,7 @@ class AngleInputDialog extends JDialog implements PropertyChangeListener {
 		JPanel panel = new JPanel();
 		textField = new JTextField();
 		textField.setPreferredSize(new Dimension(70, 22));
-		textField.setText(new Double(value).toString());
+		textField.setText(Double.toString(value));
 		panel.add(new JLabel("Enter angle:"));
 		panel.add(textField);
 		optionPane = new JOptionPane(panel, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);

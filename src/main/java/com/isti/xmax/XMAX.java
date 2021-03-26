@@ -132,13 +132,15 @@ public class XMAX extends TraceView {
 					getConfiguration().setPickPath(dequote(cmd.getOptionValue("p")).trim());
 				}
 				if (cmd.hasOption("u")) {
-					getConfiguration().setPanelCountUnit(XMAXconfiguration.PanelCountUnit.values()[new Integer(cmd.getOptionValue("u").trim())]);
+					getConfiguration().setPanelCountUnit(XMAXconfiguration.PanelCountUnit.values()[
+							Integer.parseInt(cmd.getOptionValue("u").trim())]);
 				}
 				if (cmd.hasOption("o")) {
-					getConfiguration().setPanelOrder(XMAXconfiguration.ChannelSortType.values()[new Integer(cmd.getOptionValue("o").trim())]);
+					getConfiguration().setPanelOrder(XMAXconfiguration.ChannelSortType.values()[
+							Integer.parseInt(cmd.getOptionValue("o").trim())]);
 				}
 				if (cmd.hasOption("f")) {
-					getConfiguration().setUnitsInFrame(new Integer(cmd.getOptionValue("f").trim()));
+					getConfiguration().setUnitsInFrame(Integer.parseInt(cmd.getOptionValue("f").trim()));
 				}
 				if (cmd.hasOption("F")) {
 					getConfiguration().setDefaultCompression(cmd.getOptionValue("F").trim());
@@ -170,7 +172,8 @@ public class XMAX extends TraceView {
 					getConfiguration().setFilterLocation(cmd.getOptionValue("l").trim());
 				}
 				if (cmd.hasOption("L")) {
-					getConfiguration().setDefaultBlockLength(new Integer(cmd.getOptionValue("L").trim()));
+					getConfiguration().setDefaultBlockLength(
+							Integer.parseInt(cmd.getOptionValue("L").trim()));
 				}
 				if (dump) {
 					// -T option in command line, make dump

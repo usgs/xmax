@@ -132,7 +132,6 @@ public class StatusBar extends JPanel implements Observer {
 		this.add(ovrLabel, null);
 		this.add(selLabel, null);
 	}
-
 	public void update(Observable o, Object arg) {
 		if (o instanceof GraphPanelObservable) {
 			logger.debug("updating status bar due to request from " + o.getClass().getName());
@@ -170,6 +169,7 @@ public class StatusBar extends JPanel implements Observer {
 			}
 		}
 	}
+
 
 	/**
 	 * Set information message

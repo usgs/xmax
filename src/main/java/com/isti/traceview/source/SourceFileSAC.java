@@ -69,7 +69,7 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 			data = new int[segment.getSampleCount()];
 			int i = 0;
 			for (float val: sac.getY()) {
-				data[i++]=new Float(val).intValue();
+				data[i++] = (int) val;
 			} 
 		} catch (IOException e) {
 			throw new RuntimeException(e);

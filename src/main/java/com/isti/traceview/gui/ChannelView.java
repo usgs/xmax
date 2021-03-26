@@ -723,11 +723,11 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				g.setColor(Color.BLACK);
 				if (scaleMode.getMaxValue() != Double.POSITIVE_INFINITY && scaleMode.getMaxValue() != Double.NEGATIVE_INFINITY
 						&& !Double.isInfinite(scaleMode.getMinValue())) {
-					g.drawString(new Double(scaleMode.getMaxValue()).toString(), 10, fontHeight);
+					g.drawString(Double.toString(scaleMode.getMaxValue()), 10, fontHeight);
 				}
 				if (scaleMode.getMinValue() != Double.POSITIVE_INFINITY && scaleMode.getMinValue() != Double.NEGATIVE_INFINITY
 						&& !Double.isInfinite(scaleMode.getMinValue())) {
-					g.drawString(new Double(scaleMode.getMinValue()).toString(), 10, getHeight() - 10);
+					g.drawString(Double.toString(scaleMode.getMinValue()), 10, getHeight() - 10);
 				}
 				// drawing marks
 				for (MarkPosition mp: markPositions) {
@@ -750,7 +750,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 		 */
 		public long getTime(int x) {
 			TimeInterval ti = graphPanel.getTimeRange();
-			return new Double(ti.getStart() + x * (double) ti.getDuration() / getWidth()).longValue();
+			return (long) (ti.getStart() + x * (double) ti.getDuration() / getWidth());
 		}
 
 		public void mouseMoved(MouseEvent e) {
@@ -927,11 +927,11 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				graphPanel.repaint();
 			}
 			
-			protected void finalize()throws Throwable {
+			/*protected void finalize() throws Throwable {
 				logger.debug("CVToolTip: false");
 				tooltipVisible = false;
 				super.finalize();
-			}
+			}*/
 		}
 
 		private Set<EventWrapper> getEvents(int x) {

@@ -76,7 +76,7 @@ public class SourceFileSEGD extends SourceFile implements Serializable {
 			data = new int[traceData.length];
 			int i = 0;
 			for (float val: traceData) {
-				data[i++]=new Double(normCoeff*val).intValue();
+				data[i++] = (int) (normCoeff * val);
 			}
 		} catch (IOException e) {
 			logger.error("IOException:", e);	

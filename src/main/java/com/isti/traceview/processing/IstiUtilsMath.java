@@ -338,7 +338,7 @@ public class IstiUtilsMath {
 		if (fdata.length != gdata.length)
 			throw new IllegalArgumentException("fdata and gdata must have same length. " + fdata.length + " " + gdata.length);
 		int dataLength = fdata.length;
-		int paddedDataLength = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(dataLength)).intValue() + 1)).intValue();
+		int paddedDataLength = (int) (Math.pow(2, (int) (IstiUtilsMath.log2(dataLength)) + 1));
 		double sumF = 0;
 		double sumG = 0;
 		double[] fdataPadded = new double[paddedDataLength * 2];

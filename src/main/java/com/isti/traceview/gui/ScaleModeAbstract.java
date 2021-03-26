@@ -23,7 +23,7 @@ public abstract class ScaleModeAbstract implements IScaleModeState {
 	}
 
 	public int getY(double value) {
-		return new Double(height * ((maxValue - value) / (amp))).intValue();
+		return (int) (height * ((maxValue - value) / (amp)));
 	}
 
 	public double getMaxValue() {

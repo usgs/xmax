@@ -264,8 +264,8 @@ public class ViewModal extends JDialog implements PropertyChangeListener, Change
             float[] ydata = new float[dataset.getItemCount(i)];
             float[] xdata = new float[dataset.getItemCount(i)];
             for (int j = 0; j < dataset.getItemCount(i); j++) {
-              xdata[j] = new Double(dataset.getXValue(i, j)).floatValue();
-              ydata[j] = new Double(dataset.getYValue(i, j)).floatValue();
+              xdata[j] = (float) dataset.getXValue(i, j);
+              ydata[j] = (float) dataset.getYValue(i, j);
             }
             SacTimeSeriesASCII sacAscii = SacTimeSeriesASCII.getSAC(data.get(i).getChannel(),
                 ti.getStartTime(), xdata, ydata);

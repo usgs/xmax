@@ -89,8 +89,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.TimeZone;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -135,7 +133,7 @@ import org.apache.log4j.Logger;
  *
  * @author Max Kokoulin
  */
-public class XMAXframe extends JFrame implements MouseInputListener, ActionListener, ItemListener, Observer {
+public class XMAXframe extends JFrame implements MouseInputListener, ActionListener, ItemListener {
 	private static final Logger logger = Logger.getLogger(XMAXframe.class); // @jve:decl-index=0:
 
 	private static final long serialVersionUID = 1L;
@@ -379,7 +377,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			}
 		}
 
-		CommandHandler.getInstance().addObserver(this);
 		addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -669,14 +666,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		action.actionPerformed(new ActionEvent(this, 0, (String) action.getValue(Action.NAME)));
 
 		statusBar.setMessage("");
-	}
-
-	// Method from Observer interface
-	// Update cursor after notification that all tasks were executed
-	@Override
-	public void update(Observable o, Object arg) {
-		logger.debug("updating frame due to request from " + o.getClass().getName());
-		setWaitCursor(false);
 	}
 
 	/**
@@ -3397,8 +3386,8 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			LimYDialog dialog = new LimYDialog(XMAXframe.getInstance(),
-					new Double(graphPanel.getManualValueMin()).intValue(),
-					new Double(graphPanel.getManualValueMax()).intValue());
+					(int) graphPanel.getManualValueMin(),
+					(int) graphPanel.getManualValueMax());
 			if (dialog.min != Integer.MAX_VALUE && dialog.max != Integer.MIN_VALUE) {
 				if (!(graphPanel.getScaleMode() instanceof ScaleModeXhair)) {
 					// Create Runnable SetScaleModeCommand obj

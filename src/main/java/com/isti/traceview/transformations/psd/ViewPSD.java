@@ -247,8 +247,8 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
             float[] ydata = new float[dataset.getItemCount(i)];
             float[] xdata = new float[dataset.getItemCount(i)];
             for (int j = 0; j < dataset.getItemCount(i); j++) {
-              xdata[j] = new Double(dataset.getXValue(i, j)).floatValue();
-              ydata[j] = new Double(dataset.getYValue(i, j)).floatValue();
+              xdata[j] = (float) dataset.getXValue(i, j);
+              ydata[j] = (float) dataset.getYValue(i, j);
             }
             /*
             SacTimeSeriesASCII sacAscii = SacTimeSeriesASCII.getSAC(data.get(i).getChannel(),
@@ -392,7 +392,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     if (periods.length > 0) {
       StringBuilder toSave = new StringBuilder();
       for (int i = 0; i < periods.length; i++) {
-        toSave.append(i == 0 ? "" : ",").append(new Double(periods[i]));
+        toSave.append(i == 0 ? "" : ",").append(periods[i]);
       }
       configuration.addProperty(huttPeriodsKey, toSave.toString());
     }

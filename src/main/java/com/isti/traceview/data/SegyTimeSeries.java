@@ -187,7 +187,7 @@ public class SegyTimeSeries { /* Offset Description */
 			double samples = diff * getRateSampPerSec();
 			startPos = (int) (Math.ceil(samples));
 			// the reported start time must be adjusted
-			realStart = realStart + new Double(startPos / getRateSampPerSec()).longValue();
+			realStart = realStart + (long) (startPos / getRateSampPerSec());
 		}
 		// System.out.println("end is " + end + ". endtime is " + getEndTime());
 		// if endis before getendtime, then we need to trim the end
@@ -589,7 +589,7 @@ public class SegyTimeSeries { /* Offset Description */
 		// System.out.println("samp/sec " + rate);
 		double tot_time = (double) (samples - 1) / rate;
 		// System.out.println("tot_time " + tot_time );
-		return new TimeInterval(start, new Double(start + tot_time).longValue());
+		return new TimeInterval(start, (long) (start + tot_time));
 	}
 
 	/**

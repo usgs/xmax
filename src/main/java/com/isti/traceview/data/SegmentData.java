@@ -34,7 +34,7 @@ public class SegmentData {
 		if (data == null || data.length == 0) {
 			return startTime;
 		}
-		return new Double(startTime + sampleRate * data.length).longValue();
+		return (long) (startTime + sampleRate * data.length);
 	}
 
 	/**
@@ -55,12 +55,12 @@ public class SegmentData {
 		double startvalue = (startt - startTime) / sampleRate;
 		int startIndex = 0;
 		if (startvalue > 0.000000001) {
-			startIndex = new Double(startvalue).intValue() + 1;
+			startIndex = (int) startvalue + 1;
 		}
 		int endIndex = 0;
 		if (data != null && data.length > 0) {
 			endIndex = Math.min(
-					new Double((endt - startTime) / sampleRate).intValue(), data.length - 1);
+					(int) ((endt - startTime) / sampleRate), data.length - 1);
 		}
 		if (startIndex <= endIndex) {
 			ret = new int[endIndex - startIndex + 1];
@@ -68,7 +68,7 @@ public class SegmentData {
 			// + ", endindex " + endIndex);
 			if (endIndex + 1 - startIndex >= 0)
 				System.arraycopy(data,
-						startIndex, ret, startIndex - startIndex, endIndex + 1 - startIndex);
+						startIndex, ret, 0, endIndex + 1 - startIndex);
 		}
 		if (startIndex > 0 && data != null)
 			_previous = data[startIndex - 1];
@@ -87,7 +87,7 @@ public class SegmentData {
 	 */
 	public double interpolateValue(double time) {
 		// lg.debug("interpolateValue: dataLength " + data.length + ", startTime " + dataTI.getStartTime() + ", time " + time);
-		int nextIndex = new Double((time - startTime) / sampleRate + 1).intValue();
+		int nextIndex = (int) ((time - startTime) / sampleRate + 1);
 		if (nextIndex >= data.length) {
 			nextIndex = data.length - 1;
 		}

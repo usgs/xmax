@@ -44,7 +44,7 @@ public class TransModal implements ITransformation {
       try {
         List<Spectra> spList = createData(input, filter, ti, parentFrame);
         TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
-            ti.getStart() + new Double(input.get(0).getSampleRate() * effectiveLength).longValue());
+            ti.getStart() + (long) (input.get(0).getSampleRate() * effectiveLength));
         @SuppressWarnings("unused")
         ViewModal vp = new ViewModal(parentFrame, spList, effectiveInterval, input);
       } catch (RuntimeException e) {
@@ -81,13 +81,11 @@ public class TransModal implements ITransformation {
         int[] intData = channel.getContinuousGaplessDataOverRange(ti);
         int dataSize;
         if (intData.length > maxDataLength) {
-          dataSize = new Double(Math.pow(2,
-              new Double(IstiUtilsMath.log2(maxDataLength)).intValue())).intValue();
+          dataSize = (int) Math.pow(2, (int) IstiUtilsMath.log2(maxDataLength));
           ((XMAXframe) parentFrame).getStatusBar().setMessage(
               "Points count (" + intData.length + ") exceeds max value for trace " + channel.getName());
         } else {
-          dataSize = new Double(Math.pow(2, new Double(IstiUtilsMath.log2(intData.length)).intValue()))
-              .intValue();
+          dataSize = (int) Math.pow(2, (int) IstiUtilsMath.log2(intData.length));
         }
         effectiveLength = dataSize;
 

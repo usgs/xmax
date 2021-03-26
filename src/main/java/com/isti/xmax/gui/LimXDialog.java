@@ -53,9 +53,10 @@ public class LimXDialog extends JDialog implements PropertyChangeListener {
 		super(frame, "Enter time limits:", true);
 		Object[] options = { "OK", "Cancel" };
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createPanel(ti), JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options, options[0]);
+		optionPane = new JOptionPane(createPanel(ti), JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.DEFAULT_OPTION, null, options, options[0]);
 		startTimeTE.setText(df.format(ti.getStartTime()));
-		durationTE.setText(new Integer(new Double(ti.getDuration() / 1000).intValue()).toString());
+		durationTE.setText(String.valueOf((int) (ti.getDuration() / 1000)));
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);

@@ -55,7 +55,7 @@ public class SourceFileSEGY extends SourceFile implements Serializable {
 			data = new int[segment.getSampleCount()];
 			int i = 0;
 			for (float val: segy.y) {
-				data[i++]=new Float(val).intValue();
+				data[i++] = (int) val;
 			}
 		} catch (IOException e) {
 			logger.error("IOException:", e);

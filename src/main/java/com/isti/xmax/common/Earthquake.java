@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -154,18 +155,18 @@ public class Earthquake extends AbstractEvent implements IEvent {
 						Date date = df
 								.parse(rawData[0].substring(5, 26).trim());
 						// [28-33] Latitude
-						Double latitude = new Double(rawData[0].substring(27, 
+						Double latitude = Double.parseDouble(rawData[0].substring(27,
 								33).trim());
 						// [35-41] Longitude
-						Double longitude = new Double(rawData[0].substring(34, 
+						Double longitude = Double.parseDouble(rawData[0].substring(34,
 								41).trim());
 						// [43-47] Depth
-						Double depth = new Double(rawData[0].substring(42, 47)
+						Double depth = Double.parseDouble(rawData[0].substring(42, 47)
 								.trim());
 						// [49-55] Reported magnitudes, usually mb and MS
-						Double magnitude_mb = new Double(rawData[0].substring(
+						Double magnitude_mb = Double.parseDouble(rawData[0].substring(
 								48, 51).trim());
-						Double magnitude_MS = new Double(rawData[0].substring(
+						Double magnitude_MS = Double.parseDouble(rawData[0].substring(
 								52, 55).trim());
 						// [57-80] Geographical location (24 characters)
 						String location = rawData[0].substring(56, 80).trim();
@@ -253,11 +254,9 @@ public class Earthquake extends AbstractEvent implements IEvent {
 				List<edu.sc.seis.TauP.Arrival> arrivals = timeTool.getArrivals();
 				for (edu.sc.seis.TauP.Arrival arrival : arrivals){
 
-					ret.add(new Arrival(new Date(earthquake.getStartTime()
-							.getTime() 
-							+ new Double(arrival.getTime() * 1000)
-									.longValue()), (Earthquake) earthquake,
-							arrival.getName(), arcBetween, angle, distance));
+					ret.add(new Arrival(Date.from(Instant.ofEpochMilli(
+							(long) (earthquake.getStartTime().getTime() + arrival.getTime() * 1000))),
+							(Earthquake) earthquake, arrival.getName(), arcBetween, angle, distance));
 				}
 			}
 		} catch (TauModelException e) {
