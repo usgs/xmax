@@ -10,9 +10,9 @@ import com.isti.traceview.gui.ScaleModeAuto;
 import com.isti.traceview.gui.ScaleModeCom;
 import com.isti.traceview.gui.ScaleModeXhair;
 import edu.iris.dmc.seedcodec.B1000Types;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.HashSet;
-import java.util.Observable;
 import java.util.Set;
 import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
@@ -23,23 +23,23 @@ import org.apache.log4j.Logger;
  * method of initialization (reading configuration file, defaults, by command line options etc)
  * </p>
  * <p>
- * Extends {@link Observable} interface, i.e this class can report to listeners about configuration
- * changes
  * </p>
  * 
  * @author Max Kokoulin
  */
-public class Configuration extends Observable {
+public class Configuration {
 	private static final Logger logger = Logger.getLogger(Configuration.class);
 
 	private String default_pattern_html = "<html><head><title>HTML report</title></head><body><h1>HTML report</h1> </body></html>";
 	protected static String listSeparator = ",";
 
+	private PropertyChangeSupport listenerHelper;
 
 	public Configuration() throws TraceViewException {
 		setPanelCountUnit(PanelCountUnit.TRACE);
 		setUnitsInFrame(20);
 		setPanelOrder(ChannelSortType.TRACENAME);
+		listenerHelper = new PropertyChangeSupport(this);
 	}
 
 	/**
@@ -536,9 +536,9 @@ public class Configuration extends Observable {
 	 *            scale mode to set
 	 */
 	public void setScaleMode(IScaleModeState sm) {
+		IScaleModeState oldScale = this.scaleMode;
 		this.scaleMode = sm;
-		setChanged();
-		notifyObservers(sm);
+		listenerHelper.firePropertyChange("scale state", oldScale, sm);
 	}
 
 	/**
@@ -548,6 +548,7 @@ public class Configuration extends Observable {
 	 *            scale mode to set - as string
 	 */
 	public void setScaleMode(String str) {
+		IScaleModeState oldScale = this.scaleMode;
 		if (str != null) {
 			switch (str) {
 				case "AUTO":
@@ -560,8 +561,9 @@ public class Configuration extends Observable {
 					this.scaleMode = new ScaleModeXhair();
 					break;
 			}
-			setChanged();
-			notifyObservers(this.scaleMode);
+			if (!oldScale.equals(this.scaleMode)) {
+				listenerHelper.firePropertyChange("scale state", oldScale, this.scaleMode);
+			}
 		}
 	}
 

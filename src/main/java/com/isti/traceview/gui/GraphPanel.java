@@ -31,6 +31,9 @@ import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -40,8 +43,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 import java.util.TimeZone;
 import javax.swing.BorderFactory;
@@ -67,7 +68,8 @@ import org.jfree.chart.ui.RectangleInsets;
  *
  * @author Max Kokoulin
  */
-public class GraphPanel extends JPanel implements Printable, MouseInputListener, Observer {
+public class GraphPanel extends JPanel implements Printable, MouseInputListener,
+		PropertyChangeListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -205,8 +207,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	private int mouseClickX = -1;
 
-	/** The observable. */
-	public GraphPanelObservable observable = null;
+	/** Property change listener helper object. */
+	private PropertyChangeSupport listener = null;
 
 	/** The show big cursor. */
 	private boolean showBigCursor = false;
@@ -293,7 +295,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		colorMode = new ColorModeBySegment();
 		scaleMode = new ScaleModeAuto();
 		offsetState = new OffsetModeDisabled();
-		setObservable(new GraphPanelObservable());
+		setListener(new PropertyChangeSupport(this));
 		mouseSelectionEnabled = true;
 	}
 
@@ -376,6 +378,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	public void setTimeRange(TimeInterval ti) {
 		//logger.debug("timerange: " + timeRange);
+		TimeInterval oldTimeRange = this.timeRange;
 		this.timeRange = ti;
 		if (timeRangeAdapter != null && TraceView.getFrame() != null) {
 			timeRangeAdapter.setTimeRange(ti);
@@ -383,8 +386,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		southPanel.getAxisPanel().setTimeRange(ti);
 		mouseClickX = -1;
 		southPanel.getInfoPanel().update(ti);
-		getObservable().setChanged();
-		getObservable().notifyObservers(ti);
+		getListener().firePropertyChange("time range", oldTimeRange, ti);
 		forceRepaint();
 	}
 
@@ -638,6 +640,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @param channels            list of traces
 	 */
 	public void setChannelShowSet(List<PlotDataProvider> channels) {
+
 		if (channels != null) {
 			clearChannelShowSet();
 			CommandHandler.getInstance().clearCommandHistory();
@@ -698,23 +701,19 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			selectedChannelShowSet = Collections.synchronizedList(new UniqueList<>());
 			if (overlay) {
 				overlay = false;
-				getObservable().setChanged();
-				getObservable().notifyObservers("OVR OFF");
+				getListener().firePropertyChange("overlay", true, false);
 			}
 			if (select) {
 				select = false;
-				getObservable().setChanged();
-				getObservable().notifyObservers("SEL OFF");
+				getListener().firePropertyChange("select", true, false);
 			}
 			if (rotation != null) {
 				rotation = null;
-				getObservable().setChanged();
-				getObservable().notifyObservers("ROT OFF");
+				getListener().firePropertyChange("rotation", true, false);
 			}
 			repaint();	// why repaint when adding channels to Graph?
 		}
-		getObservable().setChanged();
-		getObservable().notifyObservers(channels);
+		getListener().firePropertyChange("channels", null, channels);
 	}
 
 	/**
@@ -734,8 +733,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				}
 			}
 			// repaint();	// why repaint when adding channels to set?
-			getObservable().setChanged();
-			getObservable().notifyObservers(channels);
+			getListener().firePropertyChange("channels", null, channels);
 		}
 	}
 
@@ -745,7 +743,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	public void clearChannelShowSet() {
 		for (ChannelView cv: channelShowSet) {
 			for (PlotDataProvider channel: cv.getPlotDataProviders()) {
-				channel.deleteObserver(cv);
+				channel.removePropertyChangeListener(cv);
 			}
 		}
 		ChannelView.currentSelectionNumber = 0;
@@ -845,12 +843,12 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @param scaleMode            scaling mode which panel should use
 	 */
 	public void setScaleMode(IScaleModeState scaleMode) {
+		IScaleModeState oldMode = this.scaleMode;
 		this.scaleMode = scaleMode;
 		// returns XHair mode to all data after scale mode switching
 		// manualValueMax = Integer.MIN_VALUE;
 		// manualValueMin = Integer.MAX_VALUE;
-		getObservable().setChanged();
-		getObservable().notifyObservers(scaleMode);
+		getListener().firePropertyChange("scale mode", oldMode, scaleMode);
 		repaint();
 	}
 
@@ -869,9 +867,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @param colorMode            color mode which panel should use
 	 */
 	public void setColorMode(IColorModeState colorMode) {
+		IColorModeState oldColorMode = this.colorMode;
 		this.colorMode = colorMode;
-		getObservable().setChanged();
-		getObservable().notifyObservers(colorMode);
+		getListener().firePropertyChange("color mode", oldColorMode, colorMode);
 		repaint();
 	}
 
@@ -890,12 +888,12 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @param meanState            meaning mode which panel should use
 	 */
 	public void setMeanState(IMeanState meanState) {
+		IMeanState oldMeanState = this.meanState;
 		this.meanState = meanState;
 		// returns XHair mode to all data after scale mode switching
 		// manualValueMax = Integer.MIN_VALUE;
 		// manualValueMin = Integer.MAX_VALUE;
-		getObservable().setChanged();
-		getObservable().notifyObservers(meanState);
+		getListener().firePropertyChange("mean state", oldMeanState, meanState);
 		repaint();
 	}
 
@@ -914,9 +912,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @param offsetState            offset mode which panel should use
 	 */
 	public void setOffsetState(IOffsetState offsetState) {
+		IOffsetState oldOffsetState = this.offsetState;
 		this.offsetState = offsetState;
-		getObservable().setChanged();
-		getObservable().notifyObservers(offsetState);
+		getListener().firePropertyChange("offset state", oldOffsetState, offsetState);
 		repaint();
 	}
 
@@ -954,6 +952,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 * @param pickState            pick mode which panel should use
 	 */
 	public void setPickState(boolean pickState) {
+		boolean oldPickState = this.pickState;
 		this.pickState = pickState;
 		String message = null;
 		if (pickState) {
@@ -961,8 +960,9 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		} else {
 			message = "PICK OFF";
 		}
-		getObservable().setChanged();
-		getObservable().notifyObservers(message);
+		if (oldPickState != pickState) {
+			getListener().firePropertyChange("pick state", oldPickState, pickState);
+		}
 		repaint();
 	}
 
@@ -974,26 +974,25 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 */
 	public void setFilter(IFilter filter) {
 		logger.debug("filter " + filter);
+		IFilter oldFilter = this.filter;
 		if(filter != null){
-			if(getMaxDataLength()>filter.getMaxDataLength()){
+			if (getMaxDataLength() > filter.getMaxDataLength()) {
 				if(JOptionPane.showConfirmDialog(TraceView.getFrame(), "Too many datapoints are selected. Processing could take time. Do you want to continue?", "Warning", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
 					this.filter = filter;
-					getObservable().setChanged();
-					getObservable().notifyObservers(filter);
-					forceRepaint();
+				} else {
+					// if we don't actually confirm we'll return here, as the filter has not changed
+					return;
 				}
 			} else {
 				this.filter = filter;
-				getObservable().setChanged();
-				getObservable().notifyObservers(filter);
-				forceRepaint();
 			}
 		} else {
-			this.filter = filter;
-			getObservable().setChanged();
-			getObservable().notifyObservers(filter);
-			forceRepaint();
+			this.filter = null;
 		}
+		if (oldFilter != null && filter != null) {
+			getListener().firePropertyChange("filter state", oldFilter, filter);
+		}
+		forceRepaint();
 	}
 
 	/**
@@ -1012,6 +1011,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *            gain to set
 	 */
 	public void setRemoveGainState(RemoveGain gain) {
+		RemoveGain oldGain = this.gain;
 		List<ChannelView> currentChannelShowSet = getCurrentChannelShowSet();
 		drawAreaPanel.removeAll();
 		for (ChannelView cv: currentChannelShowSet) {
@@ -1020,8 +1020,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		select = false;
 		overlay = false;
 		this.gain = gain;
-		getObservable().setChanged();
-		getObservable().notifyObservers("REMOVE GAIN");
+		getListener().firePropertyChange("gain state", oldGain, gain);
 		forceRepaint();
 	}
 
@@ -1154,8 +1153,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						"Selection missing", JOptionPane.WARNING_MESSAGE));
 			}
 		}
-		getObservable().setChanged();
-		getObservable().notifyObservers(overlay ? "OVR ON" : "OVR OFF");
+		getListener().firePropertyChange("overlay state", !overlay, overlay);
 		forceRepaint();	// needed when selecting certain channels with new paint() method
 	}
 
@@ -1223,10 +1221,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 						JOptionPane.WARNING_MESSAGE));
 			}
 		}
-		getObservable().setChanged();
-		getObservable().notifyObservers(select ? "SEL ON" : "SEL OFF");
-		getObservable().setChanged();
-		getObservable().notifyObservers(overlay ? "OVR ON" : "OVR OFF");
+		getListener().firePropertyChange("select state", !select, select);
+		getListener().firePropertyChange("overlay state", !overlay, overlay);
 		forceRepaint();	// needed for new paint() method
 	}
 
@@ -1301,8 +1297,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *
 	 * @param o the o
 	 */
-	public void addObserver(Observer o) {
-		getObservable().addObserver(o);
+	public void addPropertyChangeListener(PropertyChangeListener o) {
+		getListener().addPropertyChangeListener(o);
 	}
 
 	/**
@@ -1310,8 +1306,8 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 	 *
 	 * @param o the o
 	 */
-	public void deleteObserver(Observer o) {
-		getObservable().deleteObserver(o);
+	public void deleteObserver(PropertyChangeListener o) {
+		getListener().removePropertyChangeListener(o);
 	}
 
 	/* (non-Javadoc)
@@ -1789,6 +1785,21 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		Object obj = evt.getSource();
+		logger.debug(this + ": update request from " + evt);
+		if (obj instanceof IScaleModeState) {
+			setScaleMode((IScaleModeState) obj);
+		} else if (obj instanceof IColorModeState) {
+			setColorMode((IColorModeState) obj);
+		} else if (obj instanceof IMeanState) {
+			setMeanState((IMeanState) obj);
+		} else if (obj instanceof IOffsetState) {
+			setOffsetState((IOffsetState) obj);
+		}
+	}
+
 	/**
 	 * Time-axis panel used by GraphPanel.
 	 */
@@ -2131,40 +2142,11 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-	 */
-	public void update(Observable observable, Object obj) {
-		logger.debug(this + ": update request from " + observable);
-		if (obj instanceof IScaleModeState) {
-			setScaleMode((IScaleModeState) obj);
-		} else if (obj instanceof IColorModeState) {
-			setColorMode((IColorModeState) obj);
-		} else if (obj instanceof IMeanState) {
-			setMeanState((IMeanState) obj);
-		} else if (obj instanceof IOffsetState) {
-			setOffsetState((IOffsetState) obj);
-		}
+	public PropertyChangeSupport getListener() {
+		return listener;
 	}
 
-	public GraphPanelObservable getObservable() {
-		return observable;
-	}
-
-	public void setObservable(GraphPanelObservable observable) {
-		this.observable = observable;
-	}
-
-	/**
-	 * The Class GraphPanelObservable.
-	 */
-	public class GraphPanelObservable extends Observable {
-
-		/* (non-Javadoc)
-		 * @see java.util.Observable#setChanged()
-		 */
-		public void setChanged() {
-			super.setChanged();
-		}
+	public void setListener(PropertyChangeSupport listener) {
+		this.listener = listener;
 	}
 }

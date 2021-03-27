@@ -56,7 +56,7 @@ public class XMAXDataModule extends DataModule {
 	}
 
 	/**
-	 * Customized {@link DataModule#loadData()} - also initializes earthquakes and picks
+	 * Customized {@link DataModule#loadNewDataFromSources()} - also initializes earthquakes, picks
 	 */
 	public void loadData() throws TraceViewException {
 		// super.loadData();
@@ -72,8 +72,7 @@ public class XMAXDataModule extends DataModule {
 		}
 
 		loadStations();
-		setChanged();
-		notifyObservers();
+		listenerHelper.firePropertyChange("data is loaded", null, null);
 	}
 
 	/**
@@ -119,13 +118,6 @@ public class XMAXDataModule extends DataModule {
 			logger.debug("-d + -t: Read from data path DONE\n\n");
 		}
 
-		/*
-		// Fill up stations from station file
-		loadStations();
-		setChanged();
-		notifyObservers();
-		*/
-		//printAllChannels();
 		logger.debug("== Exit getDataFiles()\n\n");
 		return dataFiles.toArray(new File[]{});
 	}

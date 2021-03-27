@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -51,7 +49,7 @@ import org.apache.log4j.Logger;
  * @author Max Kokoulin
  */
 
-public class PlotDataProvider extends RawDataProvider implements Observer {
+public class PlotDataProvider extends RawDataProvider {
 	public static final long serialVersionUID = 1;
 	private static final Logger logger = Logger.getLogger(PlotDataProvider.class);
 
@@ -116,17 +114,6 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	 */
 	public boolean isRotated() {
 		return this.rotation != null && this.rotation.getRotationType() != null;
-	}
-
-	/**
-	 * From interface Observer
-	 */
-	public void update(Observable o, Object arg) {
-		logger.debug(this + ": update request from " + o);
-		TimeInterval ti = (TimeInterval) arg;
-		if ((viewingInterval == null) || viewingInterval.isIntersect(ti)) {
-			notifyObservers(ti);
-		}
 	}
 
 	/**
@@ -691,7 +678,7 @@ public class PlotDataProvider extends RawDataProvider implements Observer {
 	public void setColor(Color color){
 		this.manualColor = color;
 	}
-	
+
 	/**
 	 * Temporary class to accumulate slice statistics
 	 * 

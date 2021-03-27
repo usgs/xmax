@@ -25,12 +25,13 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -51,7 +52,7 @@ import org.jfree.data.RangeType;
  * @author Max Kokoulin
  */
 
-public class ChannelView extends JPanel implements Comparable<Object>, Observer {
+public class ChannelView extends JPanel implements Comparable<Object>, PropertyChangeListener {
 	/**
 	 * 
 	 */
@@ -62,6 +63,9 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public static boolean tooltipVisible = false;
 	public static final int defaultInfoPanelWidth = 80;
 	protected static int currentSelectionNumber = 0;
+
+	/** Property change listener helper object. */
+	private PropertyChangeSupport listener = null;
 
 	private List<String> channelNames = new ArrayList<>();
 	private List<PlotDataProvider> plotDataProviders = null; // @jve:decl-index=0:
@@ -203,15 +207,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public int getPointCount() {
 		return graphAreaPanel.getWidth();
 	}
-
-	public void update(Observable observable, Object arg) {
-		logger.debug(this + ": update request from " + observable);
-		if (arg instanceof TimeInterval) {
-			//TimeInterval ti = (TimeInterval) arg;
-			//logger.info(this + " updating for range " + ti + " due to request from observer: '" + observable.getClass().getName() + "'");
-			graphAreaPanel.repaint();
-		}
-	}
 	
 	/**
 	 * Sets graph panel contains this ChannelView
@@ -299,12 +294,12 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 	public void setPlotDataProviders(List<PlotDataProvider> channels) {
 		if (plotDataProviders != null) {
 			for (PlotDataProvider channel: plotDataProviders) {
-				channel.deleteObserver(this);
+				channel.removePropertyChangeListener(this);
 			}
 		}
 		plotDataProviders = channels;
 		for (PlotDataProvider channel: plotDataProviders) {
-			channel.addObserver(this);
+			channel.addPropertyChangeListener(this);
 			logger.debug("Observer for " + channel.toString() + " added");
 			if (channel.getMaxValue() > maxValueAllChannels) {
 				maxValueAllChannels = channel.getMaxValue();
@@ -479,6 +474,18 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 			return Integer.compare(getSelectionNumber(), c.getSelectionNumber());
 		} else {
 			return 1;
+		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		Object arg = evt.getNewValue();
+		logger.debug(this + ": update request from " + evt.getSource());
+		if (arg instanceof TimeInterval) {
+			TimeInterval ti = (TimeInterval) arg;
+			logger.debug(this + " updating for range " + ti + " due to request from observer: '" +
+					evt.getSource().getClass().getName() + "'");
+			graphAreaPanel.repaint();
 		}
 	}
 
@@ -926,12 +933,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, Observer 
 				super.repaint();
 				graphPanel.repaint();
 			}
-			
-			/*protected void finalize() throws Throwable {
-				logger.debug("CVToolTip: false");
-				tooltipVisible = false;
-				super.finalize();
-			}*/
+
 		}
 
 		private Set<EventWrapper> getEvents(int x) {

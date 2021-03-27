@@ -462,7 +462,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 	private void initialize() {
 		logger.debug("== ENTER");
 		this.setContentPane(getJContentPane());
-		graphPanel.addObserver(statusBar);
+		graphPanel.addPropertyChangeListener(statusBar);
 		this.setJMenuBar(getMainMenuBar());
 		scaleModeBG = new ButtonGroup();
 		scaleModeBG.add(scaleModeAutoMenuRadioBt);
@@ -3289,7 +3289,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						filterBG.clearSelection();
 					}
 				}
-			} catch (ClassNotFoundException | IllegalAccessException | InstantiationException e1) {
+			} catch (IllegalAccessException | InstantiationException e1) {
 				logger.error("Can't get " + pluginId + " plugin filter: ", e1);
 			} finally {
 				setWaitCursor(false);

@@ -8,6 +8,7 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.source.SourceFile;
 import com.isti.traceview.source.SourceSocketFDSN;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,7 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  *
  * @author Max Kokoulin
  */
-public class DataModule extends Observable {
+public class DataModule {
 
   private static final Logger logger = Logger.getLogger(DataModule.class);
 
@@ -60,6 +60,9 @@ public class DataModule extends Observable {
   private int from = 0;
   private int to = 0;
 
+  /** Property change listener helper object. */
+  protected PropertyChangeSupport listenerHelper;
+
   /**
    * Time interval including ALL found channels
    */
@@ -76,6 +79,7 @@ public class DataModule extends Observable {
     markerPosition = 0;
     dataSources = new ArrayList<>();
     responses = new ArrayList<>();
+    listenerHelper = new PropertyChangeSupport(this);
   }
 
   /**
@@ -339,8 +343,7 @@ public class DataModule extends Observable {
     synchronized (channels) {
       channels.remove(channel);
       if (!isChangedAllChannelsTI()) {
-        setChanged();
-        notifyObservers(channel);
+        listenerHelper.firePropertyChange("channel deletion", null, channel);
       }
       logger.debug("Channel removed: " + channel.toString());
     }
@@ -355,8 +358,7 @@ public class DataModule extends Observable {
     synchronized (channels) {
       channels.removeAll(toDelete);
       if (!isChangedAllChannelsTI()) {
-        setChanged();
-        notifyObservers(toDelete);
+        listenerHelper.firePropertyChange("list of channels deletion", null, toDelete);
       }
       logger.debug("Channels removed: list");
     }
@@ -721,8 +723,7 @@ public class DataModule extends Observable {
     if (!newTI.equals(allChannelsTI)) {
       allChannelsTI = newTI;
       ret = true;
-      setChanged();
-      notifyObservers(allChannelsTI);
+      listenerHelper.firePropertyChange("available time range", null, allChannelsTI);
     }
     return ret;
   }

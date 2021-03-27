@@ -1,7 +1,7 @@
 package com.isti.xmax.gui;
 
 import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.gui.GraphPanel.GraphPanelObservable;
+import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.gui.IMeanState;
 import com.isti.traceview.gui.IOffsetState;
@@ -9,8 +9,8 @@ import com.isti.traceview.gui.IScaleModeState;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * 
  * @author Max Kokoulin
  */
-public class StatusBar extends JPanel implements Observer {
+public class StatusBar extends JPanel implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(StatusBar.class);
@@ -132,43 +132,6 @@ public class StatusBar extends JPanel implements Observer {
 		this.add(ovrLabel, null);
 		this.add(selLabel, null);
 	}
-	public void update(Observable o, Object arg) {
-		if (o instanceof GraphPanelObservable) {
-			logger.debug("updating status bar due to request from " + o.getClass().getName());
-			if (arg instanceof IScaleModeState) {
-				scaleModeLabel.setText(((IScaleModeState) arg).getStateName());
-			} else if (arg instanceof IOffsetState) {
-
-			} else if (arg instanceof IMeanState) {
-
-			} else if (arg instanceof IColorModeState) {
-
-			} else if ((arg instanceof IFilter) || (arg == null)) {
-				if (arg == null) {
-					filterLabel.setText("NONE");
-				} else {
-					filterLabel.setText(((IFilter) arg).getName());
-				}
-			} else if (arg instanceof String) {
-				String message = (String) arg;
-				if (message.equals("PICK ON")) {
-					pickLabel.setText("PICK");
-				} else if (message.equals("PICK OFF")) {
-					pickLabel.setText("");
-				} else if (message.equals("OVR ON")) {
-					ovrLabel.setText("OVR");
-				} else if (message.equals("OVR OFF")) {
-					ovrLabel.setText("");
-				} else if (message.equals("SEL ON")) {
-					selLabel.setText("SEL");
-				} else if (message.equals("SEL OFF")) {
-					selLabel.setText("");
-				} else if (message.startsWith("ROT")) {
-
-				}
-			}
-		}
-	}
 
 
 	/**
@@ -198,5 +161,55 @@ public class StatusBar extends JPanel implements Observer {
 		channelCountLabel.setMinimumSize(dim);
 		channelCountLabel.setMaximumSize(dim);
 		channelCountLabel.setText(text);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		Object arg = evt.getNewValue();
+		String message = evt.getPropertyName();
+		if (evt.getSource() instanceof GraphPanel) {
+			logger.debug("updating status bar due to request from " +
+					evt.getSource().getClass().getName());
+			if (arg instanceof IScaleModeState) {
+				scaleModeLabel.setText(((IScaleModeState) arg).getStateName());
+			} else if (arg instanceof IOffsetState) {
+
+			} else if (arg instanceof IMeanState) {
+
+			} else if (arg instanceof IColorModeState) {
+
+			} else if ((arg instanceof IFilter) || (arg == null)) {
+				if (arg == null) {
+					filterLabel.setText("NONE");
+				} else {
+					filterLabel.setText(((IFilter) arg).getName());
+				}
+			} else  {
+				if (message.equals("pick state")) {
+					Boolean pickState = (Boolean) arg;
+					if (pickState) {
+						pickLabel.setText("PICK");
+					} else {
+						pickLabel.setText("");
+					}
+				} else if (message.equals("overlay state")) {
+					Boolean overlayState = (Boolean) arg;
+					if (overlayState) {
+						ovrLabel.setText("OVR");
+					} else {
+						ovrLabel.setText("");
+					}
+				} else if (message.equals("select state")) {
+					Boolean selectState = (Boolean) arg;
+					if (selectState) {
+						selLabel.setText("SEL");
+					} else {
+						selLabel.setText("");
+					}
+				} else if (message.startsWith("rotate")) {
+
+				}
+			}
+		}
 	}
 }

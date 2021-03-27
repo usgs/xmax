@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Observable;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,7 +19,7 @@ import org.apache.log4j.Logger;
  * 
  * @author Max Kokoulin
  */
-public class Channel extends Observable implements Comparable<Object>, Serializable {
+public class Channel implements Comparable<Object>, Serializable {
 	
 	/**
 	 * 

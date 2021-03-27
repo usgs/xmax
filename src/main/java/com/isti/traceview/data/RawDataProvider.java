@@ -5,6 +5,7 @@ import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TimeInterval.DateFormatType;
 import com.isti.traceview.filters.IFilter;
+import com.isti.traceview.gui.ChannelView;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Rotation.RotationGapException;
@@ -17,6 +18,7 @@ import edu.sc.seis.seisFile.mseed.Btime;
 import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
+import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -60,12 +62,16 @@ public class RawDataProvider extends Channel {
   private String serialFile = null;
   private transient RandomAccessFile serialStream = null;
 
+  /** Property change listener helper object. */
+  private PropertyChangeSupport listenerHelper;
+
   // Constructor 1 (multiple args)
   public RawDataProvider(String channelName, Station station, String networkName,
       String locationName) {
     super(channelName, station, networkName, locationName);
     rawData = new ArrayList<>();
     contiguousRanges = new ArrayList<>();
+    listenerHelper = new PropertyChangeSupport(this);
   }
 
 
@@ -580,8 +586,7 @@ public class RawDataProvider extends Channel {
       loadData();
     }
     loaded = true;
-    setChanged();
-    notifyObservers(getTimeRange());
+    listenerHelper.firePropertyChange("time range", null, getTimeRange());
   }
 
   /**
@@ -865,6 +870,22 @@ public class RawDataProvider extends Channel {
       segment.setSourceSerialNumber(sourceNumber);
       segment.setContinueAreaNumber(continueAreaNumber);
     }
+  }
+
+  /**
+   * Implement callbacks for channelview (i.e., the one containing this data)
+   * @param channelView
+   */
+  public void addPropertyChangeListener(ChannelView channelView) {
+    listenerHelper.addPropertyChangeListener(channelView);
+  }
+
+  /**
+   * Remove channelview (i.e., the one containing this data) from callbacks
+   * @param channelView
+   */
+  public void removePropertyChangeListener(ChannelView channelView) {
+    listenerHelper.removePropertyChangeListener(channelView);
   }
 
   /**

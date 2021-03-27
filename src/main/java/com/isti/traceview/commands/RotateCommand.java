@@ -15,7 +15,9 @@ public class RotateCommand extends AbstractUndoableCommand {
 	private Rotation rotation;
 
 	/**
-	 * @param gp
+	 * @param pdpsToRotate
+	 * 						traces that will be rotated
+	 * @param graphPanel
 	 *            target graph panel
 	 * @param rotation
 	 *            rotation to perform
@@ -29,8 +31,8 @@ public class RotateCommand extends AbstractUndoableCommand {
 	public void run() {
 		for(PlotDataProvider pdp : plotDataProviders) {
 			pdp.setRotation(rotation);
-			graphPanel.getObservable().setChanged();
-			graphPanel.getObservable().notifyObservers("ROT");
+			graphPanel.getListener().firePropertyChange("rotate command", null, this);
+			// graphPanel.getListener().notifyObservers("ROT");
 			graphPanel.forceRepaint();
 		}
 	}

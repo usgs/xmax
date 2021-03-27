@@ -12,6 +12,7 @@ import com.isti.xmax.gui.XMAXframe;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Objects;
@@ -244,15 +245,15 @@ public class XMAX extends TraceView {
 	 * Get plugin-filter by id
 	 */
 	public static IFilter getFilter(String id)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+			throws InstantiationException, IllegalAccessException {
 		for (Class<? extends IFilter> curClass : filters) {
 
 			try {
 				if (Objects.equals(curClass.getField("NAME").get(null), id)) {
-					IFilter filter = curClass.newInstance();
-					return filter;
+					return curClass.getDeclaredConstructor().newInstance();
 				}
-			} catch (NoSuchFieldException | SecurityException e) {
+			} catch (NoSuchFieldException | SecurityException |
+					NoSuchMethodException | InvocationTargetException e) {
 				// Field doesn't exist, move to next
 			}
 		}
@@ -272,14 +273,14 @@ public class XMAX extends TraceView {
 	 * @return the matching ITransformation or null if none matches
 	 */
 	public static ITransformation getTransformation(String id)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+			throws InstantiationException, IllegalAccessException {
 		for (Class<? extends ITransformation> curClass : transformations) {
 			try {
 				if (Objects.equals(curClass.getField("NAME").get(null), id)) {
-					ITransformation transform = curClass.newInstance();
-					return transform;
+					return curClass.getDeclaredConstructor().newInstance();
 				}
-			} catch (IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+			} catch (NoSuchFieldException | SecurityException |
+					NoSuchMethodException | InvocationTargetException e) {
 				// Field has issues, move to next field
 			}
 		}
