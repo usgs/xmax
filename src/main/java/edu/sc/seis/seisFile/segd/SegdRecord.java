@@ -544,8 +544,7 @@ public class SegdRecord {
 		for (int i = 0; i < bytes.length; i++) {
 			int byteValue = bytes[i];
 			for (int j = 0; j < blocksOnByte; j++) {
-				ret[(i * blocksOnByte) + blocksOnByte - j - 1] = new Integer(
-						byteValue & mask).byteValue();
+				ret[(i * blocksOnByte) + blocksOnByte - j - 1] = (byte) (byteValue & mask);
 				byteValue = byteValue >>> blockLength;
 			}
 		}

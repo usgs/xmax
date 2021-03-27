@@ -162,7 +162,7 @@ public class ChannelSet {
 			short byte8 = SegdRecord.readBytes(inStream, 1, null)[0];
 			int integerPart = byte7>>2;
 			int fractionPart = ((byte7&0x3)<<8) | byte8;
-			mpFactor = Math.pow(2, new Double(integerPart+"."+fractionPart));
+			mpFactor = Math.pow(2, Double.parseDouble(integerPart+"."+fractionPart));
 			channels_in_set = SegdRecord.getDataValue(SegdRecord.getSections(SegdRecord.readBytes(inStream, 2, null),	4), 10);
 			short byte11 = SegdRecord.readBytes(inStream, 1, null)[0];
 			switch (byte11>>>4) {

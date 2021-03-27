@@ -135,8 +135,9 @@ public class Trace {
 	}
 	
 	public TimeInterval getTimeRange(){
-		long startTime = record.getDate().getTime() + new Double(timingWord).longValue();
-		return new TimeInterval(startTime, startTime + new Double(samplesNumber*record.getBaseScanInterval()).longValue());
+		long startTime = record.getDate().getTime() + (long) timingWord;
+		return new TimeInterval(startTime, startTime +
+				(long) (samplesNumber * record.getBaseScanInterval()));
 	}
 	
 	public void readHeader(DataInput inStream) throws IOException{
