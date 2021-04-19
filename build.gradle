@@ -13,15 +13,20 @@ mainClassName = "com.isti.xmax.XMAX"
 def progTitle = "XMAX"
 
 /* Get first three version numbers from code.json */
-def codeJson = new JsonSlurper().parseText(new File("code.json").text)
+def codeJson = new JsonSlurper().parseText(new File("$projectDir", "code.json").text)
 // NOTE: codeJson.version is a String[], and any IDE warning here can be safely ignored
 def jsonVersion = codeJson.version[0]
 /* Get last version number from commit counts */
 def lastTagHash = "git rev-list --tags --max-count=1".execute().text
-lastTagHash = lastTagHash.substring(0, lastTagHash.length() - 1)
-def commitCount = ("git rev-list "+lastTagHash+".. --count").execute().text
-commitCount = commitCount.substring(0, commitCount.length() - 1)
-
+def commitCount = "NO_TAG_PRESENT"
+if (! lastTagHash.isEmpty()){
+    lastTagHash = lastTagHash.substring(0, lastTagHash.length() - 1)
+    commitCount = ("git rev-list "+lastTagHash+".. --count").execute().text
+    commitCount = commitCount.substring(0, commitCount.length() - 1)
+}
+if (commitCount == "NO_TAG_PRESENT") {
+    commitCount = "0"
+}
 def version = "$jsonVersion.$commitCount"
 
 tasks.withType(JavaCompile) {
@@ -71,11 +76,6 @@ dependencies {
     // this should include encode method for steim2 data
     api group: 'edu.sc.seis', name: 'seedCodec', version: '1.0.11+'
     sourceOnly group: 'edu.sc.seis', name: 'seedCodec', version: '1.0.11+', classifier: 'sources'
-
-    // jevalresp here uses jaxb stuff and includes some additional edu.seis stuff (fissuresIDL)
-    // implementation files('./lib/JEvalResp.jar')
-
-    // we don't need to worry about sources for these as they will be automatically included
 
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.2'
     sourceOnly group: 'commons-cli', name: 'commons-cli', version: '1.2', classifier: 'sources'
@@ -199,15 +199,6 @@ gradle.beforeProject {
     proc.waitFor()
     print sout
     print serr
-    sout = new StringBuilder()
-    serr = new StringBuilder()
-    println("Updating JEvalResp")
-    proc = "./jevalresp_setup.bash".execute()
-    proc.consumeProcessOutput(sout, serr)
-    proc.waitFor()
-    print sout
-    print serr
-
     println("Done with pre-project setup")
 }
 
