@@ -173,15 +173,6 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
-task copyJar(type: Copy) {
-    from jar
-    into rootDir
-}
-task copySourcesJar(type: Copy, dependsOn: sourcesJar) {
-    from sourcesJar
-    into rootDir
-}
-
 test {
     maxHeapSize = "4096m"
     maxParallelForks = 4
@@ -219,9 +210,6 @@ gradle.beforeProject {
 
     println("Done with pre-project setup")
 }
-
-build.dependsOn(copyJar)
-sourcesJar.dependsOn(build)
 
 javadoc {
     options.memberLevel = JavadocMemberLevel.PRIVATE
