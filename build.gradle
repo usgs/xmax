@@ -202,6 +202,8 @@ gradle.beforeProject {
     println("Done with pre-project setup")
 }
 
+sourcesJar.dependsOn(build)
+
 javadoc {
     options.memberLevel = JavadocMemberLevel.PRIVATE
 }
