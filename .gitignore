@@ -8,6 +8,7 @@ config.xml
 lib/JEvalResp.jar
 
 #Build files
+gradle/*
 build/
 *.class
 **/**/classes
