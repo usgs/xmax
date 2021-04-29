@@ -1,6 +1,7 @@
 package com.isti.traceview.transformations.psd;
 
 
+import static asl.utils.NumericUtils.detrend;
 import static com.isti.traceview.processing.IstiUtilsMath.getSmoothedPSD;
 
 import asl.utils.FFTResult;
@@ -291,9 +292,15 @@ public class TransPSD implements ITransformation {
 
 		int[] data = channel.getContinuousGaplessDataOverRange(ti);
 		double[] doubleData = new double[data.length];
-		IntStream.range(0, doubleData.length).parallel().forEach(i ->
-				doubleData[i] = (double) data[i]
-		);
+		{
+			// finalized reference for use in parallel stream
+			double[] finalDoubleData = doubleData;
+			IntStream.range(0, doubleData.length).parallel().forEach(i ->
+					finalDoubleData[i] = data[i]
+			);
+		}
+		// we need to detrend here because java utils expects that before the trace is passed in
+		doubleData = detrend(doubleData);
 		long interval = (long) channel.getSampleRate();
 
 		return FFTResult.powerSpectra(doubleData, interval, response, range, slider);
