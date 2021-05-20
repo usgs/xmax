@@ -5,7 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import asl.utils.response.ChannelMetadata;
+import com.isti.traceview.TraceViewException;
+import java.io.File;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 import org.junit.Test;
 
@@ -30,6 +33,22 @@ public class ResponseTest {
     double gottenSensitivity =
         fissuresResp.getResponse().getInstrumentSensitivity().getSensitivityValue();
     assertEquals(expectedSensitivity, gottenSensitivity, 0.);
+  }
+
+  @Test
+  public void testResponseSingleEpochLoadsAnyway() throws TraceViewException {
+    Response resp =
+        Response.getResponse(
+            new File("src/test/resources/single-epoch-fake-resp/RESP.XX.GSN2.10.LH1"));
+    assertNotNull(resp.getResp(Date.from(Instant.now()), 0.05, 0.10, 10));
+  }
+
+  @Test
+  public void testResponseMultiepochNoLoad() throws TraceViewException {
+    Response resp =
+        Response.getResponse(
+            new File("src/test/resources/multi-epoch-fake-resp/RESP.XX.GSN2.10.LH1"));
+    assertEquals(0, resp.getResponseEpochMap().size());
   }
 
 }
