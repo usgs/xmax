@@ -139,18 +139,26 @@ public class Response {
 
   public ChannelMetadata getEnclosingEpochResponse(Date date) {
     List<Date> epochStartDates = new ArrayList<>(parsedEpochs.keySet());
+    // TODO: see if this fixes the issue
+    /*
+    if (epochStartDates.size() == 1) {
+      return parsedEpochs.get(epochStartDates.get(0));
+    }
+     */
     Collections.sort(epochStartDates);
     int location = Collections.binarySearch(epochStartDates, date);
-    if (location >= 0) {
-      return parsedEpochs.get(epochStartDates.get(location));
-    } else if (location < -1) {
+    if (location < -1) {
       // if location = -1, then insertion point is 0, so date is before even first epoch in list
       // location = -(insertion point) -1, so invert to get insertion point
       // then insertion point is point of first epoch AFTER date, so go back by 1 to get epoch
       location = ((location + 1) * -1) -1;
-      return parsedEpochs.get(epochStartDates.get(location));
+    } else if (location == -1) {
+      // location = -1 in which case we will just return the first epoch available
+      location = 0;
+      logger.warn("Data predates any epochs in loaded response; choosing first available.");
     }
-    return null;
+
+    return parsedEpochs.get(epochStartDates.get(location));
   }
 
   public Map<Date, ChannelMetadata> getResponseEpochMap() {
@@ -199,8 +207,16 @@ public class Response {
           location = " ";
         }
         String compareAgainst = network + "." + station + "." + location + "." + channel;
-        if (epoch.channelIdentifier.equals(compareAgainst)) {
+        // second conditional where parsed epochs size is 1 is used to handle cases
+        // where we want to load in a response that is obviously artificial and may not match
+        // the SNCL data we would seen in a properly-formed resp; artificial resps will surely
+        // never contain more than a single epoch anyway.
+        if (epoch.channelIdentifier.equals(compareAgainst) || epochList.size() == 1) {
           ChannelMetadata resp = parseResponse(filename, epoch.filePointer);
+          if (epochList.size() == 1) {
+            logger.warn("Found only one resp in file, but it had mismatched SNCL of " +
+                epoch.channelIdentifier);
+          }
           parsedEpochs.put(Date.from(epoch.startInstant), resp);
         }
       }
