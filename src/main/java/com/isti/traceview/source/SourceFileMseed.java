@@ -153,14 +153,13 @@ public class SourceFileMseed extends SourceFile implements Serializable {
         logger.error("IOException:", e);
       }
     }
-    logger.debug(this + " end position " + endPointer);
+    // logger.debug(this + " end position " + endPointer);
     setParsed(true);
     return new HashSet<>(map.values());
   }
 
   // Loads current segment from RawDataProvider (this will be multithreaded)
   public synchronized void load(Segment segment) {
-    logger.debug(this + " " + segment);
 
     RandomAccessFile dis = null;
     int currentSampleCount = 0; //Counter on the basis of data values
@@ -168,10 +167,10 @@ public class SourceFileMseed extends SourceFile implements Serializable {
     int drSampleCount;    //Counter on current DataRecord
     int blockNumber = 0;
     try {
-      logger.debug("source = " + getFile().getCanonicalPath());
+      // flogger.debug("source = " + getFile().getCanonicalPath());
       dis = new RandomAccessFile(getFile().getCanonicalPath(), "r");
       dis.seek(segment.getStartOffset());
-      logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
+      // logger.debug(this + " " + segment + " Beginning position:" + dis.getFilePointer());
       // each segment should only contain one data record's set of points. So this conditional
       // is almost certainly not actually needed
       // (currentSampleCount < segmentSampleCount) {
@@ -235,7 +234,7 @@ public class SourceFileMseed extends SourceFile implements Serializable {
   }
 
   public String toString() {
-    return "MseedRawDataProvider: file " + (getFile() == null ? "absent" : getFile().getName());
+    return "MseedSource: " + (getFile() == null ? "file absent" : getFile().getName());
   }
 
   public synchronized String getBlockHeaderText(long blockStartOffset) {

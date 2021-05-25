@@ -10,6 +10,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.SortedMap;
@@ -372,8 +373,6 @@ public class Segment implements Externalizable, Cloneable {
 			if (data == null) {
 				logger.error("== Underlying array has not been initialized");
 			}
-		} else {
-			logger.debug("== Length of underlying data array: " + data.length);
 		}
 
 		int[] ret = null;
@@ -385,7 +384,7 @@ public class Segment implements Externalizable, Cloneable {
 		int endIndex = (int) ((endt - startTime) / sampleRate);
 		if (startIndex != endIndex) {
 			ret = new int[endIndex - startIndex];
-			logger.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
+			// logger.debug("Getting segment data: startindex " + startIndex + ", endindex " + endIndex);
 			if (dataStream == null) {
 				ret = Arrays.copyOfRange(data, startIndex, endIndex);
 
@@ -572,11 +571,12 @@ public class Segment implements Externalizable, Cloneable {
 	}
 
 	public String toString() {
+		long endTime = startTime + (long) (sampleRate * sampleCount);
 		return "Segment: startTime "
-				+ TimeInterval.formatDate(new Date(startTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
+				+ Instant.ofEpochMilli(startTime)
 				+ ", endTime "
-				+ TimeInterval.formatDate(new Date((long) (startTime + sampleRate * sampleCount)),
-				TimeInterval.DateFormatType.DATE_FORMAT_NORMAL) + ", sampleRate " + sampleRate + ", sampleCount " + sampleCount
+				+ Instant.ofEpochMilli(endTime)
+				+ ", sampleRate " + sampleRate + ", sampleCount " + sampleCount
 				+ ", startOffset " + startOffset + ", maxValue " + maxValue + ", minValue " + minValue + ", rdpNumber " + sourceSerialNumber
 				+ ", serialNumber " + channelSerialNumber + ", isLoaded=" + isLoaded + ";";
 		//+ ", serialNumber " + channelSerialNumber + ";";
