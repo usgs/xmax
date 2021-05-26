@@ -69,10 +69,10 @@ public class SourceFileMseedTest {
 
     SourceFileMseed sourceFileMseed = new SourceFileMseed(file);
 
-    assertEquals("MseedRawDataProvider: file ANMO_00_LHZ_GAP.512.seed", sourceFileMseed.toString());
+    assertEquals("MseedSource: ANMO_00_LHZ_GAP.512.seed", sourceFileMseed.toString());
 
     sourceFileMseed = new SourceFileMseed(null);
 
-    assertEquals("MseedRawDataProvider: file absent", sourceFileMseed.toString());
+    assertEquals("MseedSource: file absent", sourceFileMseed.toString());
   }
 }
