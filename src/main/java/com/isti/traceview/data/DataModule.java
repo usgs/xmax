@@ -1,5 +1,6 @@
 package com.isti.traceview.data;
 
+import asl.utils.response.ChannelMetadata;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
@@ -10,9 +11,11 @@ import com.isti.traceview.source.SourceFile;
 import com.isti.traceview.source.SourceSocketFDSN;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -665,11 +668,16 @@ public class DataModule {
    * time, depth, etc.)
    */
   protected void loadStations() {
-    LineNumberReader r = null;
-    try {
-      r = new LineNumberReader(
-          new FileReader(TraceView.getConfiguration().getStationInfoFileName()));
-      String str = null;
+    String filename = TraceView.getConfiguration().getStationInfoFileName();
+    {
+      File file = new File(filename);
+      if (!file.exists() || file.isDirectory()) {
+        logger.warn("Unable to load station info file!");
+        return;
+      }
+    }
+    try (LineNumberReader r = new LineNumberReader(new FileReader(filename))) {
+      String str;
       while ((str = r.readLine()) != null) {
         String name = str.substring(0, 7).trim();
         if (!name.equals("") && !name.equals("STAT")) {
@@ -700,15 +708,8 @@ public class DataModule {
       }
     } catch (FileNotFoundException e) {
       logger.error("Can't open station file: ", e);
-
     } catch (IOException e) {
       logger.error("Error during reading station file: ", e);
-    } finally {
-      try {
-        r.close();
-      } catch (IOException e) {
-        logger.error("IOException:", e);
-      }
     }
   }
 
