@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,14 +40,24 @@ public class TimeInterval {
 	}
 
 	private static final Logger logger = Logger.getLogger(TimeInterval.class);
-	public static SimpleDateFormat df = new SimpleDateFormat("yyyy,DDD,HH:mm:ss.SSS");
-	public static SimpleDateFormat df_middle = new SimpleDateFormat("yyyy,DDD,HH:mm:ss");
-	public static SimpleDateFormat df_long = new SimpleDateFormat("yyyy,DDD,HH:mm");
-	static {
-		df.setTimeZone(TraceView.timeZone);
-		df_middle.setTimeZone(TraceView.timeZone);
-		df_long.setTimeZone(TraceView.timeZone);
-	}
+
+	public static final ThreadLocal<SimpleDateFormat> df = ThreadLocal.withInitial(() -> {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy,DDD,HH:mm:ss.SSS");
+		sdf.setTimeZone(TraceView.timeZone);
+		return sdf;
+	});
+	public static ThreadLocal<SimpleDateFormat> df_middle = ThreadLocal.withInitial(() -> {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy,DDD,HH:mm:ss");
+		sdf.setTimeZone(TraceView.timeZone);
+		return sdf;
+	});
+	public static ThreadLocal<SimpleDateFormat> df_long = ThreadLocal.withInitial(() -> {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy,DDD,HH:mm");
+		sdf.setTimeZone(TraceView.timeZone);
+		return sdf;
+	});
+
+
 	private long startTime;
 	private long endTime;
 
@@ -330,21 +341,19 @@ public class TimeInterval {
 		try {
 			switch (type) {
 			case DATE_FORMAT_NORMAL:
-				ret = df.parse(date);
+				ret = df.get().parse(date);
 				break;
 			case DATE_FORMAT_MIDDLE:
-				ret = df_middle.parse(date);
+				ret = df_middle.get().parse(date);
 				break;
 			case DATE_FORMAT_LONG:
-				ret = df_long.parse(date);
+				ret = df_long.get().parse(date);
 				break;
 			default:
 				logger.error("Wrong date format type: " + type);
 			}
 		} catch (ParseException e) {
-			StringBuilder message = new StringBuilder();
-			message.append("Cant parse date from string " + date);
-			logger.error(message.toString(), e);
+			logger.error("Cant parse date from string " + date, e);
 		}
 		return ret;
 	}
@@ -361,11 +370,11 @@ public class TimeInterval {
 	public static String formatDate(Date date, DateFormatType type) {
 		switch (type) {
 		case DATE_FORMAT_NORMAL:
-			return df.format(date);
+			return df.get().format(date);
 		case DATE_FORMAT_MIDDLE:
-			return df_middle.format(date);
+			return df_middle.get().format(date);
 		case DATE_FORMAT_LONG:
-			return df_long.format(date);
+			return df_long.get().format(date);
 		default:
 			logger.error("Wrong date format type: " + type);
 			return null;

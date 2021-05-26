@@ -1821,7 +1821,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 			setPreferredSize(new Dimension(200, 20));
 			axis = new DateAxis();
 			axis.setTimeZone(TimeZone.getTimeZone("GMT"));
-			axis.setDateFormatOverride(TimeInterval.df_long);
+			axis.setDateFormatOverride(TimeInterval.df_long.get());
 			//axis.setMinorTickCount(10);
 			axis.setMinorTickMarksVisible(true);
 			axis.setTickMarkOutsideLength(6F);
@@ -1864,16 +1864,16 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
 				axis.setMinimumDate(ti.getStartTime());
 				axis.setMaximumDate(ti.getEndTime());
 				if (ti.getDuration() < 10000) {
-					axis.setDateFormatOverride(TimeInterval.df);
+					axis.setDateFormatOverride(TimeInterval.df.get());
 				} else if (ti.getDuration() < 300000) {
-					axis.setDateFormatOverride(TimeInterval.df_middle);
+					axis.setDateFormatOverride(TimeInterval.df_middle.get());
 				} else {
-					axis.setDateFormatOverride(TimeInterval.df_long);
+					axis.setDateFormatOverride(TimeInterval.df_long.get());
 				}
 			} else {
 				axis.setMinimumDate(new Date(0));
 				axis.setMaximumDate(new Date(1000000));
-				axis.setDateFormatOverride(TimeInterval.df_long);
+				axis.setDateFormatOverride(TimeInterval.df_long.get());
 			}
 			if (needwait) {
 				// to let finish previous repaint() and avoid blank axis
