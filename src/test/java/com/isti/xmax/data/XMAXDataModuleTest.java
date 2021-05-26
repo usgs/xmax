@@ -26,4 +26,43 @@ public class XMAXDataModuleTest {
     assertTrue(files.length > 0);
   }
 
+  @Test
+  public void testEmptyStationInfo() throws TraceViewException {
+    // NOTE: currently not matching anything as resources here are not included anywhere
+    String mask = "src/test/resources/*.seed";
+    XMAXconfiguration config = XMAXconfiguration.getInstance();
+    TraceView.setConfiguration(config);
+    TraceView.getConfiguration().setDataPath(mask);
+    TraceView.getConfiguration().setStationInfoFileName(null);
+    XMAXDataModule xdm = XMAXDataModule.getInstance();
+    xdm.loadData();
+    // this fails if an exception is thrown because of the station info file not existing
+  }
+
+  @Test
+  public void testEmptyStationInfo_isDirectory() throws TraceViewException {
+    // NOTE: currently not matching anything as resources here are not included anywhere
+    String mask = "src/test/resources/*.seed";
+    XMAXconfiguration config = XMAXconfiguration.getInstance();
+    TraceView.setConfiguration(config);
+    TraceView.getConfiguration().setDataPath(mask);
+    TraceView.getConfiguration().setStationInfoFileName(config.getConfigFileDir());
+    XMAXDataModule xdm = XMAXDataModule.getInstance();
+    xdm.loadData();
+    // this fails if an exception is thrown because of the station info file not existing
+  }
+
+  @Test
+  public void testEmptyStationInfo_notExist() throws TraceViewException {
+    // NOTE: currently not matching anything as resources here are not included anywhere
+    String mask = "src/test/resources/*.seed";
+    XMAXconfiguration config = XMAXconfiguration.getInstance();
+    TraceView.setConfiguration(config);
+    TraceView.getConfiguration().setDataPath(mask);
+    TraceView.getConfiguration().setStationInfoFileName("this_file_does_not_exist.null");
+    XMAXDataModule xdm = XMAXDataModule.getInstance();
+    xdm.loadData();
+    // this fails if an exception is thrown because of the station info file not existing
+  }
+
 }

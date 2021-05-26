@@ -414,6 +414,9 @@ public class Configuration {
 	 *            The stationInfoFileName to set.
 	 */
 	public void setStationInfoFileName(String stationInfoFileName) {
+		if (stationInfoFileName == null) {
+			stationInfoFileName = "";
+		}
 		this.stationInfoFileName = stationInfoFileName;
 	}
 
