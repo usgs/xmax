@@ -68,7 +68,7 @@ XMAX [![Build Status](https://travis-ci.org/usgs/xmax.svg?branch=master)](https:
 ```bash
     gradle run              # run java com.isti.xmax.XMAX from /build dir
     gradle clean            # delete build/ directory
-    gradle build            # compile java src/ code to build/ directory. Builds everything including jar
+    gradle standardBuild    # compile java src/ code to build/ directory. Builds everything including jar
     gradle jar              # create distribution build/libs/xmax-[version].jar (default target)
 ```
 
