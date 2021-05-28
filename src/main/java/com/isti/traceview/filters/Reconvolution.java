@@ -182,12 +182,18 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 				Response respExternal = Response.getResponse(new File(selectedFileName));
 				if (respExternal != null) {
 					Complex[] respExt;
-          respExt = respExternal.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq,
-              spectra.length);
-          respExt = normData(respExt);
-          reconvolved = IstiUtilsMath.complexConvolution(removeExcessFrequencies(deconvolved, respExt),
-              respExt);
-        }
+					try {
+						respExt = respExternal
+								.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq,
+										spectra.length);
+						respExt = normData(respExt);
+						reconvolved = IstiUtilsMath
+								.complexConvolution(removeExcessFrequencies(deconvolved, respExt),
+										respExt);
+					} catch (ReconvolutionException e){
+						logger.error("ReconvolutionException:", e);
+					}
+				}
 			}
 
 			if (reconvolved == null && deconvolved == null) {

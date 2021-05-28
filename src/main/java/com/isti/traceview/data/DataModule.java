@@ -45,14 +45,14 @@ public class DataModule {
   /**
    * Map of affected stations
    */
-  private static Map<String, Station> stations = new HashMap<>();
+  private static final Map<String, Station> stations = new HashMap<>();
 
   /**
    * List of found files with trace data
    */
-  private List<ISource> dataSources;
+  private final List<ISource> dataSources;
 
-  private List<Response> responses;
+  private final List<Response> responses;
 
   // Information about current channel set
   private int markerPosition;
@@ -63,7 +63,7 @@ public class DataModule {
   /**
    * Property change listener helper object.
    */
-  protected PropertyChangeSupport listenerHelper;
+  protected final PropertyChangeSupport listenerHelper;
 
   /**
    * Time interval including ALL found channels
@@ -216,7 +216,6 @@ public class DataModule {
           //channel.drop();
           //channel = null;
         });
-    //printAllChannels();
   }
 
   /**
@@ -300,8 +299,7 @@ public class DataModule {
    * @return Station as class, or null if not found
    */
   public static Station getStation(String stationName) {
-    Station station = stations.get(stationName.trim());
-    return station;
+    return stations.get(stationName.trim());
   }
 
   private static Station addStation(String stationName) {
@@ -330,7 +328,7 @@ public class DataModule {
           dataSources.add(src);
         }
       }
-      logger.debug("Channel added: " + channel.toString());
+      logger.debug("Channel added: " + channel);
     }
   }
 
@@ -553,12 +551,11 @@ public class DataModule {
         }
       }
     } else if (unit.equals(Configuration.PanelCountUnit.CHANNEL)) {
-      int i = 0;
       int channelCount = 0;
       int ret = 0;
       String currentChannel = null;
       if (isForward) {
-        for (i = markerPosition; i < channels.size(); i++) {
+        for (int i = markerPosition; i < channels.size(); i++) {
           String channel = channels.get(i).getName();
           if (!channel.equals(currentChannel)) {
             currentChannel = channel;
@@ -570,7 +567,7 @@ public class DataModule {
           ret++;
         }
       } else {
-        for (i = markerPosition - windowSize - 1; i >= 0; i--) {
+        for (int i = markerPosition - windowSize - 1; i >= 0; i--) {
           String channel = channels.get(i).getName();
           if (!channel.equals(currentChannel)) {
             currentChannel = channel;
@@ -584,12 +581,11 @@ public class DataModule {
       }
       return ret;
     } else if (unit.equals(Configuration.PanelCountUnit.CHANNEL_TYPE)) {
-      int i = 0;
       int typeCount = 0;
       int ret = 0;
       String currentType = null;
       if (isForward) {
-        for (i = markerPosition; i < channels.size(); i++) {
+        for (int i = markerPosition; i < channels.size(); i++) {
           String type = channels.get(i).getName().substring(
               channels.get(i).getName().length() - 1);
           if (!type.equals(currentType)) {
@@ -601,9 +597,8 @@ public class DataModule {
           }
           ret++;
         }
-        return ret;
       } else {
-        for (i = markerPosition - windowSize - 1; i >= 0; i--) {
+        for (int i = markerPosition - windowSize - 1; i >= 0; i--) {
           String type = channels.get(i).getName().substring(
               channels.get(i).getName().length() - 1);
           if (!type.equals(currentType)) {
@@ -615,15 +610,14 @@ public class DataModule {
           }
           ret++;
         }
-        return ret;
       }
+      return ret;
     } else if (unit.equals(Configuration.PanelCountUnit.STATION)) {
-      int i = 0;
       int stationCount = 0;
       int ret = 0;
       Station currentStation = null;
       if (isForward) {
-        for (i = markerPosition; i < channels.size(); i++) {
+        for (int i = markerPosition; i < channels.size(); i++) {
           Station station = channels.get(i).getStation();
           if (!station.equals(currentStation)) {
             currentStation = station;
@@ -635,7 +629,7 @@ public class DataModule {
           ret++;
         }
       } else {
-        for (i = markerPosition - windowSize - 1; i >= 0; i--) {
+        for (int i = markerPosition - windowSize - 1; i >= 0; i--) {
           Station station = channels.get(i).getStation();
           if (!station.equals(currentStation)) {
             currentStation = station;
@@ -928,7 +922,7 @@ public class DataModule {
       List<Segment> segs = channel.getRawData();
       for (Segment seg : segs) {
         System.out.format("\t[%d][%d]:%s [Source:%s]\n", seg.getSourceSerialNumber(),
-            seg.getChannelSerialNumber(), seg.toString(), seg.getDataSource().getName());
+            seg.getChannelSerialNumber(), seg, seg.getDataSource().getName());
         System.out.println();
       }
     }
