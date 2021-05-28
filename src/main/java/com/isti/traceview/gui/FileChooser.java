@@ -182,7 +182,7 @@ public class FileChooser extends JFileChooser {
 			}
 			String extension = SourceFile.getExtension(f);
 			if (extension != null) {
-				if (extension.toLowerCase().equals("msd") || extension.toLowerCase().equals("mseed")) {
+				if (extension.equalsIgnoreCase("msd") || extension.equalsIgnoreCase("mseed")) {
 					return true;
 				} else {
 					return false;
@@ -204,7 +204,7 @@ public class FileChooser extends JFileChooser {
 			}
 			String extension = SourceFile.getExtension(f);
 			if (extension != null) {
-				if (extension.toLowerCase().equals("sac")) {
+				if (extension.equalsIgnoreCase("sac")) {
 					return true;
 				} else {
 					return false;

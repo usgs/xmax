@@ -308,30 +308,24 @@ public abstract class SourceFile implements ISource {
 				}
 			} catch (EOFException ex) {
 				//System.out.format("==     [file:%s] Caught EOFException:%s\n", file.getName(), ex.toString());
-				StringBuilder message = new StringBuilder();
-				message.append(String.format("== CheckData: [file:%s] Caught EOFException:\n", file.getName()));
-				logger.debug(message.toString(), ex);
+				logger.debug(
+						String.format("== CheckData: [file:%s] Caught EOFException:\n", file.getName()), ex);
 				return true;
 			} catch (FileNotFoundException e) {
-				StringBuilder message = new StringBuilder();
-				message.append(String.format("== CheckData: [file:%s] FileNotFoundException:\n", file.getName()));
-				logger.debug(message.toString(), e);
+				logger.debug(
+						String.format("== CheckData: [file:%s] FileNotFoundException:\n", file.getName()), e);
 				return false;
 			} catch (IOException e) {
-				StringBuilder message = new StringBuilder();
-				message.append(String.format("== CheckData: [file:%s] IOException:\n", file.getName()));
-				logger.debug(message.toString(), e);
+				logger.debug(String.format("== CheckData: [file:%s] IOException:\n", file.getName()), e);
 				return false;
 			} catch (SeedFormatException e) {
 				//System.out.format("==     [file:%s] Caught SeedFormatException:%s\n", file.getName(), e.toString());
-				StringBuilder message = new StringBuilder();
-				message.append(String.format("== CheckData: [file:%s] Caught SeedFormatException:\n", file.getName()));
-				logger.debug(message.toString(), e);
+				logger.debug(
+						String.format("== CheckData: [file:%s] Caught SeedFormatException:\n", file.getName()), e);
 				return false;
 			} catch (RuntimeException e) {
-				StringBuilder message = new StringBuilder();
-				message.append(String.format("== CheckData: [file:%s] Caught RuntimeException:\n", file.getName()));
-				logger.debug(message.toString(), e);
+				logger.debug(
+						String.format("== CheckData: [file:%s] Caught RuntimeException:\n", file.getName()), e);
 				return false;
 			} finally {
 				try {
@@ -362,9 +356,7 @@ public abstract class SourceFile implements ISource {
 			ras.seek(316);
 			ras.read(buffer, 0, 4);
 		} catch (Exception e) {
-			StringBuilder message = new StringBuilder();
-			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
-			logger.debug(message.toString(), e);
+			logger.debug(String.format("== CheckData: [file:%s] Exception:\n", file.getName()), e);
 			return false;
 		} finally {
 			try {
@@ -397,9 +389,7 @@ public abstract class SourceFile implements ISource {
 		try {
 			ts.readHeader(file.getCanonicalPath());
 		} catch (Exception e) {
-			StringBuilder message = new StringBuilder();
-			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
-			logger.debug(message.toString(), e);
+			logger.debug(String.format("== CheckData: [file:%s] Exception:\n", file.getName()), e);
 			return false;
 		}
 		return true;
@@ -419,19 +409,13 @@ public abstract class SourceFile implements ISource {
 			SegdRecord rec = new SegdRecord(file);
 			rec.readHeader1(new DataInputStream(inputStream));
 		} catch (IOException e) {
-			StringBuilder message = new StringBuilder();
-			message.append(String.format("== CheckData: [file:%s] IOException:\n", file.getName()));
-			logger.debug(message.toString(), e);
+			logger.debug(String.format("== CheckData: [file:%s] IOException:\n", file.getName()), e);
 			return false;
 		} catch (SegdException e) {
-			StringBuilder message = new StringBuilder();
-			message.append(String.format("== CheckData: [file:%s] SegdException:\n", file.getName()));
-			logger.debug(message.toString(), e);
+			logger.debug(String.format("== CheckData: [file:%s] SegdException:\n", file.getName()), e);
 			return false;
 		} catch (Exception e) {
-			StringBuilder message = new StringBuilder();
-			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
-			logger.debug(message.toString(), e);
+			logger.debug(String.format("== CheckData: [file:%s] Exception:\n", file.getName()), e);
 			return false;
 		} finally {
 			try{
@@ -463,9 +447,7 @@ public abstract class SourceFile implements ISource {
 				}
 			}
 		} catch (Exception e) {
-			StringBuilder message = new StringBuilder();
-			message.append(String.format("== CheckData: [file:%s] Exception:\n", file.getName()));
-			logger.debug(message.toString(), e);
+			logger.debug(String.format("== CheckData: [file:%s] Exception:\n", file.getName()), e);
 			return false;
 		} finally {
 			try{

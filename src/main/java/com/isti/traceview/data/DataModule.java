@@ -686,7 +686,7 @@ public class DataModule {
           String latitude = str.substring(83, 93).trim();
           String longitude = str.substring(93, 105).trim();
           String elevation = str.substring(105, 116).trim();
-          String depth = str.substring(116, str.length()).trim();
+          String depth = str.substring(116).trim();
           Station station = stations.get(name);
           if (station != null) {
             station.setNetwork(network);

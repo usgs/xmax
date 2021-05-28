@@ -651,8 +651,6 @@ public class Configuration {
 				setDefaultCompression(B1000Types.STEIM2);
 				break;
 			case "CDSN":
-				setDefaultCompression(B1000Types.CDSN);
-				break;
 			case "RSTN":
 				setDefaultCompression(B1000Types.CDSN);
 				break;
@@ -660,11 +658,7 @@ public class Configuration {
 				setDefaultCompression(B1000Types.DWWSSN);
 				break;
 			case "SRO":
-				setDefaultCompression(B1000Types.SRO);
-				break;
 			case "ASRO":
-				setDefaultCompression(B1000Types.SRO);
-				break;
 			case "HGLP":
 				setDefaultCompression(B1000Types.SRO);
 				break;
