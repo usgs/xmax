@@ -181,8 +181,8 @@ public class RawDataProvider extends Channel {
 
   /**
    * binary search for a given time in this object's collection of data segments
-   * @param time
-   * @return
+   * @param time epoch millis
+   * @return index of segment containing time
    */
   private int findIndexOfSegmentContainingTime(long time) {
     return findSegmentContainingTime(time, 0, rawData.size());
@@ -190,6 +190,14 @@ public class RawDataProvider extends Channel {
 
   // behold, the world's worst binary search, brought to you by bizarre data structure designs
   // and frustrating issues with the way that the underlying data works (i.e. gap leniency)
+
+  /**
+   *
+   * @param time epoch millis
+   * @param lowerBound lower bound in epoch millis
+   * @param upperBound lower bound in epoch millis
+   * @return index of segment
+   */
   private int findSegmentContainingTime(long time, int lowerBound, int upperBound) {
     // base case
     if (upperBound - lowerBound <= 5) {

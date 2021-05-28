@@ -52,9 +52,7 @@ public class TransformationUtils {
     // downsample neatly in some cases so we would first upsample,
     // filter out any noise terms, then downsample
     double[] converted = new double[data.length];
-    for (int i = 0; i < data.length; ++i) {
-      converted[i] = data[i];
-    }
+    System.arraycopy(data, 0, converted, 0, data.length);
 
     double[] upped = upsample(converted, upf);
     double[] lpfed = lowPassFilter(upped, higherFreq, lowerFreq);

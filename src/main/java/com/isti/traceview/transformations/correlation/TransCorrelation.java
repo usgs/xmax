@@ -74,9 +74,6 @@ public class TransCorrelation implements ITransformation {
 	 * 						Sampling interval of data (in milliseconds)
 	 * @return list of arrays - double raw data for selected traces and time
 	 *         ranges
-	 * @throws XMAXException
-	 *             if sample rates differ, gaps in the data, no data, or the
-	 *             data is too long.
 	 */
 	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti,
 			double sampleRate) {

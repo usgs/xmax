@@ -21,7 +21,6 @@ public abstract class AbstractFilter implements IFilter {
 
   /**
    * Get the current filter for the given parameters for use on the active segment
-   * @return
    */
   Butterworth getCurrentFilter() {
     return casc;
@@ -30,7 +29,6 @@ public abstract class AbstractFilter implements IFilter {
 
   /**
    * Instantiate a new filter for the given parameters (after a gap, etc.)
-   * @return
    */
   public abstract void reinitializeFilter();
 

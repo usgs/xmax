@@ -232,7 +232,6 @@ public class DataModule {
    * Add source of data to data module
    *
    * @param datafile file to add
-   * @return list of {@link RawDataProvider}s found in the data file
    */
   public void addDataSource(ISource datafile) {
 

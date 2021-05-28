@@ -55,9 +55,6 @@ public class TransSpectra implements ITransformation {
 	 * @param parentFrame
 	 *            parent frame
 	 * @return list of spectra for selected traces and time ranges
-	 * @throws XMAXException
-	 *             if sample rates differ, gaps in the data, or no data for a
-	 *             channel
 	 */
 	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval timeInterval,
 			JFrame parentFrame) {
