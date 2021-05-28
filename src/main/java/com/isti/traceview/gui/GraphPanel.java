@@ -1967,7 +1967,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
      * @param ti time interval of axis
      */
     public void setTimeRange(TimeInterval ti) {
-      final long ONE_DAY = 1L * 86400000;
+      final long ONE_DAY = 86400000L;
       final long TWO_DAYS = 2L * 86400000;
       final long THREE_DAYS = 3L * 86400000;
       final long FOUR_DAYS = 4L * 86400000;

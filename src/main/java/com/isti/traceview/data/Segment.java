@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.isti.traceview.data;
 
 import com.isti.traceview.common.TimeInterval;

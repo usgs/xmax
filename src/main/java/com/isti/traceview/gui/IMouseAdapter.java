@@ -1,11 +1,11 @@
 package com.isti.traceview.gui;
+import javax.swing.JPanel;
 
 /**
  * Abstract representation of mouse behavior. Concrete realizations of this interface
  * can be assigned to ChannelView or GraphPanel to customize its.
- */
-import javax.swing.JPanel;
-
+ *
+ **/
 public interface IMouseAdapter {
 	void mouseClickedButton1(int x, int y, JPanel clickedAt);
 

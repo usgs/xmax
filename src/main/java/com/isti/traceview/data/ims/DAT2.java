@@ -90,7 +90,7 @@ public class DAT2 extends Block {
 		for (ChannelSubframe csf : csfList) {
 			int[] samples = new int[csf.getNsamp()];
 			csf.getSamples(samples);
-			System.arraycopy(samples, 0, data, numSamples + 0, samples.length);
+			System.arraycopy(samples, 0, data, numSamples, samples.length);
 			numSamples += csf.getNsamp();
 		}
 		return numSamples;
