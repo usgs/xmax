@@ -37,15 +37,15 @@ public class TemporaryStorage {
 		if (f.isDirectory()) {
 			dir = f.listFiles();
 			if (dir.length > 0) {
-				for (int i = 0; i < dir.length; i++) {
-					if (!dir[i].isDirectory()) {
-						if (SourceFile.getExtension(dir[i]).equals("sac")) {
+				for (File file : dir) {
+					if (!file.isDirectory()) {
+						if (SourceFile.getExtension(file).equals("sac")) {
 							// deletes all SAC files which stored in previous sessions by full seed
 							// reader
-							dir[i].delete();
-						} else if (SourceFile.getExtension(dir[i]).equals("ser")) {
-							files.add(dir[i]);
-							logger.debug("Tepmorary file added: " + dir[i].getName());
+							file.delete();
+						} else if (SourceFile.getExtension(file).equals("ser")) {
+							files.add(file);
+							logger.debug("Tepmorary file added: " + file.getName());
 						}
 					}
 				}
@@ -153,12 +153,12 @@ public class TemporaryStorage {
 			if (f.isDirectory()) {
 				dir = f.listFiles();
 				if (dir.length > 0) {
-					for (int i = 0; i < dir.length; i++) {
-						if (!dir[i].isDirectory()) {
-							if (SourceFile.getExtension(dir[i]).equals("sac")) {
+					for (File file : dir) {
+						if (!file.isDirectory()) {
+							if (SourceFile.getExtension(file).equals("sac")) {
 								// deletes all SAC files which stored in this session by full seed
 								// reader
-								dir[i].delete();
+								file.delete();
 							}
 						}
 					}

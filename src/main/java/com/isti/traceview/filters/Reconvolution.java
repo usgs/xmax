@@ -317,8 +317,8 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 	public static Complex[] normData(Complex[] data) {
 		Complex[] ret = new Complex[data.length];
 		Complex sum = new Complex(0, 0);
-		for (int i = 0; i < data.length; i++)
-			sum = sum.add(data[i]);
+		for (Complex datum : data)
+			sum = sum.add(datum);
 		final Complex mean = sum.divide(data.length);
 		double maxAmp = 0;
 		for (int i = 0; i < data.length; i++) {
@@ -347,9 +347,9 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 			throw new ReconvolutionException("Arrays length should be equal");
 		}
 		double maxAmp = 0;
-		for (int i = 0; i < resp.length; i++) {
-			if (resp[i].abs() > maxAmp) {
-				maxAmp = resp[i].abs();
+		for (Complex complex : resp) {
+			if (complex.abs() > maxAmp) {
+				maxAmp = complex.abs();
 			}
 		}
 		Complex[] ret = new Complex[spectra.length];
