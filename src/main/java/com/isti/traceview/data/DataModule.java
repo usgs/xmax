@@ -1,6 +1,5 @@
 package com.isti.traceview.data;
 
-import asl.utils.response.ChannelMetadata;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
@@ -11,11 +10,9 @@ import com.isti.traceview.source.SourceFile;
 import com.isti.traceview.source.SourceSocketFDSN;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -63,7 +60,9 @@ public class DataModule {
   private int from = 0;
   private int to = 0;
 
-  /** Property change listener helper object. */
+  /**
+   * Property change listener helper object.
+   */
   protected PropertyChangeSupport listenerHelper;
 
   /**
@@ -130,8 +129,8 @@ public class DataModule {
   }
 
   /**
-   * Load in data from data path given in configuration and then ensure it is fully parsed in.
-   * This allows data to be loaded in from a single call for tests
+   * Load in data from data path given in configuration and then ensure it is fully parsed in. This
+   * allows data to be loaded in from a single call for tests
    */
   public void loadAndParseDataForTesting() throws TraceViewException {
     loadNewDataFromSources();
@@ -139,8 +138,8 @@ public class DataModule {
   }
 
   /**
-   * Load in data from a list of files and then ensure it is parsed in.
-   * This allows data to be loaded in from a single call for tests
+   * Load in data from a list of files and then ensure it is parsed in. This allows data to be
+   * loaded in from a single call for tests
    */
   public void loadAndParseDataForTesting(File... files) {
     loadNewDataFromSources(files);
@@ -149,7 +148,7 @@ public class DataModule {
 
   public void loadNewDataFromSources() throws TraceViewException {
     String mask = TraceView.getConfiguration().getDataPath();
-    File[] files = SourceFile.getDataFiles(mask).toArray(new File[] {});
+    File[] files = SourceFile.getDataFiles(mask).toArray(new File[]{});
     loadNewDataFromSources(files);
   }
 
@@ -205,19 +204,18 @@ public class DataModule {
       storage.delAllTempFiles();
     }
 
-
     getAllChannels().parallelStream().forEach(
         channel -> {
-      // PlotDataProvider channel = it.next();
-      logger.debug("== call channel.load() for channel=" + channel);
-      channel.load();
-      logger.debug("== call channel.load() DONE for channel=" + channel);
-      System.out.format("\tSerialize to file:%s\n", storage.getSerialFileName(channel));
-      channel.dump(storage.getSerialFileName(channel));
-      //MTH: not sure why this is needed
-      //channel.drop();
-      //channel = null;
-    });
+          // PlotDataProvider channel = it.next();
+          logger.debug("== call channel.load() for channel=" + channel);
+          channel.load();
+          logger.debug("== call channel.load() DONE for channel=" + channel);
+          System.out.format("\tSerialize to file:%s\n", storage.getSerialFileName(channel));
+          channel.dump(storage.getSerialFileName(channel));
+          //MTH: not sure why this is needed
+          //channel.drop();
+          //channel = null;
+        });
     //printAllChannels();
   }
 
