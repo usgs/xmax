@@ -57,7 +57,7 @@ public class FileChooser extends JFileChooser {
 		}
 	}
 
-	private class PNGFilter extends FileFilter {
+	private static class PNGFilter extends FileFilter {
 		public boolean accept(File f) {
 			if (f.isDirectory()) {
 				return true;
@@ -75,7 +75,7 @@ public class FileChooser extends JFileChooser {
 		}
 	}
 
-	private class JPEGFilter extends FileFilter {
+	private static class JPEGFilter extends FileFilter {
 		public boolean accept(File f) {
 			if (f.isDirectory()) {
 				return true;
@@ -94,7 +94,7 @@ public class FileChooser extends JFileChooser {
 		}
 	}
 
-	private class BMPFilter extends FileFilter {
+	private static class BMPFilter extends FileFilter {
 		public boolean accept(File f) {
 			if (f.isDirectory()) {
 				return true;
@@ -112,7 +112,7 @@ public class FileChooser extends JFileChooser {
 		}
 	}
 
-	private class HTMLFilter extends FileFilter {
+	private static class HTMLFilter extends FileFilter {
 		public boolean accept(File f) {
 			if (f.isDirectory()) {
 				return true;
@@ -131,7 +131,7 @@ public class FileChooser extends JFileChooser {
 		}
 	}
 
-	private class XMLFilter extends FileFilter {
+	private static class XMLFilter extends FileFilter {
 		public boolean accept(File f) {
 			if (f.isDirectory()) {
 				return true;
@@ -153,7 +153,7 @@ public class FileChooser extends JFileChooser {
 		}
 	}
 
-	private class TXTFilter extends FileFilter {
+	private static class TXTFilter extends FileFilter {
 		public boolean accept(File f) {
 			if (f.isDirectory()) {
 				return true;
@@ -175,7 +175,7 @@ public class FileChooser extends JFileChooser {
 		}
 	}
 
-	private class MSEEDFilter extends FileFilter {
+	private static class MSEEDFilter extends FileFilter {
 		public boolean accept(File f) {
 			if (f.isDirectory()) {
 				return true;
@@ -197,7 +197,7 @@ public class FileChooser extends JFileChooser {
 		}
 	}
 	
-	private class SACFilter extends FileFilter {
+	private static class SACFilter extends FileFilter {
 		public boolean accept(File f) {
 			if (f.isDirectory()) {
 				return true;

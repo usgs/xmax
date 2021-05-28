@@ -532,7 +532,7 @@ class ViewPSD extends JDialog implements PropertyChangeListener,
     setVisibleItems();
   }
 
-  private class PSDChannelViewFactory implements IChannelViewFactory {
+  private static class PSDChannelViewFactory implements IChannelViewFactory {
 
     @Override
     public int getInfoAreaWidth() {

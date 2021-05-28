@@ -101,9 +101,9 @@ public class ChannelView extends JPanel implements Comparable<Object>, PropertyC
   public ChannelView(List<PlotDataProvider> channels, int infoPanelWidth,
       boolean isDrawSelectionCheckBox, Color graphAreaBgColor, Color infoAreaBgColor) {
     super();
-    String names = "";
+    StringBuilder names = new StringBuilder();
     for (PlotDataProvider channel : channels) {
-      names = names + channel.toString() + ";";
+      names.append(channel.toString()).append(";");
       channelNames.add(channel.toString());
     }
     logger.debug("ChannelView created for list: " + names);
@@ -418,9 +418,10 @@ public class ChannelView extends JPanel implements Comparable<Object>, PropertyC
    * Gets string representation of ChannelView in the debug purposes
    */
   public String toString() {
-    String ret = "";
+    StringBuilder ret = new StringBuilder();
     for (PlotDataProvider channel : plotDataProviders) {
-      ret = ret + channel.getStation().getName() + "/" + channel.getChannelName() + " ";
+      ret.append(channel.getStation().getName()).append("/").append(channel.getChannelName())
+          .append(" ");
     }
     return "ChannelView: " + ret;
   }

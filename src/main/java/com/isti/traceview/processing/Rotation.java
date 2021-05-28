@@ -472,12 +472,8 @@ public class Rotation {
       @SuppressWarnings("unused")
       RawDataProvider[] triplet = getChannelsTriplet(channel);
     } catch (final TraceViewException e) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          JOptionPane.showMessageDialog(TraceView.getFrame(), e, "Rotation warning", JOptionPane.WARNING_MESSAGE);
-        }
-      });
+      SwingUtilities.invokeLater(
+          () -> JOptionPane.showMessageDialog(TraceView.getFrame(), e, "Rotation warning", JOptionPane.WARNING_MESSAGE));
       return false;
     }
     return true;
@@ -581,7 +577,7 @@ public class Rotation {
   /**
    * Visual dialog to enter rotation description
    */
-  public class RotationDialog extends JDialog implements PropertyChangeListener, ItemListener {
+  public static class RotationDialog extends JDialog implements PropertyChangeListener, ItemListener {
     /**
      *
      */

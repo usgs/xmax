@@ -32,31 +32,31 @@ public class DAT2 extends Block {
 			throw new IMSFormatException("Wrong data block header: " + header);
 		}
 		int numSamples = 0;
-		String line = "";
+		StringBuilder line = new StringBuilder();
 		while (true) {
 			long filePointer = input.getFilePointer();
 			if (wid2.getCsf() == WID2.Compression.CSF) {
 				String l = input.readLine();
 				if (isBlockEnded(l)) {
-					numSamples = decodeCSF(numSamples, line);
+					numSamples = decodeCSF(numSamples, line.toString());
 					input.seek(filePointer);
 					break;
 				}
-				line = line + l;
-				if (line.endsWith("=")) {
-					numSamples = decodeCSF(numSamples, line);
-					line = "";
+				line.append(l);
+				if (line.toString().endsWith("=")) {
+					numSamples = decodeCSF(numSamples, line.toString());
+					line = new StringBuilder();
 
 				}
 
 			} else if (wid2.getCsf() == WID2.Compression.INT) {
-				line = input.readLine();
+				line = new StringBuilder(input.readLine());
 				// lg.debug(line);
-				if (isBlockEnded(line)) {
+				if (isBlockEnded(line.toString())) {
 					input.seek(filePointer);
 					break;
 				}
-				String[] lineParts = line.split("\\s+");
+				String[] lineParts = line.toString().split("\\s+");
 				if (lineParts.length > 0) {
 					try {
 						for (String part : lineParts) {
@@ -90,9 +90,7 @@ public class DAT2 extends Block {
 		for (ChannelSubframe csf : csfList) {
 			int[] samples = new int[csf.getNsamp()];
 			csf.getSamples(samples);
-			for(int i = 0; i<samples.length; i++){
-				data[numSamples+i]=samples[i];
-			}
+			System.arraycopy(samples, 0, data, numSamples + 0, samples.length);
 			numSamples += csf.getNsamp();
 		}
 		return numSamples;

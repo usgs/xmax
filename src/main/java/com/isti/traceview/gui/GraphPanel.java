@@ -2101,7 +2101,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
    * Bottom panel with general timing information - start time, shown duration, end time, used in
    * GraphPanel.
    */
-  class TimeInfoPanel extends JPanel {
+  static class TimeInfoPanel extends JPanel {
 
     /**
      * The Constant serialVersionUID.
@@ -2243,7 +2243,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
   /**
    * The Class DrawAreaPanel.
    */
-  class DrawAreaPanel extends JPanel {
+  static class DrawAreaPanel extends JPanel {
 
     /**
      * The Constant serialVersionUID.

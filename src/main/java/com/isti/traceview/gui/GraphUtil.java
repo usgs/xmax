@@ -214,9 +214,7 @@ public class GraphUtil {
 			g2.dispose();
 			ImageIO.write(image, encFormat, out);
 		} catch (IOException e1) {
-			StringBuilder message = new StringBuilder();
-			message.append("Can't export graphics to file " + filename + ": ");
-			logger.error(message.toString(), e1);
+			logger.error("Can't export graphics to file " + filename + ": ", e1);
 		} finally {
 			try {
 				out.close();

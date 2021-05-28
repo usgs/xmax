@@ -36,8 +36,7 @@ final public class Matrix {
 		N = data[0].length;
 		this.data = new double[M][N];
 		for (int i = 0; i < M; i++)
-			for (int j = 0; j < N; j++)
-				this.data[i][j] = data[i][j];
+			System.arraycopy(data[i], 0, this.data[i], 0, N);
 	}
 
 	/**

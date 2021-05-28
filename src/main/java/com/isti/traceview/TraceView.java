@@ -123,11 +123,8 @@ public class TraceView {
 		if (!getJavaVersionMessage().contains("version OK")) {
 			// send warning to log
 			logger.warn(getJavaVersionMessage());
-			SwingUtilities.invokeLater(new Runnable() {
-			    public void run() {
-					JOptionPane.showMessageDialog(frame, getJavaVersionMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
-			    }
-			  });
+			SwingUtilities.invokeLater(
+					() -> JOptionPane.showMessageDialog(frame, getJavaVersionMessage(), "Warning", JOptionPane.WARNING_MESSAGE));
 		}
 		frame = fr;
 	}

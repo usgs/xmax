@@ -73,9 +73,7 @@ public class Wildcard {
 				}
 			}
 		} catch (Exception e) {
-			StringBuilder message = new StringBuilder();
-			message.append("Can't parse wildcarded path: '" + mask + "'" + e.toString());
-			throw new TraceViewException(message.toString());
+			throw new TraceViewException("Can't parse wildcarded path: '" + mask + "'" + e.toString());
 		}
 		return lst;
 	}

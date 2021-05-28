@@ -60,9 +60,7 @@ public class TransformationUtils {
     double[] lpfed = lowPassFilter(upped, higherFreq, lowerFreq);
     double[] downsample = downsample(lpfed, dnf);
     double[] returnValue = new double[downsample.length];
-    for (int i = 0; i < downsample.length; ++i) {
-      returnValue[i] = downsample[i];
-    }
+    System.arraycopy(downsample, 0, returnValue, 0, downsample.length);
     return returnValue;
 
   }
