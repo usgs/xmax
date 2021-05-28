@@ -5,7 +5,6 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.source.SourceFile;
 import com.isti.traceview.source.SourceSocketFDSN;
 import java.beans.PropertyChangeSupport;
@@ -21,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 /**
@@ -68,7 +65,7 @@ public class DataModule {
   /**
    * Time interval including ALL found channels
    */
-  private TimeInterval allChannelsTI = null;
+  private TimeInterval allChannelsTI;
 
   protected static TemporaryStorage storage = null;
 
@@ -171,9 +168,9 @@ public class DataModule {
   /**
    * Cleanup temp storage and dump all found data to temp storage
    */
-  public void dumpData(IColorModeState colorMode) {
+  public void dumpData() {
 
-    System.out.format("     -T: Serialize data to temp storage ");
+    logger.info("     -T: Serialize data to temp storage ");
     if (storage == null) {
       logger.debug("storage == null --> new TemporaryStorage()");
       String dataTempPath = TraceView.getConfiguration().getDataTempPath();
@@ -206,15 +203,11 @@ public class DataModule {
 
     getAllChannels().parallelStream().forEach(
         channel -> {
-          // PlotDataProvider channel = it.next();
           logger.debug("== call channel.load() for channel=" + channel);
           channel.load();
           logger.debug("== call channel.load() DONE for channel=" + channel);
           System.out.format("\tSerialize to file:%s\n", storage.getSerialFileName(channel));
           channel.dump(storage.getSerialFileName(channel));
-          //MTH: not sure why this is needed
-          //channel.drop();
-          //channel = null;
         });
   }
 
@@ -248,34 +241,6 @@ public class DataModule {
    */
   public boolean isSourceLoaded(ISource ds) {
     return getAllSources().contains(ds);
-  }
-
-  /**
-   * Check if we have found all sources for given channel
-   */
-  @SuppressWarnings("unused")
-  private boolean channelHasAllSources(RawDataProvider channel) {
-    List<ISource> sources = channel.getSources();
-    for (Object o : sources) {
-      if (o instanceof SourceFile) {
-        if (!dataSources.contains(o)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  /**
-   * @return list of loaded stations
-   */
-  public static SortedSet<Station> getAllStations() {
-    SortedSet<Station> loadedStations = new TreeSet<>();
-    for (String key : stations.keySet()) {
-      loadedStations.add(stations.get(key));
-    }
-    //return new TreeSet(stations.entrySet());
-    return loadedStations;
   }
 
   /**
@@ -828,7 +793,7 @@ public class DataModule {
    * @return response class
    */
   public Response getResponse(String network, String station, String location, String channel) {
-    Response resp = null;
+    Response resp;
 
     if (TraceView.getConfiguration() != null) {
       Configuration config = TraceView.getConfiguration();
@@ -864,12 +829,13 @@ public class DataModule {
       // if neither RESP nor XML get is possible, then produce an error
       logger.error("TraceViewException:", e);
     }
-    return resp;
+    //Unable to load response return null
+    return null;
   }
 
   private Response getResponseFromXML(String network, String station, String location,
       String channel, Configuration config) {
-    Response resp = null;
+    Response resp;
     // default to local copy to allow user to override data based on preferences
     if (config.getStationXMLPath() != null) {
       String xmlFilename = network + "." + station + "." + location + "." + channel + ".xml";
@@ -908,23 +874,6 @@ public class DataModule {
       resp = getResponse(network, station, location, channel);
       responses.add(resp);
       return resp;
-    }
-  }
-
-  // MTH:
-  public void printAllChannels() {
-    System.out
-        .format("== DataModule: Number of channels(=PDP's) attached =[%d]:\n", channels.size());
-    for (PlotDataProvider channel : channels) {
-      System.out.format("\t[PDP: %s] [nsegs=%d] [isLoadingStarted=%s] [isLoaded=%s]\n",
-          channel.toString(), channel.getSegmentCount(), channel.isLoadingStarted(),
-          channel.isLoaded());
-      List<Segment> segs = channel.getRawData();
-      for (Segment seg : segs) {
-        System.out.format("\t[%d][%d]:%s [Source:%s]\n", seg.getSourceSerialNumber(),
-            seg.getChannelSerialNumber(), seg, seg.getDataSource().getName());
-        System.out.println();
-      }
     }
   }
 

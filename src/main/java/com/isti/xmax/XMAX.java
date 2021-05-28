@@ -5,7 +5,6 @@ import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.filters.AbstractFilter;
 import com.isti.traceview.filters.FilterDYO;
 import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.gui.ColorModeBySegment;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.data.XMAXDataModule;
 import com.isti.xmax.gui.XMAXframe;
@@ -180,7 +179,7 @@ public class XMAX extends TraceView {
 					// -T option in command line, make dump
 					setConfiguration(XMAXconfiguration.getInstance());
 					setDataModule(XMAXDataModule.getInstance());
-					getDataModule().dumpData(new ColorModeBySegment());
+					getDataModule().dumpData();
 				} else {
 					// Find all classes that implement IFilter and ITransformation.
 					Reflections reflect = new Reflections("com.isti");
