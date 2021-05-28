@@ -53,7 +53,7 @@ public class TransformationUtils {
     // filter out any noise terms, then downsample
     double[] converted = new double[data.length];
     for (int i = 0; i < data.length; ++i) {
-      converted[i] = (double) data[i];
+      converted[i] = data[i];
     }
 
     double[] upped = upsample(converted, upf);

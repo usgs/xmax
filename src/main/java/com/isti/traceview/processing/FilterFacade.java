@@ -63,7 +63,7 @@ public class FilterFacade {
 	public int[] filter(int[] data) {
 		double[] toFilt = new double[data.length];
 		for (int i = 0; i < data.length; i++) {
-			toFilt[i] = (double) data[i];
+			toFilt[i] = data[i];
 		}
 		try {
 			toFilt = filter.filter(toFilt, toFilt.length);

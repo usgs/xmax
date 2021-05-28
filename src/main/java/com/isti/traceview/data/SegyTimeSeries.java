@@ -626,9 +626,9 @@ public class SegyTimeSeries { /* Offset Description */
 	public double getRateMicroSampPerSec() {
 		double rate;
 		if (deltaSample != 1) {
-			rate = (double) deltaSample;
+			rate = deltaSample;
 		} else {
-			rate = (double) samp_rate;
+			rate = samp_rate;
 		}
 		return rate;
 	}
@@ -638,13 +638,13 @@ public class SegyTimeSeries { /* Offset Description */
 		if (!((station_name.trim()).equals(""))) {
 			oStation = station_name.trim();
 			if (inst_no != 0)
-				oNetwork = Integer.toString((int) inst_no);
+				oNetwork = Integer.toString(inst_no);
 			else {
 				oNetwork = sensor_serial.trim();
 			}
 		} else {
 			if (inst_no != 0) {
-				oStation = Integer.toString((int) inst_no);
+				oStation = Integer.toString(inst_no);
 				oNetwork = sensor_serial.trim();
 			} else {
 				oStation = sensor_serial.trim();
