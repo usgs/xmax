@@ -166,8 +166,6 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 
 			// Remove signal in spectra where response is near 0
 			spectra = removeExcessFrequencies(spectra, resp);
-		} catch (TraceViewException e1) {
-			throw new TraceViewException("File " + response.getFileName() + ": " + e1);
 		} catch (ReconvolutionException e2) {
 			logger.error("ReconvolutionException:", e2);
 		}
@@ -184,18 +182,12 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 				Response respExternal = Response.getResponse(new File(selectedFileName));
 				if (respExternal != null) {
 					Complex[] respExt;
-					try {
-						respExt = respExternal.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq,
-								spectra.length);
-						respExt = normData(respExt);
-						reconvolved = IstiUtilsMath.complexConvolution(removeExcessFrequencies(deconvolved, respExt),
-								respExt);
-					} catch (TraceViewException e) {
-						throw new TraceViewException("File " + respExternal.getFileName() + ": " + e);
-					} catch (ReconvolutionException e) {
-						logger.error("ReconvolutionException:", e);
-					}
-				}
+          respExt = respExternal.getResp(channel.getTimeRange().getStartTime(), fp.startFreq, fp.endFreq,
+              spectra.length);
+          respExt = normData(respExt);
+          reconvolved = IstiUtilsMath.complexConvolution(removeExcessFrequencies(deconvolved, respExt),
+              respExt);
+        }
 			}
 
 			if (reconvolved == null && deconvolved == null) {

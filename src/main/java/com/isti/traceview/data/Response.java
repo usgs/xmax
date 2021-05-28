@@ -282,7 +282,7 @@ public class Response {
    * @return response as array of complex numbers
    */
   public synchronized Complex[] getResp(Date date, double minFreqValue, double maxFreqValue,
-      int len) throws TraceViewException {
+      int len) {
     // find closest epoch to the date
     ChannelMetadata closestResp = getEnclosingEpochResponse(date);
     double[] frequencies = generateFreqArray(minFreqValue, maxFreqValue, len);

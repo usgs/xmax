@@ -75,10 +75,6 @@ public class FilterFacade {
 			logger.error("Can't filter data: ", e);
 		} catch (BPFilterException e) {
 			logger.error("BPFilterException:", e);
-		} catch (HPFilterException e) {
-			logger.error("HPFilterException:", e);
-		} catch (LPFilterException e) {
-			logger.error("LPFilterException:", e);
 		}
 		return data;
 	}

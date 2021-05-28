@@ -6,7 +6,6 @@ import static com.isti.traceview.processing.IstiUtilsMath.getSmoothedPSD;
 
 import asl.utils.FFTResult;
 import asl.utils.timeseries.TimeSeriesUtils;
-import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
@@ -159,7 +158,7 @@ public class TransPSD implements ITransformation {
 		for (PlotDataProvider channel : input) {
 			try {
 				responses.add(channel.getResponse());
-			} catch (TraceViewException | NullPointerException e) {
+			} catch (NullPointerException e) {
 				logger.error("error with responses: " + e);
 				if (respNotFound.length() > 0) {
 					respNotFound.append(", ");
@@ -330,12 +329,8 @@ public class TransPSD implements ITransformation {
 		double deltaFreq = 1. / (padLength * period);
 		double endFreq = deltaFreq * (padLength - 1);
 
-		try {
-			respCurve = response.getResp(ti.getStartTime(), 0,
-					endFreq, padLength);
-		} catch (TraceViewException e) {
-			e.printStackTrace();
-		}
+		respCurve = response.getResp(ti.getStartTime(), 0,
+				endFreq, padLength);
 		return respCurve;
 	}
 

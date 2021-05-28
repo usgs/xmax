@@ -46,48 +46,44 @@ public class IMSFile {
 	public static IMSFile read(DataInput inStream, boolean parseOnly) throws IOException, IMSFormatException, ParseException, CanadaException {
 		IMSFile imsFile = new IMSFile();
 		RandomAccessFile input = (RandomAccessFile) inStream;
-		try {
-			while (true) {
-				long filePointer = input.getFilePointer();
-				String line = input.readLine();
-				if((line == null) || (line.startsWith("STOP"))){
-					break;
-				}
-				String[] firstLineParts = line.split("\\s.");
-				String tag = firstLineParts[0].toUpperCase();
-				switch (tag) {
-					case "BEGIN":
-						imsFile.format_version = firstLineParts[1].trim();
-						imsFile.readMessageHeader(input, filePointer);
-						if (imsFile.msg_type == MessageType.DATA) {
-							imsFile.readDataTypes(parseOnly, input, filePointer);
-						} else if (imsFile.msg_type == MessageType.REQUEST) {
-						} else if (imsFile.msg_type == MessageType.SUBSCRIPTION) {
-						}
-						break;
-					case "DATA_TYPE":
-						input.seek(filePointer);
-						imsFile.readDataTypes(parseOnly, input, filePointer);
-						break;
-					case "WID2":
-						input.seek(filePointer);
-						DataType dt = new DataTypeWaveform(filePointer);
-						dt.read(input, parseOnly);
-						imsFile.dataTypes.add(dt);
-						break;
-				}
+		while (true) {
+			long filePointer = input.getFilePointer();
+			String line = input.readLine();
+			if((line == null) || (line.startsWith("STOP"))){
+				break;
 			}
-		} catch (EOFException e) {
-			// Do nothing
-			logger.error("EOFException:", e);	
+			String[] firstLineParts = line.split("\\s.");
+			String tag = firstLineParts[0].toUpperCase();
+			switch (tag) {
+				case "BEGIN":
+					imsFile.format_version = firstLineParts[1].trim();
+					imsFile.readMessageHeader(input, filePointer);
+					if (imsFile.msg_type == MessageType.DATA) {
+						imsFile.readDataTypes(parseOnly, input, filePointer);
+					} else if (imsFile.msg_type == MessageType.REQUEST) {
+					} else if (imsFile.msg_type == MessageType.SUBSCRIPTION) {
+					}
+					break;
+				case "DATA_TYPE":
+					input.seek(filePointer);
+					imsFile.readDataTypes(parseOnly, input, filePointer);
+					break;
+				case "WID2":
+					input.seek(filePointer);
+					DataType dt = new DataTypeWaveform(filePointer);
+					dt.read(input, parseOnly);
+					imsFile.dataTypes.add(dt);
+					break;
+			}
 		}
+
 		if(imsFile.dataTypes.size()==0){
 			throw new IMSFormatException("Data not found");
 		}
 		return imsFile;
 	}
 
-	private void readMessageHeader(RandomAccessFile input, long startPointer) throws IOException, IMSFormatException, ParseException {
+	private void readMessageHeader(RandomAccessFile input, long startPointer) throws IOException {
 		long filePointer = 0;
 		while (true) {
 			filePointer = input.getFilePointer();

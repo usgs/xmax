@@ -3,8 +3,6 @@ package com.isti.traceview.filters;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
-import com.isti.traceview.processing.HPFilterException;
-import com.isti.traceview.processing.LPFilterException;
 import com.isti.xmax.gui.XMAXframe;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -259,12 +257,6 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 			System.exit(0);
 		} catch (BPFilterException e) {
 			logger.error("BPFilterException:", e);
-			System.exit(0);
-		} catch (HPFilterException e) {
-			logger.error("HPFilterException:", e);
-			System.exit(0);
-		} catch (LPFilterException e) {
-			logger.error("LPFilterException:", e);
 			System.exit(0);
 		}
 		return fltdata;

@@ -5,7 +5,6 @@ import gov.usgs.anss.cd11.ChannelSubframe;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.codec.binary.Base64;
@@ -26,7 +25,7 @@ public class DAT2 extends Block {
 		return data;
 	}
 
-	public void read(RandomAccessFile input) throws IMSFormatException, IOException, ParseException, CanadaException {
+	public void read(RandomAccessFile input) throws IMSFormatException, IOException, CanadaException {
 		header = input.readLine();
 		if (!header.startsWith("DAT2")) {
 			throw new IMSFormatException("Wrong data block header: " + header);

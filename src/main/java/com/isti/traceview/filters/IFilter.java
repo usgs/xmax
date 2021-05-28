@@ -3,8 +3,6 @@ package com.isti.traceview.filters;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
-import com.isti.traceview.processing.HPFilterException;
-import com.isti.traceview.processing.LPFilterException;
 
 /**
  * Interface to represent abstract filter. Filter gets data from RawDataProvider
@@ -40,13 +38,9 @@ public interface IFilter {
 	 *             the trace view exception
 	 * @throws BPFilterException
 	 *             the BP filter exception
-	 * @throws HPFilterException
-	 *             the HP filter exception
-	 * @throws LPFilterException
-	 *             the LP filter exception
 	 */
   double[] filter(double[] data, int length)
-			throws TraceViewException, BPFilterException, HPFilterException, LPFilterException;
+			throws TraceViewException, BPFilterException;
 
 	boolean needProcessing();
 

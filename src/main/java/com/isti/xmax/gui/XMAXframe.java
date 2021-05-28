@@ -2505,30 +2505,26 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		}
 
 		void resetPlottedData() {
+			XMAXDataModule dm = XMAXDataModule.getInstance();
+
+			graphPanel.removeAll();
+			dm.reLoadData();
 			try {
-				XMAXDataModule dm = XMAXDataModule.getInstance();
-
-				graphPanel.removeAll();
-				dm.reLoadData();
-				try {
-					graphPanel.setChannelShowSet(dm.getNextChannelSet());
-				} catch (TraceViewException ex) {
-					JOptionPane.showMessageDialog(XMAX.getFrame(), ex.getMessage(), "Information",
-							JOptionPane.INFORMATION_MESSAGE);
-					Instant start = Instant.now();
-					System.out.println("Starting repaint of data...");
-					getGraphPanel().forceRepaint();
-					Instant end = Instant.now();
-					System.out.println("Repaint took " +
-							(end.toEpochMilli() - start.toEpochMilli())/1000. + " seconds");
-				}
-
-				statusBar.setChannelCountMessage(
-						dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
-						dm.getAllChannels().size());
-			} catch (TraceViewException e1) {
-				logger.error(e1);
+				graphPanel.setChannelShowSet(dm.getNextChannelSet());
+			} catch (TraceViewException ex) {
+				JOptionPane.showMessageDialog(XMAX.getFrame(), ex.getMessage(), "Information",
+						JOptionPane.INFORMATION_MESSAGE);
+				Instant start = Instant.now();
+				System.out.println("Starting repaint of data...");
+				getGraphPanel().forceRepaint();
+				Instant end = Instant.now();
+				System.out.println("Repaint took " +
+						(end.toEpochMilli() - start.toEpochMilli())/1000. + " seconds");
 			}
+
+			statusBar.setChannelCountMessage(
+					dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
+					dm.getAllChannels().size());
 		}
 
 		JSpinner timePickerFactory(Date start, Date end) {
@@ -2786,7 +2782,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 										initialRotation = azi;
 									}
 								}
-							} catch (TraceViewException | NullPointerException e1) {
+							} catch (NullPointerException e1) {
 								logger.warn("Error getting azimuth for selected data: ", e1);
 							}
 							RotateCommand rotateTask = new RotateCommand(pdpsToRotate, graphPanel,
@@ -3565,8 +3561,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 
 				statusBar.setChannelCountMessage(dm.getChannelSetStartIndex() + 1, dm.getChannelSetEndIndex(),
 						dm.getAllChannels().size());
-			} catch (TraceViewException e1) {
-				logger.error("Can't reload trace data: ", e1);
 			} finally {
 				setWaitCursor(false);
 				XMAX.getFrame().getGraphPanel().setVisible(true);

@@ -1,7 +1,6 @@
 package com.isti.traceview.processing;
 
 import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.Response;
 import java.io.BufferedOutputStream;
@@ -155,16 +154,12 @@ public class Spectra {
 			File respFile = new File(TraceView.getConfiguration().getResponsePath() + File.separator + respToConvolve);
 			Response respExternal = Response.getResponse(respFile);
 			if (respExternal != null) {
-				try {
-					Complex[] respExt = respExternal.getResp(date, getStartFreq(), getEndFreq(), Math.min(processed.length, frequenciesArray.length));
-					// Cmplx[] respExt = respExternal.getResp(getStartFreq(), getEndFreq(), frequenciesArray.length);
-					// respExt = copyOf(respExt, Math.min(processed.length,
-					// frequenciesArray.length));
-					processed = IstiUtilsMath.complexConvolution(processed, respExt);
-				} catch (TraceViewException e) {
-					logger.error("Cant convolve with response " + respToConvolve + ": " + e);
-				}
-			}
+        Complex[] respExt = respExternal.getResp(date, getStartFreq(), getEndFreq(), Math.min(processed.length, frequenciesArray.length));
+        // Cmplx[] respExt = respExternal.getResp(getStartFreq(), getEndFreq(), frequenciesArray.length);
+        // respExt = copyOf(respExt, Math.min(processed.length,
+        // frequenciesArray.length));
+        processed = IstiUtilsMath.complexConvolution(processed, respExt);
+      }
 		}
 		return IstiUtilsMath.getSpectraAmplitude(processed);
 	}

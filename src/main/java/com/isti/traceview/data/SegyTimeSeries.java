@@ -308,7 +308,7 @@ public class SegyTimeSeries { /* Offset Description */
 	 * reads just the segy header specified by the filename. No checks are made to be sure the file
 	 * really is a segy file.
 	 */
-	public void readHeader(String filename) throws FileNotFoundException, TraceViewException {
+	public void readHeader(String filename) throws TraceViewException {
 		RandomAccessFile dis = null;
 		try {
 			dis = new RandomAccessFile(filename, "r");
@@ -330,7 +330,7 @@ public class SegyTimeSeries { /* Offset Description */
 	/**
 	 * reads the header from the given stream.
 	 */
-	protected void readHeader(RandomAccessFile dis) throws FileNotFoundException, IOException, TraceViewException {
+	protected void readHeader(RandomAccessFile dis) throws IOException, TraceViewException {
 		// TODO: probably need to replace a lot of this with bytebuffer calls to handle byte order
 		checkNeedToSwap(dis, dis.getFilePointer());
 		lineSeq = readInt(dis); /* 0 Sequence numbers within line */

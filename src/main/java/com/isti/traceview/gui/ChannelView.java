@@ -913,13 +913,10 @@ public class ChannelView extends JPanel implements Comparable<Object>, PropertyC
 
     protected String getChannelLabelText(PlotDataProvider channel) {
       String respname = "No response";
-      try {
-        if (channel.getResponse() != null) {
-          respname = channel.getResponse().getFileName();
-        }
-      } catch (TraceViewException e) {
-        // do nothing
+      if (channel.getResponse() != null) {
+        respname = channel.getResponse().getFileName();
       }
+
       return "<html>" + channel.getName() + "<br><i>Start time: </i> "
           + TimeInterval.formatDate(channel.getTimeRange().getStartTime(),
           TimeInterval.DateFormatType.DATE_FORMAT_MIDDLE)

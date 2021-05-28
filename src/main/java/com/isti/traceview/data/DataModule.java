@@ -152,7 +152,7 @@ public class DataModule {
     loadNewDataFromSources(files);
   }
 
-  public void reLoadData() throws TraceViewException {
+  public void reLoadData() {
     markerPosition = 0;
     windowSize = 0;
     from = 0;
@@ -171,7 +171,7 @@ public class DataModule {
   /**
    * Cleanup temp storage and dump all found data to temp storage
    */
-  public void dumpData(IColorModeState colorMode) throws TraceViewException {
+  public void dumpData(IColorModeState colorMode) {
 
     System.out.format("     -T: Serialize data to temp storage ");
     if (storage == null) {

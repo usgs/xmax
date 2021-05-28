@@ -1,7 +1,6 @@
 package com.isti.traceview.data;
 
 import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.Station;
 import java.io.IOException;
@@ -198,7 +197,7 @@ public class Channel implements Comparable<Object>, Serializable {
 	 * 
 	 * @return Returns the channel response.
 	 */
-	public Response getResponse() throws TraceViewException {
+	public Response getResponse() {
 		return TraceView.getDataModule().getResponseCached(getNetworkName(), getStation().getName(),
 				getLocationName(), getChannelName());
 	}

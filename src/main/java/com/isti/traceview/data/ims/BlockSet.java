@@ -1,7 +1,6 @@
 package com.isti.traceview.data.ims;
 
 import gov.usgs.anss.cd11.CanadaException;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
@@ -40,38 +39,34 @@ public class BlockSet {
 		long filePointer = 0;
 		String line = null;
 		startOffset = input.getFilePointer();
-		try {
-			while (true) {
-				filePointer = input.getFilePointer();
-				line = input.readLine();
-				if (line.startsWith("STOP") || line.startsWith("TIME_STAMP")) {
-					input.seek(filePointer);
-					break;
-				} else if (line.startsWith("WID2")) {
-					wid2 = new WID2(filePointer);
-					input.seek(filePointer);
-					wid2.read(input);
-				} else if (line.startsWith("STA2")) {
-					sta2 = new STA2(filePointer);
-					input.seek(filePointer);
-					sta2.read(input);
-				} else if (line.startsWith("DAT2")) {
-					dat2 = new DAT2(filePointer, wid2);
-					input.seek(filePointer);
-					dat2.read(input);
-				} else if (line.startsWith("CHK2")) {
-					chk2 = new CHK2(filePointer);
-					input.seek(filePointer);
-					chk2.read(input);
-					break;
-				} else {
-					throw new IMSFormatException("Unrecognized line in the file: " + line);
-				}
+		while (true) {
+			filePointer = input.getFilePointer();
+			line = input.readLine();
+			if (line.startsWith("STOP") || line.startsWith("TIME_STAMP")) {
+				input.seek(filePointer);
+				break;
+			} else if (line.startsWith("WID2")) {
+				wid2 = new WID2(filePointer);
+				input.seek(filePointer);
+				wid2.read(input);
+			} else if (line.startsWith("STA2")) {
+				sta2 = new STA2(filePointer);
+				input.seek(filePointer);
+				sta2.read(input);
+			} else if (line.startsWith("DAT2")) {
+				dat2 = new DAT2(filePointer, wid2);
+				input.seek(filePointer);
+				dat2.read(input);
+			} else if (line.startsWith("CHK2")) {
+				chk2 = new CHK2(filePointer);
+				input.seek(filePointer);
+				chk2.read(input);
+				break;
+			} else {
+				throw new IMSFormatException("Unrecognized line in the file: " + line);
 			}
-		} catch (EOFException e) {
-			// Do nothing
-			logger.error("EOFException:", e);	
 		}
+
 	}
 
 	public void check() throws IMSFormatException {

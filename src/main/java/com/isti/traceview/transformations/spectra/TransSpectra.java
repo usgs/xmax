@@ -1,6 +1,5 @@
 package com.isti.traceview.transformations.spectra;
 
-import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.IFilter;
@@ -87,14 +86,10 @@ public class TransSpectra implements ITransformation {
 			if (filter != null) {
 				data = new FilterFacade(filter, channel).filter(data);
 			}
-			try {
-				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
-						timeInterval.getStartTime(), channel, verboseDebug);
-				dataset.add(spectra);
-			} catch (TraceViewException e) {
-				logger.error("TraceViewException:", e);
-			}
-		});
+      Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
+          timeInterval.getStartTime(), channel, verboseDebug);
+      dataset.add(spectra);
+    });
 		return dataset;
 	}
 

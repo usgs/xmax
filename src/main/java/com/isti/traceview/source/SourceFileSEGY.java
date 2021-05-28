@@ -40,7 +40,7 @@ public class SourceFileSEGY extends SourceFile implements Serializable {
 			ret.add(channel);
 			Segment segment = new Segment(this, 0, segy.getTimeRange().getStartTime(), segy.getRateMicroSampPerSec()/1000.0, segy.getNumSamples(), 0);
 			channel.addSegment(segment);
-		} catch (IOException | TraceViewException e) {
+		} catch (TraceViewException e) {
 			logger.error("IO error: ", e);
 		}
 		return ret;

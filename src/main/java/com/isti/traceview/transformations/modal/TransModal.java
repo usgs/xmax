@@ -1,6 +1,5 @@
 package com.isti.traceview.transformations.modal;
 
-import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.IFilter;
@@ -95,14 +94,9 @@ public class TransModal implements ITransformation {
         if (filter != null) {
           data = new FilterFacade(filter, channel).filter(data);
         }
-        try {
-          Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
-              ti.getStartTime(), channel, verboseDebug);
-          dataset.add(spectra);
-        } catch (TraceViewException e) {
-          logger.error("Caught exception while iterating through transformation: ", e);
-          throw new RuntimeException(e.getMessage());
-        }
+        Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
+            ti.getStartTime(), channel, verboseDebug);
+        dataset.add(spectra);
       } catch (XMAXException e) {
         logger.error("Caught exception while iterating through transformation: ", e);
         throw new RuntimeException(e.getMessage());

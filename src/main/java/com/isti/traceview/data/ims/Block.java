@@ -39,13 +39,13 @@ public abstract class Block {
 		return ret;
 	}
 	
-	public int getInt(int begin, int end) throws ParseException {
+	public int getInt(int begin, int end) {
 		int ret;
 		ret = Integer.parseInt(getString(begin, end).trim());
 		return ret;
 	}
 	
-	public double getDouble(int begin, int end) throws ParseException {
+	public double getDouble(int begin, int end) {
 		double ret;
 		ret = Double.parseDouble(getString(begin, end).trim());
 		return ret;

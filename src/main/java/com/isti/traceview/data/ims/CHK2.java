@@ -2,7 +2,6 @@ package com.isti.traceview.data.ims;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.text.ParseException;
 import org.apache.log4j.Logger;
 
 public class CHK2 extends Block {
@@ -17,7 +16,7 @@ public class CHK2 extends Block {
 		return chksum;
 	}
 
-	public void read(RandomAccessFile input) throws IMSFormatException, IOException, ParseException {
+	public void read(RandomAccessFile input) throws IMSFormatException, IOException {
 		logger.debug("Reading buffered random access file");
 		header = input.readLine();
 		if (!header.startsWith("CHK2")) {

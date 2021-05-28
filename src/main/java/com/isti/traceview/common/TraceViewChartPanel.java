@@ -1427,7 +1427,7 @@ public class TraceViewChartPanel extends JPanel implements ChartChangeListener, 
 	 *            the listener type.
 	 * @return An array of listeners.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })	// cant change JComponent.getListeners() method
+	@SuppressWarnings({ "unchecked"})	// cant change JComponent.getListeners() method
 	public EventListener[] getListeners(Class listenerType) {
 		if (listenerType == ChartMouseListener.class) {
 			// fetch listeners from local storage

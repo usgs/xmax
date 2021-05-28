@@ -2,14 +2,12 @@ package com.isti.traceview.filters;
 
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
-import com.isti.traceview.processing.HPFilterException;
-import com.isti.traceview.processing.LPFilterException;
 import uk.me.berndporr.iirj.Butterworth;
 
 public abstract class AbstractFilter implements IFilter {
 
   double[] filterBackend(double[] data, int length)
-      throws LPFilterException, HPFilterException, BPFilterException {
+      throws BPFilterException {
     if (length > data.length)
       throw new BPFilterException("Requested filtering length exceeds provided array length");
 
@@ -64,7 +62,7 @@ public abstract class AbstractFilter implements IFilter {
 
   @Override
   synchronized public double[] filter(double[] data, int length)
-      throws BPFilterException, HPFilterException, LPFilterException {
+      throws BPFilterException {
 
     double[] returnArray = filterBackend(data, length);
     // IntStream.range(0, length).parallel().forEach(i -> returnArray[i] += offset);
