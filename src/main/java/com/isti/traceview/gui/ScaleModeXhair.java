@@ -24,11 +24,11 @@ public class ScaleModeXhair extends ScaleModeAbstract implements IScaleModeState
 			} else {
 				double dataMaxValue = meanState.getValue(data.getMaxValue(), data.getMeanValue());
 				if (dataMaxValue > maxValue) {
-					maxValue = Double.valueOf(df.format(dataMaxValue));
+					maxValue = Double.parseDouble(df.format(dataMaxValue));
 				}
 				double dataMinValue = meanState.getValue(data.getMinValue(), data.getMeanValue());
 				if (dataMinValue < minValue) {
-					minValue = Double.valueOf(df.format(dataMinValue));
+					minValue = Double.parseDouble(df.format(dataMinValue));
 				}
 			}
 		}

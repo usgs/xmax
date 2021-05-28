@@ -23,10 +23,10 @@ public class ScaleModeCom extends ScaleModeAbstract implements IScaleModeState {
 				double meanMaxValue = meanState.getValue(data.getMaxValue(), data.getMeanValue());
 				double meanMinValue = meanState.getValue(data.getMinValue(), data.getMeanValue());
 				if (maxValue < meanMaxValue || maxValue == Double.NEGATIVE_INFINITY) {
-					maxValue = Double.valueOf(df.format(meanMaxValue));
+					maxValue = Double.parseDouble(df.format(meanMaxValue));
 				}
 				if (minValue > meanMinValue || minValue == Double.POSITIVE_INFINITY) {
-					minValue = Double.valueOf(df.format(meanMinValue));
+					minValue = Double.parseDouble(df.format(meanMinValue));
 				}
 			}
 		}
