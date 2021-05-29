@@ -63,7 +63,7 @@ public class RawDataProvider extends Channel {
   private transient RandomAccessFile serialStream = null;
 
   /** Property change listener helper object. */
-  private PropertyChangeSupport listenerHelper;
+  private final PropertyChangeSupport listenerHelper;
 
   // Constructor 1 (multiple args)
   public RawDataProvider(String channelName, Station station, String networkName,
@@ -132,11 +132,11 @@ public class RawDataProvider extends Channel {
     public void run() {
       int sampleCount = segment.getSampleCount();
       if (!segment.getIsLoaded()) {
-        logger.debug("== Load Segment:" + segment.toString());
+        logger.debug("== Load Segment:" + segment);
         segment.load();
         segment.setIsLoaded(true);
       } else {
-        logger.debug("== Segment is ALREADY loaded:" + segment.toString());
+        logger.debug("== Segment is ALREADY loaded:" + segment);
         //System.out.format("== RawDataProvider.loadData(): Segment is Already Loaded:%s\n", seg.toString() );
         // MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
         //      in order to have the segment's int[] data filled before serialization, but we're
@@ -882,7 +882,7 @@ public class RawDataProvider extends Channel {
 
   /**
    * Implement callbacks for channelview (i.e., the one containing this data)
-   * @param channelView
+   * @param channelView channel panel
    */
   public void addPropertyChangeListener(ChannelView channelView) {
     listenerHelper.addPropertyChangeListener(channelView);
@@ -890,7 +890,7 @@ public class RawDataProvider extends Channel {
 
   /**
    * Remove channelview (i.e., the one containing this data) from callbacks
-   * @param channelView
+   * @param channelView channel panel
    */
   public void removePropertyChangeListener(ChannelView channelView) {
     listenerHelper.removePropertyChangeListener(channelView);
@@ -900,7 +900,7 @@ public class RawDataProvider extends Channel {
    * Prints RawDataProvider content
    */
   public void printout() {
-    System.out.println("  " + toString());
+    System.out.println("  " + this);
     for (SegmentCache cached : rawData) {
       Segment segment = cached.getSegment();
       System.out.println("    " + segment.toString());
@@ -949,7 +949,7 @@ public class RawDataProvider extends Channel {
    */
   private void writeObject(ObjectOutputStream out) throws IOException {
     logger.debug("== ENTER");
-    logger.debug("Serializing RawDataProvider" + toString());
+    logger.debug("Serializing RawDataProvider" + this);
     out.defaultWriteObject();
     logger.debug("== EXIT");
   }
@@ -964,7 +964,7 @@ public class RawDataProvider extends Channel {
    * @deprecated This method appears to no be used by anything.
    */
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    logger.debug("== Deserializing RawDataProvider" + toString());
+    logger.debug("== Deserializing RawDataProvider" + this);
     // MTH: Once we've read in the .SER file, serialFile(=... .DATA) will be set
     logger.debug("== call defaultReadObject()");
     in.defaultReadObject();

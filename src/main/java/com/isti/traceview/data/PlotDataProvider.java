@@ -14,11 +14,8 @@ import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Rotation.RotationGapException;
 import com.isti.xmax.XMAXException;
 import java.awt.Color;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,29 +52,14 @@ public class PlotDataProvider extends RawDataProvider {
   private static final Logger logger = Logger.getLogger(PlotDataProvider.class);
 
   /**
-   * Point count which we have in RAM for whole time range
-   */
-  private static final int initPointCount = 10000;
-
-  /**
    * Set of events attached to this data provider
    */
   protected transient SortedSet<IEvent> events;
 
   /**
-   * Time of last access to data
-   */
-  private transient Date lastAccessed = null;
-
-  /**
-   * Time range of last query of data
-   */
-  private transient TimeInterval viewingInterval = null;
-
-  /**
    * May be used by ColorModeByTrace to color trace in manual mode.
    */
-  private Color manualColor = Color.BLACK;
+  private final Color manualColor = Color.BLACK;
 
   /**
    * Current plots applied rotation
@@ -271,7 +253,6 @@ public class PlotDataProvider extends RawDataProvider {
           ret.addPixel(pdpArray);
         }
       }
-      lastAccessed = new Date();
     }
     logger.debug("== END: " + this);
     return ret;
@@ -451,25 +432,6 @@ public class PlotDataProvider extends RawDataProvider {
   }
 
   /**
-   * Getter of the property <tt>Events</tt>
-   *
-   * @return set of all events
-   */
-  public SortedSet<IEvent> getEvents() {
-    return events;
-  }
-
-  /**
-   * Get set of events which have given start time
-   *
-   * @param time the Date to find events near (not Time, bug?)
-   * @return set of events
-   */
-  public SortedSet<IEvent> getEvents(Date time) {
-    return getEvents(time, 0);
-  }
-
-  /**
    * set of events which lies near given time
    *
    * @param time the Date to find events near (not Time, bug?)
@@ -524,10 +486,6 @@ public class PlotDataProvider extends RawDataProvider {
       events = Collections.synchronizedSortedSet(new TreeSet<>());
     }
     events.addAll(evt);
-  }
-
-  public Date getLastAccessed() {
-    return lastAccessed;
   }
 
 
@@ -606,49 +564,10 @@ public class PlotDataProvider extends RawDataProvider {
   }
 
   /**
-   * Loads trace from serialized file in temporary storage
-   */
-  public static PlotDataProvider load(String fileName) {
-    logger.debug("\n== ENTER: Deserialize channel from file:" + fileName);
-    PlotDataProvider channel = null;
-    ObjectInputStream ois = null;
-    try {
-      Object objRead;
-      ois = new ObjectInputStream(new FileInputStream(fileName));
-      logger.debug("== call ois.readObject()");
-      objRead = ois.readObject();
-      logger.debug("== call ois.readObject() DONE");
-      channel = (PlotDataProvider) objRead;
-      channel.setStation(DataModule.getOrAddStation(channel.getStation().getName()));
-
-      //MTH: added Segment.isLoaded boolean
-      List<Segment> segs = channel.getRawData();
-      for (Segment seg : segs) {
-        seg.setIsLoaded(true);
-      }
-    } catch (FileNotFoundException e) {
-      logger.error("FileNotFoundException:", e);
-    } catch (IOException e) {
-      logger.error("IOException:", e);
-    } catch (ClassNotFoundException e) {
-      logger.error("ClassNotFoundException:", e);
-    } finally {
-      try {
-        ois.close();
-      } catch (IOException e) {
-        // Do nothing
-        logger.error("IOException:", e);
-      }
-    }
-    logger.debug("== load(fileName=%s) -- EXIT\n");
-    return channel;
-  }
-
-  /**
    * print debug output to the console
    */
   public void printout() {
-    System.out.println(toString());
+    System.out.println(this);
   }
 
   /**
@@ -656,13 +575,6 @@ public class PlotDataProvider extends RawDataProvider {
    */
   public Color getColor() {
     return manualColor;
-  }
-
-  /**
-   * set color to color traces in manual mode
-   */
-  public void setColor(Color color) {
-    this.manualColor = color;
   }
 
   /**
