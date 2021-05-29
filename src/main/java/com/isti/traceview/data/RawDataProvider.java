@@ -53,10 +53,7 @@ public class RawDataProvider extends Channel {
 
   private List<ContiguousSegmentRange> contiguousRanges;
 
-  private boolean loadingStarted = false;
   private boolean loaded = false;
-
-  protected boolean resetCaches = false;
 
   // Used to store dataStream file name and restore it after serialization
   private String serialFile = null;
@@ -158,24 +155,6 @@ public class RawDataProvider extends Channel {
         ret.add(sc.getSegment());
       }
       return ret;
-    }
-  }
-
-  /**
-   * @return Returns one point for given time value, or Integer.MIN_VALUE if value not found
-   */
-  public double getRawData(long time) {
-    int index = findIndexOfSegmentContainingTime(time);
-    if (index >= 0) {
-      Segment segment = rawData.get(index).getSegment();
-      try {
-        return segment.getPointAtTime(time);
-      } catch (IndexOutOfBoundsException e) {
-        segment = rawData.get(index + 1).getSegment();
-        return segment.getPointAtTime(time);
-      }
-    } else {
-      return Double.NaN;
     }
   }
 
@@ -291,7 +270,6 @@ public class RawDataProvider extends Channel {
    * @param segment to add
    */
   public void addSegment(Segment segment) {
-    resetCaches = false;
     if (segment.getSampleCount() < 1) {
       logger.warn("Segment has no usable data!");
       return;
@@ -313,7 +291,6 @@ public class RawDataProvider extends Channel {
       }
     }
     setSampleRate(segment.getSampleRate());
-    // logger.debug(segment + " added to " + this);
   }
 
   protected List<SegmentCache> getSegmentCache() {
@@ -332,7 +309,6 @@ public class RawDataProvider extends Channel {
       return;
     }
 
-    resetCaches = false;
     synchronized (rawData) {
       List<SegmentCache> segments = mergeIn.getSegmentCache();
       // now go through the data we're merging in and see if they overlap/duplicate
@@ -490,24 +466,6 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * @return flag if data loading process was started for this provider
-   */
-  public boolean isLoadingStarted() {
-    synchronized (rawData) {
-      return loadingStarted;
-    }
-  }
-
-  /**
-   * @return flag is data provider loaded
-   */
-  public boolean isLoaded() {
-    synchronized (rawData) {
-      return loaded;
-    }
-  }
-
-  /**
    * Load data into this data provider from data sources. Segment loading is parallelized.
    *
    *
@@ -570,26 +528,11 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * @return data stream where this provider was serialized
-   */
-  public RandomAccessFile getDataStream() {
-    return serialStream;
-  }
-
-  /**
-   * @return flag if this provider was serialized
-   */
-  public boolean isSerialized() {
-    return serialStream == null;
-  }
-
-  /**
    * Loads all data to this provider from its data sources
    */
   public void load() {
     if (loaded) return;
 
-    loadingStarted = true;
     synchronized (rawData) {
       loadData();
     }
@@ -897,17 +840,6 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * Prints RawDataProvider content
-   */
-  public void printout() {
-    System.out.println("  " + this);
-    for (SegmentCache cached : rawData) {
-      Segment segment = cached.getSegment();
-      System.out.println("    " + segment.toString());
-    }
-  }
-
-  /**
    * Standard comparator - by start time
    */
   public int compareTo(Object o) {
@@ -1030,19 +962,9 @@ class SegmentCache implements Serializable, Comparable<Object> {
    *
    */
   private static final long serialVersionUID = 1L;
-  private Segment initialData;
+  private final Segment initialData;
 
   SegmentCache(Segment segment) {
-    initialData = segment;
-  }
-
-  /**
-   * Setter for raw data
-   *
-   * @param segment The new initial data
-   */
-  @SuppressWarnings("unused")  //Why is this here?
-  public void setData(Segment segment) {
     initialData = segment;
   }
 

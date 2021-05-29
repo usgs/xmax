@@ -564,13 +564,6 @@ public class PlotDataProvider extends RawDataProvider {
   }
 
   /**
-   * print debug output to the console
-   */
-  public void printout() {
-    System.out.println(this);
-  }
-
-  /**
    * get color to color traces in manual mode
    */
   public Color getColor() {
