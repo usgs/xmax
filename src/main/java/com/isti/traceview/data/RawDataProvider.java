@@ -110,40 +110,6 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * Runnable class for loadData(TimeInterval ti) NOTE: This is currently not used due to hardware
-   * constraints on different machines
-   */
-  @SuppressWarnings("unused")
-  private static class LoadDataWorker implements Runnable {
-
-    private final Segment segment;  // current segment to load
-    int index;      // index of current segment
-
-    // Constructor initializing channel segment
-    private LoadDataWorker(Segment segment, int index) {
-      this.segment = segment;
-      this.index = index;
-    }
-
-    @Override
-    public void run() {
-      int sampleCount = segment.getSampleCount();
-      if (!segment.getIsLoaded()) {
-        logger.debug("== Load Segment:" + segment);
-        segment.load();
-        segment.setIsLoaded(true);
-      } else {
-        logger.debug("== Segment is ALREADY loaded:" + segment);
-        //System.out.format("== RawDataProvider.loadData(): Segment is Already Loaded:%s\n", seg.toString() );
-        // MTH: This is another place we *could* load the points into a serialized provider (from .DATA)
-        //      in order to have the segment's int[] data filled before serialization, but we're
-        //      doing this instead via PDP.initPointCache() --> PDP.pixelize(ti) --> Segment.getData(ti)
-        //seg.loadDataInt();
-      }
-    }
-  }
-
-  /**
    * Getter of the property <tt>rawData</tt>
    *
    * @return Returns all raw data this provider contains.
@@ -245,7 +211,6 @@ public class RawDataProvider extends Channel {
         logger.error("Cannot rotate due to presence of gap", e);
       }
     }
-
     return getRawData(ti);
   }
 
