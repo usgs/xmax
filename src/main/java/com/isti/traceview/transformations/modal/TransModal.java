@@ -1,5 +1,6 @@
 package com.isti.traceview.transformations.modal;
 
+import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.IFilter;
