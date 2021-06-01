@@ -180,11 +180,12 @@ public class TransPSD implements ITransformation {
 		IntStream.range(0, input.size()).parallel().forEach( i-> {
 			PlotDataProvider channel = input.get(i);
 			try {
-				if (!responses.containsKey(channel.getName())) {
+				String key = channel.getName();
+				if (!responses.containsKey(key)) {
 					return; // skip to next PSD -- this lambda is basically its own method
 				}
-				Complex[] respCurve = generateResponse(responses.get(i), ti, (long) channel.getSampleRate(),
-						windowDivisor);
+				Complex[] respCurve = generateResponse(responses.get(key), ti,
+						(long) channel.getSampleRate(), windowDivisor);
 				if (respCurve == null) {
 					return;
 				}
@@ -341,6 +342,8 @@ public class TransPSD implements ITransformation {
 		// these are in units of Hz
 		double deltaFreq = 1. / (padLength * period);
 		double endFreq = deltaFreq * (padLength - 1);
+
+		assert(response != null);
 
 		respCurve = response.getResp(ti.getStartTime(), 0,
 				endFreq, padLength);
