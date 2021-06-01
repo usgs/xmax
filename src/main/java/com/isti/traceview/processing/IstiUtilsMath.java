@@ -1,5 +1,6 @@
 package com.isti.traceview.processing;
 
+import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.Channel;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
@@ -395,18 +396,21 @@ public class IstiUtilsMath {
 	 *            true for verbose debug messages
 	 * @return the noise spectra.
 	 */
-	public static Spectra getNoiseSpectra(int[] trace, Response response, Date date, Channel channel, boolean verboseDebug) {
+	public static Spectra getNoiseSpectra(int[] trace, Response response, Date date, Channel channel,
+			boolean verboseDebug) throws TraceViewException {
 		// Init error string
 		logger.debug("Getting noise spectra");
 		String errString = "";
 
-		final Response.FreqParameters fp = Response.getFreqParameters(trace.length, 1000.0 / channel.getSampleRate());
+		final Response.FreqParameters fp =
+				Response.getFreqParameters(trace.length, 1000.0 / channel.getSampleRate());
 		final double[] frequenciesArray = generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq);
 
 		// Make a copy of data since we gonna modify it
 		double[] traceCopy = new double[trace.length];
-		for (int i = 0; i < trace.length; i++)
+		for (int i = 0; i < trace.length; i++) {
 			traceCopy[i] = trace[i];
+		}
 
 		// Norm the data: remove trend
 		traceCopy = normData(traceCopy);
@@ -421,7 +425,8 @@ public class IstiUtilsMath {
 			resp = response.getResp(date, fp.startFreq, fp.endFreq, Math.min(noise_spectra.length, fp.numFreq));
 		} catch (Exception e) {
 			errString = "Can't get response for channel " + channel.getName() + ": ";
-			logger.error(errString, e);	
+			// logger.error(errString, e);
+			throw new TraceViewException(errString);
 		}
 		return new Spectra(date, noise_spectra, frequenciesArray, resp, fp.sampFreq, channel, errString);
 	}

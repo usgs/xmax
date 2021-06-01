@@ -16,7 +16,9 @@ import com.isti.xmax.gui.XMAXframe;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -154,18 +156,19 @@ public class TransPSD implements ITransformation {
 		// evalresp doesn't play nicely with threads so let's get that out of the way first
 		// we can use a stringbuilder for error messages because getting the responses is not threaded
 		StringBuilder respNotFound = new StringBuilder();
-		final List<Response> responses = new ArrayList<>();
+		final Map<String, Response> responses = new HashMap<>();
 		for (PlotDataProvider channel : input) {
 			try {
-				responses.add(channel.getResponse());
-			} catch (NullPointerException e) {
+				Response resp = channel.getResponse();
+				if (resp != null) {
+					responses.put(channel.getName(), resp);
+				}
+			} catch (TraceViewException | NullPointerException e) {
 				logger.error("error with responses: " + e);
 				if (respNotFound.length() > 0) {
 					respNotFound.append(", ");
 				}
 				respNotFound.append(channel.getName());
-				// if the response doesn't exist, then
-				responses.add(null);
 			}
 		}
 
@@ -175,16 +178,25 @@ public class TransPSD implements ITransformation {
 		long startl = System.nanoTime();
 		IntStream.range(0, input.size()).parallel().forEach( i-> {
 			PlotDataProvider channel = input.get(i);
-			Complex[] respCurve = generateResponse(responses.get(i), ti, (long) channel.getSampleRate(),
-					windowDivisor);
-			if (respCurve == null) {
-				return; // skip to next PSD -- this lambda is basically its own method
-			}
 			try {
-				XYSeries[] xys =
-						convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor, doSmoothing);
-				Collections.addAll(dataset, xys);
-			} catch (XMAXException e) {
+				if (!responses.containsKey(channel.getName())) {
+					return; // skip to next PSD -- this lambda is basically its own method
+				}
+				Complex[] respCurve = generateResponse(responses.get(i), ti, (long) channel.getSampleRate(),
+						windowDivisor);
+				if (respCurve == null) {
+					return;
+				}
+				try {
+					XYSeries[] xys =
+							convertToPlottableSeries(channel, ti, respCurve, windowDivisor, shiftDivisor,
+									doSmoothing);
+					Collections.addAll(dataset, xys);
+				} catch (XMAXException e) {
+					logger.error(e);
+					traceHadError.append(e.getMessage()).append("\n");
+				}
+			} catch (TraceViewException e) {
 				logger.error(e);
 				traceHadError.append(e.getMessage()).append("\n");
 			}
@@ -201,17 +213,17 @@ public class TransPSD implements ITransformation {
 			throw new XMAXException("Cannot find responses for any channels selected.");
 		} else if (dataset.size() == 0) {
 			String message = "The following errors were caught while trying to produce a PSD:\n" +
-					traceHadError.toString();
+					traceHadError;
 			throw new XMAXException(message);
 		} else {
 			StringBuilder message = new StringBuilder();
 			if (respNotFound.length() > 0) {
 				message.append("Error attempting to load responses for these channels:\n")
-						.append(respNotFound.toString());
+						.append(respNotFound);
 			}
 			if (traceHadError.length() > 0) {
 				message.append("The following errors occurred while trying to get trace data:\n")
-						.append(traceHadError.toString());
+						.append(traceHadError);
 			}
 			if (message.length() > 0) {
 				JOptionPane.showMessageDialog(parentFrame, message.toString(),
@@ -311,7 +323,7 @@ public class TransPSD implements ITransformation {
 	}
 
 	private Complex[] generateResponse(Response response, TimeInterval ti,
-			long interval, int windowDivisor) {
+			long interval, int windowDivisor) throws TraceViewException {
 		Complex[] respCurve = null;
 
 		// first, get the range of data for this channel

@@ -48,7 +48,9 @@ public class TransModal implements ITransformation {
         ViewModal vp = new ViewModal(parentFrame, spList, effectiveInterval, input);
       } catch (RuntimeException e) {
         if (!e.getMessage().equals("Operation cancelled")) {
-          JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+          String message = "Mode plots encountered the following critical error:\n" +
+              e.getMessage();
+          JOptionPane.showMessageDialog(parentFrame, message, "Warning", JOptionPane.WARNING_MESSAGE);
         }
       }
     }
@@ -91,12 +93,17 @@ public class TransModal implements ITransformation {
         if (filter != null) {
           data = new FilterFacade(filter, channel).filter(data);
         }
-        Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
-            ti.getStartTime(), channel, verboseDebug);
-        dataset.add(spectra);
+        try {
+          Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
+              ti.getStartTime(), channel, verboseDebug);
+          dataset.add(spectra);
+        } catch (TraceViewException e) {
+          logger.error("Caught exception while iterating through transformation: ", e);
+          throw new RuntimeException(e.getMessage(), e);
+        }
       } catch (XMAXException e) {
         logger.error("Caught exception while iterating through transformation: ", e);
-        throw new RuntimeException(e.getMessage());
+        throw new RuntimeException("Could not get gapless data for trace under analysis.", e);
       }
     });
 

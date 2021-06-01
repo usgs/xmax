@@ -38,7 +38,9 @@ public class TransSpectra implements ITransformation {
 						timeInterval);
 			} catch (RuntimeException e) {
 				if (!e.getMessage().equals("Operation cancelled")) {
-					JOptionPane.showMessageDialog(parentFrame, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+					String message = "Spectral plots encountered the following critical error:\n" +
+							e.getMessage();
+					JOptionPane.showMessageDialog(parentFrame, message, "Warning", JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		}
@@ -65,7 +67,7 @@ public class TransSpectra implements ITransformation {
 				intData = channel.getContinuousGaplessDataOverRange(timeInterval);
 			} catch (XMAXException e) {
 				logger.error("Caught exception while iterating through transformation: ", e);
-				throw new RuntimeException(e);
+				throw new RuntimeException(e.getMessage(), e);
 			}
 
 			int dataSize;
@@ -83,10 +85,15 @@ public class TransSpectra implements ITransformation {
 			if (filter != null) {
 				data = new FilterFacade(filter, channel).filter(data);
 			}
-      Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
-          timeInterval.getStartTime(), channel, verboseDebug);
-      dataset.add(spectra);
-    });
+			try {
+				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
+						timeInterval.getStartTime(), channel, verboseDebug);
+				dataset.add(spectra);
+			} catch (TraceViewException e) {
+				logger.error("TraceViewException:", e);
+				throw new RuntimeException(e.getMessage(), e);
+			}
+		});
 		return dataset;
 	}
 
