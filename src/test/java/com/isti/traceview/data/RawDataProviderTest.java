@@ -21,6 +21,7 @@ import com.isti.traceview.processing.Rotation.RotationGapException;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class RawDataProviderTest {
     assertEquals(279, segments.size());
     int dataPointCount = 0;
     for (Segment segment : segments) {
-      assertEquals(segment.getSampleRate(), 1000., 0.1);
+      assertEquals(segment.getSampleIntervalMillis(), 1000., 0.1);
       dataPointCount += segment.getSampleCount();
       assertNotNull(segment.getData().data);
     }
@@ -318,7 +319,7 @@ public class RawDataProviderTest {
     RawDataProvider data = dm.getAllChannels().get(0);
 
     List<Segment> segments = data.getRawData();
-    double sampleInterval = segments.get(0).getSampleRate();
+    double sampleInterval = segments.get(0).getSampleIntervalMillis();
     for (int i = 1; i < segments.size(); ++i) {
       long previousEnd = segments.get(i-1).getEndTime().getTime();
       long thisStart = segments.get(i).getStartTime().getTime();
@@ -362,10 +363,45 @@ public class RawDataProviderTest {
     for (int i = 1; i < segments.get(0).getSampleCount(); ++i) {
       long timeDifference =
           segments.get(i).getStartTimeMillis() - segments.get(i-1).getEndTimeMillis();
-      assertTrue(timeDifference < segments.get(i).getSampleRate());
+      assertTrue(timeDifference < segments.get(i).getSampleIntervalMillis());
       for (int point : segments.get(i).getData().data) {
         assertFalse(Double.isNaN(point));
       }
+    }
+  }
+
+  @Test
+  public void dumpMseed_sampleRateConsistent() throws IOException {
+    String folderStructure = "src/test/resources/rotation/";
+    DataModule dm = new DataModule();
+    String originalNorthFilename = folderStructure + "unrot_10_BH1.512.seed";
+    File originalNorthFile = new File(originalNorthFilename);
+    assertTrue(originalNorthFile.exists());
+    dm.loadAndParseDataForTesting(originalNorthFile);
+    TraceView.setDataModule(dm);
+    String dumpedNorthName = folderStructure + "srate_test_output.mseed";
+    File dumpedNorth = new File(dumpedNorthName);
+    if (dumpedNorth.exists()) {
+      dumpedNorth.delete();
+    }
+
+    RawDataProvider dataNorth = dm.getAllChannels().get(0);
+    double sampleRate = dataNorth.getSampleRate();
+
+    DataOutputStream dsNorth = new DataOutputStream(new FileOutputStream(dumpedNorth));
+    TimeInterval ti = new TimeInterval(
+        dataNorth.getRawData().get(0).getStartTimeMillis(),
+        dataNorth.getRawData().get(1).getEndTimeMillis()
+    );
+    dataNorth.dumpMseed(dsNorth, ti, null, null);
+    dsNorth.close();
+
+    dm = new DataModule();
+    dm.loadAndParseDataForTesting(dumpedNorth);
+    // now the data in dataNorth, dataEast is rotated data (by 20 degrees)
+    assertEquals(sampleRate, dm.getAllChannels().get(0).getSampleRate(), 0.);
+    if (dumpedNorth.exists()) {
+      dumpedNorth.delete();
     }
   }
 
@@ -417,11 +453,13 @@ public class RawDataProviderTest {
     assertEquals("BH1", dataNorth.getChannelName());
     DataOutputStream dsNorth = new DataOutputStream(new FileOutputStream(outputFileNorth));
     dataNorth.dumpMseed(dsNorth, ti, null, twentyDegreesRotation);
+    dsNorth.close();
 
     RawDataProvider dataEast = dm.getAllChannels().get(1);
     assertEquals("BH2", dataEast.getChannelName());
     DataOutputStream dsEast = new DataOutputStream(new FileOutputStream(outputFileEast));
     dataEast.dumpMseed(dsEast, ti, null, twentyDegreesRotation);
+    dsEast.close();
 
     dm = new DataModule();
     dm.loadAndParseDataForTesting(outputFileNorth, outputFileEast);

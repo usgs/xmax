@@ -242,7 +242,7 @@ public class RawDataProvider extends Channel {
     synchronized (rawData) {
       boolean notContinuous = rawData.size() == 0 ||
           Segment.isDataBreak(rawData.get(rawData.size() - 1).getSegment().getEndTimeMillis(),
-              segment.getStartTimeMillis(), segment.getSampleRate());
+              segment.getStartTimeMillis(), segment.getSampleIntervalMillis());
       rawData.add(new SegmentCache(segment));
       int newestSegmentIndex = rawData.size() - 1;
       segment.setRawDataProvider(this);
@@ -255,7 +255,7 @@ public class RawDataProvider extends Channel {
         contiguousRanges.get(contiguousRanges.size() - 1).setEndingIndex(newestSegmentIndex);
       }
     }
-    setSampleRate(segment.getSampleRate());
+    setSampleRate(segment.getSampleIntervalMillis());
   }
 
   protected List<SegmentCache> getSegmentCache() {
@@ -528,7 +528,7 @@ public class RawDataProvider extends Channel {
       Segment segment = segments.get(j);
       if (filter != null && previousSegment != null &&
           Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
-              segment.getSampleRate())) {
+              segment.getSampleIntervalMillis())) {
         // reset the filter due to data gap -- data is not continuous
         filter.init(this);
       }
@@ -552,7 +552,8 @@ public class RawDataProvider extends Channel {
           header.setChannelIdentifier(getChannelName());
           header.setNetworkCode(getNetworkName());
           header.setLocationIdentifier(getLocationName());
-          header.setSampleRate((float) (segment.getSampleRate()/1000.));
+          float writtenRate = (float) segment.getSampleRateHz();
+          header.setSampleRate(writtenRate);
           Btime btime = new Btime(Instant.ofEpochMilli(exportedRange.getStart()));
           header.setStartBtime(btime);
           int frameCount = (int) Math.ceil(data.length/16.);
@@ -601,12 +602,12 @@ public class RawDataProvider extends Channel {
       Segment segment = segments.get(j);
       if (filter != null && previousSegment != null &&
           Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
-              segment.getSampleRate())) {
+              segment.getSampleIntervalMillis())) {
         // reset the filter due to data gap -- data is not continuous
         filter.init(this);
       }
 
-      double sampleRate = segment.getSampleRate();
+      double sampleRate = segment.getSampleIntervalMillis();
       long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
       if (previousSegment != null) {
         currentTime = Math.max(currentTime, previousSegment.getEndTime().getTime());
@@ -652,7 +653,7 @@ public class RawDataProvider extends Channel {
       Segment segment = segments.get(j);
       if (filter != null && previousSegment != null &&
           Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
-              segment.getSampleRate())) {
+              segment.getSampleIntervalMillis())) {
         // reset the filter due to data gap -- data is not continuous
         filter.init(this);
       }
@@ -670,12 +671,12 @@ public class RawDataProvider extends Channel {
             fw.write("<Segment start =\""
                 + TimeInterval
                 .formatDate(new Date(currentTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-                + "\" sampleRate = \"" + segment.getSampleRate() + "\">\n");
+                + "\" sampleRate = \"" + segment.getSampleIntervalMillis() + "\">\n");
             segmentStarted = true;
           }
           fw.write("<Value>" + value + "</Value>\n");
         }
-        currentTime = (long) (currentTime + segment.getSampleRate());
+        currentTime = (long) (currentTime + segment.getSampleIntervalMillis());
       }
       i++;
       fw.write("</Segment>\n");
@@ -763,12 +764,12 @@ public class RawDataProvider extends Channel {
       if (previousSegment != null) {
         if (Segment
             .isDataBreak(previousSegment.getEndTime().getTime(), segment.getStartTime().getTime(),
-                segment.getSampleRate())) {
+                segment.getSampleIntervalMillis())) {
           segmentNumber++;
         }
         if (Segment
             .isDataGap(previousSegment.getEndTime().getTime(), segment.getStartTime().getTime(),
-                segment.getSampleRate())) {
+                segment.getSampleIntervalMillis())) {
           continueAreaNumber++;
         }
         if (!previousSegment.getDataSource().equals(segment.getDataSource())) {

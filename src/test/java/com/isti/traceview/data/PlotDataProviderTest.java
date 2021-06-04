@@ -3,7 +3,6 @@ package com.isti.traceview.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import asl.utils.NumericUtils;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
@@ -20,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -124,7 +122,7 @@ public class PlotDataProviderTest {
       Segment currentSeg = segments.get(i);
       Segment prevSeg = segments.get(i - 1);
       if (Segment.isDataBreak(prevSeg.getEndTimeMillis(),
-          currentSeg.getStartTimeMillis(), segments.get(i).getSampleRate())) {
+          currentSeg.getStartTimeMillis(), segments.get(i).getSampleIntervalMillis())) {
         assertEquals(prevSeg.getContinueAreaNumber() + 1, currentSeg.getContinueAreaNumber());
         ++gaps;
         firstSegAfterGapIdx = i;

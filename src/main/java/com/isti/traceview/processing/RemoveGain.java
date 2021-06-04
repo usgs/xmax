@@ -42,7 +42,7 @@ public class RemoveGain {
 			int pointCount, IFilter filter, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException{
 		double minFreqValue = 0.0001;
-		double maxFreqValue = 500.0 / channel.getRawData().get(0).getSampleRate();
+		double maxFreqValue = 500.0 / channel.getRawData().get(0).getSampleIntervalMillis();
 		int numberFreqs = 500;
 		double sensitivity = 1;
 		if(removestate){

@@ -144,7 +144,7 @@ public class Segment implements Externalizable, Cloneable {
 
 		this.dataSource = segment.getDataSource();
 		this.startOffset = segment.getStartOffset();
-		this.sampleRate = segment.getSampleRate();
+		this.sampleRate = segment.getSampleIntervalMillis();
 		this.sampleCount = segment.getSampleCount();
 		this.sourceSerialNumber = segment.getSourceSerialNumber();
 
@@ -465,12 +465,19 @@ public class Segment implements Externalizable, Cloneable {
 	}
 
 	/**
-	 * Getter of the property <tt>sampleRate</tt>
-	 *
-	 * @return Returns the sample rate.
+	 * Getter of the sampling interval in milliseconds.
+	 * @return Returns the sample interval.
 	 */
-	public double getSampleRate() {
+	public double getSampleIntervalMillis() {
 		return sampleRate;
+	}
+
+	/**
+	 * Get the sample rate in Hz (derived from the sampling interval in ms)
+	 * @return The data sample rate
+	 */
+	public double getSampleRateHz() {
+		return 1000./getSampleIntervalMillis();
 	}
 
 	/**
@@ -711,14 +718,14 @@ public class Segment implements Externalizable, Cloneable {
 
 	public static Segment mergeSegments(Segment... segs) {
 		long startTime = segs[0].startTime;
-		double sampleRate = segs[0].getSampleRate();
+		double sampleRate = segs[0].getSampleIntervalMillis();
 		int[][] allSamples = new int[segs.length][];
 		allSamples[0] = segs[0].getData().data;
 		int totalLength = allSamples[0].length;
 		long currentEndTime = startTime + (long) (totalLength * sampleRate);
 		for (int i = 1; i < segs.length; ++i) {
 			Segment seg = segs[i];
-			assert (seg.getSampleRate() == sampleRate);
+			assert (seg.getSampleIntervalMillis() == sampleRate);
 			assert (!isDataGap(segs[i-1].getEndTimeMillis(), seg.getStartTimeMillis(), sampleRate));
 			TimeInterval ti = new TimeInterval(seg.getStartTimeMillis(), seg.getEndTimeMillis());
 			if (seg.getStartTimeMillis() < currentEndTime) {

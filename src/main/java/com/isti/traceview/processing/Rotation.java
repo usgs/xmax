@@ -321,13 +321,13 @@ public class Rotation {
     Segment segment = rawSegmentsFirst.get(0);
     int sampleCount = segment.getSampleCount() - pointIndexFirst;
     Segment firstRotated = new Segment(null, segment.getStartOffset(),
-        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleRate(), sampleCount,
+        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleIntervalMillis(), sampleCount,
         segment.getSourceSerialNumber());
     Segment secondRotated = new Segment(null, segment.getStartOffset(),
-        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleRate(), sampleCount,
+        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleIntervalMillis(), sampleCount,
         segment.getSourceSerialNumber());
     Segment thirdRotated = new Segment(null, segment.getStartOffset(),
-        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleRate(), sampleCount,
+        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleIntervalMillis(), sampleCount,
         segment.getSourceSerialNumber());
 
     while (currentTime < ti.getEnd()) {
@@ -372,13 +372,13 @@ public class Rotation {
           sampleCount = (int) Math.ceil((ti.getEnd() - currentTime) / channel.getSampleRate());
         }
         firstRotated = new Segment(null, segment.getStartOffset(),
-            segment.getStartTime(), segment.getSampleRate(), sampleCount,
+            segment.getStartTime(), segment.getSampleIntervalMillis(), sampleCount,
             segment.getSourceSerialNumber());
         secondRotated = new Segment(null, segment.getStartOffset(),
-            segment.getStartTime(), segment.getSampleRate(), sampleCount,
+            segment.getStartTime(), segment.getSampleIntervalMillis(), sampleCount,
             segment.getSourceSerialNumber());
         thirdRotated = new Segment(null, segment.getStartOffset(),
-            segment.getStartTime(), segment.getSampleRate(), sampleCount,
+            segment.getStartTime(), segment.getSampleIntervalMillis(), sampleCount,
             segment.getSourceSerialNumber());
       } else {
         ++pointIndexFirst;

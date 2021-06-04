@@ -513,9 +513,9 @@ public class PlotDataProvider extends RawDataProvider {
     int[] intData = new int[0];
     if (segments.size() > 0) {
       long segment_end_time = 0;
-      double firstSampleRate = segments.get(0).getSampleRate();
+      double firstSampleRate = segments.get(0).getSampleIntervalMillis();
       for (Segment segment : segments) {
-        if (segment.getSampleRate() != firstSampleRate) {
+        if (segment.getSampleIntervalMillis() != firstSampleRate) {
           throw new XMAXException(
               "You have data with different sample rate for channel " + getName());
         }
