@@ -336,7 +336,6 @@ public class ChannelView extends JPanel implements Comparable<Object>, PropertyC
   public synchronized String updateData() {
     int width = graphAreaPanel.getWidth();// - graphAreaPanel.getInsets().left -
 
-    // graphAreaPanel.getInsets().right;
     logger.debug("Updating data " + this + "Width = " + width);
     graphs = new ArrayList<>();
     List<String> errorChannels = new ArrayList<>();
