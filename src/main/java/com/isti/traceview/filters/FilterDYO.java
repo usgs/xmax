@@ -36,25 +36,41 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	public static final String DESCRIPTION = "Creates DYO filter for selected channels and apply it";
 	public static final String NAME = "DYO";
 
+	//State is maintained in these fields
+	// There may be a memory leak here, if the JOptionPane is kept alive because of a reverese link.
+	// This has not shown up though.
+	private final static JTextField lowFrequencyTF;
+	private final static JTextField highFrequencyTF;
+	private final static JComboBox<Object> orderCB;
+
 	private IFilter filter = null;
-	private final JOptionPane optionPane;
-	private JTextField lowFrequencyTF = null;
-	private JTextField highFrequencyTF = null;
-	private JComboBox<Object> orderCB = null;
+	private JOptionPane optionPane;
+
 	private boolean needProcessing = false;
 
-	public FilterDYO() {
-		super(XMAXframe.getInstance(), "Design your own filter", true);
-		Object[] options = { "OK", "Close" };
-
+	static {
 		Double cutLowFrequency = 0.1;
 		Double cutHighFrequency = 0.5;
 		Integer order = 4;
 
-		initIfNullLowFrequencyTF(cutLowFrequency);
-		initIfNullHighFrequencyTF(cutHighFrequency);
+		lowFrequencyTF = new JTextField();
+		lowFrequencyTF.setText(cutLowFrequency.toString());
+		lowFrequencyTF.setPreferredSize(new Dimension(50, 20));
 
-		initIfNullOrderCB(order);
+		highFrequencyTF = new JTextField();
+		highFrequencyTF.setText(cutHighFrequency.toString());
+		highFrequencyTF.setPreferredSize(new Dimension(50, 20));
+
+		orderCB = new JComboBox<>();
+		for (int i = 1; i <= 5; ++i) {
+			orderCB.addItem((i * 2));
+		}
+		orderCB.setSelectedItem(order);
+	}
+
+	public FilterDYO() {
+		super(XMAXframe.getInstance(), "Design your own filter", true);
+		Object[] options = { "OK", "Close" };
 
 
 		// Create the JOptionPane.
@@ -195,18 +211,9 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 							"Please enter either low or high frequencies", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
-		}
-	}
-
-	/**
-	 * This method initializes lowFrequencyTF
-	 *
-	 */
-	private void initIfNullLowFrequencyTF(Double cutLowFrequency) {
-		if (lowFrequencyTF == null) {
-			lowFrequencyTF = new JTextField();
-			lowFrequencyTF.setText(cutLowFrequency.toString());
-			lowFrequencyTF.setPreferredSize(new Dimension(50, 20));
+			// Nullifying this for memory cleanup.
+			// Might not be needed, but it is a circular reference and the optionPane is recreated each time.
+			this.optionPane = null;
 		}
 	}
 
@@ -214,34 +221,8 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		return lowFrequencyTF;
 	}
 
-	/**
-	 * This method initializes highFrequencyTF
-	 *
-	 */
-	private void initIfNullHighFrequencyTF(Double cutHighFrequency) {
-		if (highFrequencyTF == null) {
-			highFrequencyTF = new JTextField();
-			highFrequencyTF.setText(cutHighFrequency.toString());
-			highFrequencyTF.setPreferredSize(new Dimension(50, 20));
-		}
-	}
-
 	private JTextField getHighFrequencyTF(){
 		return highFrequencyTF;
-	}
-
-	/**
-	 * This method initializes orderCB
-	 * 
-	 */
-	private void initIfNullOrderCB(Integer order) {
-		if (orderCB == null) {
-			orderCB = new JComboBox<>();
-			for (int i = 1; i <= 5; ++i) {
-				orderCB.addItem((i * 2));
-			}
-			orderCB.setSelectedItem(order);
-		}
 	}
 
 	private JComboBox<Object> getOrderCB() {
