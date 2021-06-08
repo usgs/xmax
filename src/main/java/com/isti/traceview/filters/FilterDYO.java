@@ -41,12 +41,9 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	private static Integer order = null;
 
 	private IFilter filter = null;
-	private JOptionPane optionPane;
+	private final JOptionPane optionPane;
 	private JTextField lowFrequencyTF = null;
 	private JTextField highFrequencyTF = null;
-	private JLabel lowFrequencyL = null;
-	private JLabel highFrequencyL = null;
-	private JLabel orderL = null;
 	private JComboBox<Object> orderCB = null;
 	private boolean needProcessing = false;
 
@@ -63,8 +60,8 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		}
 		Object[] options = { "OK", "Close" };
 		// Create the JOptionPane.
-		optionPane = new JOptionPane(createDesignPanel(order, cutLowFrequency, cutHighFrequency),
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.CLOSED_OPTION, null, options, options[0]);
+		optionPane = new JOptionPane(createDesignPanel(),
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, options, options[0]);
 		// Make this dialog display it.
 		setContentPane(optionPane);
 		optionPane.addPropertyChangeListener(this);
@@ -91,12 +88,12 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		return filter.isInitialized();
 	}
 
-	private JPanel createDesignPanel(int order, double cutLowFrequency, double cutHighFrequency) {
+	private JPanel createDesignPanel() {
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 		panel.setLayout(new GridBagLayout());
 
-		orderL = new JLabel();
+		JLabel orderL = new JLabel();
 		orderL.setText("Order:");
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.anchor = GridBagConstraints.EAST;
@@ -110,7 +107,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		gridBagConstraints1.gridx = 2;
 		panel.add(getOrderCB(), gridBagConstraints1);
 
-		lowFrequencyL = new JLabel();
+		JLabel lowFrequencyL = new JLabel();
 		lowFrequencyL.setText("Low cut frequency, Hz:");
 		lowFrequencyL.setLabelFor(lowFrequencyTF);
 		GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
@@ -127,7 +124,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		gridBagConstraints3.insets = new Insets(2, 3, 2, 3);
 		panel.add(getLowFrequencyTF(), gridBagConstraints3);
 
-		highFrequencyL = new JLabel();
+		JLabel highFrequencyL = new JLabel();
 		highFrequencyL.setText("High cut frequency, Hz:");
 		highFrequencyL.setLabelFor(highFrequencyTF);
 		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
