@@ -51,7 +51,6 @@ public class FilterBP extends AbstractFilter {
 	 *            poles and 2 hi freq poles)
 	 * @param cutLowFrequency
 	 *            double cutoff (3-db) frequency in Hz
-	 * @param cutHighFrequency
 	 *            double cutoff (3-db) frequency in Hz
 	 */
 	public FilterBP(int order, double cutLowFrequency, double cutHighFrequency) {
