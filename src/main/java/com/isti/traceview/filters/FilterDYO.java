@@ -36,10 +36,6 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	public static final String DESCRIPTION = "Creates DYO filter for selected channels and apply it";
 	public static final String NAME = "DYO";
 
-	private static Double cutLowFrequency = null;
-	private static Double cutHighFrequency = null;
-	private static Integer order = null;
-
 	private IFilter filter = null;
 	private final JOptionPane optionPane;
 	private JTextField lowFrequencyTF = null;
@@ -49,16 +45,18 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 
 	public FilterDYO() {
 		super(XMAXframe.getInstance(), "Design your own filter", true);
-		if (cutLowFrequency == null) {
-			cutLowFrequency = 0.1;
-		}
-		if (cutHighFrequency == null) {
-			cutHighFrequency = 0.5;
-		}
-		if (order == null) {
-			order = 4;
-		}
 		Object[] options = { "OK", "Close" };
+
+		Double cutLowFrequency = 0.1;
+		Double cutHighFrequency = 0.5;
+		Integer order = 4;
+
+		initIfNullLowFrequencyTF(cutLowFrequency);
+		initIfNullHighFrequencyTF(cutHighFrequency);
+
+		initIfNullOrderCB(order);
+
+
 		// Create the JOptionPane.
 		optionPane = new JOptionPane(createDesignPanel(),
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, options, options[0]);
@@ -155,19 +153,20 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 				setVisible(false);
 				needProcessing = false;
 			} else if (value.equals("OK")) {
+				// Initialize to invalid value in case of error during parsing
+				double cutLowFrequency = Double.NaN;
+				double cutHighFrequency = Double.NaN;
 				try {
 					cutLowFrequency = Double.parseDouble(lowFrequencyTF.getText());
 				} catch (NumberFormatException e1) {
 					logger.warn("NumberFormatException (cutLowFrequency=NaN):", e1);
-					cutLowFrequency = Double.NaN;
 				}
 				try {
 					cutHighFrequency = Double.parseDouble(highFrequencyTF.getText());
 				} catch (NumberFormatException e1) {
 					logger.warn("NumberFormatException (cutHighFrequency=NaN):", e1);
-					cutHighFrequency = Double.NaN;
 				}
-				order = (Integer) orderCB.getSelectedItem();
+				Integer order = (Integer) orderCB.getSelectedItem();
 				if (!Double.isNaN(cutLowFrequency) && !Double.isNaN(cutHighFrequency) &&
 						cutLowFrequency > 0 && cutHighFrequency > 0) {
 					logger.info("Band pass filtering triggered");
@@ -201,38 +200,41 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 
 	/**
 	 * This method initializes lowFrequencyTF
-	 * 
-	 * @return javax.swing.JTextField
+	 *
 	 */
-	private JTextField getLowFrequencyTF() {
+	private void initIfNullLowFrequencyTF(Double cutLowFrequency) {
 		if (lowFrequencyTF == null) {
 			lowFrequencyTF = new JTextField();
 			lowFrequencyTF.setText(cutLowFrequency.toString());
 			lowFrequencyTF.setPreferredSize(new Dimension(50, 20));
 		}
+	}
+
+	private JTextField getLowFrequencyTF(){
 		return lowFrequencyTF;
 	}
 
 	/**
 	 * This method initializes highFrequencyTF
-	 * 
-	 * @return javax.swing.JTextField
+	 *
 	 */
-	private JTextField getHighFrequencyTF() {
+	private void initIfNullHighFrequencyTF(Double cutHighFrequency) {
 		if (highFrequencyTF == null) {
 			highFrequencyTF = new JTextField();
 			highFrequencyTF.setText(cutHighFrequency.toString());
 			highFrequencyTF.setPreferredSize(new Dimension(50, 20));
 		}
+	}
+
+	private JTextField getHighFrequencyTF(){
 		return highFrequencyTF;
 	}
 
 	/**
 	 * This method initializes orderCB
 	 * 
-	 * @return javax.swing.JComboBox
 	 */
-	private JComboBox<Object> getOrderCB() {
+	private void initIfNullOrderCB(Integer order) {
 		if (orderCB == null) {
 			orderCB = new JComboBox<>();
 			for (int i = 1; i <= 5; ++i) {
@@ -240,6 +242,9 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 			}
 			orderCB.setSelectedItem(order);
 		}
+	}
+
+	private JComboBox<Object> getOrderCB() {
 		return orderCB;
 	}
 
