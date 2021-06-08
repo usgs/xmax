@@ -1448,7 +1448,14 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
                 comp.doLayout();
               }
             }
-            synchronized (filterLock) {
+            if (filter != null) {
+              synchronized (filterLock) {
+                String errorChannel = view.updateData();
+                if (!errorChannel.equals("")) {
+                  channelsWithErrors.add(errorChannel);
+                }
+              }
+            } else {
               String errorChannel = view.updateData();
               if (!errorChannel.equals("")) {
                 channelsWithErrors.add(errorChannel);
