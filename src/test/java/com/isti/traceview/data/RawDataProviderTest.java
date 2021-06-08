@@ -177,8 +177,6 @@ public class RawDataProviderTest {
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
 
-    dm.loadAndParseDataForTesting(fileToModify);
-
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
     dm.loadAndParseDataForTesting(fileToModify);
     // dm.loadData();

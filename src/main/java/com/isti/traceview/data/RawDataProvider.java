@@ -19,6 +19,7 @@ import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.beans.PropertyChangeSupport;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -29,6 +30,7 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -519,6 +521,7 @@ public class RawDataProvider extends Channel {
 
     Segment previousSegment = null;
     List<Segment> segments = getDataWithRotation(rotation, ti);
+    int recordNumber = 0;
     for (int j = 0; j < segments.size(); j++) {
       int biasValue = 0;
       if (j > 0) {
@@ -546,41 +549,69 @@ public class RawDataProvider extends Channel {
       TimeInterval exportedRange = TimeInterval
           .getIntersect(ti, new TimeInterval(segment.getStartTime(), segment.getEndTime()));
       if (data.length > 0) {
+        // sample code derived from crotwell seisfile example, see
+        // https://github.com/crotwell/seisFile/blob/seisfile2.0/src/client/java/edu/sc/seis/seisFile/example/WriteMiniSeed.java
         try {
-          DataHeader header = new DataHeader(j, 'D', j>0);
-          header.setStationIdentifier(getStation().getName());
-          header.setChannelIdentifier(getChannelName());
-          header.setNetworkCode(getNetworkName());
-          header.setLocationIdentifier(getLocationName());
-          float writtenRate = (float) segment.getSampleRateHz();
-          header.setSampleRate(writtenRate);
-          Btime btime = new Btime(Instant.ofEpochMilli(exportedRange.getStart()));
-          header.setStartBtime(btime);
-          int frameCount = (int) Math.ceil(data.length/16.);
-          SteimFrameBlock block = Steim2.encode(data, frameCount, biasValue);
-
-          if (block.getNumSamples() < data.length) {
-            // real usage would loop, creating multiple data records,
-            // but to keep this example simple we only create the first one
-            System.err.println("Can't fit all data into one record, "
-                +block.getNumSamples()+" out of "+data.length);
-          }
-          DataRecord record = new DataRecord(header);
-          Blockette1000 blockette1000 = new Blockette1000();
-          blockette1000.setEncodingFormat((byte) B1000Types.STEIM2);
-          blockette1000.setWordOrder(Blockette1000.SEED_BIG_ENDIAN);
-          blockette1000.setDataRecordLength((byte) 12); // log2 of 4096
-          record.addBlockette(blockette1000);
-          record.setData(block.getEncodedData());
-          header.setNumSamples((short)block.getNumSamples());
-
-          record.write(ds);
+          long interval = (long) segment.getSampleIntervalMillis();
+          recordNumber = arrayToMSEED(recordNumber, (float) segment.getSampleRateHz(),
+              exportedRange.getStart(), biasValue, data, ds, interval);
         } catch (SteimException | SeedFormatException e) {
           logger.error("Can't encode data: " + ti + ", " + this + e);
         }
       }
     }
     // closing ds is handled by calling method
+  }
+
+  private int arrayToMSEED(int recordCount, float writtenRate, long rangeStartTime,
+      int biasValue, int[] data, DataOutputStream ds, long intervalMillis)
+      throws SteimException, SeedFormatException, IOException {
+    // continuation code should be false because we don't store any blockettes besides
+    // the (required) b1000. Only other thing is the data, and if we can't fit it in a single
+    // steim block, we just create a new record for the remaining data.
+    DataHeader header = new DataHeader(recordCount, 'D', false);
+    header.setStationIdentifier(getStation().getName());
+    header.setChannelIdentifier(getChannelName());
+    header.setNetworkCode(getNetworkName());
+    header.setLocationIdentifier(getLocationName());
+    header.setSampleRate(writtenRate);
+    Btime btime = new Btime(Instant.ofEpochMilli(rangeStartTime));
+    header.setStartBtime(btime);
+    // int frameCount = (int) Math.ceil(data.length/16.);
+    SteimFrameBlock block = null;
+    try {
+      // use 7 frames because otherwise we may not fit data into 512 byte range
+      block = Steim2.encode(data, 7, biasValue);
+    } catch (SteimException e) {
+      // exception will be handled in the following if block's recursive call
+      // which also handles cases where no exception is thrown but can't fit all data in block
+    }
+
+    // recursive calls if we need to split data up to fit in the block
+    if (block == null || block.getNumSamples() < data.length) {
+      int[] data1 = Arrays.copyOfRange(data, 0, data.length / 2);
+      int[] data2 = Arrays.copyOfRange(data, data.length / 2, data.length);
+      recordCount = arrayToMSEED(recordCount, writtenRate, rangeStartTime, biasValue, data1, ds,
+          intervalMillis);
+      biasValue = data1[data1.length - 1];
+      rangeStartTime += data1.length * intervalMillis;
+      recordCount = arrayToMSEED(recordCount, writtenRate, rangeStartTime, biasValue, data2, ds,
+          intervalMillis);
+      return recordCount;
+    }
+
+    DataRecord record = new DataRecord(header);
+    Blockette1000 blockette1000 = new Blockette1000();
+    blockette1000.setEncodingFormat((byte) B1000Types.STEIM2);
+    blockette1000.setWordOrder(Blockette1000.SEED_BIG_ENDIAN);
+    byte recordLength = 9; // log2 of 512
+    blockette1000.setDataRecordLength(recordLength);
+    record.addBlockette(blockette1000);
+    record.getHeader().setDataOffset((short) 56);
+    record.setData(block.getEncodedData());
+    header.setNumSamples((short)block.getNumSamples());
+    record.write(ds);
+    return (recordCount + 1);
   }
 
   /**
