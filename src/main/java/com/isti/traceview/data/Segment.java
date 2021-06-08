@@ -107,10 +107,10 @@ public class Segment implements Externalizable, Cloneable {
 	 * @param RDPserialNumber
 	 *            ordinal number of segment in the data source
 	 */
-	public Segment(ISource dataSource, long startOffset, Date startTime, double sampleRate, int sampleCount, int RDPserialNumber) {
+	public Segment(ISource dataSource, long startOffset, Instant startTime, double sampleRate, int sampleCount, int RDPserialNumber) {
 		this.dataSource = dataSource;
 		this.startOffset = startOffset;
-		this.startTime = startTime.getTime();
+		this.startTime = startTime.toEpochMilli();
 		this.sampleCount = sampleCount;
 		this.trimStart = 0;
 		this.sampleRate = sampleRate;
@@ -135,9 +135,9 @@ public class Segment implements Externalizable, Cloneable {
 	 */
 	public Segment(Segment segment, long newStartPoint, long newEndPoint) {
 		// can't start before existing segment's start point
-		newStartPoint = Math.max(segment.getStartTime().getTime(), newStartPoint);
+		newStartPoint = Math.max(segment.getStartTime().toEpochMilli(), newStartPoint);
 		// can't end after existing segment's end point
-		newEndPoint = Math.min(segment.getEndTime().getTime(), newEndPoint);
+		newEndPoint = Math.min(segment.getEndTime().toEpochMilli(), newEndPoint);
 
 		this.currentPos = 0;
 		this.data = null;
@@ -148,7 +148,7 @@ public class Segment implements Externalizable, Cloneable {
 		this.sampleCount = segment.getSampleCount();
 		this.sourceSerialNumber = segment.getSourceSerialNumber();
 
-		long untrimmedStartMilli = segment.getStartTime().getTime();
+		long untrimmedStartMilli = segment.getStartTime().toEpochMilli();
 		// first sample to take of given data
 		this.trimStart = (int) ((newStartPoint - untrimmedStartMilli) / sampleRate);
 		// quantized start time, i.e., when the first untrimmed sample actually occurs
@@ -189,8 +189,8 @@ public class Segment implements Externalizable, Cloneable {
 	 *
 	 * @return segment data start time
 	 */
-	public Date getStartTime() {
-		return new Date(startTime);
+	public Instant getStartTime() {
+		return Instant.ofEpochMilli(startTime);
 	}
 
 	public long getStartTimeMillis() {
@@ -202,11 +202,11 @@ public class Segment implements Externalizable, Cloneable {
 	 *
 	 * @return segment data end time
 	 */
-	public Date getEndTime() {
+	public Instant getEndTime() {
 		// sampleRate is really interval in ms (i.e., millseconds per sample)
 		// then (ms / sample) * samples = millisecond length of data
 		long time = (long) (sampleCount * sampleRate);
-		return new Date(getStartTime().getTime() + time);
+		return Instant.ofEpochMilli(getStartTime().toEpochMilli() + time);
 	}
 
 	public long getEndTimeMillis() {
@@ -376,7 +376,7 @@ public class Segment implements Externalizable, Cloneable {
 		int previous = Integer.MAX_VALUE;
 		int next = Integer.MAX_VALUE;
 		double startt = Math.max(startTime, start);
-		double endt = Math.min(getEndTime().getTime(), end);
+		double endt = Math.min(getEndTime().toEpochMilli(), end);
 		int startIndex = (int) ((startt - startTime) / sampleRate);
 		int endIndex = (int) ((endt - startTime) / sampleRate);
 		if (startIndex != endIndex) {
@@ -394,7 +394,7 @@ public class Segment implements Externalizable, Cloneable {
 			} else {
 				// we use serialized data file
 				logger.debug("== dataStream is NOT null --> Load points from dataStream.readInt() "
-						+ "to data[] | startTime=" + startTime + " endTime=" + getEndTime().getTime());
+						+ "to data[] | startTime=" + startTime + " endTime=" + getEndTime().toEpochMilli());
 				try {
 					if(startIndex>0){
 						dataStream.seek(startOffsetSerial + startIndex * 4L - 4);

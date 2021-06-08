@@ -1861,7 +1861,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
     List<PlotDataProvider> channels = getChannelSet();
     for (PlotDataProvider channel : channels) {
       for (Segment segment : channel.getRawData()) {
-        long segmentStart = segment.getStartTime().getTime();
+        long segmentStart = segment.getStartTime().toEpochMilli();
         if (segmentStart > time.getTime() && segmentStart < nearestSegment) {
           nearestSegment = segmentStart;
         }
@@ -1885,7 +1885,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
     List<PlotDataProvider> channels = getChannelSet();
     for (PlotDataProvider channel : channels) {
       for (Segment segment : channel.getRawData()) {
-        long segmentEnd = segment.getEndTime().getTime();
+        long segmentEnd = segment.getEndTime().toEpochMilli();
         if (segmentEnd < time.getTime() && segmentEnd > nearestSegment) {
           nearestSegment = segmentEnd;
         }

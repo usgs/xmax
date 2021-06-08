@@ -38,7 +38,7 @@ public class SourceSocketFDSN extends SourceSocket {
   private static final Logger logger = Logger.getLogger(SourceSocketFDSN.class);
   private Map<String, DataBlock> cachedData;
   private List<String> dataNames;
-  private long interval;
+  private Map<String, Long> intervals;
 
   /**
    * Connect to the FDSN and receive data from one trace over a given time range.
@@ -83,6 +83,7 @@ public class SourceSocketFDSN extends SourceSocket {
             net, sta, location, channel, startTime, endTime));
       }
       dataNames = new ArrayList<>(cachedData.keySet());
+      intervals = new HashMap<>();
       // here the index into datanames list is used as start offset
       // snclData has format {network [0], station [1], location [2], channel [3]}
       IntStream.range(0, dataNames.size()).parallel().forEach(i -> {
@@ -92,15 +93,15 @@ public class SourceSocketFDSN extends SourceSocket {
         DataBlock block = cachedData.get(key);
         PlotDataProvider pdp = new PlotDataProvider(snclData[3],
             DataModule.getOrAddStation(snclData[1]), snclData[0], snclData[2]);
-        interval = block.getInterval();
+        intervals.put(key, block.getInterval());
         logger.debug("Expected sample count: " + cachedData.size());
         ret.add(pdp);
         Map<Long, double[]> dataMap = block.getDataMap();
         for (Long startTime : dataMap.keySet()) {
           double[] timeSeries = dataMap.get(startTime);
           int numberSamples = timeSeries.length;
-          Segment segment = new Segment(this, i,
-              Date.from(Instant.ofEpochMilli(startTime)), (double) interval, numberSamples, 0);
+          Segment segment = new Segment(this, i, Instant.ofEpochMilli(startTime),
+              (double) block.getInterval(), numberSamples, 0);
           pdp.addSegment(segment);
         }
       });
@@ -148,9 +149,9 @@ public class SourceSocketFDSN extends SourceSocket {
   public void load(Segment segment) {
     logger.debug("SAMPLE COUNT: " + segment.getSampleCount());
     int cachedDataOffset = (int)
-        ((segment.getStartTime().toInstant().toEpochMilli() - startTime) / interval);
+        ((segment.getStartTime().toEpochMilli() - startTime) / segment.getSampleIntervalMillis());
     logger.debug("CACHED DATA OFFSET? " + cachedDataOffset);
-    long startTime = segment.getStartTime().toInstant().toEpochMilli();
+    long startTime = segment.getStartTime().toEpochMilli();
     int offset = (int) segment.getStartOffset();
     double[] dataRange = cachedData.get(dataNames.get(offset)).getDataMap().get(startTime);
     for (int i = 0; i < segment.getSampleCount(); ++i) {

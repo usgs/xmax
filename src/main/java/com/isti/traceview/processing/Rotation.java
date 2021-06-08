@@ -321,13 +321,13 @@ public class Rotation {
     Segment segment = rawSegmentsFirst.get(0);
     int sampleCount = segment.getSampleCount() - pointIndexFirst;
     Segment firstRotated = new Segment(null, segment.getStartOffset(),
-        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleIntervalMillis(), sampleCount,
+        Instant.ofEpochMilli(currentTime), segment.getSampleIntervalMillis(), sampleCount,
         segment.getSourceSerialNumber());
     Segment secondRotated = new Segment(null, segment.getStartOffset(),
-        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleIntervalMillis(), sampleCount,
+        Instant.ofEpochMilli(currentTime), segment.getSampleIntervalMillis(), sampleCount,
         segment.getSourceSerialNumber());
     Segment thirdRotated = new Segment(null, segment.getStartOffset(),
-        Date.from(Instant.ofEpochMilli(currentTime)), segment.getSampleIntervalMillis(), sampleCount,
+        Instant.ofEpochMilli(currentTime), segment.getSampleIntervalMillis(), sampleCount,
         segment.getSourceSerialNumber());
 
     while (currentTime < ti.getEnd()) {

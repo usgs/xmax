@@ -3,7 +3,7 @@ package com.isti.traceview.data.ims;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
-import java.util.Date;
+import java.time.Instant;
 import org.apache.log4j.Logger;
 
 public class WID2 extends Block {
@@ -15,7 +15,7 @@ public class WID2 extends Block {
 	
 	//private static Pattern headerPattern = Pattern.compile("(\\w.)\\s.(\\S.)\\s.(\\S.)\\s.");
 	
-	private Date start;			//6-15 i4,a1,i2,a1,i2 date of the first sample (yyyy/mm/dd)
+	private Instant start;			//6-15 i4,a1,i2,a1,i2 date of the first sample (yyyy/mm/dd)
 								//17-28 i2,a1,i2,a1,f6.3 time of the first sample (hh:mm:ss.sss)
 	private String station;		//30-34 a5 station code
 	private String channel;		//36-38 a3 FDSN channel code
@@ -40,7 +40,7 @@ public class WID2 extends Block {
 
 	}
 
-	public Date getStart() {
+	public Instant getStart() {
 		return start;
 	}
 

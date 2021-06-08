@@ -45,7 +45,9 @@ public class SourceFileSEGD extends SourceFile implements Serializable {
 								Integer.toString(segd.getManufacturerCode()),									//Network ID
 								Double.toString(trace.getReceiverPointNumber()));								//Location
 						ret.add(channel);
-						Segment segment = new Segment(this, trace.getDataOffset(), trace.getTimeRange().getStartTime(), segd.getBaseScanInterval(), trace.getSamplesNumber(), 0);
+						Segment segment = new Segment(this, trace.getDataOffset(),
+								trace.getTimeRange().getStartInstant(), segd.getBaseScanInterval(),
+								trace.getSamplesNumber(), 0);
 						channel.addSegment(segment);						
 					}
 				}

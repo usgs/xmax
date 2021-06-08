@@ -62,10 +62,10 @@ public class RawDataProviderTest {
       // assert that new segment starts when previous segment ends
       // and that segments are strictly increasing by start time
       // (so technically this also tests that segment end times are calculated correctly)
-      assertEquals(cache.get(i).getSegment().getStartTime().getTime(),
-          cache.get(i-1).getSegment().getEndTime().getTime());
-      assertTrue(cache.get(i).getSegment().getStartTime().getTime() >
-          cache.get(i-1).getSegment().getStartTime().getTime());
+      assertEquals(cache.get(i).getSegment().getStartTime().toEpochMilli(),
+          cache.get(i-1).getSegment().getEndTime().toEpochMilli());
+      assertTrue(cache.get(i).getSegment().getStartTime().toEpochMilli() >
+          cache.get(i-1).getSegment().getStartTime().toEpochMilli());
     }
 
   }
@@ -319,8 +319,8 @@ public class RawDataProviderTest {
     List<Segment> segments = data.getRawData();
     double sampleInterval = segments.get(0).getSampleIntervalMillis();
     for (int i = 1; i < segments.size(); ++i) {
-      long previousEnd = segments.get(i-1).getEndTime().getTime();
-      long thisStart = segments.get(i).getStartTime().getTime();
+      long previousEnd = segments.get(i-1).getEndTime().toEpochMilli();
+      long thisStart = segments.get(i).getStartTime().toEpochMilli();
       assertFalse(Segment.isDataBreak(previousEnd, thisStart, sampleInterval));
     }
 

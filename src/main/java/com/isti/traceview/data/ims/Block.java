@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
 
@@ -33,10 +34,9 @@ public abstract class Block {
 		return header.substring(begin, end);
 	}
 	
-	public Date getDate(int begin, int end) throws ParseException {
-		Date ret = null;
-		ret = df.parse(getString(begin, end));
-		return ret;
+	public Instant getDate(int begin, int end) throws ParseException {
+		Date ret = df.parse(getString(begin, end));
+		return Instant.ofEpochMilli(ret.getTime());
 	}
 	
 	public int getInt(int begin, int end) {

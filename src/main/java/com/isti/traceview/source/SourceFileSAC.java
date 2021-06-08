@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -54,7 +55,9 @@ public class SourceFileSAC extends SourceFile implements Serializable {
 			PlotDataProvider channel = new PlotDataProvider(sac.getHeader().getKcmpnm(), DataModule
           .getOrAddStation(sac.getHeader().getKstnm()), sac.getHeader().getKnetwk(), loc);
 			ret.add(channel);
-			Segment segment = new Segment(this, 0, new Date(getSACtime(sac)), sac.getHeader().getDelta() * 1000, sac.getHeader().getNpts(), 0);
+			Instant startInstant = Instant.ofEpochMilli(getSACtime(sac));
+			Segment segment = new Segment(this, 0, startInstant,
+					sac.getHeader().getDelta() * 1000, sac.getHeader().getNpts(), 0);
 			channel.addSegment(segment);
 		} catch (IOException e) {
 			logger.error("IO error: ", e);

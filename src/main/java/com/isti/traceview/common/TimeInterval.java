@@ -94,6 +94,18 @@ public class TimeInterval {
 	}
 
 	/**
+	 * Constructor from Java {@link Instant} values
+	 *
+	 * @param startTime
+	 *            startTime start time of interval
+	 * @param endTime
+	 *            end time of interval
+	 */
+	public TimeInterval(Instant startTime, Instant endTime) {
+		this(startTime.toEpochMilli(), endTime.toEpochMilli());
+	}
+
+	/**
 	 * Extends time interval
 	 * 
 	 * @param date

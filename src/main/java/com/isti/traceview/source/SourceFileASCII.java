@@ -77,7 +77,7 @@ public class SourceFileASCII extends SourceFile implements Serializable {
                 DataModule.getOrAddStation(station), location, channel);
             ret.add(pdp);
             Segment segment = new Segment(this, file.getFilePointer(),
-                Date.from(start.toInstant()), sampleInterval, numberSamples, 0);
+                start.toInstant(), sampleInterval, numberSamples, 0);
             pdp.addSegment(segment);
             break parseLoop; // TODO: skip past [numberSamples] lines to get additional data
         }

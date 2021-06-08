@@ -298,15 +298,15 @@ public class RawDataProvider extends Channel {
           // if index >= 0, a segment with the given start time already exists
           Segment testSegment = rawData.get(expectedIndex).getSegment();
 
-          if (segment.getEndTime().getTime() <= testSegment.getEndTime().getTime()) {
+          if (segment.getEndTime().toEpochMilli() <= testSegment.getEndTime().toEpochMilli()) {
             // start times must match for index to be positive; in this case either segment is
             // the exact same length or shorter than the data already there, so we skip over it
             continue; // nothing else to do here -- just go on to the next segment
           }
 
           // trim off the part duplicated (go one sample after the segment in the list)
-          long newStart = testSegment.getEndTime().getTime();
-          segment = new Segment(segment, newStart, segment.getEndTime().getTime());
+          long newStart = testSegment.getEndTime().toEpochMilli();
+          segment = new Segment(segment, newStart, segment.getEndTime().toEpochMilli());
           // we will add any data in this segment that doesn't overlap what exists soon
         } else {
           // if index < 0
@@ -325,11 +325,11 @@ public class RawDataProvider extends Channel {
           // (otherwise the binary search would return a different index)
           if (expectedIndex > 0) {
             Segment previousInList = rawData.get(expectedIndex - 1).getSegment();
-            if (!segment.getStartTime().after(previousInList.getEndTime())) {
+            if (!segment.getStartTime().isAfter(previousInList.getEndTime())) {
               // start at the end of the found segment's end time -- don't overwrite existing data
-              long newStart = previousInList.getEndTime().getTime();
+              long newStart = previousInList.getEndTime().toEpochMilli();
               // trim off the data that's already duplicated -- i.e., get a new Segment
-              segment = new Segment(segment, newStart, segment.getEndTime().getTime());
+              segment = new Segment(segment, newStart, segment.getEndTime().toEpochMilli());
             }
           }
           // now that we've accounted for any possible previous overlap, time to fill in the gap
@@ -337,17 +337,18 @@ public class RawDataProvider extends Channel {
           // now this segment must also have range between that segment and the next one
           // so let's get that range and add it to the segment list
           // gap ends the sample before the next point in the list
-          long gapEnd = rawData.get(expectedIndex).getSegment().getStartTime().getTime();
+          long gapEnd = rawData.get(expectedIndex).getSegment().getStartTime().toEpochMilli();
           // just make sure that this segment doesn't overlap the data either
-          gapEnd = Math.min(gapEnd, segment.getEndTime().getTime());
-          Segment trimmedSegment = new Segment(segment, segment.getStartTime().getTime(), gapEnd);
+          gapEnd = Math.min(gapEnd, segment.getEndTime().toEpochMilli());
+          Segment trimmedSegment = 
+              new Segment(segment, segment.getStartTime().toEpochMilli(), gapEnd);
           if (trimmedSegment.getSampleCount() > 0) {
             // this is almost certainly guaranteed to be true, admittedly
             addSegment(trimmedSegment);
           }
           // now our range of analysis is for the points after the given segment
-          long afterExisting = rawData.get(expectedIndex).getSegment().getEndTime().getTime();
-          segment = new Segment(segment, afterExisting, segment.getEndTime().getTime());
+          long afterExisting = rawData.get(expectedIndex).getSegment().getEndTime().toEpochMilli();
+          segment = new Segment(segment, afterExisting, segment.getEndTime().toEpochMilli());
         }
 
         // now keep going through the list of existing data until this segment doesn't overlap
@@ -360,15 +361,15 @@ public class RawDataProvider extends Channel {
 
           // there is a gap here between the end of the previous point
           // which the segment currently has accounted for in its present start point
-          long gapEnd = rawData.get(i).getSegment().getStartTime().getTime();
+          long gapEnd = rawData.get(i).getSegment().getStartTime().toEpochMilli();
           Segment fillingPossibleGap =
-              new Segment(segment, segment.getStartTime().getTime(), gapEnd);
+              new Segment(segment, segment.getStartTime().toEpochMilli(), gapEnd);
           if (fillingPossibleGap.getSampleCount() > 0) {
             addSegment(fillingPossibleGap);
           }
           // now it's time to trim the segment again
-          long newSegmentStart = rawData.get(i).getSegment().getEndTime().getTime();
-          segment = new Segment(segment, newSegmentStart, segment.getEndTime().getTime());
+          long newSegmentStart = rawData.get(i).getSegment().getEndTime().toEpochMilli();
+          segment = new Segment(segment, newSegmentStart, segment.getEndTime().toEpochMilli());
         } // end of loop over rest of rawData
 
       } // end of loop over merged-in segments
@@ -536,10 +537,10 @@ public class RawDataProvider extends Channel {
         filter.init(this);
       }
 
-      long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
+      long currentTime = Math.max(ti.getStart(), segment.getStartTime().toEpochMilli());
       // prevent overlap
       if (previousSegment != null) {
-        currentTime = Math.max(currentTime, previousSegment.getEndTime().getTime());
+        currentTime = Math.max(currentTime, previousSegment.getEndTime().toEpochMilli());
       }
       TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
       int[] data = segment.getData(dataInterval).data;
@@ -639,9 +640,9 @@ public class RawDataProvider extends Channel {
       }
 
       double sampleRate = segment.getSampleIntervalMillis();
-      long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
+      long currentTime = Math.max(ti.getStart(), segment.getStartTime().toEpochMilli());
       if (previousSegment != null) {
-        currentTime = Math.max(currentTime, previousSegment.getEndTime().getTime());
+        currentTime = Math.max(currentTime, previousSegment.getEndTime().toEpochMilli());
       }
       TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
       int[] data = segment.getData(dataInterval).data;
@@ -689,9 +690,9 @@ public class RawDataProvider extends Channel {
         filter.init(this);
       }
 
-      long currentTime = Math.max(ti.getStart(), segment.getStartTime().getTime());
+      long currentTime = Math.max(ti.getStart(), segment.getStartTime().toEpochMilli());
       if (previousSegment != null) {
-        currentTime = Math.max(currentTime, previousSegment.getEndTime().getTime());
+        currentTime = Math.max(currentTime, previousSegment.getEndTime().toEpochMilli());
       }
       TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
       int[] data = segment.getData(dataInterval).data;
@@ -729,7 +730,7 @@ public class RawDataProvider extends Channel {
       throw new TraceViewException("You have gaps in the interval to import as SAC");
     }
     int[] intData = segments.get(0).getData(ti).data;
-    long currentTime = Math.max(ti.getStart(), segments.get(0).getStartTime().getTime());
+    long currentTime = Math.max(ti.getStart(), segments.get(0).getStartTime().toEpochMilli());
     if (filter != null) {
       intData = new FilterFacade(filter, this).filter(intData);
     }
@@ -794,12 +795,12 @@ public class RawDataProvider extends Channel {
       Segment segment = rawData.get(i).getSegment();
       if (previousSegment != null) {
         if (Segment
-            .isDataBreak(previousSegment.getEndTime().getTime(), segment.getStartTime().getTime(),
+            .isDataBreak(previousSegment.getEndTime().toEpochMilli(), segment.getStartTime().toEpochMilli(),
                 segment.getSampleIntervalMillis())) {
           segmentNumber++;
         }
         if (Segment
-            .isDataGap(previousSegment.getEndTime().getTime(), segment.getStartTime().getTime(),
+            .isDataGap(previousSegment.getEndTime().toEpochMilli(), segment.getStartTime().toEpochMilli(),
                 segment.getSampleIntervalMillis())) {
           continueAreaNumber++;
         }
@@ -995,10 +996,10 @@ class SegmentCache implements Serializable, Comparable<Object> {
     }
     if (o instanceof SegmentCache) {
       SegmentCache sc = (SegmentCache) o;
-      if (getSegment().getStartTime().getTime() > sc.getSegment().getStartTime().getTime()) {
+      if (getSegment().getStartTime().toEpochMilli() > sc.getSegment().getStartTime().toEpochMilli()) {
         return 1;
-      } else if (getSegment().getStartTime().getTime() == sc.getSegment().getStartTime()
-          .getTime()) {
+      } else if (getSegment().getStartTime().toEpochMilli() ==
+                 sc.getSegment().getStartTime().toEpochMilli()) {
         return 0;
       }
     }

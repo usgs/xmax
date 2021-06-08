@@ -46,7 +46,9 @@ public class SourceFileIMS extends SourceFile {
 							PlotDataProvider channel = new PlotDataProvider(bs.getWID2().getChannel(), DataModule
                   .getOrAddStation(bs.getWID2().getStation()), "", "");
 							ret.add(channel);
-							Segment segment = new Segment(this, bs.getStartOffset(), bs.getWID2().getStart(), 1000.0/bs.getWID2().getSampleRate(), bs.getWID2().getNumSamples(), 0);
+							Segment segment = new Segment(this, bs.getStartOffset(),
+									bs.getWID2().getStart(), 1000.0/bs.getWID2().getSampleRate(),
+									bs.getWID2().getNumSamples(), 0);
 							channel.addSegment(segment);
 						}
 					}

@@ -418,8 +418,8 @@ public class PlotDataProvider extends RawDataProvider {
   private static Segment[] getSegment(List<Segment> sps, double start, double end) {
     List<Segment> ret = new ArrayList<>();
     for (Segment seg : sps) {
-      long retStart = seg.getStartTime().getTime();
-      long retEnd = seg.getEndTime().getTime();
+      long retStart = seg.getStartTime().toEpochMilli();
+      long retEnd = seg.getEndTime().toEpochMilli();
       if (!((start >= retEnd && end >= retEnd) || (start <= retStart && end <= retStart))) {
         ret.add(seg);
       }
@@ -520,11 +520,11 @@ public class PlotDataProvider extends RawDataProvider {
               "You have data with different sample rate for channel " + getName());
         }
         if (segment_end_time != 0 &&
-            Segment.isDataBreak(segment_end_time, segment.getStartTime().getTime(),
+            Segment.isDataBreak(segment_end_time, segment.getStartTime().toEpochMilli(),
                 firstSampleRate)) {
           throw new XMAXException("You have gap in the data for channel " + getName());
         }
-        segment_end_time = segment.getEndTime().getTime();
+        segment_end_time = segment.getEndTime().toEpochMilli();
         intData = IstiUtilsMath.padArray(intData, segment.getData(ti).data);
       }
 

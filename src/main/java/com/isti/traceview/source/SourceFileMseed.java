@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -313,7 +314,8 @@ public class SourceFileMseed extends SourceFile implements Serializable {
   private void addSegment(RawDataProvider channel, long currentOffset,
       double sampleRate, int serialNumber, int segmentSampleCount, long segmentStartTime) {
     if (segmentSampleCount != 0) {
-      Segment segment = new Segment(this, currentOffset, new Date(segmentStartTime), sampleRate,
+      Instant startInstant = Instant.ofEpochMilli(segmentStartTime);
+      Segment segment = new Segment(this, currentOffset, startInstant, sampleRate,
           segmentSampleCount, serialNumber);
       channel.addSegment(segment);
     }
