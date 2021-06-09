@@ -62,6 +62,7 @@ public class FilterBP extends AbstractFilter {
 
 	/**
 	 * Default constructor
+	 * Called via reflection in XMAX.java
 	 */
 	public FilterBP() {
 		this(4, 0.1, 0.5);
@@ -86,10 +87,8 @@ public class FilterBP extends AbstractFilter {
 	public boolean equals(Object o) {
 		if (o instanceof FilterBP) {
 			FilterBP arg = (FilterBP) o;
-			if ((order == arg.getOrder()) && (cutLowFrequency == arg.getCutLowFrequency())
-					&& (cutHighFrequency == arg.getCutHighFrequency())) {
-				return true;
-			}
+			return (order == arg.getOrder()) && (cutLowFrequency == arg.getCutLowFrequency())
+					&& (cutHighFrequency == arg.getCutHighFrequency());
 		}
 		return false;
 	}

@@ -37,7 +37,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	public static final String NAME = "DYO";
 
 	//State is maintained in these fields
-	// There may be a memory leak here, if the JOptionPane is kept alive because of a reverese link.
+	// There may be a memory leak here, if the JOptionPane is kept alive because of a reverse link.
 	// This has not shown up though.
 	private final static JTextField lowFrequencyTF;
 	private final static JTextField highFrequencyTF;
