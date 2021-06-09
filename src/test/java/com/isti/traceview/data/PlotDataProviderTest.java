@@ -39,7 +39,7 @@ public class PlotDataProviderTest {
   }
 
   @Test
-  public void filterWorksCorrectly() throws LPFilterException, BPFilterException, HPFilterException {
+  public void filterWorksCorrectly() throws BPFilterException {
     String filename = "src/test/resources/ppm/00_BH1.512.seed";
     DataModule dm = new DataModule();
     File dataToFilter = new File(filename);
