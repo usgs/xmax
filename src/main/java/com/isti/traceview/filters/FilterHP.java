@@ -27,6 +27,7 @@ public class FilterHP extends AbstractFilter {
 	public FilterHP(int order, double cutFrequency) {
 		this.order = order;
 		this.cutFrequency = cutFrequency;
+		//This requires samplerate to be set, but this isn't possible at this point.
 		reinitializeFilter();
 	}
 
