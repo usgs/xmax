@@ -26,6 +26,7 @@ public class FilterLP extends AbstractFilter {
 	public FilterLP(int order, double cutFrequency) {
 		this.order = order;
 		this.cutFrequency = cutFrequency;
+		// Samplerate is not set to a proper value at this point. Reinitialize will create an erroneous filter
 		reinitializeFilter();
 	}
 
