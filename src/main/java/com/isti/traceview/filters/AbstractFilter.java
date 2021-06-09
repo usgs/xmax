@@ -54,6 +54,14 @@ public abstract class AbstractFilter implements IFilter {
     initialized = true;
   }
 
+  //Temporary until filters rewritten
+  synchronized public void init2(double newsampleRateHz) {
+    sampleRate = newsampleRateHz;
+    newPoint = true;
+    reinitializeFilter();
+    initialized = true;
+  }
+
   public boolean isInitialized() {
     return initialized;
   }
