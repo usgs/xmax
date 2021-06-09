@@ -1,6 +1,7 @@
 package com.isti.traceview.source;
 
-import asl.utils.timeseries.*;
+import asl.utils.timeseries.DataBlock;
+import asl.utils.timeseries.TimeSeriesUtils;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.Configuration;
 import com.isti.traceview.data.DataModule;
@@ -18,7 +19,6 @@ import edu.sc.seis.seisFile.fdsnws.stationxml.Station;
 import edu.sc.seis.seisFile.fdsnws.stationxml.StationIterator;
 import edu.sc.seis.seisFile.fdsnws.stationxml.StationXMLException;
 import java.io.IOException;
-import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class SourceSocketFDSN extends SourceSocket {
 
   /**
    * Connect to the FDSN and receive data from one trace over a given time range.
-   * Currently, wildcards are not supported.
+   * Wildcards are supported.
    * FDSN connection parameters such as port, url, etc. are taken from config.xml file
    * @param network Name of network to get data from
    * @param station Name of station
