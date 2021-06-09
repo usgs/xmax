@@ -26,6 +26,11 @@ public class SourceSocketFDSNTest {
     SourceSocketFDSN fdsn = new SourceSocketFDSN("IU", "ANMO", "00",
         "*H*", start, end);
     List<PlotDataProvider> traces = new ArrayList<>(fdsn.parse());
+
+    if (traces.isEmpty()){
+      fail("Probable network error when contacting the IRIS FDSN server");
+    }
+
     for (PlotDataProvider trace : traces) {
       String channel = trace.getChannelName();
       double sampleRate = trace.getRawData().get(0).getSampleRateHz();
