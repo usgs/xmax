@@ -87,8 +87,8 @@ public class TransSpectra implements ITransformation {
 				data = new FilterFacade(filter, channel).filter(data);
 			}
 			try {
-				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),
-						timeInterval.getStartTime(), channel, verboseDebug);
+				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, timeInterval.getStartTime(),
+						channel, verboseDebug);
 				dataset.add(spectra);
 			} catch (TraceViewException e) {
 				logger.error("TraceViewException:", e);

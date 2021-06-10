@@ -7,6 +7,7 @@ import com.isti.traceview.jnt.FFT.RealDoubleFFT_Even;
 import com.isti.traceview.transformations.psd.TransPSD;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.log4j.Logger;
@@ -394,6 +395,12 @@ public class IstiUtilsMath {
 	 *            the trace array.
 	 * @param verboseDebug
 	 *            true for verbose debug messages
+	 * @param date
+	 * 						Date of data
+	 * @param channel
+	 *						SNCL identifying source of trace
+	 * @param response
+	 * 						Response matched with trace data
 	 * @return the noise spectra.
 	 */
 	public static Spectra getNoiseSpectra(int[] trace, Response response, Date date, Channel channel,
@@ -428,6 +435,49 @@ public class IstiUtilsMath {
 			// logger.error(errString, e);
 			throw new TraceViewException(errString);
 		}
+		return new Spectra(date, noise_spectra, frequenciesArray, resp, fp.sampFreq, channel, errString);
+	}
+
+	/**
+	 * Builds amplitude spectra of trace. proper response function out of RESP
+	 * file.
+	 *
+	 * @param trace
+	 *            the trace array.
+	 * @param verboseDebug
+	 *            true for verbose debug messages
+	 * @param date
+	 * 						Date of data
+	 * @param channel
+	 * 						SNCL identifying source of trace
+	 * @return the noise spectra.
+	 */
+	public static Spectra getNoiseSpectra(int[] trace, Date date, Channel channel,
+			boolean verboseDebug) throws TraceViewException {
+		// Init error string
+		logger.debug("Getting noise spectra");
+		String errString = "";
+
+		final Response.FreqParameters fp =
+				Response.getFreqParameters(trace.length, channel.getSampleRate());
+		final double[] frequenciesArray = generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq);
+
+		// Make a copy of data since we gonna modify it
+		double[] traceCopy = new double[trace.length];
+		for (int i = 0; i < trace.length; i++) {
+			traceCopy[i] = trace[i];
+		}
+
+		// Norm the data: remove trend
+		traceCopy = normData(traceCopy);
+
+		// Apply Hanning window
+		traceCopy = windowHanning(traceCopy);
+
+		// Do FFT and get imag and real parts of the data spectrum
+		final Complex[] noise_spectra = processFft(traceCopy);
+		Complex[] resp = new Complex[noise_spectra.length];
+		Arrays.fill(resp, Complex.ONE);
 		return new Spectra(date, noise_spectra, frequenciesArray, resp, fp.sampFreq, channel, errString);
 	}
 
