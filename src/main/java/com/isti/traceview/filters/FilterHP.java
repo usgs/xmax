@@ -1,5 +1,6 @@
 package com.isti.traceview.filters;
 
+import java.util.function.Function;
 import uk.me.berndporr.iirj.Butterworth;
 
 /**
@@ -27,8 +28,6 @@ public class FilterHP extends AbstractFilter {
 	public FilterHP(int order, double cutFrequency) {
 		this.order = order;
 		this.cutFrequency = cutFrequency;
-		//This requires samplerate to be set, but this isn't possible at this point.
-		reinitializeFilter();
 	}
 
 	/**
@@ -44,11 +43,9 @@ public class FilterHP extends AbstractFilter {
 	}
 
 	@Override
-	public void reinitializeFilter() {
-		casc = new Butterworth();
-		casc.highPass(order, sampleRate, cutFrequency);
+	public Function<double[], double[]> getFilterFunction() {
+		return Filter.HIGHPASS.getFilter(sampleRate, false, order, cutFrequency, null);
 	}
-
 	public boolean needProcessing() {
 		return true;
 	}
@@ -64,9 +61,7 @@ public class FilterHP extends AbstractFilter {
 	public boolean equals(Object o) {
 		if (o instanceof FilterHP) {
 			FilterHP arg = (FilterHP) o;
-			if ((order == arg.getOrder()) && (cutFrequency == arg.getCutFrequency())) {
-				return true;
-			}
+			return (order == arg.getOrder()) && (cutFrequency == arg.getCutFrequency());
 		}
 		return false;
 	}

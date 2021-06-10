@@ -56,7 +56,7 @@ public class PlotDataProviderTest {
       initData[i] = pdp.getRawData().get(0).getData().data[i];
     }
 
-    double[] filteredCalculated = defaultLPFilter.filter(initData, sampleCount);
+    double[] filteredCalculated = defaultLPFilter.getFilterFunction().apply(initData);
     double[] filteredExpected = new double[]{
         0.000000, 0.000000, 0.000001,
         0.000000, 0.000023, 0.000046,

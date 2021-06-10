@@ -522,6 +522,7 @@ public class RawDataProvider extends Channel {
     Segment previousSegment = null;
     List<Segment> segments = getDataWithRotation(rotation, ti);
     int recordNumber = 0;
+    //TODO: Make this filter across the entire range being dumped instead of each individual segment.
     for (int j = 0; j < segments.size(); j++) {
       int biasValue = 0;
       if (j > 0) {
@@ -547,6 +548,8 @@ public class RawDataProvider extends Channel {
       TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
       int[] data = segment.getData(dataInterval).data;
       if (filter != null) {
+        //TODO: This appears to rely on the saved state in the butterworth cascade object.
+        // The new method does not maintain this outside of individual filters.
         data = new FilterFacade(filter, this).filter(data);
       }
 

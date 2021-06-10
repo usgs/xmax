@@ -3269,8 +3269,9 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 					filterBG.clearSelection();
 				} else {
 					IFilter filter = XMAX.getFilter(pluginId);
-					if (filter.needProcessing()) {
-						graphPanel.setFilter(filter);
+					//if (filter.needProcessing()) {
+					if (true) {
+							graphPanel.setFilter(filter);
 						if (graphPanel.getFilter() != null && graphPanel.getFilter().equals(filter)) {
 							setFilterMenuItem(pluginId);
 							setFilterButton(pluginId);

@@ -17,6 +17,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -93,8 +94,8 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 	}
 
 	@Override
-	public boolean isInitialized() {
-		return false;
+	public Function<double[], double[]> getFilterFunction() {
+		return null;
 	}
 
 	/**

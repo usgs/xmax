@@ -193,7 +193,7 @@ public class RawDataProviderTest {
       }
     }
 
-    double[] filteredExpected = lowPass.filter(unfilteredExpected, sampleCount);
+    double[] filteredExpected = lowPass.getFilterFunction().apply(unfilteredExpected);
     for (int i = 0; i < filteredExpected.length; ++i) {
       assertNotEquals(unfilteredExpected[i], filteredExpected[i]);
     }

@@ -3,6 +3,7 @@ package com.isti.traceview.filters;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
+import java.util.function.Function;
 
 /**
  * Interface to represent abstract filter. Filter gets data from RawDataProvider
@@ -24,7 +25,7 @@ public interface IFilter {
 	 */
   void init(RawDataProvider channel);
 
-  boolean isInitialized();
+	Function<double[], double[]> getFilterFunction();
 
 	/**
 	 * Performs filtering.
@@ -39,10 +40,8 @@ public interface IFilter {
 	 * @throws BPFilterException
 	 *             the BP filter exception
 	 */
-  double[] filter(double[] data, int length)
-			throws TraceViewException, BPFilterException;
-
-	boolean needProcessing();
+//  double[] filter(double[] data, int length)
+//			throws TraceViewException, BPFilterException;
 
 	/**
 	 * Can be used instead of referencing NAME when used as Generic.

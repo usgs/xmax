@@ -1,5 +1,6 @@
 package com.isti.traceview.filters;
 
+import java.util.function.Function;
 import org.apache.log4j.Logger;
 import uk.me.berndporr.iirj.Butterworth;
 
@@ -26,8 +27,6 @@ public class FilterLP extends AbstractFilter {
 	public FilterLP(int order, double cutFrequency) {
 		this.order = order;
 		this.cutFrequency = cutFrequency;
-		// Samplerate is not set to a proper value at this point. Reinitialize will create an erroneous filter
-		reinitializeFilter();
 	}
 
 	/**
@@ -36,20 +35,13 @@ public class FilterLP extends AbstractFilter {
 	public FilterLP() {
 		this(4, 0.05);
 	}
-
+	@Override
+	public Function<double[], double[]> getFilterFunction() {
+		return Filter.LOWPASS.getFilter(sampleRate, false, order, cutFrequency, null);
+	}
 	@Override
 	public String getName() {
 		return FilterLP.NAME;
-	}
-
-	@Override
-	public void reinitializeFilter() {
-		casc = new Butterworth();
-		casc.lowPass(order, sampleRate, cutFrequency);
-	}
-
-	public boolean needProcessing() {
-		return true;
 	}
 
 	public int getOrder() {
@@ -63,9 +55,7 @@ public class FilterLP extends AbstractFilter {
 	public boolean equals(Object o) {
 		if (o instanceof FilterLP) {
 			FilterLP arg = (FilterLP) o;
-			if ((order == arg.getOrder()) && (cutFrequency == arg.getCutFrequency())) {
-				return true;
-			}
+			return (order == arg.getOrder()) && (cutFrequency == arg.getCutFrequency());
 		}
 		return false;
 	}

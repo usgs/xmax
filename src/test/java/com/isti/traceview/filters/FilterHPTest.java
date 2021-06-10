@@ -323,7 +323,7 @@ public class FilterHPTest {
 
     filter.init2(40);
 
-    double[] result = filter.filter(data, data.length);
+    double[] result = filter.getFilterFunction().apply(data);
 
     assertEquals(3456000, result.length);
     for (Integer key : expected.keySet()) {

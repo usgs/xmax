@@ -1,5 +1,6 @@
 package com.isti.traceview.filters;
 
+import java.util.function.Function;
 import uk.me.berndporr.iirj.Butterworth;
 
 /**
@@ -24,7 +25,6 @@ import uk.me.berndporr.iirj.Butterworth;
 
 public class FilterBP extends AbstractFilter {
 
-	public static final String DESCRIPTION = "Apply Band Pass filter for selected channels";
 	public static final String NAME = "BP";
 
 	private final int order;
@@ -34,15 +34,6 @@ public class FilterBP extends AbstractFilter {
 	@Override
 	public String getName() {
 		return NAME;
-	}
-
-	@Override
-	public void reinitializeFilter() {
-		casc = new Butterworth();
-		double width = cutHighFrequency - cutLowFrequency;
-		double center = cutLowFrequency + (width) / 2.;
-		// filter library defines bandpass with center frequency and notch width
-		casc.bandPass(order, sampleRate, center, width);
 	}
 
 	/**
@@ -57,7 +48,6 @@ public class FilterBP extends AbstractFilter {
 		this.order = order;
 		this.cutLowFrequency = cutLowFrequency;
 		this.cutHighFrequency = cutHighFrequency;
-		reinitializeFilter();
 	}
 
 	/**
@@ -68,8 +58,9 @@ public class FilterBP extends AbstractFilter {
 		this(4, 0.1, 0.5);
 	}
 
-	public boolean needProcessing() {
-		return true;
+	@Override
+	public Function<double[], double[]> getFilterFunction() {
+		return Filter.BANDPASS.getFilter(sampleRate, false, order, cutLowFrequency, cutHighFrequency);
 	}
 
 	public int getOrder() {

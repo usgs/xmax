@@ -4,7 +4,9 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
+import com.isti.traceview.filters.Filter;
 import com.isti.traceview.filters.IFilter;
+import java.util.function.Function;
 import org.apache.log4j.Logger;
 
 /**
@@ -14,7 +16,7 @@ import org.apache.log4j.Logger;
  */
 public class FilterFacade {
 	private static final Logger logger = Logger.getLogger(FilterFacade.class);
-	private final IFilter filter;
+	private final Function<double[], double[]> filter;
 
 	/**
 	 * @param filter
@@ -23,38 +25,8 @@ public class FilterFacade {
 	 *            Filtered PlotDataProvider
 	 */
 	public FilterFacade(IFilter filter, RawDataProvider channel) {
-		this.filter = filter;
-		if (!this.filter.isInitialized()) {
-			this.filter.init(channel);
-		}
-	}
-
-	/**
-	 * Method to filter segment
-	 * 
-	 * @param segment
-	 *            Segment to filter
-	 * @param ti
-	 *            Time interval to process
-	 * @return filtered segment
-	 */
-	public Segment filter(Segment segment, TimeInterval ti) {
-		Segment clone = null;
-		try {
-			clone = (Segment) segment.clone();
-			int[] data = null;
-			if (ti == null) {
-				data = clone.getData().data;
-			} else {
-				data = clone.getData(ti).data;
-			}
-			data = filter(data);
-			clone.getData().data = data;
-		} catch (CloneNotSupportedException e) {
-			logger.error("Can't filter segment: " + e);
-			return segment;
-		}
-		return clone;
+		filter.init(channel);
+		this.filter = filter.getFilterFunction();
 	}
 
 	/**
@@ -65,24 +37,10 @@ public class FilterFacade {
 		for (int i = 0; i < data.length; i++) {
 			toFilt[i] = data[i];
 		}
-		try {
-			toFilt = filter.filter(toFilt, toFilt.length);
-			for (int i = 0; i < data.length; i++) {
-				data[i] = (int) toFilt[i];
-				// data[i] = new Double(toFilt[i]).intValue();
-			}
-		} catch (TraceViewException e) {
-			logger.error("Can't filter data: ", e);
-		} catch (BPFilterException e) {
-			logger.error("BPFilterException:", e);
+		toFilt = filter.apply(toFilt);
+		for (int i = 0; i < data.length; i++) {
+			data[i] = (int) toFilt[i];
 		}
 		return data;
-	}
-
-	/**
-	 * Method to filter whole segment
-	 */
-	public Segment filter(Segment segment) {
-		return filter(segment, null);
 	}
 }

@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -96,10 +97,6 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 
 	public int getMaxDataLength() {
 		return filter.getMaxDataLength();
-	}
-
-	public boolean isInitialized() {
-		return filter.isInitialized();
 	}
 
 	private JPanel createDesignPanel() {
@@ -229,31 +226,14 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		return orderCB;
 	}
 
-	// From interface IFilter
-
-	public double[] filter(double[] data, int length) {
-		double[] fltdata = null;
-		try {
-			fltdata = filter.filter(data, length);
-		} catch (TraceViewException e) {
-			logger.error("TraceviewException:", e);
-			System.exit(0);
-		} catch (BPFilterException e) {
-			logger.error("BPFilterException:", e);
-			System.exit(0);
-		}
-		return fltdata;
-	}
-
 	public void init(RawDataProvider channel) {
 		filter.init(channel);
 	}
 
-	public boolean needProcessing() {
-		return needProcessing;
+	@Override
+	public Function<double[], double[]> getFilterFunction() {
+		return this.filter.getFilterFunction();
 	}
-
-	// ----------------------------------------
 
 	public boolean equals(Object o) {
 		if (filter == null)
