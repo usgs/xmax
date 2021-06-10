@@ -318,21 +318,18 @@ public class FilterHPTest {
     }};
 
     FilterHP filter = new FilterHP();
-    double[] data = getFirstTimeSeries("src/test/resources/rotation/unrot_10_BHZ.512.seed").getData();
-    //for (double d : IntStream.range(0, 100).mapToDouble(i -> data[i]).toArray()){
-    //  System.out.println(d);
-    //}
+    double[] data = getFirstTimeSeries("src/test/resources/rotation/unrot_10_BHZ.512.seed")
+        .getData();
+
     filter.init2(40);
 
     double[] result = filter.filter(data, data.length);
 
     assertEquals(3456000, result.length);
-    for (Integer key : expected.keySet()){
-      //System.out.println(expected.get(key)+ ", " +result[key]);
-      // Check difference
-      assertTrue("Result more than 5E-5% different", (1 - expected.get(key)/result[key]) < 5E-07
+    for (Integer key : expected.keySet()) {
+      assertTrue("Result more than 5E-5% different", (1 - expected.get(key) / result[key]) < 5E-07
       );
     }
 
-    }
+  }
 }

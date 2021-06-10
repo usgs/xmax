@@ -4,23 +4,8 @@ import static asl.utils.timeseries.TimeSeriesUtils.getFirstTimeSeries;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.isti.traceview.TraceView;
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.Configuration;
-import com.isti.traceview.data.DataModule;
-import com.isti.traceview.data.PlotDataProvider;
-import com.isti.xmax.XMAXconfiguration;
-import edu.iris.dmc.seedcodec.CodecException;
-import edu.sc.seis.seisFile.mseed.SeedFormatException;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.junit.Before;
 import org.junit.Test;
 
 public class FilterBPTest {
@@ -333,7 +318,8 @@ public class FilterBPTest {
     }};
 
     FilterBP filter = new FilterBP();
-    double[] data = getFirstTimeSeries("src/test/resources/rotation/unrot_10_BHZ.512.seed").getData();
+    double[] data = getFirstTimeSeries("src/test/resources/rotation/unrot_10_BHZ.512.seed")
+        .getData();
     //for (double d : IntStream.range(0, 100).mapToDouble(i -> data[i]).toArray()){
     //  System.out.println(d);
     //}
@@ -342,11 +328,11 @@ public class FilterBPTest {
     double[] result = filter.filter(data, data.length);
 
     assertEquals(3456000, result.length);
-    for (Integer key : expected.keySet()){
+    for (Integer key : expected.keySet()) {
       //System.out.println(expected.get(key)+ ", " +result[key]);
       // Check a 12% difference
-      assertTrue("Result more than 12% off", (1 - expected.get(key)/result[key]) < 0.12);
+      assertTrue("Result more than 12% off", (1 - expected.get(key) / result[key]) < 0.12);
     }
 
-    }
+  }
 }
