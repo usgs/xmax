@@ -48,7 +48,7 @@ public abstract class AbstractFilter implements IFilter {
 
   @Override
   synchronized public void init(RawDataProvider channel) {
-    sampleRate = 1000.0 / channel.getSampleInterval();
+    sampleRate = channel.getSampleRate();
     newPoint = true;
     reinitializeFilter();
     initialized = true;

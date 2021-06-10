@@ -70,6 +70,9 @@ public class Channel implements Comparable<Object>, Serializable {
 	 */
 	private String networkName = null;
 
+	/**
+	 * Sampling interval (period) in ms
+	 */
 	private double sampleInterval = 0.0;
 	
 	private transient boolean isSelected = false;
@@ -168,12 +171,21 @@ public class Channel implements Comparable<Object>, Serializable {
 	}
 
 	/**
-	 * Getter of sampleRate property
+	 * Getter of sampleInterval property
 	 * 
 	 * @return Sampling interval in milliseconds
 	 */
 	public double getSampleInterval() {
 		return sampleInterval;
+	}
+
+	/**
+	 * Compute sample rate in Hertz
+	 *
+	 * @return Sample Rate in Hz
+	 */
+	public double getSampleRate() {
+		return 1000.0 / this.getSampleInterval();
 	}
 	
 	public void setSampleInterval(double sampleInterval) {

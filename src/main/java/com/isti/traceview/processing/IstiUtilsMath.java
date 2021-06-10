@@ -403,7 +403,7 @@ public class IstiUtilsMath {
 		String errString = "";
 
 		final Response.FreqParameters fp =
-				Response.getFreqParameters(trace.length, 1000.0 / channel.getSampleInterval());
+				Response.getFreqParameters(trace.length, channel.getSampleRate());
 		final double[] frequenciesArray = generateFreqArray(fp.startFreq, fp.endFreq, fp.numFreq);
 
 		// Make a copy of data since we gonna modify it

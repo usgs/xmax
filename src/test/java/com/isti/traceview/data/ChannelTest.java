@@ -52,7 +52,7 @@ public class ChannelTest {
   }
 
   @Test
-  public void channelSampleRateCorrect() {
+  public void channelSampleIntervalCorrect() {
     String filename = "src/test/resources/ANMO_00_LHZ_GAP.512.seed";
     File fileWithGaps = new File(filename);
     assertTrue(fileWithGaps.getAbsolutePath(), fileWithGaps.getAbsoluteFile().exists());
@@ -63,6 +63,20 @@ public class ChannelTest {
     RawDataProvider dataProvider = dm.getAllChannels().get(0);
     // LHZ = 1Hz data, or 1 sample every 1000 ms
     assertEquals(1000., dataProvider.getSampleInterval(), 1E-5);
+  }
+
+  @Test
+  public void channelSampleRateCorrect() {
+    String filename = "src/test/resources/ANMO_00_LHZ_GAP.512.seed";
+    File fileWithGaps = new File(filename);
+    assertTrue(fileWithGaps.getAbsolutePath(), fileWithGaps.getAbsoluteFile().exists());
+
+    DataModule dm = new DataModule();
+    dm.loadAndParseDataForTesting(fileWithGaps);
+
+    RawDataProvider dataProvider = dm.getAllChannels().get(0);
+    // LHZ = 1Hz data, or 1 sample every 1000 ms
+    assertEquals(1.0, dataProvider.getSampleRate(), 1E-5);
   }
 
   @Test
