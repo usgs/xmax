@@ -920,7 +920,7 @@ public class ChannelView extends JPanel implements Comparable<Object>, PropertyC
           + TimeInterval.formatDate(channel.getTimeRange().getStartTime(),
           TimeInterval.DateFormatType.DATE_FORMAT_MIDDLE)
           + "<br><i>Duration: </i> " + channel.getTimeRange().convert() + "<br><i>Sample rate: </i>"
-          + channel.getSampleRate() + " ms <br>"
+          + channel.getSampleInterval() + " ms <br>"
           + respname + "</html>";
     }
 

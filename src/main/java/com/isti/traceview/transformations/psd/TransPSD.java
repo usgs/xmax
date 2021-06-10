@@ -185,7 +185,7 @@ public class TransPSD implements ITransformation {
 					return; // skip to next PSD -- this lambda is basically its own method
 				}
 				Complex[] respCurve = generateResponse(responses.get(key), ti,
-						(long) channel.getSampleRate(), windowDivisor);
+						(long) channel.getSampleInterval(), windowDivisor);
 				if (respCurve == null) {
 					return;
 				}
@@ -262,7 +262,7 @@ public class TransPSD implements ITransformation {
 			Complex[] response, int windowDivisor, int shiftDivisor, boolean performSmoothing)
 			throws XMAXException {
 
-		long interval = (long) channel.getSampleRate();
+		long interval = (long) channel.getSampleInterval();
 		long traceLength = (ti.getEnd() - ti.getStart()) / interval;
 		int windowLength = (int) (traceLength / windowDivisor);
 		int shiftLength = windowLength / shiftDivisor;
@@ -314,7 +314,7 @@ public class TransPSD implements ITransformation {
 		}
 		// we need to detrend here because java utils expects that before the trace is passed in
 		doubleData = detrend(doubleData);
-		long interval = (long) channel.getSampleRate();
+		long interval = (long) channel.getSampleInterval();
 
 		return FFTResult.powerSpectra(doubleData, interval, response, range, slider);
 	}

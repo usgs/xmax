@@ -48,12 +48,12 @@ public class TransCoherence implements ITransformation{
 
     // sample rate is interval in ms -- larger sample rate is the lower-frequency data
     // and if they don't match up we should downsample to the lower frequency rate
-    double sampleRate = Math.max(input.get(0).getSampleRate(), input.get(1).getSampleRate());
+    double sampleRate = Math.max(input.get(0).getSampleInterval(), input.get(1).getSampleInterval());
 
-    if (input.get(0).getSampleRate() != input.get(1).getSampleRate()){
+    if (input.get(0).getSampleInterval() != input.get(1).getSampleInterval()){
       JOptionPane.showMessageDialog(parentFrame, "Channel sample rates do not match. ("+input.get(0).getLocationName()+"/"
-              +input.get(0).getChannelName()+"= "+input.get(0).getSampleRate()+", " +input.get(1).getLocationName()+"/"
-              +input.get(1).getChannelName()+"= "+input.get(1).getSampleRate()+")\n"+
+              +input.get(0).getChannelName()+"= "+input.get(0).getSampleInterval()+", " +input.get(1).getLocationName()+"/"
+              +input.get(1).getChannelName()+"= "+input.get(1).getSampleInterval()+")\n"+
               "Downsampling will be done on the higher-frequency data.",
           "Coherence computation warning",
           JOptionPane.WARNING_MESSAGE);
@@ -64,7 +64,7 @@ public class TransCoherence implements ITransformation{
     try {
       XYSeriesCollection plotSeries = createData(input, filter, ti, sampleRate, parentFrame);
       TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
-          ti.getStart() + (long) (input.get(0).getSampleRate() * effectiveLength));
+          ti.getStart() + (long) (input.get(0).getSampleInterval() * effectiveLength));
       @SuppressWarnings("unused")
       ViewCoherence vc = new ViewCoherence(parentFrame, plotSeries, effectiveInterval);
     } catch (XMAXException e) {
@@ -122,7 +122,7 @@ public class TransCoherence implements ITransformation{
         dblData[i] = (double) intData[i];
       }
       dblData =
-          TransformationUtils.decimate(dblData, (long) channel.getSampleRate(), (long) downsampleInterval);
+          TransformationUtils.decimate(dblData, (long) channel.getSampleInterval(), (long) downsampleInterval);
       intData = new int[dblData.length];
       for (int i = 0; i < dblData.length; ++i) {
         intData[i] = (int) dblData[i];

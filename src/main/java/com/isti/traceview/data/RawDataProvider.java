@@ -19,7 +19,6 @@ import edu.sc.seis.seisFile.mseed.DataHeader;
 import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.beans.PropertyChangeSupport;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -104,7 +103,7 @@ public class RawDataProvider extends Channel {
       }
       long previousEnd = rawData.get(i - 1).getSegment().getEndTimeMillis();
       long currentStart = rawData.get(i).getSegment().getStartTimeMillis();
-      if (Segment.isDataGap(previousEnd, currentStart, getSampleRate())) {
+      if (Segment.isDataGap(previousEnd, currentStart, getSampleInterval())) {
         return true;
       }
     }
@@ -154,7 +153,7 @@ public class RawDataProvider extends Channel {
       for (int i = lowerBound; i < upperBound; ++i) {
         Segment seg = rawData.get(i).getSegment();
         // check to make sure that expected first point is less than a full sample away
-        if (time + (long) getSampleRate() >= seg.getStartTimeMillis()
+        if (time + (long) getSampleInterval() >= seg.getStartTimeMillis()
             && time < seg.getEndTimeMillis()) {
           return i;
         } else if (time < seg.getStartTimeMillis() &&
@@ -169,7 +168,7 @@ public class RawDataProvider extends Channel {
     Segment seg = rawData.get(midPoint).getSegment();
 
     // once again, allow flexibility for first point if it's less than a sample away from start
-    if (time + (long) getSampleRate() >= seg.getStartTimeMillis() && time < seg.getEndTimeMillis()) {
+    if (time + (long) getSampleInterval() >= seg.getStartTimeMillis() && time < seg.getEndTimeMillis()) {
       return midPoint;
     } else if (time < seg.getStartTimeMillis()) {
       return findSegmentContainingTime(time, lowerBound, midPoint);
@@ -257,7 +256,7 @@ public class RawDataProvider extends Channel {
         contiguousRanges.get(contiguousRanges.size() - 1).setEndingIndex(newestSegmentIndex);
       }
     }
-    setSampleRate(segment.getSampleIntervalMillis());
+    setSampleInterval(segment.getSampleIntervalMillis());
   }
 
   protected List<SegmentCache> getSegmentCache() {

@@ -21,7 +21,6 @@ import com.isti.traceview.processing.Rotation.RotationGapException;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -259,7 +258,7 @@ public class RawDataProviderTest {
     // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
-    double sampleRate = dm.getAllChannels().get(0).getSampleRate();
+    double sampleRate = dm.getAllChannels().get(0).getSampleInterval();
     int[] dataFromFirstFile = dm.getAllChannels().get(0).getUncutSegmentData(0);
     TimeInterval initial = data.getTimeRange();
     long start = initial.getStart();
@@ -282,7 +281,7 @@ public class RawDataProviderTest {
 
     long secondStart = dm.getAllChannels().get(0).getTimeRange().getStart();
     long secondEnd = dm.getAllChannels().get(0).getTimeRange().getEnd();
-    double secondSampleRate = dm.getAllChannels().get(0).getSampleRate();
+    double secondSampleRate = dm.getAllChannels().get(0).getSampleInterval();
     int[] dataFromSecondFile = dm.getAllChannels().get(0).getUncutSegmentData(0);
     // clean up the written in file
     outputFile = new File(filename2);
@@ -384,7 +383,7 @@ public class RawDataProviderTest {
     }
 
     RawDataProvider dataNorth = dm.getAllChannels().get(0);
-    double sampleRate = dataNorth.getSampleRate();
+    double sampleRate = dataNorth.getSampleInterval();
 
     DataOutputStream dsNorth = new DataOutputStream(new FileOutputStream(dumpedNorth));
     TimeInterval ti = new TimeInterval(
@@ -397,7 +396,7 @@ public class RawDataProviderTest {
     dm = new DataModule();
     dm.loadAndParseDataForTesting(dumpedNorth);
     // now the data in dataNorth, dataEast is rotated data (by 20 degrees)
-    assertEquals(sampleRate, dm.getAllChannels().get(0).getSampleRate(), 0.);
+    assertEquals(sampleRate, dm.getAllChannels().get(0).getSampleInterval(), 0.);
     if (dumpedNorth.exists()) {
       dumpedNorth.delete();
     }

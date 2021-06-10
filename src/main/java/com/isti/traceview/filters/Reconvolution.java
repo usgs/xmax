@@ -142,7 +142,7 @@ public class Reconvolution extends JDialog implements IFilter, PropertyChangeLis
 		mean = mean / traceCopyLength;
 
 		final Response.FreqParameters fp = Response.getFreqParameters(traceCopy.length,
-				1000.0 / channel.getSampleRate());
+				1000.0 / channel.getSampleInterval());
 				// final double[] frequenciesArray =
 				// RespUtils.generateFreqArray(fp.startFreq, fp.endFreq,
 				// fp.numFreq, false);

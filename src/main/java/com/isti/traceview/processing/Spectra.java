@@ -178,7 +178,7 @@ public class Spectra {
 			for (int i = 0; i < deconvolved.length; i++) {
 				psd[i] = (deconvolved[i].getReal() * deconvolved[i].getReal() +
 						deconvolved[i].getImaginary() * deconvolved[i].getImaginary())
-						* (channel.getSampleRate() / (double)deconvolved.length) * (1.0/0.875) / 13.0;
+						* (channel.getSampleInterval() / (double)deconvolved.length) * (1.0/0.875) / 13.0;
 			}
 
 			/*

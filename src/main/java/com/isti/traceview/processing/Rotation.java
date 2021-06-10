@@ -20,7 +20,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -287,14 +286,14 @@ public class Rotation {
         rawSegmentsFirst.get(rawSegmentsFirst.size() - 1).getEndTimeMillis());
     int pointIndexFirst = (int)
         Math.round((ti.getStart() - rawSegmentsFirst.get(0).getStartTimeMillis())
-            / channel.getSampleRate());
+            / channel.getSampleInterval());
     int segIndexSecond = 0;
     List<Segment> rawSegmentsSecond = triplet[1].getRawData(ti);
     endTime = Math.min(endTime,
         rawSegmentsSecond.get(rawSegmentsSecond.size() - 1).getEndTimeMillis());
     int pointIndexSecond = (int)
         Math.round((ti.getStart() - rawSegmentsSecond.get(0).getStartTimeMillis())
-            / channel.getSampleRate());
+            / channel.getSampleInterval());
 
     // this code is only needed if the rotation is standard; otherwise we just populate the
     // vertical trace with zeros, because it isn't part of the horizontal calculations
@@ -311,7 +310,7 @@ public class Rotation {
           rawSegmentsThird.get(rawSegmentsThird.size() - 1).getEndTimeMillis());
       pointIndexThird = (int)
           Math.round((ti.getStart() - rawSegmentsThird.get(0).getStartTimeMillis())
-              / channel.getSampleRate());
+              / channel.getSampleInterval());
     }
 
     ti = new TimeInterval(ti.getStart(), endTime);
@@ -368,8 +367,8 @@ public class Rotation {
         // set up all the data structures for a new segment
         segment = rawSegmentsFirst.get(segIndexFirst);
         sampleCount = segment.getSampleCount();
-        if (currentTime + (sampleCount * channel.getSampleRate()) >= ti.getEnd()) {
-          sampleCount = (int) Math.ceil((ti.getEnd() - currentTime) / channel.getSampleRate());
+        if (currentTime + (sampleCount * channel.getSampleInterval()) >= ti.getEnd()) {
+          sampleCount = (int) Math.ceil((ti.getEnd() - currentTime) / channel.getSampleInterval());
         }
         firstRotated = new Segment(null, segment.getStartOffset(),
             segment.getStartTime(), segment.getSampleIntervalMillis(), sampleCount,
@@ -402,7 +401,7 @@ public class Rotation {
 
 
       // iteration step
-      currentTime += channel.getSampleRate();
+      currentTime += channel.getSampleInterval();
     }
     if (firstRotated.getData().data.length > 0) {
       first.add(firstRotated);
@@ -556,7 +555,7 @@ public class Rotation {
     String channelName = channel.getChannelName().substring(0, channel.getChannelName().length() - 1) + channelType;
     RawDataProvider channelComplementary = TraceView.getDataModule().getChannel(channelName, channel.getStation(), channel.getNetworkName(),
         channel.getLocationName());
-    if (channelComplementary != null && channelComplementary.getSampleRate() == channel.getSampleRate()) {
+    if (channelComplementary != null && channelComplementary.getSampleInterval() == channel.getSampleInterval()) {
       return channelComplementary;
     } else {
       // we will allow for vertical channels to return null, allowing 2D rotations when no vertical is loaded

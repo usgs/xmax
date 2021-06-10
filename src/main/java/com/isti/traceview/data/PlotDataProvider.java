@@ -149,8 +149,6 @@ public class PlotDataProvider extends RawDataProvider {
    */
   private PlotData getPlotData(TimeInterval ti, int pointCount,
       IFilter filter) {
-    logger.debug(this + "; " + ti + "(" + ti.getStart() + "-" + ti.getEnd() + ")" + "; pointCount "
-        + pointCount);
 
     List<PlotDataPoint[]> points = null;
 
@@ -269,7 +267,6 @@ public class PlotDataProvider extends RawDataProvider {
    */
   private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, IFilter filter)
       throws PlotDataException {
-    //logger.debug("pixelizing " + this +"; "+ ti + "; "+ "pointCount " + pointCount);
     List<PlotDataPoint[]> pointSet = new ArrayList<>(pointCount);
 
     List<Segment> unfinalSegments; // finalize this only after we determine if rotation is possible
@@ -300,7 +297,7 @@ public class PlotDataProvider extends RawDataProvider {
       plottingData = rawDataFinal;
     }
 
-    // filtering; cannot be parallelized, and the
+    // filtering; cannot be parallelized, and the object should be reinstantiated when gaps are encountered.
     if (filter != null) {
       synchronized (filter) {
         FilterFacade ff = new FilterFacade(filter, this);

@@ -44,7 +44,7 @@ public class TransModal implements ITransformation {
       try {
         List<Spectra> spList = createData(input, filter, ti, parentFrame);
         TimeInterval effectiveInterval = new TimeInterval(ti.getStart(),
-            ti.getStart() + (long) (input.get(0).getSampleRate() * effectiveLength));
+            ti.getStart() + (long) (input.get(0).getSampleInterval() * effectiveLength));
         @SuppressWarnings("unused")
         ViewModal vp = new ViewModal(parentFrame, spList, effectiveInterval, input);
       } catch (RuntimeException e) {

@@ -292,7 +292,7 @@ public class SacTimeSeriesASCII extends SacTimeSeries {
 			sum +=y;
 		}
 		sac.setNpts(ydata.length);
-		float f =  (float) ((channel.getSampleRate())/1000.0f);
+		float f =  (float) ((channel.getSampleInterval())/1000.0f);
 		sac.setB(0);
 		sac.setE(sac.getNpts() * f);
 		sac.setDelta(f);

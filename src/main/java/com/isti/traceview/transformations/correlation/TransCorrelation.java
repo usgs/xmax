@@ -46,9 +46,9 @@ public class TransCorrelation implements ITransformation {
 				// sample rate is interval in ms -- larger sample rate is the lower-frequency data
 				// and if they don't match up we should downsample to the lower frequency rate
 
-				double sampleRate = input.get(0).getSampleRate();
+				double sampleRate = input.get(0).getSampleInterval();
 				if (input.size() == 2) {
-					sampleRate = Math.max(input.get(0).getSampleRate(), input.get(1).getSampleRate());
+					sampleRate = Math.max(input.get(0).getSampleInterval(), input.get(1).getSampleInterval());
 				}
 
 				@SuppressWarnings("unused")
@@ -88,7 +88,7 @@ public class TransCorrelation implements ITransformation {
 				}
 				double[] dblData = IstiUtilsMath.normData(intData);
 				dblData =
-            TransformationUtils.decimate(dblData, (long) trace.getSampleRate(), (long) sampleRate);
+            TransformationUtils.decimate(dblData, (long) trace.getSampleInterval(), (long) sampleRate);
 				if (dblData.length > maxDataLength) {
 					throw new XMAXException("Too many datapoints are selected.");
 				}

@@ -70,7 +70,7 @@ public class Channel implements Comparable<Object>, Serializable {
 	 */
 	private String networkName = null;
 
-	private double sampleRate = 0.0;
+	private double sampleInterval = 0.0;
 	
 	private transient boolean isSelected = false;
 	
@@ -172,12 +172,12 @@ public class Channel implements Comparable<Object>, Serializable {
 	 * 
 	 * @return Sampling interval in milliseconds
 	 */
-	public double getSampleRate() {
-		return sampleRate;
+	public double getSampleInterval() {
+		return sampleInterval;
 	}
 	
-	public void setSampleRate(double sampleRate) {
-		this.sampleRate = sampleRate;
+	public void setSampleInterval(double sampleInterval) {
+		this.sampleInterval = sampleInterval;
 	}
 	
 
@@ -508,8 +508,8 @@ class NetworkStationSamplerateComparator implements Comparator<Object> {
 				String st1 = channel1.getStation().getName();
 				String st2 = channel2.getStation().getName();
 				if (st1.equals(st2)) {
-					Double sr1 = channel1.getSampleRate();
-					Double sr2 = channel2.getSampleRate();
+					Double sr1 = channel1.getSampleInterval();
+					Double sr2 = channel2.getSampleInterval();
 					if ((Math.abs(sr1 - sr2) < 0.000001)) {
 						String loc1 = channel1.getLocationName();
 						String loc2 = channel2.getLocationName();

@@ -97,7 +97,7 @@ public class TransPPM implements ITransformation {
 
 		PlotDataProvider channel1 = input.get(0); // N/S
 		PlotDataProvider channel2 = input.get(1); // E/W
-		if (channel1.getSampleRate() != channel2.getSampleRate())
+		if (channel1.getSampleInterval() != channel2.getSampleInterval())
 			throw new XMAXException("Channels have different sample rate");
 
 		// not a synchronized list because we use a forEachOrdered stream loo=XX
