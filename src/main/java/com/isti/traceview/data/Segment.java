@@ -9,7 +9,6 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.apache.log4j.Logger;
@@ -184,7 +183,7 @@ public class Segment implements Externalizable, Cloneable {
 		logger.debug("Created empty segment");
 	}
 
-	/**
+  /**
 	 * Getter of the property <tt>startTime</tt>
 	 *
 	 * @return segment data start time
@@ -748,5 +747,12 @@ public class Segment implements Externalizable, Cloneable {
 				segs[0].getStartTime(), sampleRate, totalLength, segs[0].sourceSerialNumber);
 		returnValue.data = data;
 		return returnValue;
+	}
+
+	public long quantizeTrimmedStartTime(long currentTime) {
+		// note that we round down here, so data starts with the first sample before current time
+		// (rather than first after or rounded to closest time)
+		int startIndex = (int) ((currentTime - startTime) / sampleRate);
+		return startTime + (long) (startIndex * sampleRate); // sampleRate is interval in ms
 	}
 }

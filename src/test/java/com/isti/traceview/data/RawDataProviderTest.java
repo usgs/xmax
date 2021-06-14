@@ -14,13 +14,11 @@ import com.isti.traceview.common.Configuration;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.filters.FilterLP;
 import com.isti.traceview.processing.BPFilterException;
-import com.isti.traceview.processing.HPFilterException;
-import com.isti.traceview.processing.LPFilterException;
 import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Rotation.RotationGapException;
-import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,17 +68,14 @@ public class RawDataProviderTest {
   }
 
   @Test
-  public void testLoad() throws IOException {
+  public void testLoad() {
     DataModule dm = new DataModule();
 
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
-
-    dm.loadAndParseDataForTesting(fileToModify);
-
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
+
     dm.loadAndParseDataForTesting(fileToModify);
-    // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
     List<Segment> segments = data.getRawData();
@@ -96,18 +91,15 @@ public class RawDataProviderTest {
   }
 
   @Test
-  public void dumpMseed_trim() throws IOException, SeedFormatException, TraceViewException {
+  public void dumpMseed_trim() throws IOException {
 
     DataModule dm = new DataModule();
 
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
-
-    dm.loadAndParseDataForTesting(fileToModify);
-
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
+
     dm.loadAndParseDataForTesting(fileToModify);
-    // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
     TimeInterval initial = data.getTimeRange();
@@ -169,16 +161,15 @@ public class RawDataProviderTest {
 
   @Test
   public void dumpMseed_filter()
-      throws IOException, LPFilterException, BPFilterException, HPFilterException {
+      throws IOException, BPFilterException {
     // first, we need to load in the data (may be moved to set-up method)
     DataModule dm = new DataModule();
 
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
-
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
+
     dm.loadAndParseDataForTesting(fileToModify);
-    // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
     List<Segment> segments = data.getRawData();
@@ -219,6 +210,7 @@ public class RawDataProviderTest {
     // write out filtered data
     DataOutputStream ds = new DataOutputStream(new FileOutputStream(outputFile));
     data.dumpMseed(ds, data.getTimeRange(), lowPass, null);
+    ds.close();
     dm = new DataModule();
     dm.loadAndParseDataForTesting(outputFile);
     if (outputFile.exists()) {
@@ -238,7 +230,7 @@ public class RawDataProviderTest {
     lastArrayPoint = 0;
     for (Segment seg : segments) {
       for (int point : seg.getData().data) {
-        filteredLoaded[lastArrayPoint++] = (double) point;
+        filteredLoaded[lastArrayPoint++] = point;
       }
     }
     assertArrayEquals(filteredExpected, filteredLoaded, 1.);
@@ -250,12 +242,9 @@ public class RawDataProviderTest {
 
     // first, we need to load in the data (may be moved to set-up method)
     File fileToModify = new File(startFileSeedPath);
-
-    dm.loadAndParseDataForTesting(fileToModify);
-
     assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
+
     dm.loadAndParseDataForTesting(fileToModify);
-    // dm.loadData();
 
     RawDataProvider data = dm.getAllChannels().get(0);
     double sampleRate = dm.getAllChannels().get(0).getSampleInterval();
@@ -274,6 +263,7 @@ public class RawDataProviderTest {
     for (int i = 0; i < 10; ++i) {
       DataOutputStream ds = new DataOutputStream(new FileOutputStream(outputFile));
       data.dumpMseed(ds, data.getTimeRange(), null, null);
+      ds.close();
       dm = new DataModule();
       dm.loadAndParseDataForTesting(outputFile);
       data = dm.getAllChannels().get(0);
@@ -293,6 +283,53 @@ public class RawDataProviderTest {
     assertEquals(sampleRate, secondSampleRate, 0.);
     assertEquals(end, secondEnd);
     assertEquals(end-start, secondEnd-secondStart);
+  }
+
+  @Test
+  public void dumpMseed_quantizationCorrect() throws IOException {
+    DataModule dm = new DataModule();
+
+    // first, we need to load in the data (may be moved to set-up method)
+    File fileToModify = new File(startFileSeedPath);
+    assertTrue(fileToModify.getAbsolutePath(), fileToModify.getAbsoluteFile().exists());
+
+    dm.loadAndParseDataForTesting(fileToModify);
+
+    RawDataProvider data = dm.getAllChannels().get(0);
+
+    double sampleRate = data.getSampleInterval();
+    TimeInterval initial = data.getTimeRange();
+    long start = initial.getStart();
+    long end = initial.getEnd();
+
+    // now we will create a start time that should NOT match the underlying data quantization
+    long trimStart = start + (long) (4.5 * sampleRate + 10);
+    // because we do division on data cast to long, we always expect to round down
+    long expectedQuantizedStart = start + (long) (4 * sampleRate);
+    long quantizedStart = data.getRawData().get(0).quantizeTrimmedStartTime(trimStart);
+    assertNotEquals(trimStart, quantizedStart);
+    assertEquals(expectedQuantizedStart, quantizedStart);
+    int startingIndex = (int) ((quantizedStart - start) / sampleRate);
+    assertEquals(4, startingIndex);
+
+    String filename2 = "src/test/resources/quantization-check.512.mseed";
+    // make sure data from a previous test isn't lingering
+    File outputFile = new File(filename2);
+    if (outputFile.exists()) {
+      outputFile.delete();
+    }
+
+    DataOutputStream ds = new DataOutputStream(new FileOutputStream(outputFile));
+    data.dumpMseed(ds, new TimeInterval(quantizedStart, end), null, null);
+    ds.close();
+    dm = new DataModule();
+    dm.loadAndParseDataForTesting(outputFile);
+    data = dm.getAllChannels().get(0);
+
+    assertEquals(quantizedStart, data.getTimeRange().getStart());
+    if (outputFile.exists()) {
+      outputFile.delete();
+    }
   }
 
   @Test

@@ -536,25 +536,27 @@ public class RawDataProvider extends Channel {
         filter.init(this);
       }
 
-      long currentTime = Math.max(ti.getStart(), segment.getStartTime().toEpochMilli());
+      long currentTime = ti.getStart();
       // prevent overlap
       if (previousSegment != null) {
-        currentTime = Math.max(currentTime, previousSegment.getEndTime().toEpochMilli());
+        currentTime = Math.max(ti.getStart(), previousSegment.getEndTimeMillis());
       }
+      // now ensure quantization so we record the start time at the first sample we intend to get
+      currentTime = segment.quantizeTrimmedStartTime(currentTime);
+
       TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
       int[] data = segment.getData(dataInterval).data;
       if (filter != null) {
         data = new FilterFacade(filter, this).filter(data);
       }
-      TimeInterval exportedRange = TimeInterval
-          .getIntersect(ti, new TimeInterval(segment.getStartTime(), segment.getEndTime()));
+
       if (data.length > 0) {
         // sample code derived from crotwell seisfile example, see
         // https://github.com/crotwell/seisFile/blob/seisfile2.0/src/client/java/edu/sc/seis/seisFile/example/WriteMiniSeed.java
         try {
           long interval = (long) segment.getSampleIntervalMillis();
           recordNumber = arrayToMSEED(recordNumber, (float) segment.getSampleRateHz(),
-              exportedRange.getStart(), biasValue, data, ds, interval);
+              currentTime, biasValue, data, ds, interval);
         } catch (SteimException | SeedFormatException e) {
           logger.error("Can't encode data: " + ti + ", " + this + e);
         }
