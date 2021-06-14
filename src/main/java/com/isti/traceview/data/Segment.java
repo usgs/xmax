@@ -753,6 +753,9 @@ public class Segment implements Externalizable, Cloneable {
 		// note that we round down here, so data starts with the first sample before current time
 		// (rather than first after or rounded to closest time)
 		int startIndex = (int) ((currentTime - startTime) / sampleRate);
+		if (startIndex < 0) {
+			startIndex = 0;
+		}
 		return startTime + (long) (startIndex * sampleRate); // sampleRate is interval in ms
 	}
 }
