@@ -132,6 +132,12 @@ public class Configuration {
 
 	private PanelCountUnit panelCountUnit;
 
+	// parameters for default values for filter cut bands in
+	private double lowPassCutoff = 0.05;
+	private double highPassCutoff = 1.0;
+	private double bandLowCutoff = 0.1;
+	private double bandHighCutoff = 0.5;
+
 	/**
 	 * Quantity of visible units on the screen, see {@link PanelCountUnit}. Correspond -f command
 	 * line option.
@@ -858,5 +864,86 @@ public class Configuration {
 				lastIndexOf(confFile.getName()));
 		logger.debug("== fileDir: " + ret);
 		return ret;
+	}
+
+	/**
+	 * Return configuration-derived value for corner frequency in low-pass filter operations.
+	 * This value is taken from field "Configuration.FreqLimits.LowPass" in config.xml
+	 * Default value if not defined in config is 0.05 (Hz).
+	 * @return value to apply to low-pass filter for corner frequency, in Hz
+	 */
+	public double getLowPassCutoff() {
+		return lowPassCutoff;
+	}
+
+	/**
+	 * Set the value for corner frequency in low-pass filter operations
+	 * @param lowPassCutoff Frequency value to use as corner, in Hz
+	 */
+	public void setLowPassCutoff(double lowPassCutoff) {
+		this.lowPassCutoff = lowPassCutoff;
+	}
+
+	/**
+	 * Return configuration-derived value for corner frequency in high-pass filter operations.
+	 * This value is taken from field "Configuration.FreqLimits.HighPass" in config.xml
+	 * Default value if not defined in config is 1.0 (Hz).
+	 * @return value to apply to high-pass filter for corner frequency, in Hz
+	 */
+	public double getHighPassCutoff() {
+		return highPassCutoff;
+	}
+
+	/**
+	 * Set the value for corner frequency in high-pass filter operations
+	 * @param highPassCutoff Frequency value to use as corner, in Hz
+	 */
+	public void setHighPassCutoff(double highPassCutoff) {
+		this.highPassCutoff = highPassCutoff;
+	}
+
+	/**
+	 * Return configuration-derived value for low corner frequency in band-pass filter operations.
+	 * This value is taken from field "Configuration.FreqLimits.BandPassLow" in config.xml and is
+	 * designed to pair with "Configuration.FreqLimits.BandPassHigh" parameter.
+	 * Default value if not defined in config is 0.1 (Hz).
+	 * If both bandPassLow and bandPassHigh fields are defined, this is the lower of the two values.
+	 * If this value was not defined in the configuration but BandPassHigh was using a value
+	 * below 0.1, this will be the value assigned to BandPassHigh and BandPassHigh will be at 0.1
+	 * @return value to apply to band-pass filter for lower corner frequency, in Hz
+	 */
+	public double getBandLowCutoff() {
+		return bandLowCutoff;
+	}
+
+	/**
+	 * Return configuration-derived value for high corner frequency in band-pass filter operations.
+	 * This value is taken from field "Configuration.FreqLimits.BandPassHigh" in config.xml
+	 * Default value if not defined in config is 0.5 (Hz).
+	 * If both bandPassLow and bandPassHigh fields are defined, this is the higher of the two values.
+	 * If this value was not defined in the configuration but BandPassLow was using a value
+	 * above 0.5, this will be the value assigned to BandPassLow and BandPassLow will be at 0.5
+	 * @return value to apply to band-pass filter for higher corner frequency, in Hz
+	 */
+	public double getBandHighCutoff() {
+		return bandHighCutoff;
+	}
+
+	/**
+	 * Return configuration-derived values for upper and lower corners for band-pass filter
+	 * operations.
+	 * These values are taken from fields "Configuration.FreqLimits.BandPassLow" and
+	 * "Configuration.FreqLimits.BandPassHigh" with some caveats.
+	 * In particular, values are only assigned if lowBand and highBand are different values.
+	 * The values assigned will always be taken as the max and min values passed in,
+	 * rather than which field is tagged as the lower and higher corner.
+	 * @param lowBand low-frequency corner value to use, in Hz
+	 * @param highBand high-frequency corner value to use, in Hz
+	 */
+	public void setBandPassCutoffs(double lowBand, double highBand) {
+		if (lowBand != highBand) {
+			bandLowCutoff = Math.min(lowBand, highBand);
+			bandHighCutoff = Math.max(lowBand, highBand);
+		}
 	}
 }

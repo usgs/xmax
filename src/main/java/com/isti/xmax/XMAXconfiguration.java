@@ -172,6 +172,20 @@ public class XMAXconfiguration extends Configuration {
 			setResponsePath(config.getString("Configuration.Data.ResponsePath",
 					defaultRespPath));
 			// setAllowMultiplexedData(config.getBoolean("Configuration.Data.AllowMultiplexedData"));
+
+			// default values assigned at config instantiation, so use that as default values
+			setLowPassCutoff(config.getDouble("Configuration.FreqLimits.LowPass",
+					getLowPassCutoff()));
+			setHighPassCutoff(config.getDouble("Configuration.FreqLimits.HighPass",
+					getHighPassCutoff()));
+			// get temp variables for the band filtering so they can be assigned as a pair
+			{
+				double tempBandLow = config.getDouble("Configuration.FreqLimits.BandPassLow",
+						getBandLowCutoff());
+				double tempBandHigh = config.getDouble("Configuration.FreqLimits.BandPassHigh",
+						getBandHighCutoff());
+				setBandPassCutoffs(tempBandLow, tempBandHigh);
+			}
 			setOutputPath(config.getString("Configuration.OutputPath", currentDir));
 			String startTimeStr = config.getString("Configuration.StartTime");
 			if (startTimeStr != null) {
