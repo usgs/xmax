@@ -1,7 +1,7 @@
 package com.isti.traceview.filters;
 
+import asl.utils.Filter;
 import java.util.function.Function;
-import uk.me.berndporr.iirj.Butterworth;
 
 /**
  * <p>
@@ -60,7 +60,7 @@ public class FilterBP extends AbstractFilter {
 
 	@Override
 	public Function<double[], double[]> getFilterFunction() {
-		return Filter.BANDPASS.getFilter(sampleRate, false, order, cutLowFrequency, cutHighFrequency);
+		return Filter.BANDPASS.getFilterFunction(sampleRate, false, order, cutLowFrequency, cutHighFrequency);
 	}
 
 	public int getOrder() {

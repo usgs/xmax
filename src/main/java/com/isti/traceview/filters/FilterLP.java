@@ -1,8 +1,8 @@
 package com.isti.traceview.filters;
 
+import asl.utils.Filter;
 import java.util.function.Function;
 import org.apache.log4j.Logger;
-import uk.me.berndporr.iirj.Butterworth;
 
 /**
  * Low-pass Butterworth filter Algorithm is from Stearns, 1975
@@ -37,7 +37,7 @@ public class FilterLP extends AbstractFilter {
 	}
 	@Override
 	public Function<double[], double[]> getFilterFunction() {
-		return Filter.LOWPASS.getFilter(sampleRate, false, order, cutFrequency, null);
+		return Filter.LOWPASS.getFilterFunction(sampleRate, false, order, cutFrequency, null);
 	}
 	@Override
 	public String getName() {

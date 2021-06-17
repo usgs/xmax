@@ -1,7 +1,7 @@
 package com.isti.traceview.filters;
 
+import asl.utils.Filter;
 import java.util.function.Function;
-import uk.me.berndporr.iirj.Butterworth;
 
 /**
  * High-pass Butterworth filter Algorithm is from Stearns, 1975
@@ -44,7 +44,7 @@ public class FilterHP extends AbstractFilter {
 
 	@Override
 	public Function<double[], double[]> getFilterFunction() {
-		return Filter.HIGHPASS.getFilter(sampleRate, false, order, cutFrequency, null);
+		return Filter.HIGHPASS.getFilterFunction(sampleRate, false, order, cutFrequency, null);
 	}
 	public boolean needProcessing() {
 		return true;

@@ -1,10 +1,6 @@
 package com.isti.traceview.processing;
 
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.RawDataProvider;
-import com.isti.traceview.data.Segment;
-import com.isti.traceview.filters.Filter;
 import com.isti.traceview.filters.IFilter;
 import java.util.function.Function;
 import org.apache.log4j.Logger;

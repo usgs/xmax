@@ -1,12 +1,12 @@
 package com.isti.traceview.transformations.correlation;
 
+import asl.utils.NumericUtils;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
-import com.isti.traceview.transformations.TransformationUtils;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class TransCorrelation implements ITransformation {
 				}
 				double[] dblData = IstiUtilsMath.normData(intData);
 				dblData =
-            TransformationUtils.decimate(dblData, (long) trace.getSampleInterval(), (long) sampleRate);
+            NumericUtils.decimate(dblData, (long) trace.getSampleInterval(), (long) sampleRate);
 				if (dblData.length > maxDataLength) {
 					throw new XMAXException("Too many datapoints are selected.");
 				}

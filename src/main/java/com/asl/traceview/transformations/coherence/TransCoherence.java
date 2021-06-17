@@ -2,6 +2,7 @@ package com.asl.traceview.transformations.coherence;
 
 import static com.isti.traceview.processing.IstiUtilsMath.generateFreqArray;
 
+import asl.utils.NumericUtils;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
@@ -9,7 +10,6 @@ import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
-import com.isti.traceview.transformations.TransformationUtils;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class TransCoherence implements ITransformation{
         dblData[i] = (double) intData[i];
       }
       dblData =
-          TransformationUtils.decimate(dblData, (long) channel.getSampleInterval(), (long) downsampleInterval);
+          NumericUtils.decimate(dblData, (long) channel.getSampleInterval(), (long) downsampleInterval);
       intData = new int[dblData.length];
       for (int i = 0; i < dblData.length; ++i) {
         intData[i] = (int) dblData[i];
