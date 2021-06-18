@@ -79,28 +79,26 @@ public class Configuration {
 	 * stations and have a list sorted by channels
 	 */
 	public enum ChannelSortType {
+
 		/**
-		 * Trace name is what you see on a plot, i.e
-		 * network/station/location/channel. See
-		 * {@link com.isti.traceview.data.Channel.NameComparator} for details
+		 * Trace name is what you see on a plot, i.e network/station/location/channel
 		 */
 		TRACENAME,
 
 		/**
-		 * Network - station - sample rate - location code -channel type order
+		 * Order by network, station, sample rate, location, then channel.
+		 * Groups channels of similar datatype.
 		 */
 		NETWORK_STATION_SAMPLERATE,
 
 		/**
-		 * Really Channel - network - station - location order See
-		 * {@link com.isti.traceview.data.Channel.ChannelComparator} for details
+		 * Orders primarily by channel, then by network, station, location.
 		 */
 		CHANNEL,
 
 		/**
-		 * Channel type is last character of channel name. Channel type -
-		 * channel - network - station order.
-		 * @see com.isti.traceview.data.Channel.ChannelTypeComparator
+		 * Channel type is last character of channel name, which loosely matches sample rate.
+		 * After channel type, ordering is full channel name, then network, station, location.
 		 */
 		CHANNEL_TYPE
 	}
