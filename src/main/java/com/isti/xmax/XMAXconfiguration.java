@@ -450,7 +450,15 @@ public class XMAXconfiguration extends Configuration {
 	}
 
 	public void setFrameState(int extendedState, int posX, int posY, int width, int heigth) {
+		final String fixParams = "SessionData.Frame.FixParams"; // fix window parameters, don't save
+		if (!config.containsKey(fixParams)) {
+			config.setProperty(fixParams, false);
+			save();
+		}
+
+		boolean preventSave = config.getBoolean(fixParams);
 		boolean needsave = false;
+
 		String state = "";
 		if (extendedState != frameState) {
 			frameState = extendedState;
@@ -467,43 +475,44 @@ public class XMAXconfiguration extends Configuration {
 			case Frame.MAXIMIZED_VERT:
 				state = "MAXIMIZED_VERT";
 				break;
-			case Frame.MAXIMIZED_BOTH:
-				state = "MAXIMIZED_BOTH";
-				break;
+			case Frame.MAXIMIZED_BOTH: // treat this as default case
 			default:
 				state = "MAXIMIZED_BOTH";
 			}
-			config.setProperty("SessionData.Frame.State", state);
-			needsave = true;
+			if (!preventSave) {
+				config.setProperty("SessionData.Frame.State", state);
+				needsave = true;
+			}
 		}
 		if (posX != framePos[0]) {
-			if (posX < 0) {
-				framePos[0] = 0;
-			} else {
-				framePos[0] = posX;
+			framePos[0] = Math.max(posX, 0);
+			if (!preventSave) {
+				config.setProperty("SessionData.Frame.PosX", framePos[0]);
+				needsave = true;
 			}
-			config.setProperty("SessionData.Frame.PosX", framePos[0]);
-			needsave = true;
 		}
 		if (posY != framePos[1]) {
-			if (posY < 0) {
-				framePos[1] = 0;
-			} else {
-				framePos[1] = posY;
+			framePos[1] = Math.max(posY, 0);
+			if (!preventSave) {
+				config.setProperty("SessionData.Frame.PosY", framePos[1]);
+				needsave = true;
 			}
-			config.setProperty("SessionData.Frame.PosY", framePos[1]);
-			needsave = true;
 		}
 		if (width != frameSize[0]) {
 			frameSize[0] = width;
-			config.setProperty("SessionData.Frame.Width", width);
-			needsave = true;
+			if (!preventSave) {
+				config.setProperty("SessionData.Frame.Width", width);
+				needsave = true;
+			}
 		}
 		if (heigth != frameSize[1]) {
 			frameSize[1] = heigth;
-			config.setProperty("SessionData.Frame.Heigth", heigth);
-			needsave = true;
+			if (!preventSave) {
+				config.setProperty("SessionData.Frame.Heigth", heigth);
+				needsave = true;
+			}
 		}
+
 		if (needsave) {
 			save();
 		}
