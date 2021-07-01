@@ -4,9 +4,7 @@ import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TimeInterval.DateFormatType;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.ChannelView;
-import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Rotation.RotationGapException;
 import edu.iris.dmc.seedcodec.B1000Types;
@@ -33,20 +31,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.DoubleUnaryOperator;
 import org.apache.log4j.Logger;
 
 /**
  * Class for trace representation, holds raw trace data and introduces an abstract way to get it.
  * Trace data here is list of {@link Segment}s.
  *
+ * TODO:  NEEDS TESTING!
+ * This whole class needs extensive unit testing! Especially the dumping.
+ * TODO: Remove outdated dump formats.
+ *
  * @author Max Kokoulin
  */
 public class RawDataProvider extends Channel {
-
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
 
   private static final Logger logger = Logger.getLogger(RawDataProvider.class);
 
@@ -512,11 +510,11 @@ public class RawDataProvider extends Channel {
    *
    * @param ds stream to dump (must be closed by calling method; not closed here)
    * @param ti content's time interval
-   * @param filter filter being applied to the data
+   * @param filterFunction filter being applied to the data
    * @param rotation system of rotation applied to the data (can be null)
    * @throws IOException if there are problems writing the miniseed dump
    */
-  public void dumpMseed(DataOutputStream ds, TimeInterval ti, IFilter filter, Rotation rotation)
+  public void dumpMseed(DataOutputStream ds, TimeInterval ti, DoubleUnaryOperator filterFunction, Rotation rotation)
       throws IOException {
 
     Segment previousSegment = null;
@@ -530,12 +528,7 @@ public class RawDataProvider extends Channel {
         biasValue = previousSegment.getData().getLastValue();
       }
       Segment segment = segments.get(j);
-      if (filter != null && previousSegment != null &&
-          Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
-              segment.getSampleIntervalMillis())) {
-        // reset the filter due to data gap -- data is not continuous
-        filter.init(this);
-      }
+
 
       long currentTime = ti.getStart();
       // prevent overlap
@@ -546,11 +539,20 @@ public class RawDataProvider extends Channel {
       currentTime = segment.quantizeTrimmedStartTime(currentTime);
 
       TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
+      // segment.getData() clones in the backend, should be safe to modify this instance.
       int[] data = segment.getData(dataInterval).data;
-      if (filter != null) {
-        //TODO: This appears to rely on the saved state in the butterworth cascade object.
-        // The new method does not maintain this outside of individual filters.
-        data = new FilterFacade(filter, this).filter(data);
+
+      if (filterFunction != null) {
+        if (previousSegment == null) {
+          // Pre initialize filter since it is the first segment.
+          for (int i = data.length -1; i >= 0; i--){
+            double ignore = filterFunction.applyAsDouble(data[i]);
+          }
+        }
+        //TODO: This does not handle the right filter pass properly! Needs to be fixed!
+        for(int i = 0; i < data.length; i++){
+          data[i] = (int)filterFunction.applyAsDouble(data[i]);
+        }
       }
 
       if (data.length > 0) {
@@ -626,7 +628,7 @@ public class RawDataProvider extends Channel {
    * @param ti content's time interval
    * @throws IOException if there are problems writing the ascii dump
    */
-  public void dumpASCII(FileWriter fw, TimeInterval ti, IFilter filter, Rotation rotation)
+  public void dumpASCII(FileWriter fw, TimeInterval ti, DoubleUnaryOperator filterFunction, Rotation rotation)
       throws IOException {
     int i = 1;
     List<Segment> segments = getDataWithRotation(rotation, ti);
@@ -636,12 +638,6 @@ public class RawDataProvider extends Channel {
         previousSegment = segments.get(j - 1);
       }
       Segment segment = segments.get(j);
-      if (filter != null && previousSegment != null &&
-          Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
-              segment.getSampleIntervalMillis())) {
-        // reset the filter due to data gap -- data is not continuous
-        filter.init(this);
-      }
 
       double sampleRate = segment.getSampleIntervalMillis();
       long currentTime = Math.max(ti.getStart(), segment.getStartTime().toEpochMilli());
@@ -650,8 +646,17 @@ public class RawDataProvider extends Channel {
       }
       TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
       int[] data = segment.getData(dataInterval).data;
-      if (filter != null) {
-        data = new FilterFacade(filter, this).filter(data);
+      if (filterFunction != null) {
+        if (previousSegment == null) {
+          // Pre initialize filter since it is the first segment.
+          for (int index = data.length -1; index >= 0; index--){
+            double ignore = filterFunction.applyAsDouble(data[index]);
+          }
+        }
+        //TODO: This does not handle the right filter pass properly! Needs to be fixed!
+        for(int index = 0; index < data.length; index++){
+          data[index] = (int)filterFunction.applyAsDouble(data[index]);
+        }
       }
       for (int value : data) {
         if (ti.isContain(currentTime)) {
@@ -673,9 +678,8 @@ public class RawDataProvider extends Channel {
    * @param ti content's time interval
    * @throws IOException if there are problems writing the XML dump
    */
-  public void dumpXML(FileWriter fw, TimeInterval ti, IFilter filter, Rotation rotation)
+  public void dumpXML(FileWriter fw, TimeInterval ti, DoubleUnaryOperator filterFunction, Rotation rotation)
       throws IOException {
-    @SuppressWarnings("unused")
     int i = 1;
     fw.write("<Trace network=\"" + getNetworkName() + "\" station=\"" + getStation().getName()
         + "\" location=\"" + getLocationName()
@@ -687,12 +691,6 @@ public class RawDataProvider extends Channel {
         previousSegment = segments.get(j - 1);
       }
       Segment segment = segments.get(j);
-      if (filter != null && previousSegment != null &&
-          Segment.isDataGap(previousSegment.getEndTimeMillis(), segment.getStartTimeMillis(),
-              segment.getSampleIntervalMillis())) {
-        // reset the filter due to data gap -- data is not continuous
-        filter.init(this);
-      }
 
       long currentTime = Math.max(ti.getStart(), segment.getStartTime().toEpochMilli());
       if (previousSegment != null) {
@@ -700,6 +698,20 @@ public class RawDataProvider extends Channel {
       }
       TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
       int[] data = segment.getData(dataInterval).data;
+
+      if (filterFunction != null) {
+        if (previousSegment == null) {
+          // Pre initialize filter since it is the first segment.
+          for (int index = data.length -1; index >= 0; index--){
+            double ignore = filterFunction.applyAsDouble(data[index]);
+          }
+        }
+        //TODO: This does not handle the right filter pass properly! Needs to be fixed!
+        for(int index = 0; index < data.length; index++){
+          data[index] = (int)filterFunction.applyAsDouble(data[index]);
+        }
+      }
+
       boolean segmentStarted = false;
       for (int value : data) {
         if (ti.isContain(currentTime)) {
@@ -723,25 +735,34 @@ public class RawDataProvider extends Channel {
   /**
    * Dumps content of this provider in SAC format
    *
+   *
    * @param ds writer to dump
    * @param ti content's time interval
    * @throws IOException if there are problems writing the sac dump
    */
-  public void dumpSacAscii(DataOutputStream ds, TimeInterval ti, IFilter filter, Rotation rotation)
+  public void dumpSacAscii(DataOutputStream ds, TimeInterval ti, DoubleUnaryOperator filterFunction, Rotation rotation)
       throws IOException, TraceViewException {
     List<Segment> segments = getDataWithRotation(rotation, ti);
     if (segments.size() != 1) {
       throw new TraceViewException("You have gaps in the interval to import as SAC");
     }
     int[] intData = segments.get(0).getData(ti).data;
-    long currentTime = Math.max(ti.getStart(), segments.get(0).getStartTime().toEpochMilli());
-    if (filter != null) {
-      intData = new FilterFacade(filter, this).filter(intData);
-    }
     float[] floatData = new float[intData.length];
-    for (int i = 0; i < intData.length; i++) {
-      floatData[i] = (float) intData[i];
+
+    long currentTime = Math.max(ti.getStart(), segments.get(0).getStartTime().toEpochMilli());
+
+    if (filterFunction != null) {
+      // Pre initialize filter since it is the first segment.
+      for (int index = intData.length -1; index >= 0; index--){
+        double ignore = filterFunction.applyAsDouble(intData[index]);
+      }
+
+      //TODO: This does not handle the right filter pass properly! Needs to be fixed!
+      for(int index = 0; index < intData.length; index++){
+        floatData[index] = (float)filterFunction.applyAsDouble(intData[index]);
+      }
     }
+
     SacTimeSeriesASCII sacAscii = SacTimeSeriesASCII.getSAC(this, new Date(currentTime), floatData);
     sacAscii.writeHeader(ds);
     sacAscii.writeData(ds);
