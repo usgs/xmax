@@ -4,15 +4,14 @@ import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
 import uk.me.berndporr.iirj.Butterworth;
 
-public abstract class AbstractFilter implements IFilter {
+public abstract class AbstractFilter {
   double sampleRate = 0.;
 
-  @Override
   public int getMaxDataLength() {
     return Integer.MAX_VALUE;
   }
 
-  @Override
+
   public void init(RawDataProvider channel) {
     sampleRate = channel.getSampleRate();
   }
@@ -22,7 +21,7 @@ public abstract class AbstractFilter implements IFilter {
     sampleRate = newsampleRateHz;
   }
 
-  @Override
+
   public String getName() {
     return null;
   }

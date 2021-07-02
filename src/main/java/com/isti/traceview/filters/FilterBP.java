@@ -58,9 +58,9 @@ public class FilterBP extends AbstractFilter {
 		this(4, 0.1, 0.5);
 	}
 
-	@Override
 	public Function<double[], double[]> getFilterFunction() {
-		return Filter.BANDPASS.getFilterFunction(sampleRate, false, order, cutLowFrequency, cutHighFrequency);
+		return new Filter().withBandPass(cutLowFrequency, cutHighFrequency).withOrder(order).withSampleRate(sampleRate).withZeroPhase(false).buildFilterBulkFunction(false);
+
 	}
 
 	public int getOrder() {

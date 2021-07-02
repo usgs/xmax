@@ -1,5 +1,6 @@
 package com.isti.traceview.filters;
 
+import asl.utils.Filter;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.processing.BPFilterException;
@@ -29,7 +30,7 @@ import org.apache.log4j.Logger;
  * 
  * @author Max Kokoulin
  */
-public class FilterDYO extends JDialog implements IFilter, PropertyChangeListener {
+public class FilterDYO extends JDialog implements  PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(FilterDYO.class);
@@ -44,7 +45,7 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 	private final static JTextField highFrequencyTF;
 	private final static JComboBox<Object> orderCB;
 
-	private IFilter filter = null;
+	private Filter filter = null;
 	private JOptionPane optionPane;
 
 	private boolean needProcessing = false;
@@ -93,10 +94,6 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		pack();
 		setLocationRelativeTo(super.getOwner());
 		setVisible(true);
-	}
-
-	public int getMaxDataLength() {
-		return filter.getMaxDataLength();
 	}
 
 	private JPanel createDesignPanel() {
@@ -184,7 +181,8 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 						cutLowFrequency > 0 && cutHighFrequency > 0) {
 					logger.info("Band pass filtering triggered");
 					if (cutLowFrequency < cutHighFrequency) {
-						filter = new FilterBP(order, cutLowFrequency, cutHighFrequency);
+						filter = new Filter().withBandPass(cutLowFrequency, cutHighFrequency).withOrder(order).withZeroPhase(true);
+						//new FilterBP(order, cutLowFrequency, cutHighFrequency);
 						setVisible(false);
 						needProcessing = true;
 					} else {
@@ -193,12 +191,14 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 					}
 				} else if (!Double.isNaN(cutLowFrequency) && cutLowFrequency > 0) {
 					logger.info("Low pass filtering triggered");
-					filter = new FilterLP(order, cutLowFrequency);
+					filter = new Filter().withLowPass(cutLowFrequency).withOrder(order).withZeroPhase(true);
+							//new FilterLP(order, cutLowFrequency);
 					setVisible(false);
 					needProcessing = true;
 				} else if (!Double.isNaN(cutHighFrequency) && cutHighFrequency > 0) {
 					logger.info("High pass filtering triggered");
-					filter = new FilterHP(order, cutHighFrequency);
+					filter = new Filter().withHighPass(cutHighFrequency).withOrder(order).withZeroPhase(true);
+					//new FilterHP(order, cutHighFrequency);
 					setVisible(false);
 					needProcessing = true;
 				} else {
@@ -226,13 +226,8 @@ public class FilterDYO extends JDialog implements IFilter, PropertyChangeListene
 		return orderCB;
 	}
 
-	public void init(RawDataProvider channel) {
-		filter.init(channel);
-	}
-
-	@Override
 	public Function<double[], double[]> getFilterFunction() {
-		return this.filter.getFilterFunction();
+		return this.filter.buildFilterBulkFunction();
 	}
 
 	public boolean equals(Object o) {

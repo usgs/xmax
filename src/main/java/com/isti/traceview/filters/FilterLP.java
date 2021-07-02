@@ -35,9 +35,9 @@ public class FilterLP extends AbstractFilter {
 	public FilterLP() {
 		this(4, 0.05);
 	}
-	@Override
+
 	public Function<double[], double[]> getFilterFunction() {
-		return Filter.LOWPASS.getFilterFunction(sampleRate, false, order, cutFrequency, null);
+		return new Filter().withLowPass(cutFrequency).withOrder(order).withSampleRate(sampleRate).withZeroPhase(false).buildFilterBulkFunction(false);
 	}
 	@Override
 	public String getName() {

@@ -42,9 +42,11 @@ public class FilterHP extends AbstractFilter {
 		return FilterHP.NAME;
 	}
 
-	@Override
 	public Function<double[], double[]> getFilterFunction() {
-		return Filter.HIGHPASS.getFilterFunction(sampleRate, false, order, cutFrequency, null);
+		return new Filter().withHighPass(cutFrequency).withOrder(order).withSampleRate(sampleRate).withZeroPhase(false).buildFilterBulkFunction(false);
+
+
+		//Filter.HIGHPASS.getFilterFunction(sampleRate, false, order, cutFrequency, null);
 	}
 	public boolean needProcessing() {
 		return true;
