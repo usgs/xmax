@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import asl.utils.Filter;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.Configuration;
@@ -182,8 +183,7 @@ public class RawDataProviderTest {
     assertEquals(86400, sampleCount);
     TimeInterval ti = data.getTimeRange();
 
-    FilterLP lowPass = new FilterLP();
-    lowPass.init(data);
+    Filter lowPass = new Filter().withLowPass(0.05).withOrder(4).withSampleRate(1.0).withZeroPhase(false);
 
     int lastArrayPoint = 0;
     double[] unfilteredExpected = new double[sampleCount];
@@ -193,13 +193,11 @@ public class RawDataProviderTest {
       }
     }
 
-    double[] filteredExpected = lowPass.getFilterFunction().apply(unfilteredExpected);
+    double[] filteredExpected = lowPass.buildFilterBulkFunction(true).apply(unfilteredExpected.clone());
     for (int i = 0; i < filteredExpected.length; ++i) {
       assertNotEquals(unfilteredExpected[i], filteredExpected[i]);
     }
 
-    lowPass = new FilterLP();
-    lowPass.init(data);
     String filename2 = "src/test/resources/filtered_00_LHZ.512.mseed";
     // make sure data from a previous test isn't lingering
     File outputFile = new File(filename2);
@@ -209,7 +207,7 @@ public class RawDataProviderTest {
 
     // write out filtered data
     DataOutputStream ds = new DataOutputStream(new FileOutputStream(outputFile));
-    data.dumpMseed(ds, data.getTimeRange(), lowPass, null);
+    data.dumpMseed(ds, data.getTimeRange(), lowPass.buildFilterSingleFunction(), null);
     ds.close();
     dm = new DataModule();
     dm.loadAndParseDataForTesting(outputFile);
