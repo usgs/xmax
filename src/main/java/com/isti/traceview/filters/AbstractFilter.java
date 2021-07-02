@@ -1,8 +1,6 @@
 package com.isti.traceview.filters;
 
 import com.isti.traceview.data.RawDataProvider;
-import com.isti.traceview.processing.BPFilterException;
-import uk.me.berndporr.iirj.Butterworth;
 
 public abstract class AbstractFilter {
   double sampleRate = 0.;

@@ -8,7 +8,6 @@ import asl.utils.response.ChannelMetadata;
 import com.isti.traceview.TraceViewException;
 import java.io.File;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Date;
 import org.junit.Test;
 

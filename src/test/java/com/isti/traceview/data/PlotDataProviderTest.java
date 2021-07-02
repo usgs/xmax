@@ -12,8 +12,6 @@ import com.isti.traceview.filters.FilterLP;
 import com.isti.traceview.gui.ColorModeByGap;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.processing.BPFilterException;
-import com.isti.traceview.processing.HPFilterException;
-import com.isti.traceview.processing.LPFilterException;
 import com.isti.traceview.processing.RemoveGainException;
 import java.io.File;
 import java.io.IOException;

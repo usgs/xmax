@@ -1,9 +1,6 @@
 package com.isti.traceview.filters;
 
 import asl.utils.Filter;
-import com.isti.traceview.TraceViewException;
-import com.isti.traceview.data.RawDataProvider;
-import com.isti.traceview.processing.BPFilterException;
 import com.isti.xmax.gui.XMAXframe;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
