@@ -1,9 +1,8 @@
 package com.isti.traceview.transformations.ppm;
 
+import asl.utils.Filter;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
@@ -30,7 +29,7 @@ public class TransPPM implements ITransformation {
 	private static final Logger logger = Logger.getLogger(TransPPM.class);
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, Filter filter, Object configuration,
 			JFrame parentFrame) {
 		if ((input == null) || (input.size() != 2)) {
 			JOptionPane.showMessageDialog(parentFrame, "You should select two channels to view PPM", "Error",
@@ -92,7 +91,7 @@ public class TransPPM implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	double[][] createDataset(List<PlotDataProvider> input, IFilter filter, TimeInterval ti)
+	double[][] createDataset(List<PlotDataProvider> input, Filter filter, TimeInterval ti)
 			throws XMAXException {
 
 		PlotDataProvider channel1 = input.get(0); // N/S
@@ -106,7 +105,7 @@ public class TransPPM implements ITransformation {
 			try {
 				int[] intData = channel.getContinuousGaplessDataOverRange(ti);
 				if (filter != null) {
-					intData = new FilterFacade(filter, channel).filter(intData);
+					intData = filter.withSampleRate(channel.getSampleRate()).buildFilterBulkIntFunction(true).apply(intData);
 				}
 				// haven't tried doing a stream in a stream, might be faster
 				double avg = 0;

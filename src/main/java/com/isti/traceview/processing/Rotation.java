@@ -7,7 +7,6 @@ import com.isti.traceview.data.PlotData;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.IColorModeState;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -565,12 +564,6 @@ public class Rotation {
       throw new TraceViewException("Can't find channels triplet to rotate " + channel.getName() + ": " + channel.getNetworkName() + "/"
           + channel.getStation().getName() + "/" + channel.getLocationName() + "/" + channelName);
     }
-  }
-
-  private static PlotData getComplementaryPlotData(PlotDataProvider channel, char channelType, TimeInterval ti, int pointCount, IFilter filter, IColorModeState colorMode)
-      throws TraceViewException, RemoveGainException {
-    PlotDataProvider complement = (PlotDataProvider) getComplementaryChannel(channel, channelType);
-    return complement.getOriginalPlotData(ti, pointCount, filter, null, colorMode);
   }
 
   /**

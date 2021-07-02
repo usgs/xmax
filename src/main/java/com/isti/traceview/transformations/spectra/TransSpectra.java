@@ -1,10 +1,9 @@
 package com.isti.traceview.transformations.spectra;
 
+import asl.utils.Filter;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.Spectra;
 import com.isti.traceview.transformations.ITransformation;
@@ -27,7 +26,7 @@ public class TransSpectra implements ITransformation {
 	public static final String NAME = "Spectra";
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval timeInterval, IFilter filter, Object configuration,
+	public void transform(List<PlotDataProvider> input, TimeInterval timeInterval, Filter filter, Object configuration,
 			JFrame parentFrame) {
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "Spectra computation warning",
@@ -59,7 +58,7 @@ public class TransSpectra implements ITransformation {
 	 *            parent frame
 	 * @return list of spectra for selected traces and time ranges
 	 */
-	private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval timeInterval,
+	private List<Spectra> createData(List<PlotDataProvider> input, Filter filter, TimeInterval timeInterval,
 			JFrame parentFrame) {
 		List<Spectra> dataset = new ArrayList<>();
 		input.forEach(channel -> {
@@ -84,7 +83,7 @@ public class TransSpectra implements ITransformation {
 			int[] data = new int[dataSize];
 			System.arraycopy(intData, 0, data, 0, dataSize);
 			if (filter != null) {
-				data = new FilterFacade(filter, channel).filter(data);
+				data = filter.withSampleRate(channel.getSampleRate()).buildFilterBulkIntFunction().apply(data);
 			}
 			try {
 				Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, timeInterval.getStartTime(),

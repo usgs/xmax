@@ -18,10 +18,8 @@ import edu.sc.seis.seisFile.mseed.DataRecord;
 import edu.sc.seis.seisFile.mseed.SeedFormatException;
 import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
@@ -53,10 +51,6 @@ public class RawDataProvider extends Channel {
   private List<ContiguousSegmentRange> contiguousRanges;
 
   private boolean loaded = false;
-
-  // Used to store dataStream file name and restore it after serialization
-  private String serialFile = null;
-  private transient RandomAccessFile serialStream = null;
 
   /** Property change listener helper object. */
   private final PropertyChangeSupport listenerHelper;
@@ -457,42 +451,6 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * Sets data stream to serialize this provider
-   *
-   * @param dataStream The serialized file set
-   */
-  public void setDataStream(Object dataStream) {
-    logger.debug("== ENTER");
-    try {
-      if (dataStream == null) {
-        logger.debug("== dataStream == null --> serialStream.close()");
-        try {
-          this.serialStream.close();
-          this.serialStream = null;
-        } catch (IOException e) {
-          // do nothing
-          logger.error("IOException:", e);
-        }
-      } else {
-        if (dataStream instanceof String) {
-          this.serialFile = (String) dataStream;
-          logger.debug("dataStream == instanceof String --> set serialFile=" + serialFile);
-        }
-        // MTH: This is a little redundant since readObject() already wraps the serialFile in a
-        //      BufferedRandomAccessFile before using it to call setDataStream(raf) ...
-        this.serialStream = new RandomAccessFile(serialFile, "rw");
-      }
-      for (SegmentCache sc : rawData) {
-        logger.debug("== sc.setDataStream(serialStream)");
-        sc.setDataStream(serialStream);
-      }
-      logger.debug("== DONE");
-    } catch (FileNotFoundException e) {
-      logger.error("FileNotFoundException:", e);
-    }
-  }
-
-  /**
    * Loads all data to this provider from its data sources
    */
   public void load() {
@@ -672,67 +630,6 @@ public class RawDataProvider extends Channel {
   }
 
   /**
-   * Dumps content of this provider in XML format
-   *
-   * @param fw writer to dump
-   * @param ti content's time interval
-   * @throws IOException if there are problems writing the XML dump
-   */
-  public void dumpXML(FileWriter fw, TimeInterval ti, DoubleUnaryOperator filterFunction, Rotation rotation)
-      throws IOException {
-    int i = 1;
-    fw.write("<Trace network=\"" + getNetworkName() + "\" station=\"" + getStation().getName()
-        + "\" location=\"" + getLocationName()
-        + "\" channel=\"" + getChannelName() + "\">\n");
-    List<Segment> segments = getDataWithRotation(rotation, ti);
-    Segment previousSegment = null;
-    for (int j = 0; j < segments.size(); j++) {
-      if (j > 0) {
-        previousSegment = segments.get(j - 1);
-      }
-      Segment segment = segments.get(j);
-
-      long currentTime = Math.max(ti.getStart(), segment.getStartTime().toEpochMilli());
-      if (previousSegment != null) {
-        currentTime = Math.max(currentTime, previousSegment.getEndTime().toEpochMilli());
-      }
-      TimeInterval dataInterval = new TimeInterval(currentTime, ti.getEnd());
-      int[] data = segment.getData(dataInterval).data;
-
-      if (filterFunction != null) {
-        if (previousSegment == null) {
-          // Pre initialize filter since it is the first segment.
-          for (int index = data.length -1; index >= 0; index--){
-            double ignore = filterFunction.applyAsDouble(data[index]);
-          }
-        }
-        //TODO: This does not handle the right filter pass properly! Needs to be fixed!
-        for(int index = 0; index < data.length; index++){
-          data[index] = (int)filterFunction.applyAsDouble(data[index]);
-        }
-      }
-
-      boolean segmentStarted = false;
-      for (int value : data) {
-        if (ti.isContain(currentTime)) {
-          if (!segmentStarted) {
-            fw.write("<Segment start =\""
-                + TimeInterval
-                .formatDate(new Date(currentTime), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-                + "\" sampleRate = \"" + segment.getSampleIntervalMillis() + "\">\n");
-            segmentStarted = true;
-          }
-          fw.write("<Value>" + value + "</Value>\n");
-        }
-        currentTime = (long) (currentTime + segment.getSampleIntervalMillis());
-      }
-      i++;
-      fw.write("</Segment>\n");
-    }
-    fw.write("</Trace>\n");
-  }
-
-  /**
    * Dumps content of this provider in SAC format
    *
    *
@@ -906,28 +803,6 @@ public class RawDataProvider extends Channel {
     logger.debug("== ENTER");
     logger.debug("Serializing RawDataProvider" + this);
     out.defaultWriteObject();
-    logger.debug("== EXIT");
-  }
-
-  /**
-   * Special deserialization handler
-   *
-   * @param in stream to deserialize object
-   * @throws IOException if thrown in {@link java.io.ObjectInputStream#defaultReadObject()}
-   * @throws ClassNotFoundException if thrown in {@link java.io.ObjectInputStream#defaultReadObject()}
-   * @see Serializable
-   * @deprecated This method appears to no be used by anything.
-   */
-  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    logger.debug("== Deserializing RawDataProvider" + this);
-    // MTH: Once we've read in the .SER file, serialFile(=... .DATA) will be set
-    logger.debug("== call defaultReadObject()");
-    in.defaultReadObject();
-    logger.debug("== defaultReadObject() DONE");
-    if (serialFile != null) {
-      serialStream = new RandomAccessFile(serialFile, "rw");
-      setDataStream(serialStream);
-    }
     logger.debug("== EXIT");
   }
 

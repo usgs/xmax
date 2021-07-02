@@ -1,8 +1,8 @@
 package com.isti.traceview.transformations;
 
+import asl.utils.Filter;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.filters.IFilter;
 import java.util.List;
 import javax.swing.JFrame;
 
@@ -30,7 +30,7 @@ public interface ITransformation {
 	 * @param parentFrame
 	 *            Host frame
 	 */
-  void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter,
+  void transform(List<PlotDataProvider> input, TimeInterval ti, Filter filter,
       Object configiration,
       JFrame parentFrame);
 

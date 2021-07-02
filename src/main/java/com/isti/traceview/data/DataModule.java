@@ -166,52 +166,6 @@ public class DataModule {
   }
 
   /**
-   * Cleanup temp storage and dump all found data to temp storage
-   */
-  public void dumpData() {
-
-    logger.info("     -T: Serialize data to temp storage ");
-    if (storage == null) {
-      logger.debug("storage == null --> new TemporaryStorage()");
-      String dataTempPath = TraceView.getConfiguration().getDataTempPath();
-      storage = new TemporaryStorage(dataTempPath);
-
-      // MTH: Check if dataTempPath exists and if not, try to create it:
-      File dir = new File(dataTempPath);
-      if (dir.exists()) {
-        if (!dir.isDirectory()) {
-          logger.error(String.format("== dataTempPath=[%s] is NOT a directory!\n", dataTempPath));
-          System.exit(1);
-        }
-      } else {
-        boolean success = dir.mkdirs();
-        if (!success) {
-          logger
-              .error(String.format("unable to create directory dataTempPath=[%s]\n", dataTempPath));
-          System.exit(1);
-        }
-      }
-    }
-
-    // MTH: if -t was given on command line then keep the files in /DATA_TEMP, else clear them out
-    if (TraceView.getConfiguration().getUseTempData()) {
-      System.out.format(" [-t: Don't wipe out existing data in temp storage]\n");
-    } else {
-      System.out.format(" [First wipe out existing data in temp storage]\n");
-      storage.delAllTempFiles();
-    }
-
-    getAllChannels().parallelStream().forEach(
-        channel -> {
-          logger.debug("== call channel.load() for channel=" + channel);
-          channel.load();
-          logger.debug("== call channel.load() DONE for channel=" + channel);
-          System.out.format("\tSerialize to file:%s\n", storage.getSerialFileName(channel));
-          channel.dump(storage.getSerialFileName(channel));
-        });
-  }
-
-  /**
    * Getter of the property <tt>dataFiles</tt>
    *
    * @return Returns the list of found data files.

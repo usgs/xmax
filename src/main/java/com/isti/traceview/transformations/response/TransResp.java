@@ -2,12 +2,12 @@ package com.isti.traceview.transformations.response;
 
 import static com.isti.traceview.processing.IstiUtilsMath.generateFreqArray;
 
+import asl.utils.Filter;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
 import com.isti.traceview.data.Response.FreqParameters;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
@@ -25,7 +25,7 @@ public class TransResp implements ITransformation {
 	private static final int numberFreqs = 500;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, Filter filter, Object configuration,
 			JFrame parentFrame) {
 		if (input.size() == 0) {
 			JOptionPane.showMessageDialog(parentFrame, "Please select channels", "RESP computation warning",

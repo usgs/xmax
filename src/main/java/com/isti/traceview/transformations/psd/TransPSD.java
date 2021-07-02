@@ -5,12 +5,12 @@ import static asl.utils.NumericUtils.detrend;
 import static com.isti.traceview.processing.IstiUtilsMath.getSmoothedPSD;
 
 import asl.utils.FFTResult;
+import asl.utils.Filter;
 import asl.utils.timeseries.TimeSeriesUtils;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
 import com.isti.xmax.gui.XMAXframe;
@@ -54,7 +54,7 @@ public class TransPSD implements ITransformation {
 	public static final int DEFAULT_SHIFT_LENGTH_DIVISOR = 4;
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter,
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, Filter filter,
 			Object configuration, JFrame parentFrame) {
 
 		if (input.size() == 0) {
@@ -126,7 +126,7 @@ public class TransPSD implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
+	public List<XYSeries> createData(List<PlotDataProvider> input, Filter filter,
 			TimeInterval ti, boolean doSmoothing, JFrame parentFrame) throws XMAXException {
 
 		return createData(input, filter, ti, doSmoothing, DEFAULT_WINDOW_LENGTH_DIVISOR,
@@ -150,7 +150,7 @@ public class TransPSD implements ITransformation {
 	 *             if sample rates differ, gaps in the data, or no data for a
 	 *             channel
 	 */
-	public List<XYSeries> createData(List<PlotDataProvider> input, IFilter filter,
+	public List<XYSeries> createData(List<PlotDataProvider> input, Filter filter,
 			TimeInterval ti, boolean doSmoothing, int windowDivisor, int shiftDivisor,
 			JFrame parentFrame) throws XMAXException {
 

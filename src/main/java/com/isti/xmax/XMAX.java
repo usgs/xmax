@@ -1,10 +1,9 @@
 package com.isti.xmax;
 
+import asl.utils.Filter;
 import com.isti.traceview.TraceView;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.filters.AbstractFilter;
-import com.isti.traceview.filters.FilterDYO;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.data.XMAXDataModule;
 import com.isti.xmax.gui.XMAXframe;
@@ -13,7 +12,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarInputStream;
@@ -47,7 +48,7 @@ public class XMAX extends TraceView {
 	 */
 	private static CommandLine cmd;
 	private static Options options;
-	private static Set<Class<? extends IFilter>> filters;
+	private static Map<String, Filter> defaultFilters;
 	private static Set<Class<? extends ITransformation>> transformations;
 
 	public static String getReleaseDate() {
@@ -175,17 +176,15 @@ public class XMAX extends TraceView {
 					getConfiguration().setDefaultBlockLength(
 							Integer.parseInt(cmd.getOptionValue("L").trim()));
 				}
-				if (dump) {
-					// -T option in command line, make dump
-					setConfiguration(XMAXconfiguration.getInstance());
-					setDataModule(XMAXDataModule.getInstance());
-					getDataModule().dumpData();
-				} else {
+{
 					// Find all classes that implement IFilter and ITransformation.
 					Reflections reflect = new Reflections("com.isti");
-					filters = new HashSet<>();
-					filters.addAll(reflect.getSubTypesOf(AbstractFilter.class));
-					filters.add(FilterDYO.class);
+					defaultFilters = new HashMap<>();
+					Filter baseFilter= new Filter().withOrder(4).withZeroPhase(true);
+					defaultFilters.put("BP", baseFilter.withBandPass(0.1, 0.5));
+					defaultFilters.put("HP", baseFilter.withHighPass(1.0));
+					defaultFilters.put("LP", baseFilter.withLowPass(0.05));
+					defaultFilters.put("DYO", baseFilter);
 					transformations = reflect.getSubTypesOf(ITransformation.class);
 
 					setDataModule(XMAXDataModule.getInstance());
@@ -236,27 +235,25 @@ public class XMAX extends TraceView {
 	/**
 	 * Get all plugins-filters
 	 */
-	public static Set<Class<? extends IFilter>> getFilters() {
-		return filters;
+	public static Map<String, Filter> getFilters() {
+		return defaultFilters;
 	}
 
 	/**
 	 * Get plugin-filter by id
 	 */
-	public static IFilter getFilter(String id)
-			throws InstantiationException, IllegalAccessException {
-		for (Class<? extends IFilter> curClass : filters) {
-
-			try {
-				if (Objects.equals(curClass.getField("NAME").get(null), id)) {
-					return curClass.getDeclaredConstructor().newInstance();
-				}
-			} catch (NoSuchFieldException | SecurityException |
-					NoSuchMethodException | InvocationTargetException e) {
-				// Field doesn't exist, move to next
+	public static Filter getDefaultFilter(String id) {
+			Filter filter= new Filter().withOrder(4).withZeroPhase(true);
+			switch(id) {
+				case "BP":
+					return filter.withBandPass(0.1, 0.5);
+				case "HP":
+					return filter.withHighPass(1.0);
+				case "LP":
+					return filter.withLowPass(0.05);
+				default:
+					return null;
 			}
-		}
-		return null;
 	}
 
 	/**

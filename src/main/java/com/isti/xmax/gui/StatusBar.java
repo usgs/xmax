@@ -1,6 +1,6 @@
 package com.isti.xmax.gui;
 
-import com.isti.traceview.filters.IFilter;
+import asl.utils.Filter;
 import com.isti.traceview.gui.GraphPanel;
 import com.isti.traceview.gui.IColorModeState;
 import com.isti.traceview.gui.IMeanState;
@@ -178,11 +178,11 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
 
 			} else if (arg instanceof IColorModeState) {
 
-			} else if ((arg instanceof IFilter) || (arg == null)) {
+			} else if ((arg instanceof Filter.FilterType) || (arg == null)) {
 				if (arg == null) {
 					filterLabel.setText("NONE");
 				} else {
-					filterLabel.setText(((IFilter) arg).getName());
+					filterLabel.setText(((Filter.FilterType) arg).getName());
 				}
 			} else  {
 				if (message.equals("pick state")) {

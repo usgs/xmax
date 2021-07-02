@@ -1,10 +1,9 @@
 package com.isti.traceview.transformations.modal;
 
+import asl.utils.Filter;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.Spectra;
 import com.isti.traceview.transformations.ITransformation;
@@ -31,7 +30,7 @@ public class TransModal implements ITransformation {
   private int effectiveLength = 0;
 
   @Override
-  public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+  public void transform(List<PlotDataProvider> input, TimeInterval ti, Filter filter, Object configuration,
       JFrame parentFrame) {
     if (input.size() == 0) {
       JOptionPane.showMessageDialog(parentFrame, "Please select channels", "PSD computation warning",
@@ -70,7 +69,7 @@ public class TransModal implements ITransformation {
    *            parent frame
    * @return list of spectra for selected traces and time ranges
    */
-  private List<Spectra> createData(List<PlotDataProvider> input, IFilter filter,
+  private List<Spectra> createData(List<PlotDataProvider> input, Filter filter,
       TimeInterval ti, JFrame parentFrame) {
 
     List<Spectra> dataset = new ArrayList<>();
@@ -92,7 +91,7 @@ public class TransModal implements ITransformation {
         int[] data = new int[dataSize];
         System.arraycopy(intData, 0, data, 0, dataSize);
         if (filter != null) {
-          data = new FilterFacade(filter, channel).filter(data);
+          data = filter.withSampleRate(channel.getSampleRate()).buildFilterBulkIntFunction(true).apply(data);
         }
         try {
           Spectra spectra = IstiUtilsMath.getNoiseSpectra(data, channel.getResponse(),

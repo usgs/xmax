@@ -1,5 +1,6 @@
 package com.isti.traceview.gui;
 
+import asl.utils.Filter;
 import com.isti.traceview.CommandHandler;
 import com.isti.traceview.ITimeRangeAdapter;
 import com.isti.traceview.TraceView;
@@ -10,7 +11,6 @@ import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.RawDataProvider;
 import com.isti.traceview.data.Segment;
 import com.isti.traceview.data.SelectionContainer;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.Rotation;
 import java.awt.BorderLayout;
@@ -327,7 +327,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
   /**
    * The filter.
    */
-  private IFilter filter = null;
+  private Filter filter = null;
 
   /**
    * The rotation.
@@ -1072,25 +1072,10 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
    *
    * @param filter IFilter to set
    */
-  public void setFilter(IFilter filter) {
+  public void setFilter(Filter filter) {
     logger.debug("filter " + filter);
-    IFilter oldFilter = this.filter;
-    if (filter != null) {
-      if (getMaxDataLength() > filter.getMaxDataLength()) {
-        if (JOptionPane.showConfirmDialog(TraceView.getFrame(),
-            "Too many datapoints are selected. Processing could take time. Do you want to continue?",
-            "Warning", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-          this.filter = filter;
-        } else {
-          // if we don't actually confirm we'll return here, as the filter has not changed
-          return;
-        }
-      } else {
-        this.filter = filter;
-      }
-    } else {
-      this.filter = null;
-    }
+    Filter oldFilter = this.filter;
+    this.filter = filter;
     if (oldFilter != null && filter != null) {
       getListener().firePropertyChange("filter state", oldFilter, filter);
     }
@@ -1102,7 +1087,7 @@ public class GraphPanel extends JPanel implements Printable, MouseInputListener,
    *
    * @return current filter, null if filter is not present
    */
-  public IFilter getFilter() {
+  public Filter getFilter() {
     return filter;
   }
 

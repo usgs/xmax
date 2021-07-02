@@ -1,8 +1,8 @@
 package com.isti.traceview.transformations.ppm;
 
+import asl.utils.Filter;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.common.TraceViewChartPanel;
-import com.isti.traceview.filters.IFilter;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -34,7 +34,7 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
     private static JPanel ret = null;
     private double altAngle;
 
-	ViewPPM(Frame owner, XYDataset dataset, TimeInterval ti, String annotation, IFilter filter,
+	ViewPPM(Frame owner, XYDataset dataset, TimeInterval ti, String annotation, Filter filter,
 			double estimatedBackAzimuth) {
 
 		super(owner, "Particle Motion", true);
@@ -159,7 +159,7 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 	}
 	
 	private static JPanel createChartPanel(XYDataset dataset, TimeInterval ti,
-			String annotation, IFilter filter, double bAzimuth) {
+			String annotation, Filter filter, double bAzimuth) {
 		ret = new JPanel();
 		BoxLayout retLayout = new BoxLayout(ret, javax.swing.BoxLayout.Y_AXIS);
 		ret.setLayout(retLayout);
@@ -171,7 +171,7 @@ class ViewPPM extends JDialog implements PropertyChangeListener {
 		);
 		String filterName = "None";
 		if (filter != null) {
-			filterName = filter.getName();
+			filterName = filter.filterType.getName();
 		}
 		TextTitle title = new TextTitle("Start time: "
 				+ TimeInterval.formatDate(ti.getStartTime(), TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)

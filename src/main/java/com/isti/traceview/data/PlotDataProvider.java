@@ -1,12 +1,11 @@
 package com.isti.traceview.data;
 
+import asl.utils.Filter;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.IEvent;
 import com.isti.traceview.common.Station;
 import com.isti.traceview.common.TimeInterval;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.IColorModeState;
-import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.processing.RemoveGain;
 import com.isti.traceview.processing.RemoveGainException;
@@ -14,9 +13,6 @@ import com.isti.traceview.processing.Rotation;
 import com.isti.traceview.processing.Rotation.RotationGapException;
 import com.isti.xmax.XMAXException;
 import java.awt.Color;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -108,9 +104,9 @@ public class PlotDataProvider extends RawDataProvider {
    * @param filter - filter to apply
    * @return generated plot data to draw
    * @throws TraceViewException if thrown in {@link RemoveGain#removegain(PlotDataProvider,
-   * TimeInterval, int, IFilter, IColorModeState)}
+   * TimeInterval, int, Filter, IColorModeState)}
    */
-  public PlotData getPlotData(TimeInterval ti, int pointCount, IFilter filter,
+  public PlotData getPlotData(TimeInterval ti, int pointCount, Filter filter,
       RemoveGain rg, IColorModeState colorMode)
       throws TraceViewException, RemoveGainException {
     if (rg != null && rg.removestate && this.rotation == null) {
@@ -128,9 +124,9 @@ public class PlotDataProvider extends RawDataProvider {
    * @param filter - filter to apply
    * @return generated plot data to draw from original dataset
    * @throws TraceViewException if thrown in {@link RemoveGain#removegain(PlotDataProvider,
-   * TimeInterval, int, IFilter, IColorModeState)}
+   * TimeInterval, int, Filter, IColorModeState)}
    */
-  public PlotData getOriginalPlotData(TimeInterval ti, int pointCount, IFilter filter,
+  public PlotData getOriginalPlotData(TimeInterval ti, int pointCount, Filter filter,
       RemoveGain rg, IColorModeState colorMode)
       throws TraceViewException, RemoveGainException {
     if (rg != null) {
@@ -148,7 +144,7 @@ public class PlotDataProvider extends RawDataProvider {
    * @return generated plot data to draw
    */
   private PlotData getPlotData(TimeInterval ti, int pointCount,
-      IFilter filter) {
+      Filter filter) {
 
     List<PlotDataPoint[]> points = null;
 
@@ -265,7 +261,7 @@ public class PlotDataProvider extends RawDataProvider {
    * @param filter filter to apply to raw data before pixelization
    * @return List of PlotDataPoint
    */
-  private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, IFilter filter)
+  private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, Filter filter)
       throws PlotDataException {
     List<PlotDataPoint[]> pointSet = new ArrayList<>(pointCount);
 
@@ -297,20 +293,17 @@ public class PlotDataProvider extends RawDataProvider {
       plottingData = rawDataFinal;
     }
 
-    // filtering; cannot be parallelized, and the object should be reinstantiated when gaps are encountered.
-    if (filter != null) {
-      synchronized (filter) {
-        FilterFacade ff = new FilterFacade(filter, this);
-        SegmentData[] filteredRawData = new SegmentData[plottingData.length];
-        for (int i = 0; i < plottingData.length; i++) {
-          SegmentData segmentData = plottingData[i];
-          filteredRawData[i] = new SegmentData(segmentData.startTime, segmentData.sampleRate,
-              segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
-              segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
-              ff.filter(segmentData.data));
-        }
-        plottingData = filteredRawData;
-      }
+    SegmentData[] filteredRawData = new SegmentData[plottingData.length];
+    for (int i = 0; i < plottingData.length; i++) {
+      //TODO: Parallelize this!
+      SegmentData segmentData = plottingData[i];
+      filteredRawData[i] = new SegmentData(segmentData.startTime, segmentData.sampleRate,
+          segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
+          segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
+          filter.withSampleRate(getSampleRate()).buildFilterBulkIntFunction().apply(segmentData.data));
+
+    plottingData = filteredRawData;
+
     }
 
     double interval = (ti.getDuration()) / (double) pointCount;
@@ -530,34 +523,6 @@ public class PlotDataProvider extends RawDataProvider {
     }
 
     return intData;
-  }
-
-  /**
-   * Dumps trace to file in temporary storage in internal format
-   */
-  public void dump(String serialFileName) {
-    ObjectOutputStream out = null;
-    try {
-      logger.debug("== ENTER: serfialFileName=" + serialFileName);
-      out = new ObjectOutputStream(new FileOutputStream(serialFileName + ".SER"));
-      setDataStream(serialFileName + ".DATA");
-      synchronized (this) {
-        logger.info("Serializing " + this + " to file " + serialFileName);
-        out.writeObject(this);
-        notifyAll();
-      }
-    } catch (Exception ex) {
-      logger.error("Can't save channel: ", ex);
-    } finally {
-      try {
-        setDataStream(null);
-        out.close();
-      } catch (IOException e) {
-        // Do nothing
-        logger.error("IOException:", e);
-      }
-    }
-    logger.debug("== EXIT");
   }
 
   /**

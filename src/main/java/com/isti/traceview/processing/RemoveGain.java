@@ -1,12 +1,12 @@
 package com.isti.traceview.processing;
 
+import asl.utils.Filter;
 import com.isti.traceview.TraceViewException;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotData;
 import com.isti.traceview.data.PlotDataPoint;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Segment;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.IColorModeState;
 
 /**
@@ -39,7 +39,7 @@ public class RemoveGain {
 	 *             throws if the channel type can not be determined.
 	 */
 	public PlotData removegain(PlotDataProvider channel, TimeInterval ti,
-			int pointCount, IFilter filter, IColorModeState colorMode)
+			int pointCount, Filter filter, IColorModeState colorMode)
 			throws TraceViewException, RemoveGainException{
 		double minFreqValue = 0.0001;
 		double maxFreqValue = 500.0 / channel.getRawData().get(0).getSampleIntervalMillis();

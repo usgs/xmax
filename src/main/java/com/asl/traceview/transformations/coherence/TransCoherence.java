@@ -2,12 +2,11 @@ package com.asl.traceview.transformations.coherence;
 
 import static com.isti.traceview.processing.IstiUtilsMath.generateFreqArray;
 
+import asl.utils.Filter;
 import asl.utils.NumericUtils;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
 import com.isti.traceview.data.Response;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
@@ -31,7 +30,7 @@ public class TransCoherence implements ITransformation{
   private static final Logger logger = Logger.getLogger(TransCoherence.class);
 
   @Override
-  public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+  public void transform(List<PlotDataProvider> input, TimeInterval ti, Filter filter, Object configuration,
       JFrame parentFrame) {
 
     if (input.size() != 2) {
@@ -94,7 +93,7 @@ public class TransCoherence implements ITransformation{
    *             channel
    */
 
-  private XYSeriesCollection createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti, double downsampleInterval, JFrame parentFrame)
+  private XYSeriesCollection createData(List<PlotDataProvider> input, Filter filter, TimeInterval ti, double downsampleInterval, JFrame parentFrame)
       throws XMAXException {
     XYSeriesCollection dataset = new XYSeriesCollection();
     List<Complex[]> xSegmentData = new ArrayList<>();
@@ -197,7 +196,7 @@ public class TransCoherence implements ITransformation{
           segIndex++;
         } else {
           if (filter != null) {
-            data = new FilterFacade(filter, channel).filter(data);
+            data = filter.withSampleRate(channel.getSampleRate()).buildFilterBulkIntFunction(true).apply(data);
           }
 
           // Make a copy of data to make it an array of doubles

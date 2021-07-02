@@ -1,5 +1,6 @@
 package com.isti.xmax.gui;
 
+import asl.utils.Filter;
 import com.asl.traceview.transformations.coherence.TransCoherence;
 import com.isti.traceview.CommandHandler;
 import com.isti.traceview.ExecuteCommand;
@@ -11,7 +12,6 @@ import com.isti.traceview.commands.OffsetCommand;
 import com.isti.traceview.commands.OverlayCommand;
 import com.isti.traceview.commands.RemoveGainCommand;
 import com.isti.traceview.commands.RotateCommand;
-import com.isti.traceview.commands.SaveAllDataCommand;
 import com.isti.traceview.commands.SelectCommand;
 import com.isti.traceview.commands.SelectTimeCommand;
 import com.isti.traceview.commands.SelectValueCommand;
@@ -23,7 +23,6 @@ import com.isti.traceview.filters.FilterBP;
 import com.isti.traceview.filters.FilterDYO;
 import com.isti.traceview.filters.FilterHP;
 import com.isti.traceview.filters.FilterLP;
-import com.isti.traceview.filters.IFilter;
 import com.isti.traceview.gui.ChannelView;
 import com.isti.traceview.gui.ColorModeBW;
 import com.isti.traceview.gui.ColorModeByGap;
@@ -270,8 +269,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new PreviousAction();
 		actionMap.put(action.getValue(Action.NAME), action);
-		action = new SaveAllAction();
-		actionMap.put(action.getValue(Action.NAME), action);
 		action = new OverlayAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new SelectChannelsAction();
@@ -337,8 +334,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new DelPickAction();
 		actionMap.put(action.getValue(Action.NAME), action);
-		action = new DumpXMLAction();
-		actionMap.put(action.getValue(Action.NAME), action);
 		action = new DumpMSeedAction();
 		actionMap.put(action.getValue(Action.NAME), action);
 		action = new DumpSACAction();
@@ -367,12 +362,11 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 		actionMap.put(action.getValue(Action.NAME), action);
 
 		// adding actions for filter plugins
-		for (Class<? extends IFilter> curClass : XMAX.getFilters()) {
+		for (String filterKey : XMAX.getFilters().keySet()) {
 			try {
-				action = new FilterAction((String) curClass.getField("NAME").get(null),
-						(String) curClass.getField("NAME").get(null));
+				action = new FilterAction(filterKey, filterKey);
 				actionMap.put(action.getValue(Action.NAME), action);
-			} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e1) {
+			} catch (IllegalArgumentException | SecurityException e1) {
 				logger.error("Filter Initializing failed");
 			}
 		}
@@ -985,17 +979,16 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			filterMenu.setText("Filters");
 			filterMenu.setMnemonic(KeyEvent.VK_F);
 			filterBG = new ButtonGroup();
-			for (Class<? extends IFilter> curClass : XMAX.getFilters()) {
+			for (String filterKey : XMAX.getFilters().keySet()) {
 				try {
 					JRadioButtonMenuItem filterItem = new JRadioButtonMenuItem();
-					filterItem.setText((String) curClass.getField("NAME").get(null));
+					filterItem.setText(filterKey);
 					filterItem.setSelected(false);
-					filterItem.setAction(actionMap.get(curClass.getField("NAME").get(null)));
+					filterItem.setAction(actionMap.get(filterKey));
 					filterItem.addMouseListener(this);
 					filterBG.add(filterItem);
 					filterMenu.add(filterItem);
-				} catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
-						| SecurityException e) {
+				} catch (IllegalArgumentException | SecurityException e) {
 					logger.error("Filter failed to initialize");
 				}
 
@@ -1646,35 +1639,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				statusBar.setMessage("");
 				setWaitCursor(false);
 			}
-		}
-	}
-
-	class SaveAllAction extends AbstractAction implements Action {
-
-		private static final long serialVersionUID = 1L;
-
-		SaveAllAction() {
-			super();
-			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
-			putValue(Action.NAME, "Dump all to Internal");
-			putValue(Action.SHORT_DESCRIPTION, "save all");
-			putValue(Action.LONG_DESCRIPTION, "Save all loaded channels into internal file format");
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			setWaitCursor(true);
-			// Create Runnable SaveAllDataCommand obj
-			SaveAllDataCommand saveAllTask = new SaveAllDataCommand();
-
-			// Create ExecuteCommand obj for executing Runnable
-			ExecuteCommand executor = new ExecuteCommand(saveAllTask);
-			executor.initialize();
-			executor.start();
-			executor.shutdown();
-
-			statusBar.setMessage("");
-			setWaitCursor(false);
 		}
 	}
 
@@ -2994,7 +2958,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
 							channel = selectedChannel;
-							channel.dumpMseed(ds, graphPanel.getTimeRange(), graphPanel.getFilter(),
+							channel.dumpMseed(ds, graphPanel.getTimeRange(), graphPanel.getFilter().buildFilterSingleFunction(),
 									channel.getRotation());
 						}
 						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to Mseed",
@@ -3076,7 +3040,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 										selectedFile.getPath().lastIndexOf(File.separator)) + File.separator
 										+ exportFileName;
 								ds = new DataOutputStream(new FileOutputStream(new File(exportFileName)));
-								channel.dumpSacAscii(ds, graphPanel.getTimeRange(), graphPanel.getFilter(),
+								channel.dumpSacAscii(ds, graphPanel.getTimeRange(), graphPanel.getFilter().buildFilterSingleFunction(),
 										channel.getRotation());
 							} catch (IOException e1) {
 								logger.error("Can't export to SAC channel " + channel.getChannelName() + ": ", e1);
@@ -3100,77 +3064,6 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 				} catch (TraceViewException e2) {
 					logger.error("Can't export to SAC channel " + channel.getChannelName() + ": ", e2);
 				} finally {
-					setWaitCursor(false);
-				}
-			} else {
-				getGraphPanel().forceRepaint();
-			}
-			statusBar.setMessage("");
-		}
-	}
-
-	class DumpXMLAction extends AbstractAction implements Action {
-
-		private static final long serialVersionUID = 1L;
-
-		DumpXMLAction() {
-			super();
-			putValue(Action.NAME, "Dump to XML");
-			putValue(Action.SHORT_DESCRIPTION, "XML");
-			putValue(Action.LONG_DESCRIPTION, "Dump selected channels to XML format");
-			putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			final FileChooser fc = new FileChooser(FileChooser.Type.XML);
-			String exportDir = XMAX.getConfiguration().getUserDir("XML");
-			if (exportDir != null) {
-				fc.setCurrentDirectory(new File(exportDir));
-			}
-			if (fc.showSaveDialog(XMAXframe.getInstance()) == JFileChooser.APPROVE_OPTION) {
-				PlotDataProvider channel = null;
-				FileWriter fw = null;
-				try {
-					setWaitCursor(true);
-					File selectedFile = fc.getSelectedFile();
-					XMAX.getConfiguration().setUserDir("XML", selectedFile.getParent());
-					fw = new FileWriter(selectedFile);
-					List<PlotDataProvider> selectedChannels = new ArrayList<>();
-					List<ChannelView> selectedViews = graphPanel.getCurrentSelectedChannelShowSet();
-					for (ChannelView channelView : selectedViews) {
-						selectedChannels.addAll(channelView.getPlotDataProviders());
-					}
-					if (selectedChannels.size() > 0) {
-						fw.write("<Export start = \""
-								+ TimeInterval.formatDate(graphPanel.getTimeRange().getStartTime(),
-								TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-								+ "\" end = \"" + TimeInterval.formatDate(graphPanel.getTimeRange().getEndTime(),
-								TimeInterval.DateFormatType.DATE_FORMAT_NORMAL)
-								+ "\">\n");
-						for (PlotDataProvider selectedChannel : selectedChannels) {
-							// (PlotDataProvider)
-							channel = selectedChannel;
-							channel.dumpXML(fw, graphPanel.getTimeRange(), graphPanel.getFilter(),
-									channel.getRotation());
-						}
-						fw.write("</Export>");
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to XML",
-								"Info", JOptionPane.INFORMATION_MESSAGE);
-					} else {
-						JOptionPane.showMessageDialog(XMAXframe.getInstance(),
-								"You should select at least one channel to export", "Warning",
-								JOptionPane.WARNING_MESSAGE);
-					}
-					getGraphPanel().forceRepaint();
-				} catch (IOException e1) {
-					logger.error("Can't export to XML channel " + channel.getChannelName() + ": ", e1);
-				} finally {
-					try {
-						fw.close();
-					} catch (IOException e1) {
-						logger.error("IOException:", e1);
-					}
 					setWaitCursor(false);
 				}
 			} else {
@@ -3216,7 +3109,7 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 						for (PlotDataProvider selectedChannel : selectedChannels) {
 							// (PlotDataProvider)
 							channel = selectedChannel;
-							channel.dumpASCII(fw, graphPanel.getTimeRange(), graphPanel.getFilter(),
+							channel.dumpASCII(fw, graphPanel.getTimeRange(), graphPanel.getFilter().buildFilterSingleFunction(),
 									channel.getRotation());
 						}
 						JOptionPane.showMessageDialog(XMAXframe.getInstance(), "Data sucessfully exported to ASCII",
@@ -3261,33 +3154,25 @@ public class XMAXframe extends JFrame implements MouseInputListener, ActionListe
 			setWaitCursor(true);
 			try {
 				pluginId = getValue(Action.NAME).toString();
-				IFilter currentFilter = graphPanel.getFilter();
-				if ((currentFilter != null) && Objects.equals(currentFilter.getName(), pluginId)) {
+				Filter currentFilter = graphPanel.getFilter();
+				if ((currentFilter != null) && Objects.equals(currentFilter.filterType.getName(), pluginId)) {
 					graphPanel.setFilter(null);
 					setFilterMenuItem(null);
 					setFilterButton(null);
 					filterBG.clearSelection();
 				} else {
-					IFilter filter = XMAX.getFilter(pluginId);
-					//if (filter.needProcessing()) {
-					if (true) {
-							graphPanel.setFilter(filter);
-						if (graphPanel.getFilter() != null && graphPanel.getFilter().equals(filter)) {
-							setFilterMenuItem(pluginId);
-							setFilterButton(pluginId);
-						}
-						if (graphPanel.getFilter() == null) {
-							filterBG.clearSelection();
-						}
-					} else {
-						graphPanel.setFilter(null);
-						setFilterMenuItem(null);
-						setFilterButton(null);
+					Filter filter = XMAX.getDefaultFilter(pluginId);
+					graphPanel.setFilter(filter);
+					//TODO: This comparison probably broke now
+					if (graphPanel.getFilter() != null && graphPanel.getFilter().equals(filter)) {
+						setFilterMenuItem(pluginId);
+						setFilterButton(pluginId);
+					}
+					if (graphPanel.getFilter() == null) {
 						filterBG.clearSelection();
 					}
+
 				}
-			} catch (IllegalAccessException | InstantiationException e1) {
-				logger.error("Can't get " + pluginId + " plugin filter: ", e1);
 			} finally {
 				setWaitCursor(false);
 			}

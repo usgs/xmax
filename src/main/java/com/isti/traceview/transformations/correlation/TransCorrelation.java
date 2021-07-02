@@ -1,10 +1,9 @@
 package com.isti.traceview.transformations.correlation;
 
+import asl.utils.Filter;
 import asl.utils.NumericUtils;
 import com.isti.traceview.common.TimeInterval;
 import com.isti.traceview.data.PlotDataProvider;
-import com.isti.traceview.filters.IFilter;
-import com.isti.traceview.processing.FilterFacade;
 import com.isti.traceview.processing.IstiUtilsMath;
 import com.isti.traceview.transformations.ITransformation;
 import com.isti.xmax.XMAXException;
@@ -29,7 +28,7 @@ public class TransCorrelation implements ITransformation {
 
 
 	@Override
-	public void transform(List<PlotDataProvider> input, TimeInterval ti, IFilter filter, Object configuration,
+	public void transform(List<PlotDataProvider> input, TimeInterval ti, Filter filter, Object configuration,
 			JFrame parentFrame) {
 		if ((input == null) || (input.size() == 0) || (input.size() > 2)) {
 			JOptionPane.showMessageDialog(parentFrame,
@@ -75,7 +74,7 @@ public class TransCorrelation implements ITransformation {
 	 * @return list of arrays - double raw data for selected traces and time
 	 *         ranges
 	 */
-	private List<double[]> createData(List<PlotDataProvider> input, IFilter filter, TimeInterval ti,
+	private List<double[]> createData(List<PlotDataProvider> input, Filter filter, TimeInterval ti,
 			double sampleRate) {
 		List<double[]> ret = new ArrayList<>();
 
@@ -84,7 +83,7 @@ public class TransCorrelation implements ITransformation {
 				int[] intData = trace.getContinuousGaplessDataOverRange(ti);
 				logger.debug("size = " + intData.length);
 				if (filter != null) {
-					intData = new FilterFacade(filter, trace).filter(intData);
+					intData = filter.withSampleRate(trace.getSampleRate()).buildFilterBulkIntFunction().apply(intData);
 				}
 				double[] dblData = IstiUtilsMath.normData(intData);
 				dblData =
