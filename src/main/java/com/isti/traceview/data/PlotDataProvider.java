@@ -293,17 +293,20 @@ public class PlotDataProvider extends RawDataProvider {
       plottingData = rawDataFinal;
     }
 
-    SegmentData[] filteredRawData = new SegmentData[plottingData.length];
-    for (int i = 0; i < plottingData.length; i++) {
-      //TODO: Parallelize this!
-      SegmentData segmentData = plottingData[i];
-      filteredRawData[i] = new SegmentData(segmentData.startTime, segmentData.sampleRate,
-          segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
-          segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
-          filter.withSampleRate(getSampleRate()).buildFilterBulkIntFunction().apply(segmentData.data));
+    if (filter != null) {
+      SegmentData[] filteredRawData = new SegmentData[plottingData.length];
+      for (int i = 0; i < plottingData.length; i++) {
+        //TODO: Parallelize this!
+        SegmentData segmentData = plottingData[i];
+        filteredRawData[i] = new SegmentData(segmentData.startTime, segmentData.sampleRate,
+            segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
+            segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
+            filter.withSampleRate(getSampleRate()).buildFilterBulkIntFunction()
+                .apply(segmentData.data));
 
-    plottingData = filteredRawData;
+        plottingData = filteredRawData;
 
+      }
     }
 
     double interval = (ti.getDuration()) / (double) pointCount;
