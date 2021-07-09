@@ -230,7 +230,7 @@ public class RawDataProviderTest {
       }
     }
     for( int i = 0; i < filteredExpected.length; i++) {
-      assertTrue("Result more than 0.9% off", (1 - filteredExpected[i] / filteredLoaded[i]) < 0.009);
+      assertTrue("Result more than 0.9% off", Math.abs(1 - filteredExpected[i] / filteredLoaded[i]) < 0.009);
     }
   }
 
