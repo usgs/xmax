@@ -14,6 +14,7 @@ import com.isti.traceview.processing.Rotation.RotationGapException;
 import com.isti.xmax.XMAXException;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -266,7 +267,6 @@ public class PlotDataProvider extends RawDataProvider {
    */
   private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, Filter filter)
       throws PlotDataException {
-    List<PlotDataPoint[]> pointList = new ArrayList<>(pointCount);
 
     List<Segment> unfinalSegments; // finalize this only after we determine if rotation is possible
     try {
@@ -301,67 +301,61 @@ public class PlotDataProvider extends RawDataProvider {
     }
 
     double interval = (ti.getDuration()) / (double) pointCount;
-    double time = ti.getStart();
+    final SegmentData[] plottingDataArray = plottingData.collect(Collectors.toList()).toArray(new SegmentData[]{});
 
-    SegmentData[] plottingDataArray = plottingData.collect(Collectors.toList()).toArray(new SegmentData[]{});
+    List<PlotDataPoint[]> pointList = IntStream.range(0, pointCount).parallel().mapToDouble(i -> i*interval + ti.getStart()).mapToObj(start ->{
+      List<SegmentData> intervalData = getSegmentData(plottingDataArray, start, start + interval);
 
-    for (int i = 0; i < pointCount; i++) {
-      // Get segmentData objects in the interval (time, time+interval)
-      SegmentData[] intervalData = getSegmentData(plottingDataArray, time, time + interval);
-      if (intervalData != null) {
-        int k = 0;
-        int intervalDataLength = intervalData.length;  // number of continuous segmentData objects
-        PlotDataPoint[] intervalPoints = new PlotDataPoint[intervalDataLength];
-        for (SegmentData segData : intervalData) {
-          TimeInterval currentSegmentDataTI = new TimeInterval(segData.startTime,
-              segData.endTime());
-          double top = Double.NEGATIVE_INFINITY;
-          double bottom = Double.POSITIVE_INFINITY;
-          double sum = 0.0;
-          int[] data;
-          if (i == (pointCount - 1)) {
-            data = segData.getData(time, ti.getEnd()).data;  // last chunk
-          } else if (segData.getData(time, time + interval) != null) {
-            data = segData.getData(time, time + interval).data;  // interval sized chunks
+          if (intervalData != null) {
+            return intervalData.parallelStream().map(segData -> {
+              TimeInterval currentSegmentDataTI = new TimeInterval(segData.startTime,
+                  segData.endTime());
+              double top = Double.NEGATIVE_INFINITY;
+              double bottom = Double.POSITIVE_INFINITY;
+              double sum = 0.0;
+              int[] data;
+              //Detect last section
+              if (ti.getEnd() < start) {
+                data = segData.getData(start, ti.getEnd()).data;  // last chunk
+              } else if (segData.getData(start, start + interval) != null) {
+                data = segData.getData(start, start + interval).data;  // interval sized chunks
+              } else {
+                data = new int[]{};
+              }
+              int rawDataPointCount = data.length;
+              if (rawDataPointCount > 0) {
+                for (int value : data) {
+                  top = Math.max(top, value);
+                  bottom = Math.min(bottom, value);
+                  sum = sum + value;
+                }
+                return new PlotDataPoint(top, bottom, sum / rawDataPointCount,
+                    segData.channelSerialNumber, segData.sourceSerialNumber,
+                    segData.continueAreaNumber,
+                    null);
+              } else {
+                if (currentSegmentDataTI.isContain((long) start)) {
+                  double value = segData.interpolateValue(start);
+                  return new PlotDataPoint(value, value, value,
+                      segData.channelSerialNumber,
+                      segData.sourceSerialNumber, segData.continueAreaNumber, null);
+                } else {
+                  return new PlotDataPoint(Double.NEGATIVE_INFINITY,
+                      Double.POSITIVE_INFINITY,
+                      Double.NaN, segData.channelSerialNumber, segData.sourceSerialNumber,
+                      segData.continueAreaNumber, null);
+                }
+              }
+            }).toArray(PlotDataPoint[]::new);
           } else {
-            data = new int[]{};
+            PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
+            intervalPoints[0] = new PlotDataPoint(
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN,
+                -1, -1, -1, null);
+            return intervalPoints;
           }
-          int rawDataPointCount = data.length;
-          if (rawDataPointCount > 0) {
-            for (int value : data) {
-              top = Math.max(top, value);
-              bottom = Math.min(bottom, value);
-              sum = sum + value;
-            }
-            intervalPoints[k] = new PlotDataPoint(top, bottom, sum / rawDataPointCount,
-                segData.channelSerialNumber, segData.sourceSerialNumber, segData.continueAreaNumber,
-                null);
-          } else {
-            if (currentSegmentDataTI.isContain((long) time)) {
-              double value = segData.interpolateValue(time);
-              intervalPoints[k] = new PlotDataPoint(value, value, value,
-                  segData.channelSerialNumber,
-                  segData.sourceSerialNumber, segData.continueAreaNumber, null);
-            } else {
-              intervalPoints[k] = new PlotDataPoint(Double.NEGATIVE_INFINITY,
-                  Double.POSITIVE_INFINITY,
-                  Double.NaN, segData.channelSerialNumber, segData.sourceSerialNumber,
-                  segData.continueAreaNumber, null);
-            }
-          }
-          k++;
-        }
-        pointList.add(intervalPoints);
-      } else {
-        //lg.debug("Pixelizing : segment null");
-        PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
-        intervalPoints[0] = new PlotDataPoint(
-            Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN,
-            -1, -1, -1, null);
-        pointList.add(intervalPoints);
-      }
-      time = time + interval;
-    }
+    }).collect(Collectors.toList());
+
     logger.debug("pixelizing end " + this);
     return pointList;
   }
@@ -374,7 +368,7 @@ public class PlotDataProvider extends RawDataProvider {
    * normal situation is none or one segment, but it can be bigger count in the case of segment
    * overlapping or gaps. If no segments found, return null.
    */
-  private static SegmentData[] getSegmentData(SegmentData[] sps, double start, double end) {
+  private static List<SegmentData> getSegmentData(SegmentData[] sps, double start, double end) {
     List<SegmentData> ret = new ArrayList<>();
     for( SegmentData segData : sps){
       long retStart = segData.startTime;
@@ -387,7 +381,7 @@ public class PlotDataProvider extends RawDataProvider {
     if (ret.size() == 0) {
       return null;
     } else {
-      return ret.toArray(new SegmentData[]{});
+      return ret;
     }
   }
 
