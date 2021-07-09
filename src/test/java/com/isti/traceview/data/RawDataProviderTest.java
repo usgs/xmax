@@ -229,7 +229,9 @@ public class RawDataProviderTest {
         filteredLoaded[lastArrayPoint++] = point;
       }
     }
-    assertArrayEquals(filteredExpected, filteredLoaded, 1.);
+    for( int i = 0; i < filteredExpected.length; i++) {
+      assertTrue("Result more than 0.9% off", (1 - filteredExpected[i] / filteredLoaded[i]) < 0.009);
+    }
   }
 
   @Test

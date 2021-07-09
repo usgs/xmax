@@ -17,10 +17,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.apache.log4j.Logger;
 
 /**
@@ -263,7 +266,7 @@ public class PlotDataProvider extends RawDataProvider {
    */
   private List<PlotDataPoint[]> pixelize(TimeInterval ti, int pointCount, Filter filter)
       throws PlotDataException {
-    List<PlotDataPoint[]> pointSet = new ArrayList<>(pointCount);
+    List<PlotDataPoint[]> pointList = new ArrayList<>(pointCount);
 
     List<Segment> unfinalSegments; // finalize this only after we determine if rotation is possible
     try {
@@ -276,45 +279,35 @@ public class PlotDataProvider extends RawDataProvider {
       // reset rotation here; any complement channels will also have rotation nulled
       unfinalSegments = getRawData(ti);
     }
-    List<Segment> segments = unfinalSegments;
-    int numSegments = segments.size();
-    SegmentData[] plottingData;
+    Stream<Segment> segments = unfinalSegments.parallelStream();
+    Stream<SegmentData> plottingData;
     {
-      final SegmentData[] rawDataFinal = new SegmentData[numSegments];
       // Combine segments if no gap and colormode is not by source, to correct filtering
-      IntStream.range(0, numSegments).parallel().forEach(i -> {
+      plottingData = segments.map(segment -> {
         //ALL requested for pixelization time range in this segment
-        Segment segment = segments.get(i);
         TimeInterval currentSegmentDataTI = TimeInterval.getIntersect(ti,
             new TimeInterval(segment.getStartTime(), segment.getEndTime()));
-        SegmentData segmentData = segment.getData(currentSegmentDataTI);
-        rawDataFinal[i] = segmentData;
-      });
-      plottingData = rawDataFinal;
+        return segment.getData(currentSegmentDataTI);
+      }).filter(Objects::nonNull);
     }
 
     if (filter != null) {
-      SegmentData[] filteredRawData = new SegmentData[plottingData.length];
-      for (int i = 0; i < plottingData.length; i++) {
-        //TODO: Parallelize this!
-        SegmentData segmentData = plottingData[i];
-        filteredRawData[i] = new SegmentData(segmentData.startTime, segmentData.sampleRate,
-            segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
-            segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
-            filter.withSampleRate(getSampleRate()).buildFilterBulkIntFunction()
-                .apply(segmentData.data));
 
-        plottingData = filteredRawData;
-
-      }
+      plottingData = plottingData.map(segmentData -> new SegmentData(segmentData.startTime, segmentData.sampleRate,
+          segmentData.sourceSerialNumber, segmentData.channelSerialNumber,
+          segmentData.continueAreaNumber, segmentData.previous, segmentData.next,
+          filter.withSampleRate(getSampleRate()).buildFilterBulkIntFunction()
+              .apply(segmentData.data)));
     }
 
     double interval = (ti.getDuration()) / (double) pointCount;
     double time = ti.getStart();
 
+    SegmentData[] plottingDataArray = plottingData.collect(Collectors.toList()).toArray(new SegmentData[]{});
+
     for (int i = 0; i < pointCount; i++) {
       // Get segmentData objects in the interval (time, time+interval)
-      SegmentData[] intervalData = getSegmentData(plottingData, time, time + interval);
+      SegmentData[] intervalData = getSegmentData(plottingDataArray, time, time + interval);
       if (intervalData != null) {
         int k = 0;
         int intervalDataLength = intervalData.length;  // number of continuous segmentData objects
@@ -358,19 +351,19 @@ public class PlotDataProvider extends RawDataProvider {
           }
           k++;
         }
-        pointSet.add(intervalPoints);
+        pointList.add(intervalPoints);
       } else {
         //lg.debug("Pixelizing : segment null");
         PlotDataPoint[] intervalPoints = new PlotDataPoint[1];
         intervalPoints[0] = new PlotDataPoint(
             Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN,
             -1, -1, -1, null);
-        pointSet.add(intervalPoints);
+        pointList.add(intervalPoints);
       }
       time = time + interval;
     }
     logger.debug("pixelizing end " + this);
-    return pointSet;
+    return pointList;
   }
 
   /**
@@ -383,7 +376,7 @@ public class PlotDataProvider extends RawDataProvider {
    */
   private static SegmentData[] getSegmentData(SegmentData[] sps, double start, double end) {
     List<SegmentData> ret = new ArrayList<>();
-    for (SegmentData segData : sps) {
+    for( SegmentData segData : sps){
       long retStart = segData.startTime;
       long retEnd = segData.endTime();
       retEnd = Math.max(retEnd, retStart + (long) segData.sampleRate);
